@@ -1,0 +1,78 @@
+# All these sections are optional, edit this file as you like.
+[general]
+# Ignore certain rules, you can reference them by their id or by their full name
+# ignore=title-trailing-punctuation, T3
+
+# verbosity should be a value between 1 and 3, the commandline -v flags take precedence over this
+# verbosity = 2
+
+# By default gitlint will ignore merge commits. Set to 'false' to disable.
+# ignore-merge-commits=true
+
+# By default gitlint will ignore fixup commits. Set to 'false' to disable.
+# ignore-fixup-commits=true
+
+# By default gitlint will ignore squash commits. Set to 'false' to disable.
+# ignore-squash-commits=true
+
+# Enable debug mode (prints more output). Disabled by default.
+# debug=true
+
+# Set the extra-path where gitlint will search for user defined rules
+# See http://jorisroovers.github.io/gitlint/user_defined_rules for details
+extra-path=gitlint/
+
+# [title-max-length]
+# line-length=80
+
+[title-must-not-contain-word]
+# Comma-separated list of words that should not occur in the title. Matching is case
+# insensitive. It's fine if the keyword occurs as part of a larger word (so "WIPING"
+# will not cause a violation, but "WIP: my title" will.
+words=wip
+
+#[title-match-regex]
+# python like regex (https://docs.python.org/2/library/re.html) that the
+# commit-msg title must be matched to.
+# Note that the regex can contradict with other rules if not used correctly
+# (e.g. title-must-not-contain-word).
+#regex=
+
+# [B1]
+# B1 = body-max-line-length
+# line-length=120
+# [body-min-length]
+# min-length=5
+
+# [body-is-missing]
+# Whether to ignore this rule on merge commits (which typically only have a title)
+# default = True
+# ignore-merge-commits=false
+
+# [body-changed-file-mention]
+# List of files that need to be explicitly mentioned in the body when they are changed
+# This is useful for when developers often erroneously edit certain files or git submodules.
+# By specifying this rule, developers can only change the file when they explicitly reference
+# it in the commit message.
+# files=gitlint/rules.py,README.md
+
+# [author-valid-email]
+# python like regex (https://docs.python.org/2/library/re.html) that the
+# commit author email address should be matched to
+# For example, use the following regex if you only want to allow email addresses from foo.com
+# regex=[^@]+@foo.com
+
+[ignore-by-title]
+# Allow empty body & wrong title pattern only when bots (pyup/greenkeeper)
+# upgrade dependencies
+regex=^(⬆️.*|Update (.*) from (.*) to (.*)|(chore|fix)\(package\): update .*)$
+ignore=B6,UC1
+
+# [ignore-by-body]
+# Ignore certain rules for commits of which the body has a line that matches a regex
+# E.g. Match bodies that have a line that that contain "release"
+# regex=(.*)release(.*)
+#
+# Ignore certain rules, you can reference them by their id or by their full name
+# Use 'all' to ignore all rules
+# ignore=T1,body-min-length

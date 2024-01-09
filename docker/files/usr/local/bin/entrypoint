@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# The container user (see USER in the Dockerfile) is an un-privileged user that
+# does not exists and is not created during the build phase (see Dockerfile).
+# Hence, we use this entrypoint to wrap commands that will be run in the
+# container to create an entry for this user in the /etc/passwd file.
+#
+# The following environment variables may be passed to the container to
+# customize running user account:
+#
+#   * USER_NAME: container user name (default: default)
+#   * HOME     : container user home directory (default: none)
+#
+# To pass environment variables, you can either use the -e option of the docker run command:
+#
+#     docker run --rm -e USER_NAME=foo -e HOME='/home/foo' publish:latest python manage.py migrate
+#
+# or define new variables in an environment file to use with docker or docker compose:
+#
+#     # env.d/production
+#     USER_NAME=foo
+#     HOME=/home/foo
+#
+#     docker run --rm --env-file env.d/production publish:latest python manage.py migrate
+#
+
+echo "🐳(entrypoint) creating user running in the container..."
+if ! whoami > /dev/null 2>&1; then
+  if [ -w /etc/passwd ]; then
+    echo "${USER_NAME:-default}:x:$(id -u):$(id -g):${USER_NAME:-default} user:${HOME}:/sbin/nologin" >> /etc/passwd
+  fi
+fi
+
+echo "🐳(entrypoint) running your command: ${*}"
+exec "$@"

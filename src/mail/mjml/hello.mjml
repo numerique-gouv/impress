@@ -1,0 +1,28 @@
+<mjml>
+  <mj-include path="./partial/header.mjml" />
+  <mj-body mj-class="bg--blue-100">
+    <mj-wrapper css-class="wrapper" padding="20px 40px 40px 40px">
+    <mj-section>
+      <mj-column>
+        <mj-image src="{% base64_static 'publish/images/logo_publish.png' %}" width="200px" align="left" alt="{%trans 'Company logo' %}" />
+      </mj-column>
+    </mj-section>
+      <mj-section mj-class="bg--blue-100" border-radius="6px 6px 0 0" padding="30px 50px 60px 50px">
+        <mj-column>
+          <mj-text padding="0">
+            <p>
+              {%if fullname%}
+                {% blocktranslate with name=fullname %}Hello {{ name }}{% endblocktranslate %}
+              {% else %}
+                {%trans "Hello" %}
+              {% endif %}<br/>
+              <strong>{%trans "Thank you very much for your visit!"%}</strong>
+            </p>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-include path="./partial/footer.mjml" />
+  </mj-body>
+</mjml>
+

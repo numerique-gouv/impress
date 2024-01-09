@@ -1,0 +1,20 @@
+# Django
+DJANGO_ALLOWED_HOSTS=*
+DJANGO_SECRET_KEY=ThisIsAnExampleKeyForDevPurposeOnly
+DJANGO_SETTINGS_MODULE=publish.settings
+DJANGO_SUPERUSER_PASSWORD=admin
+
+# Python
+PYTHONPATH=/app
+
+#JWT
+DJANGO_JWT_PRIVATE_SIGNING_KEY=ThisIsAnExampleKeyForDevPurposeOnly
+
+# publish settings
+
+# Mail
+DJANGO_EMAIL_HOST="mailcatcher"
+DJANGO_EMAIL_PORT=1025
+
+# Backend url
+publish_BASE_URL="http://localhost:8072"

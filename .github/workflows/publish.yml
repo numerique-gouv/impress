@@ -1,0 +1,226 @@
+name: publish Workflow
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  lint-git:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' # Makes sense only for pull requests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
+      - name: show
+        run: git log
+      - name: Enforce absence of print statements in code
+        run: |
+          ! git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- . ':(exclude)**/publish.yml' | grep "print("
+      - name: Check absence of fixup commits
+        run: |
+          ! git log | grep 'fixup!'
+      - name: Install gitlint
+        run: pip install --user requests gitlint
+      - name: Lint commit messages added to main
+        run: ~/.local/bin/gitlint --commits origin/${{ github.event.pull_request.base.ref }}..HEAD
+
+  check-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Check that the CHANGELOG has been modified in the current branch
+        run: git whatchanged --name-only --pretty="" origin..HEAD | grep CHANGELOG
+
+  lint-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Check CHANGELOG max line length
+        run: |
+          max_line_length=$(cat CHANGELOG.md | grep -Ev "^\[.*\]: https://github.com" | wc -L)
+          if [ $max_line_length -ge 80 ]; then
+            echo "ERROR: CHANGELOG has lines longer than 80 characters."
+            exit 1
+          fi
+
+  build-mails:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/mail
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install yarn
+        run: npm install -g yarn
+      - name: Install node dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build mails
+        run: yarn build
+
+  build-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Generate a version.json file describing app release
+        run: |
+          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/publish/version.json
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build production image
+        run: docker build -t publish:${{ github.sha }} --target production .
+      - name: Check built image availability
+        run: docker images "publish:${{ github.sha }}*"
+
+  lint-back:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install development dependencies
+        run: pip install --user .[dev]
+      - name: Check code formatting with ruff
+        run: ~/.local/bin/ruff format publish --diff
+      - name: Lint code with ruff
+        run: ~/.local/bin/ruff check publish
+      - name: Lint code with pylint
+        run: ~/.local/bin/pylint publish
+
+  test-back:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: publish
+          POSTGRES_USER: dinum
+          POSTGRES_PASSWORD: pass
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      DJANGO_CONFIGURATION: Test
+      DJANGO_SETTINGS_MODULE: publish.settings
+      DJANGO_SECRET_KEY: ThisIsAnExampleKeyForTestPurposeOnly
+      DJANGO_JWT_PRIVATE_SIGNING_KEY: ThisIsAnExampleKeyForDevPurposeOnly
+      DB_HOST: localhost
+      DB_NAME: publish
+      DB_USER: dinum
+      DB_PASSWORD: pass
+      DB_PORT: 5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Create writable /data
+        run: |
+          sudo mkdir -p /data/media && \
+          sudo mkdir -p /data/static
+      - name: Install Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install development dependencies
+        run: pip install --user .[dev]
+      - name: Install gettext (required to compile messages)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext
+      - name: Generate a MO file from strings extracted from the project
+        run: python manage.py compilemessages
+      - name: Run tests
+        run: ~/.local/bin/pytest -n 2
+
+  i18n-back:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install gettext (required to make messages)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext
+      - name: Install Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install development dependencies
+        working-directory: src/backend
+        run: pip install --user .[dev]
+      - name: Generate the translation base file
+        run: ~/.local/bin/django-admin makemessages --keep-pot --all
+      - name: Upload files to Crowdin
+        run: |
+          docker run \
+          --rm \
+          -e CROWDIN_API_TOKEN=${{ secrets.CROWDIN_API_TOKEN }} \
+          -e CROWDIN_PROJECT_ID=${{ vars.CROWDIN_PROJECT_ID }} \
+          -e CROWDIN_BASE_PATH=${{ vars.CROWDIN_BASE_PATH }} \
+          -v "${{ github.workspace }}:/app" \
+          crowdin/cli:3.16.0 \
+          crowdin upload sources -c /app/crowdin/config.yml
+
+  hub:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Generate a version.json file describing app release
+        run: |
+          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/publish/version.json
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build production image
+        run: docker build -t publish:${{ github.sha }} --target production .
+      - name: Check built images availability
+        run: docker images "publish:${{ github.sha }}*"
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
+      - name: Tag images
+        run: |
+          DOCKER_TAG=$([[ -z "${{ github.event.ref }}" ]] && echo "${{ github.event.ref }}" || echo "${{ github.event.ref }}" | sed 's/^v//')
+          RELEASE_TYPE=$([[ -z "${{ github.event.ref }}" ]] && echo "branch" || echo "tag ")
+          echo "DOCKER_TAG: ${DOCKER_TAG} (Git ${RELEASE_TYPE}${{ github.event.ref }})"
+          docker tag publish:${{ github.sha }} numerique-gouv/publish:${DOCKER_TAG}
+          if [[ -n "${{ github.event.ref }}" ]]; then
+            docker tag publish:${{ github.sha }} numerique-gouv/publish:latest
+          fi
+          docker images | grep -E "^numerique-gouv/publish\s*(${DOCKER_TAG}.*|latest|main)"
+      - name: Publish images
+        run: |
+          DOCKER_TAG=$([[ -z "${{ github.event.ref }}" ]] && echo "${{ github.event.ref }}" || echo "${{ github.event.ref }}" | sed 's/^v//')
+          RELEASE_TYPE=$([[ -z "${{ github.event.ref }}" ]] && echo "branch" || echo "tag ")
+          echo "DOCKER_TAG: ${DOCKER_TAG} (Git ${RELEASE_TYPE}${{ github.event.ref }})"
+          docker push numerique-gouv/publish:${DOCKER_TAG}
+          if [[ -n "${{ github.event.ref }}" ]]; then
+            docker push numerique-gouv/publish:latest
+          fi

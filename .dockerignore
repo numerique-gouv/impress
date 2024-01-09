@@ -1,0 +1,33 @@
+# Python
+__pycache__
+*.pyc
+**/__pycache__
+**/*.pyc
+venv
+.venv
+
+# System-specific files
+.DS_Store
+**/.DS_Store
+
+# Docker
+docker compose.*
+env.d
+
+# Docs
+docs
+*.md
+*.log
+
+# Development/test cache & configurations
+data
+.cache
+.circleci
+.git
+.vscode
+.iml
+.idea
+db.sqlite3
+.mypy_cache
+.pylint.d
+.pytest_cache

@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:16
+    env_file:
+      - env.d/development/postgresql
+    ports:
+      - "15432:5432"
+
+  redis:
+    image: redis:5
+
+  mailcatcher:
+    image: sj26/mailcatcher:latest
+    ports:
+      - "1081:1080"
+
+  app-dev:
+    build:
+      context: .
+      target: development
+      args:
+        DOCKER_USER: ${DOCKER_USER:-1000}
+    user: ${DOCKER_USER:-1000}
+    image: publish:development
+    environment:
+      - PYLINTHOME=/app/.pylint.d
+      - DJANGO_CONFIGURATION=Development
+    env_file:
+      - env.d/development/common
+      - env.d/development/postgresql
+    ports:
+      - "8071:8000"
+    volumes:
+      - ./src/backend:/app
+      - ./data/media:/data/media
+      - ./data/static:/data/static
+    depends_on:
+        - postgresql
+        - mailcatcher
+        - redis
+  
+  celery-dev:
+    user: ${DOCKER_USER:-1000}
+    image: publish:development
+    command: ["celery", "-A", "publish.celery_app", "worker", "-l", "DEBUG"]
+    environment:
+      - DJANGO_CONFIGURATION=Development
+    env_file:
+      - env.d/development/common
+      - env.d/development/postgresql
+    volumes:
+      - ./src/backend:/app
+      - ./data/media:/data/media
+      - ./data/static:/data/static
+    depends_on:
+      - app-dev
+
+  app:
+    build:
+      context: .
+      target: production
+      args:
+        DOCKER_USER: ${DOCKER_USER:-1000}
+    user: ${DOCKER_USER:-1000}
+    image: publish:production
+    environment:
+      - DJANGO_CONFIGURATION=ContinuousIntegration
+    env_file:
+      - env.d/development/common
+      - env.d/development/postgresql
+    volumes:
+      - ./data/media:/data/media
+    depends_on:
+      - postgresql
+      - redis
+
+  celery:
+    user: ${DOCKER_USER:-1000}
+    image: publish:production
+    command: ["celery", "-A", "publish.celery_app", "worker", "-l", "INFO"]
+    environment:
+      - DJANGO_CONFIGURATION=ContinuousIntegration
+    env_file:
+      - env.d/development/common
+      - env.d/development/postgresql
+    depends_on:
+      - app
+
+  nginx:
+    image: nginx:1.25
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./docker/files/etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./data/media:/data/media:ro
+    depends_on:
+      - app
+
+  dockerize:
+    image: jwilder/dockerize
+
+  crowdin:
+    image: crowdin/cli:3.16.0
+    volumes:
+      - ".:/app"
+    env_file:
+      - env.d/development/crowdin
+    user: "${DOCKER_USER:-1000}"
+    working_dir: /app
+
+  node:
+    image: node:18
+    user: "${DOCKER_USER:-1000}"
+    environment:
+      HOME: /tmp
+    volumes:
+      - ".:/app"
+
+  terraform-state:
+    image: hashicorp/terraform:1.6
+    environment:
+      - TF_WORKSPACE=${PROJECT:-} # avoid env conflict in local state
+    user: ${DOCKER_USER:-1000}
+    working_dir: /app
+    volumes:
+      - ./src/terraform/create_state_bucket:/app
+
+  terraform:
+    image: hashicorp/terraform:1.6
+    user: ${DOCKER_USER:-1000}
+    working_dir: /app
+    volumes:
+      - ./src/terraform:/app

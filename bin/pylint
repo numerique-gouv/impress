@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# shellcheck source=bin/_config.sh
+source "$(dirname "${BASH_SOURCE[0]}")/_config.sh"
+
+declare diff_from
+declare -a paths
+declare -a args
+
+# Parse options
+for arg in "$@"
+do
+    case $arg in
+        --diff-only=*)
+            diff_from="${arg#*=}"
+            shift
+            ;;
+        -*)
+            args+=("$arg")
+            shift
+            ;;
+        *)
+            paths+=("$arg")
+            shift
+            ;;
+    esac
+done
+
+if [[ -n "${diff_from}" ]]; then
+    # Run pylint only on modified files located in src/backend
+    # (excluding deleted files and migration files)
+    # shellcheck disable=SC2207
+    paths=($(git diff "${diff_from}" --name-only --diff-filter=d -- src/backend ':!**/migrations/*.py' | grep -E '^src/backend/.*\.py$'))
+fi
+
+# Fix docker vs local path when project sources are mounted as a volume
+read -ra paths <<< "$(echo "${paths[@]}" | sed "s|src/backend/||g")"
+_dc_run app-dev pylint "${paths[@]}" "${args[@]}"

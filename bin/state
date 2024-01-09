@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+source "$(dirname "${BASH_SOURCE[0]}")/_config.sh"
+
+project=$(_set_openstack_project)
+echo "Using \"${project}\" project..."
+
+source "${TERRAFORM_DIRECTORY}/${project}/openrc.sh"
+
+# Run Terraform commands in the Hashicorp docker container via docker compose
+# shellcheck disable=SC2068
+DOCKER_USER="$(id -u):$(id -g)" \
+    PROJECT="${project}" \
+    docker compose run --rm \
+    -e OS_AUTH_URL \
+    -e OS_IDENTITY_API_VERSION \
+    -e OS_USER_DOMAIN_NAME \
+    -e OS_PROJECT_DOMAIN_NAME \
+    -e OS_TENANT_ID \
+    -e OS_TENANT_NAME \
+    -e OS_USERNAME \
+    -e OS_PASSWORD \
+    -e OS_REGION_NAME \
+    terraform-state "$@"

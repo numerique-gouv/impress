@@ -1,0 +1,48 @@
+<mj-head>
+    <mj-title>{{ title }}</mj-title>
+    <mj-preview>
+        <!--
+            We load django tags here, in this way there are put within the body in html output
+            so the html-to-text command includes it within its output
+        -->
+        {% load i18n static extra_tags %}
+        {{ title }}
+    </mj-preview>
+    <mj-attributes>
+        <mj-font name="Roboto" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" />
+        <mj-all
+                font-family="Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif"
+                font-size="16px"
+                line-height="1.5em"
+                color="#031963"
+        />
+        <mj-class name="text--small" font-size="0.875rem" />
+        <mj-class name="bg--blue-100" background-color="#EDF5FA" />
+    </mj-attributes>
+    <mj-style>
+        /* Reset */
+        h1, h2, h3, h4, h5, h6, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            color: inherit;
+        }
+    </mj-style>
+    <mj-style>
+        /* Global styles */
+        h1 {
+            color: #055FD2;
+            font-size: 2rem;
+            line-height: 1em;
+            font-weight: 700;
+        }
+
+        .wrapper {
+            background: #FFFFFF;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 0 6px rgba(2 117 180 / 0.3);
+        }
+    </mj-style>
+</mj-head>

@@ -1,0 +1,11 @@
+{
+  "wordwrap": 600,
+  "selectors": [
+    {
+      "selector": "h1",
+      "options": {
+        "uppercase": false
+      }
+    }
+  ]
+}
