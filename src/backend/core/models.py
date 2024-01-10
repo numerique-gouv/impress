@@ -18,6 +18,7 @@ from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
 from django.template.engine import Engine
 
+import frontmatter
 import markdown
 from weasyprint import CSS, HTML
 from weasyprint.text.fonts import FontConfiguration
@@ -236,8 +237,12 @@ class Template(BaseModel):
         Generate and return a PDF document for this template around the
         markdown body passed as argument.
         """
-        body_html = markdown.markdown(textwrap.dedent(body)) if body else ""
-        document_html = HTML(string=DjangoTemplate(self.code).render(Context({"body": body_html})))
+        document = frontmatter.loads(body)
+        metadata = document.metadata
+        markdown_body = document.content.strip()
+        body_html =  markdown.markdown(textwrap.dedent(markdown_body)) if markdown_body else ""
+
+        document_html = HTML(string=DjangoTemplate(self.code).render(Context({"body": body_html, **metadata})))
         css = CSS(
             string=self.css,
             font_config=FontConfiguration(),
