@@ -1,0 +1,30 @@
+@use "@openfun/cunningham-react/sass/fonts";
+@use "@openfun/cunningham-react/sass/icons";
+@use "@openfun/cunningham-react/style";
+@use "cunningham-tokens";
+
+:root {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background-color: var(--c--theme--colors--greyscale-000);
+}
+
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background-color: var(--c--theme--colors--greyscale-100);
+  border-radius: 1rem;
+
+  h1, h3 {
+    margin-bottom: 40px;
+  }
+}

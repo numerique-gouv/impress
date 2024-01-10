@@ -236,7 +236,7 @@ class Template(BaseModel):
         Generate and return a PDF document for this template around the
         markdown body passed as argument.
         """
-        body_html =  markdown.markdown(textwrap.dedent(body)) if body else ""
+        body_html = markdown.markdown(textwrap.dedent(body)) if body else ""
         document_html = HTML(string=DjangoTemplate(self.code).render(Context({"body": body_html})))
         css = CSS(
             string=self.css,
