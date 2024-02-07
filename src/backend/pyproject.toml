@@ -34,7 +34,7 @@ dependencies = [
     "django-parler==2.3",
     "django-storages==1.14.2",
     "django-timezone-field>=5.1",
-    "django==5.0",
+    "django==5.0.2",
     "djangorestframework-simplejwt==5.3.0",
     "djangorestframework==3.14.0",
     "drf_spectacular==0.26.5",
