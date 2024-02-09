@@ -1,29 +1,10 @@
 """Client serializers for the publish core app."""
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import exceptions, serializers
 from timezone_field.rest_framework import TimeZoneSerializerField
 
 from core import models
-
-
-class ContactSerializer(serializers.ModelSerializer):
-    """Serialize contacts."""
-
-    class Meta:
-        model = models.Contact
-        fields = [
-            "id",
-            "base",
-            "data",
-            "full_name",
-            "owner",
-            "short_name",
-        ]
-        read_only_fields = ["id", "owner"]
-
-    def update(self, instance, validated_data):
-        """Make "base" field readonly but only for update/patch."""
-        validated_data.pop("base", None)
-        return super().update(instance, validated_data)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -42,13 +23,14 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "is_device", "is_staff"]
 
-class TeamAccessSerializer(serializers.ModelSerializer):
-    """Serialize team accesses."""
+
+class TemplateAccessSerializer(serializers.ModelSerializer):
+    """Serialize template accesses."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = models.TeamAccess
+        model = models.TemplateAccess
         fields = ["id", "user", "role", "abilities"]
         read_only_fields = ["id", "abilities"]
 
@@ -80,58 +62,65 @@ class TeamAccessSerializer(serializers.ModelSerializer):
                 message = (
                     f"You are only allowed to set role to {', '.join(can_set_role_to)}"
                     if can_set_role_to
-                    else "You are not allowed to set this role for this team."
+                    else "You are not allowed to set this role for this template."
                 )
                 raise exceptions.PermissionDenied(message)
 
         # Create
         else:
             try:
-                team_id = self.context["team_id"]
+                template_id = self.context["template_id"]
             except KeyError as exc:
                 raise exceptions.ValidationError(
-                    "You must set a team ID in kwargs to create a new team access."
+                    "You must set a template ID in kwargs to create a new template access."
                 ) from exc
 
-            if not models.TeamAccess.objects.filter(
-                team=team_id,
+            if not models.TemplateAccess.objects.filter(
+                template=template_id,
                 user=user,
                 role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
             ).exists():
                 raise exceptions.PermissionDenied(
-                    "You are not allowed to manage accesses for this team."
+                    "You are not allowed to manage accesses for this template."
                 )
 
             if (
                 role == models.RoleChoices.OWNER
-                and not models.TeamAccess.objects.filter(
-                    team=team_id,
+                and not models.TemplateAccess.objects.filter(
+                    template=template_id,
                     user=user,
                     role=models.RoleChoices.OWNER,
                 ).exists()
             ):
                 raise exceptions.PermissionDenied(
-                    "Only owners of a team can assign other users as owners."
+                    "Only owners of a template can assign other users as owners."
                 )
 
-        attrs["team_id"] = self.context["team_id"]
+        attrs["template_id"] = self.context["template_id"]
         return attrs
 
 
-class TeamSerializer(serializers.ModelSerializer):
-    """Serialize teams."""
+class TemplateSerializer(serializers.ModelSerializer):
+    """Serialize templates."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
-    accesses = TeamAccessSerializer(many=True, read_only=True)
+    accesses = TemplateAccessSerializer(many=True, read_only=True)
 
     class Meta:
-        model = models.Team
-        fields = ["id", "name", "accesses", "abilities"]
+        model = models.Template
+        fields = ["id", "title", "accesses", "abilities"]
         read_only_fields = ["id", "accesses", "abilities"]
 
-    def get_abilities(self, team) -> dict:
+    def get_abilities(self, template) -> dict:
         """Return abilities of the logged-in user on the instance."""
         request = self.context.get("request")
         if request:
-            return team.get_abilities(request.user)
+            return template.get_abilities(request.user)
         return {}
+
+
+# pylint: disable=abstract-method
+class DocumentGenerationSerializer(serializers.Serializer):
+    """Serializer to receive a request to generate a document on a template."""
+
+    body = serializers.CharField(label=_("Markdown Body"))

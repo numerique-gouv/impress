@@ -1,6 +1,6 @@
 # Publish
 
-publish is an application to handle users and teams.
+publish is an application to handle users and templates.
 
 publish is built on top of [Django Rest
 Framework](https://www.django-rest-framework.org/).

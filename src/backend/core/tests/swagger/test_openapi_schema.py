@@ -23,7 +23,7 @@ def test_openapi_client_schema():
         "--api-version",
         "v1.0",
         "--urlconf",
-        "publish.api_urls",
+        "core.urls",
         "--format",
         "openapi-json",
         "--file",

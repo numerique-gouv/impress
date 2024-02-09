@@ -83,7 +83,9 @@ class Base(Configuration):
                 environ_name="DB_ENGINE",
                 environ_prefix=None,
             ),
-            "NAME": values.Value("publish", environ_name="DB_NAME", environ_prefix=None),
+            "NAME": values.Value(
+                "publish", environ_name="DB_NAME", environ_prefix=None
+            ),
             "USER": values.Value("dinum", environ_name="DB_USER", environ_prefix=None),
             "PASSWORD": values.Value(
                 "pass", environ_name="DB_PASSWORD", environ_prefix=None

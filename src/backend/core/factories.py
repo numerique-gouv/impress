@@ -19,48 +19,39 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.User
 
+    sub = factory.Sequence(lambda n: f"user{n!s}")
+    email = factory.Faker("email")
     language = factory.fuzzy.FuzzyChoice([lang[0] for lang in settings.LANGUAGES])
     password = make_password("password")
 
 
-class IdentityFactory(factory.django.DjangoModelFactory):
-    """A factory to create identities for a user"""
+class TemplateFactory(factory.django.DjangoModelFactory):
+    """A factory to create templates"""
 
     class Meta:
-        model = models.Identity
-        django_get_or_create = ("sub",)
+        model = models.Template
+        django_get_or_create = ("title",)
 
-    user = factory.SubFactory(UserFactory)
-    sub = factory.Sequence(lambda n: f"user{n!s}")
-    email = factory.Faker("email")
-
-
-class TeamFactory(factory.django.DjangoModelFactory):
-    """A factory to create teams"""
-
-    class Meta:
-        model = models.Team
-        django_get_or_create = ("name",)
-
-    name = factory.Sequence(lambda n: f"team{n}")
+    title = factory.Sequence(lambda n: f"template{n}")
+    is_public = factory.Faker("boolean")
 
     @factory.post_generation
     def users(self, create, extracted, **kwargs):
-        """Add users to team from a given list of users with or without roles."""
+        """Add users to template from a given list of users with or without roles."""
         if create and extracted:
             for item in extracted:
                 if isinstance(item, models.User):
-                    TeamAccessFactory(team=self, user=item)
+                    TemplateAccessFactory(template=self, user=item)
                 else:
-                    TeamAccessFactory(team=self, user=item[0], role=item[1])
+                    TemplateAccessFactory(template=self, user=item[0], role=item[1])
 
 
-class TeamAccessFactory(factory.django.DjangoModelFactory):
-    """Create fake team user accesses for testing."""
+class TemplateAccessFactory(factory.django.DjangoModelFactory):
+    """Create fake template user accesses for testing."""
 
     class Meta:
-        model = models.TeamAccess
+        model = models.TemplateAccess
 
-    team = factory.SubFactory(TeamFactory)
+    template = factory.SubFactory(TemplateFactory)
     user = factory.SubFactory(UserFactory)
     role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])

@@ -25,8 +25,8 @@ def test_api_users_list_authenticated():
     """
     Authenticated users should not be able to list users.
     """
-    identity = factories.IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    user = factories.UserFactory()
+    jwt_token = OIDCToken.for_user(user)
 
     factories.UserFactory.create_batch(2)
     response = APIClient().get(
@@ -49,14 +49,8 @@ def test_api_users_retrieve_me_anonymous():
 
 def test_api_users_retrieve_me_authenticated():
     """Authenticated users should be able to retrieve their own user via the "/users/me" path."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     jwt_token = OIDCToken.for_user(user)
-
-    # Define profile contact
-    contact = factories.ContactFactory(owner=user)
-    user.profile_contact = contact
-    user.save()
 
     factories.UserFactory.create_batch(2)
     response = APIClient().get(
@@ -70,7 +64,6 @@ def test_api_users_retrieve_me_authenticated():
         "timezone": str(user.timezone),
         "is_device": False,
         "is_staff": False,
-        "data": user.profile_contact.data,
     }
 
 
@@ -91,8 +84,7 @@ def test_api_users_retrieve_authenticated_self():
     Authenticated users should be allowed to retrieve their own user.
     The returned object should not contain the password.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     jwt_token = OIDCToken.for_user(user)
 
     response = APIClient().get(
@@ -107,8 +99,8 @@ def test_api_users_retrieve_authenticated_other():
     Authenticated users should be able to retrieve another user's detail view with
     limited information.
     """
-    identity = factories.IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    user = factories.UserFactory()
+    jwt_token = OIDCToken.for_user(user)
 
     other_user = factories.UserFactory()
 
@@ -135,8 +127,7 @@ def test_api_users_create_anonymous():
 
 def test_api_users_create_authenticated():
     """Authenticated users should not be able to create users via the API."""
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     jwt_token = OIDCToken.for_user(user)
 
     response = APIClient().post(
@@ -182,8 +173,7 @@ def test_api_users_update_authenticated_self():
     Authenticated users should be able to update their own user but only "language"
     and "timezone" fields.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     jwt_token = OIDCToken.for_user(user)
 
     old_user_values = dict(serializers.UserSerializer(instance=user).data)
@@ -210,8 +200,8 @@ def test_api_users_update_authenticated_self():
 
 def test_api_users_update_authenticated_other():
     """Authenticated users should not be allowed to update other users."""
-    identity = factories.IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    user = factories.UserFactory()
+    jwt_token = OIDCToken.for_user(user)
 
     user = factories.UserFactory()
     old_user_values = dict(serializers.UserSerializer(instance=user).data)
@@ -262,8 +252,7 @@ def test_api_users_patch_authenticated_self():
     Authenticated users should be able to patch their own user but only "language"
     and "timezone" fields.
     """
-    identity = factories.IdentityFactory()
-    user = identity.user
+    user = factories.UserFactory()
     jwt_token = OIDCToken.for_user(user)
 
     old_user_values = dict(serializers.UserSerializer(instance=user).data)
@@ -291,8 +280,8 @@ def test_api_users_patch_authenticated_self():
 
 def test_api_users_patch_authenticated_other():
     """Authenticated users should not be allowed to patch other users."""
-    identity = factories.IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    user = factories.UserFactory()
+    jwt_token = OIDCToken.for_user(user)
 
     user = factories.UserFactory()
     old_user_values = dict(serializers.UserSerializer(instance=user).data)
@@ -329,8 +318,8 @@ def test_api_users_delete_list_anonymous():
 def test_api_users_delete_list_authenticated():
     """Authenticated users should not be allowed to delete a list of users."""
     factories.UserFactory.create_batch(2)
-    identity = factories.IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    user = factories.UserFactory()
+    jwt_token = OIDCToken.for_user(user)
 
     client = APIClient()
     response = client.delete(
@@ -355,8 +344,8 @@ def test_api_users_delete_authenticated():
     """
     Authenticated users should not be allowed to delete a user other than themselves.
     """
-    identity = factories.IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    user = factories.UserFactory()
+    jwt_token = OIDCToken.for_user(user)
     other_user = factories.UserFactory()
 
     response = APIClient().delete(
@@ -369,11 +358,11 @@ def test_api_users_delete_authenticated():
 
 def test_api_users_delete_self():
     """Authenticated users should not be able to delete their own user."""
-    identity = factories.IdentityFactory()
-    jwt_token = OIDCToken.for_user(identity.user)
+    user = factories.UserFactory()
+    jwt_token = OIDCToken.for_user(user)
 
     response = APIClient().delete(
-        f"/api/v1.0/users/{identity.user.id!s}/",
+        f"/api/v1.0/users/{user.id!s}/",
         HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 

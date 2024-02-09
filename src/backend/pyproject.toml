@@ -20,7 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 description = "An application to print markdown to pdf from a set of managed templates."
-keywords = ["Django", "Contacts", "Teams", "RBAC"]
+keywords = ["Django", "Contacts", "Templates", "RBAC"]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"

@@ -1,22 +1,24 @@
+"""Management user to create a superuser."""
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from django.core.exceptions import ValidationError
+
+UserModel = get_user_model()
 
 
 class Command(BaseCommand):
-    help = 'Create a superuser with an email and a password'
+    """Management command to create a superuser from and email and password."""
+
+    help = "Create a superuser with an email and a password"
 
     def add_arguments(self, parser):
         """Define required arguments "email" and "password"."""
         parser.add_argument(
             "--email",
-            help=(
-                "Email for the user."
-            ),
+            help=("Email for the user."),
         )
         parser.add_argument(
             "--password",
-            help='Password for the user.',
+            help="Password for the user.",
         )
 
     def handle(self, *args, **options):
@@ -24,13 +26,12 @@ class Command(BaseCommand):
         Given an email and a password, create a superuser or upgrade the existing
         user to superuser status.
         """
-        UserModel = get_user_model()
-        email = options.get('email')
+        email = options.get("email")
         try:
-            user = UserModel.objects.get(email=email)
+            user = UserModel.objects.get(admin_email=email)
         except UserModel.DoesNotExist:
-            user = UserModel(email=email)
-            message = 'Superuser created successfully.'
+            user = UserModel(admin_email=email)
+            message = "Superuser created successfully."
         else:
             if user.is_superuser and user.is_staff:
                 message = "Superuser already exists."
@@ -39,7 +40,7 @@ class Command(BaseCommand):
 
         user.is_superuser = True
         user.is_staff = True
-        user.set_password(options['password'])
+        user.set_password(options["password"])
         user.save()
 
         self.stdout.write(self.style.SUCCESS(message))
