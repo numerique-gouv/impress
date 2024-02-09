@@ -7,15 +7,9 @@ class OIDCToken(AccessToken):
 
     @classmethod
     def for_user(cls, user):
-        token = super().for_user(user)
-        identity = user.identities.filter(is_main=True).first()
-        token["first_name"] = (
-            user.profile_contact.short_name if user.profile_contact else "David"
-        )
-        token["last_name"] = (
-            " ".join(user.profile_contact.full_name.split()[1:])
-            if user.profile_contact
-            else "Bowman"
-        )
-        token["email"] = identity.email
+        """Returns an authorization token for the given user for testing."""
+        token = cls()
+        token["sub"] = str(user.sub)
+        token["email"] = user.email
+
         return token
