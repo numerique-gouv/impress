@@ -130,7 +130,7 @@ jobs:
       DJANGO_CONFIGURATION: Test
       DJANGO_SETTINGS_MODULE: publish.settings
       DJANGO_SECRET_KEY: ThisIsAnExampleKeyForTestPurposeOnly
-      DJANGO_JWT_PRIVATE_SIGNING_KEY: ThisIsAnExampleKeyForDevPurposeOnly
+      OIDC_OP_JWKS_ENDPOINT: /endpoint-for-test-purpose-only
       DB_HOST: localhost
       DB_NAME: publish
       DB_USER: dinum

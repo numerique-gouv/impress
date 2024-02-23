@@ -16,8 +16,6 @@ from django.utils.translation import gettext_lazy as _
 
 import frontmatter
 import markdown
-from rest_framework_simplejwt.exceptions import InvalidToken
-from rest_framework_simplejwt.settings import api_settings
 from timezone_field import TimeZoneField
 from weasyprint import CSS, HTML
 from weasyprint.text.fonts import FontConfiguration
@@ -331,27 +329,3 @@ class TemplateAccess(BaseModel):
             "retrieve": bool(role),
             "set_role_to": set_role_to,
         }
-
-
-def oidc_user_getter(validated_token):
-    """
-    Given a valid OIDC token , retrieve, create or update corresponding user/contact/email from db.
-
-    The token is expected to have the following fields in payload:
-        - sub
-        - email
-        - ...
-    """
-    try:
-        user_id = validated_token[api_settings.USER_ID_CLAIM]
-    except KeyError as exc:
-        raise InvalidToken(
-            _("Token contained no recognizable user identification")
-        ) from exc
-
-    try:
-        user = User.objects.get(sub=user_id)
-    except User.DoesNotExist:
-        user = User.objects.create(sub=user_id, email=validated_token.get("email"))
-
-    return user
