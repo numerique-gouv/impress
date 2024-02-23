@@ -71,6 +71,7 @@ bootstrap: \
 	env.d/development/common \
 	env.d/development/crowdin \
 	env.d/development/postgresql \
+	env.d/development/kc_postgresql \
 	build \
 	run \
 	migrate \
@@ -96,6 +97,7 @@ run: ## start the wsgi (production) and development server
 	@$(COMPOSE) up --force-recreate -d nginx
 	@$(COMPOSE) up --force-recreate -d app-dev
 	@$(COMPOSE) up --force-recreate -d celery-dev
+	@$(COMPOSE) up --force-recreate -d keycloak
 	@echo "Wait for postgresql to be up..."
 	@$(WAIT_DB)
 .PHONY: run
@@ -200,6 +202,9 @@ env.d/development/common:
 
 env.d/development/postgresql:
 	cp -n env.d/development/postgresql.dist env.d/development/postgresql
+
+env.d/development/kc_postgresql:
+	cp -n env.d/development/kc_postgresql.dist env.d/development/kc_postgresql
 
 # -- Internationalization
 

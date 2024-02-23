@@ -1,0 +1,11 @@
+# Postgresql db container configuration
+POSTGRES_DB=keycloak
+POSTGRES_USER=impress
+POSTGRES_PASSWORD=pass
+
+# App database configuration
+DB_HOST=kc_postgresql
+DB_NAME=keycloak
+DB_USER=impress
+DB_PASSWORD=pass
+DB_PORT=5433
