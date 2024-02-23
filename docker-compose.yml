@@ -92,11 +92,13 @@ services:
     image: nginx:1.25
     ports:
       - "8082:8082"
+      - "8083:8083"
     volumes:
       - ./docker/files/etc/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./data/media:/data/media:ro
     depends_on:
       - app
+      - keycloak
 
   dockerize:
     image: jwilder/dockerize
@@ -133,3 +135,38 @@ services:
     working_dir: /app
     volumes:
       - ./src/terraform:/app
+
+  kc_postgresql:
+    image: postgres:14.3
+    ports:
+      - "5433:5432"
+    env_file:
+      - env.d/development/kc_postgresql
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0.1
+    volumes:
+      - ./docker/auth/realm.json:/opt/keycloak/data/import/realm.json
+    command:
+      - start-dev
+      - --features=preview
+      - --import-realm
+      - --proxy=edge
+      - --hostname-url=http://localhost:8083
+      - --hostname-admin-url=http://localhost:8083/
+      - --hostname-strict=false
+      - --hostname-strict-https=false
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: kc_postgresql
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_PASSWORD: pass
+      KC_DB_USERNAME: impress
+      KC_DB_SCHEMA: public
+      PROXY_ADDRESS_FORWARDING: 'true'
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kc_postgresql
