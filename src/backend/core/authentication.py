@@ -1,59 +1,100 @@
-"""Authentication for the publish core app."""
-from django.conf import settings
-from django.utils.functional import SimpleLazyObject
-from django.utils.module_loading import import_string
+"""Authentication for the Impress core app."""
+
+from django.core.exceptions import SuspiciousOperation
 from django.utils.translation import gettext_lazy as _
 
-from drf_spectacular.authentication import SessionScheme, TokenScheme
-from drf_spectacular.plumbing import build_bearer_security_scheme_object
-from rest_framework import authentication
-from rest_framework_simplejwt.authentication import JWTAuthentication
+import requests
+from mozilla_django_oidc.auth import (
+    OIDCAuthenticationBackend as MozillaOIDCAuthenticationBackend,
+)
+
+from .models import User
 
 
-class DelegatedJWTAuthentication(JWTAuthentication):
-    """Override JWTAuthentication to create missing users on the fly."""
+class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
+    """Custom OpenID Connect (OIDC) Authentication Backend.
 
-    def get_user(self, validated_token):
+    This class overrides the default OIDC Authentication Backend to accommodate differences
+    in the User and Identity models, and handles signed and/or encrypted UserInfo response.
+    """
+
+    def get_userinfo(self, access_token, id_token, payload):
+        """Return user details dictionary.
+
+        Parameters:
+        - access_token (str): The access token.
+        - id_token (str): The id token (unused).
+        - payload (dict): The token payload (unused).
+
+        Note: The id_token and payload parameters are unused in this implementation,
+        but were kept to preserve base method signature.
+
+        Note: It handles signed and/or encrypted UserInfo Response. It is required by
+        Agent Connect, which follows the OIDC standard. It forces us to override the
+        base method, which deal with 'application/json' response.
+
+        Returns:
+        - dict: User details dictionary obtained from the OpenID Connect user endpoint.
         """
-        Return the user related to the given validated token, creating or updating it if necessary.
+
+        user_response = requests.get(
+            self.OIDC_OP_USER_ENDPOINT,
+            headers={"Authorization": f"Bearer {access_token}"},
+            verify=self.get_settings("OIDC_VERIFY_SSL", True),
+            timeout=self.get_settings("OIDC_TIMEOUT", None),
+            proxies=self.get_settings("OIDC_PROXY", None),
+        )
+        user_response.raise_for_status()
+        userinfo = self.verify_token(user_response.text)
+        return userinfo
+
+    def get_or_create_user(self, access_token, id_token, payload):
+        """Return a User based on userinfo. Get or create a new user if no user matches the Sub.
+
+        Parameters:
+        - access_token (str): The access token.
+        - id_token (str): The ID token.
+        - payload (dict): The user payload.
+
+        Returns:
+        - User: An existing or newly created User instance.
+
+        Raises:
+        - Exception: Raised when user creation is not allowed and no existing user is found.
         """
-        get_user = import_string(settings.JWT_USER_GETTER)
-        return SimpleLazyObject(lambda: get_user(validated_token))
 
+        user_info = self.get_userinfo(access_token, id_token, payload)
+        sub = user_info.get("sub")
 
-class OpenApiJWTAuthenticationExtension(TokenScheme):
-    """Extension for specifying JWT authentication schemes."""
+        if sub is None:
+            raise SuspiciousOperation(
+                _("User info contained no recognizable user identification")
+            )
 
-    target_class = "core.authentication.DelegatedJWTAuthentication"
-    name = "DelegatedJWTAuthentication"
+        try:
+            user = User.objects.get(sub=sub)
+        except User.DoesNotExist:
+            if self.get_settings("OIDC_CREATE_USER", True):
+                user = self.create_user(user_info)
+            else:
+                user = None
 
-    def get_security_definition(self, auto_schema):
-        """Return the security definition for JWT authentication."""
-        return build_bearer_security_scheme_object(
-            header_name="Authorization",
-            token_prefix="Bearer",  # noqa S106
+        return user
+
+    def create_user(self, claims):
+        """Return a newly created User instance."""
+
+        sub = claims.get("sub")
+
+        if sub is None:
+            raise SuspiciousOperation(
+                _("Claims contained no recognizable user identification")
+            )
+
+        user = User.objects.create(
+            sub=sub,
+            email=claims.get("email"),
+            password="!",  # noqa: S106
         )
 
-
-class SessionAuthenticationWithAuthenticateHeader(authentication.SessionAuthentication):
-    """
-    This class is needed, because REST Framework's default SessionAuthentication does
-    never return 401's, because they cannot fill the WWW-Authenticate header with a
-    valid value in the 401 response. As a result, we cannot distinguish calls that are
-    not unauthorized (401 unauthorized) and calls for which the user does not have
-    permission (403 forbidden).
-    See https://github.com/encode/django-rest-framework/issues/5968
-
-    We do set authenticate_header function in SessionAuthentication, so that a value
-    for the WWW-Authenticate header can be retrieved and the response code is
-    automatically set to 401 in case of unauthenticated requests.
-    """
-
-    def authenticate_header(self, request):
-        return "Session"
-
-
-class OpenApiSessionAuthenticationExtension(SessionScheme):
-    """Extension for specifying session authentication schemes."""
-
-    target_class = "core.api.authentication.SessionAuthenticationWithAuthenticateHeader"
+        return user

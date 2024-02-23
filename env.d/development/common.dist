@@ -7,9 +7,6 @@ DJANGO_SUPERUSER_PASSWORD=admin
 # Python
 PYTHONPATH=/app
 
-#JWT
-DJANGO_JWT_PRIVATE_SIGNING_KEY=ThisIsAnExampleKeyForDevPurposeOnly
-
 # publish settings
 
 # Mail
@@ -18,3 +15,21 @@ DJANGO_EMAIL_PORT=1025
 
 # Backend url
 publish_BASE_URL="http://localhost:8072"
+
+# OIDC
+OIDC_OP_JWKS_ENDPOINT=http://nginx:8083/realms/impress/protocol/openid-connect/certs
+OIDC_OP_AUTHORIZATION_ENDPOINT=http://localhost:8083/realms/impress/protocol/openid-connect/auth
+OIDC_OP_TOKEN_ENDPOINT=http://nginx:8083/realms/impress/protocol/openid-connect/token
+OIDC_OP_USER_ENDPOINT=http://nginx:8083/realms/impress/protocol/openid-connect/userinfo
+
+OIDC_RP_CLIENT_ID=impress
+OIDC_RP_CLIENT_SECRET=ThisIsAnExampleKeyForDevPurposeOnly
+OIDC_RP_SIGN_ALGO=RS256
+OIDC_RP_SCOPES="openid email"
+
+LOGIN_REDIRECT_URL=http://localhost:3000
+LOGIN_REDIRECT_URL_FAILURE=http://localhost:3000
+LOGOUT_REDIRECT_URL=http://localhost:3000
+
+OIDC_REDIRECT_ALLOWED_HOSTS=["http://localhost:8083", "http://localhost:3000"]
+OIDC_AUTH_REQUEST_EXTRA_PARAMS={"acr_values": "eidas1"}
