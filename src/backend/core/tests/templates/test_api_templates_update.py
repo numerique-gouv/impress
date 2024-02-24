@@ -8,7 +8,6 @@ from rest_framework.test import APIClient
 
 from core import factories
 from core.api import serializers
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -41,7 +40,9 @@ def test_api_templates_update_authenticated_unrelated():
     Authenticated users should not be allowed to update a template to which they are not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(is_public=False)
     old_template_values = serializers.TemplateSerializer(instance=template).data
@@ -49,11 +50,10 @@ def test_api_templates_update_authenticated_unrelated():
     new_template_values = serializers.TemplateSerializer(
         instance=factories.TemplateFactory()
     ).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/templates/{template.id!s}/",
         new_template_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 404
@@ -70,7 +70,9 @@ def test_api_templates_update_authenticated_members():
     not be allowed to update it.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "member")])
     old_template_values = serializers.TemplateSerializer(instance=template).data
@@ -78,11 +80,10 @@ def test_api_templates_update_authenticated_members():
     new_template_values = serializers.TemplateSerializer(
         instance=factories.TemplateFactory()
     ).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/templates/{template.id!s}/",
         new_template_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -99,7 +100,9 @@ def test_api_templates_update_authenticated_members():
 def test_api_templates_update_authenticated_administrators(role):
     """Administrators of a template should be allowed to update it."""
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, role)])
     old_template_values = serializers.TemplateSerializer(instance=template).data
@@ -107,11 +110,10 @@ def test_api_templates_update_authenticated_administrators(role):
     new_template_values = serializers.TemplateSerializer(
         instance=factories.TemplateFactory()
     ).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/templates/{template.id!s}/",
         new_template_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 200
 
@@ -130,7 +132,9 @@ def test_api_templates_update_administrator_or_owner_of_another():
     another template.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     factories.TemplateFactory(users=[(user, random.choice(["administrator", "owner"]))])
     is_public = random.choice([True, False])
@@ -140,11 +144,10 @@ def test_api_templates_update_administrator_or_owner_of_another():
     new_template_values = serializers.TemplateSerializer(
         instance=factories.TemplateFactory()
     ).data
-    response = APIClient().put(
+    response = client.put(
         f"/api/v1.0/templates/{template.id!s}/",
         new_template_values,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403 if is_public else 404

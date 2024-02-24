@@ -7,7 +7,6 @@ import pytest
 from rest_framework.test import APIClient
 
 from core import factories, models
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -30,14 +29,15 @@ def test_api_templates_delete_authenticated_unrelated():
     related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     is_public = random.choice([True, False])
     template = factories.TemplateFactory(is_public=is_public)
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/templates/{template.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403 if is_public else 404
@@ -51,12 +51,14 @@ def test_api_templates_delete_authenticated_member(role):
     only a member.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, role)])
 
-    response = APIClient().delete(
-        f"/api/v1.0/templates/{template.id}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.delete(
+        f"/api/v1.0/templates/{template.id}/",
     )
 
     assert response.status_code == 403
@@ -72,12 +74,14 @@ def test_api_templates_delete_authenticated_owner():
     owner.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "owner")])
 
-    response = APIClient().delete(
-        f"/api/v1.0/templates/{template.id}/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.delete(
+        f"/api/v1.0/templates/{template.id}/",
     )
 
     assert response.status_code == 204

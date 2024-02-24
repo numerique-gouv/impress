@@ -5,7 +5,6 @@ import pytest
 from rest_framework.test import APIClient
 
 from core import factories
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -47,13 +46,14 @@ def test_api_templates_retrieve_authenticated_unrelated_public():
     not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(is_public=True)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/templates/{template.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -76,13 +76,14 @@ def test_api_templates_retrieve_authenticated_unrelated_not_public():
     to which they are not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(is_public=False)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/templates/{template.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 404
     assert response.json() == {"detail": "Not found."}
@@ -94,15 +95,16 @@ def test_api_templates_retrieve_authenticated_related():
     are related whatever the role.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory()
     access1 = factories.TemplateAccessFactory(template=template, user=user)
     access2 = factories.TemplateAccessFactory(template=template)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/templates/{template.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 200
     content = response.json()

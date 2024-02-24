@@ -10,7 +10,6 @@ from rest_framework.test import APIClient
 from core import factories, models
 from core.api import serializers
 
-from .utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -33,7 +32,9 @@ def test_api_template_accesses_list_authenticated_unrelated():
     to which they are not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory()
     factories.TemplateAccessFactory.create_batch(3, template=template)
@@ -42,9 +43,8 @@ def test_api_template_accesses_list_authenticated_unrelated():
     other_access = factories.TemplateAccessFactory(user=user)
     factories.TemplateAccessFactory(template=other_access.template)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/templates/{template.id!s}/accesses/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -61,7 +61,9 @@ def test_api_template_accesses_list_authenticated_related():
     to which they are related, whatever their role in the template.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory()
     user_access = models.TemplateAccess.objects.create(
@@ -75,9 +77,8 @@ def test_api_template_accesses_list_authenticated_related():
     other_access = factories.TemplateAccessFactory(user=user)
     factories.TemplateAccessFactory(template=other_access.template)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/templates/{template.id!s}/accesses/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -130,14 +131,15 @@ def test_api_template_accesses_retrieve_authenticated_unrelated():
     a template to which they are not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory()
     access = factories.TemplateAccessFactory(template=template)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
     assert response.status_code == 403
     assert response.json() == {
@@ -149,9 +151,8 @@ def test_api_template_accesses_retrieve_authenticated_unrelated():
         factories.TemplateAccessFactory(),
         factories.TemplateAccessFactory(user=user),
     ]:
-        response = APIClient().get(
+        response = client.get(
             f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         assert response.status_code == 404
@@ -164,14 +165,15 @@ def test_api_template_accesses_retrieve_authenticated_related():
     associated template user accesses.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[user])
     access = factories.TemplateAccessFactory(template=template)
 
-    response = APIClient().get(
+    response = client.get(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -211,18 +213,19 @@ def test_api_template_accesses_create_authenticated_unrelated():
     which they are not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     other_user = factories.UserFactory()
     template = factories.TemplateFactory()
 
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/templates/{template.id!s}/accesses/",
         {
             "user": str(other_user.id),
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -232,21 +235,21 @@ def test_api_template_accesses_create_authenticated_unrelated():
 def test_api_template_accesses_create_authenticated_member():
     """Members of a template should not be allowed to create template accesses."""
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "member")])
     other_user = factories.UserFactory()
 
-    api_client = APIClient()
     for role in [role[0] for role in models.RoleChoices.choices]:
-        response = api_client.post(
+        response = client.post(
             f"/api/v1.0/templates/{template.id!s}/accesses/",
             {
                 "user": str(other_user.id),
                 "role": role,
             },
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         assert response.status_code == 403
@@ -260,7 +263,9 @@ def test_api_template_accesses_create_authenticated_administrator():
     except for the "owner" role.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
@@ -268,14 +273,13 @@ def test_api_template_accesses_create_authenticated_administrator():
     api_client = APIClient()
 
     # It should not be allowed to create an owner access
-    response = api_client.post(
+    response = client.post(
         f"/api/v1.0/templates/{template.id!s}/accesses/",
         {
             "user": str(other_user.id),
             "role": "owner",
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -288,14 +292,13 @@ def test_api_template_accesses_create_authenticated_administrator():
         [role[0] for role in models.RoleChoices.choices if role[0] != "owner"]
     )
 
-    response = api_client.post(
+    response = client.post(
         f"/api/v1.0/templates/{template.id!s}/accesses/",
         {
             "user": str(other_user.id),
             "role": role,
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 201
@@ -314,21 +317,22 @@ def test_api_template_accesses_create_authenticated_owner():
     Owners of a template should be able to create template accesses whatever the role.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "owner")])
     other_user = factories.UserFactory()
 
     role = random.choice([role[0] for role in models.RoleChoices.choices])
 
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/templates/{template.id!s}/accesses/",
         {
             "user": str(other_user.id),
             "role": role,
         },
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 201
@@ -373,7 +377,9 @@ def test_api_template_accesses_update_authenticated_unrelated():
     they are not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     access = factories.TemplateAccessFactory()
     old_values = serializers.TemplateAccessSerializer(instance=access).data
@@ -384,13 +390,11 @@ def test_api_template_accesses_update_authenticated_unrelated():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
             {**old_values, field: value},
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         assert response.status_code == 403
 
@@ -402,7 +406,9 @@ def test_api_template_accesses_update_authenticated_unrelated():
 def test_api_template_accesses_update_authenticated_member():
     """Members of a template should not be allowed to update its accesses."""
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "member")])
     access = factories.TemplateAccessFactory(template=template)
@@ -414,13 +420,11 @@ def test_api_template_accesses_update_authenticated_member():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
             {**old_values, field: value},
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         assert response.status_code == 403
 
@@ -435,7 +439,9 @@ def test_api_template_accesses_update_administrator_except_owner():
     access for this template, as long as they don't try to set the role to owner.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "administrator")])
     access = factories.TemplateAccessFactory(
@@ -450,14 +456,12 @@ def test_api_template_accesses_update_administrator_except_owner():
         "role": random.choice(["administrator", "member"]),
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
             data=new_data,
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         if (
@@ -481,7 +485,9 @@ def test_api_template_accesses_update_administrator_from_owner():
     the user access of an "owner" for this template.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
@@ -496,13 +502,11 @@ def test_api_template_accesses_update_administrator_from_owner():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
             data={**old_values, field: value},
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         assert response.status_code == 403
@@ -517,7 +521,9 @@ def test_api_template_accesses_update_administrator_to_owner():
     the user access of another user to grant template ownership.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "administrator")])
     other_user = factories.UserFactory()
@@ -534,14 +540,12 @@ def test_api_template_accesses_update_administrator_to_owner():
         "role": "owner",
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
             data=new_data,
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
         # We are not allowed or not really updating the role
         if field == "role" or new_data["role"] == old_values["role"]:
@@ -560,7 +564,9 @@ def test_api_template_accesses_update_owner():
     a user access for this template whatever the role.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "owner")])
     factories.UserFactory()
@@ -575,14 +581,12 @@ def test_api_template_accesses_update_owner():
         "role": random.choice(models.RoleChoices.choices)[0],
     }
 
-    api_client = APIClient()
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = api_client.put(
+        response = client.put(
             f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
             data=new_data,
             format="json",
-            HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
         )
 
         if (
@@ -607,19 +611,19 @@ def test_api_template_accesses_update_owner_self():
     their own user access provided there are other owners in the template.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory()
     access = factories.TemplateAccessFactory(template=template, user=user, role="owner")
     old_values = serializers.TemplateAccessSerializer(instance=access).data
     new_role = random.choice(["administrator", "member"])
 
-    api_client = APIClient()
-    response = api_client.put(
+    response = client.put(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
         data={**old_values, "role": new_role},
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -629,11 +633,10 @@ def test_api_template_accesses_update_owner_self():
     # Add another owner and it should now work
     factories.TemplateAccessFactory(template=template, role="owner")
 
-    response = api_client.put(
+    response = client.put(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
         data={**old_values, "role": new_role},
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -662,13 +665,14 @@ def test_api_template_accesses_delete_authenticated():
     template to which they are not related.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     access = factories.TemplateAccessFactory()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -681,7 +685,9 @@ def test_api_template_accesses_delete_member():
     template in which they are a simple member.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "member")])
     access = factories.TemplateAccessFactory(template=template)
@@ -689,9 +695,8 @@ def test_api_template_accesses_delete_member():
     assert models.TemplateAccess.objects.count() == 2
     assert models.TemplateAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -704,7 +709,9 @@ def test_api_template_accesses_delete_administrators_except_owners():
     from the template provided it is not ownership.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "administrator")])
     access = factories.TemplateAccessFactory(
@@ -714,9 +721,8 @@ def test_api_template_accesses_delete_administrators_except_owners():
     assert models.TemplateAccess.objects.count() == 2
     assert models.TemplateAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 204
@@ -729,7 +735,9 @@ def test_api_template_accesses_delete_administrators_owners():
     access from the template.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "administrator")])
     access = factories.TemplateAccessFactory(template=template, role="owner")
@@ -737,9 +745,8 @@ def test_api_template_accesses_delete_administrators_owners():
     assert models.TemplateAccess.objects.count() == 2
     assert models.TemplateAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403
@@ -752,7 +759,9 @@ def test_api_template_accesses_delete_owners():
     for a template of which they are owner.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(users=[(user, "owner")])
     access = factories.TemplateAccessFactory(
@@ -762,9 +771,8 @@ def test_api_template_accesses_delete_owners():
     assert models.TemplateAccess.objects.count() == 2
     assert models.TemplateAccess.objects.filter(user=access.user).exists()
 
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 204
@@ -776,15 +784,16 @@ def test_api_template_accesses_delete_owners_last_owner():
     It should not be possible to delete the last owner access from a template
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory()
     access = factories.TemplateAccessFactory(template=template, user=user, role="owner")
 
     assert models.TemplateAccess.objects.count() == 1
-    response = APIClient().delete(
+    response = client.delete(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 403

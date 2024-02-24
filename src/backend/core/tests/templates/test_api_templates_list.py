@@ -9,7 +9,6 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.test import APIClient
 
 from core import factories
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -35,7 +34,9 @@ def test_api_templates_list_authenticated():
     an owner/administrator/member of.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     related_templates = [
         access.template
@@ -48,8 +49,8 @@ def test_api_templates_list_authenticated():
         str(template.id) for template in related_templates + public_templates
     }
 
-    response = APIClient().get(
-        "/api/v1.0/templates/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/templates/",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -65,7 +66,9 @@ def test_api_templates_list_pagination(
 ):
     """Pagination should work as expected."""
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template_ids = [
         str(access.template.id)
@@ -73,8 +76,8 @@ def test_api_templates_list_pagination(
     ]
 
     # Get page 1
-    response = APIClient().get(
-        "/api/v1.0/templates/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/templates/",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -89,8 +92,8 @@ def test_api_templates_list_pagination(
         template_ids.remove(item["id"])
 
     # Get page 2
-    response = APIClient().get(
-        "/api/v1.0/templates/?page=2", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/templates/?page=2",
     )
 
     assert response.status_code == HTTP_200_OK
@@ -108,14 +111,16 @@ def test_api_templates_list_pagination(
 def test_api_templates_list_authenticated_distinct():
     """A template with several related users should only be listed once."""
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     other_user = factories.UserFactory()
 
     template = factories.TemplateFactory(users=[user, other_user], is_public=True)
 
-    response = APIClient().get(
-        "/api/v1.0/templates/", HTTP_AUTHORIZATION=f"Bearer {jwt_token}"
+    response = client.get(
+        "/api/v1.0/templates/",
     )
 
     assert response.status_code == HTTP_200_OK

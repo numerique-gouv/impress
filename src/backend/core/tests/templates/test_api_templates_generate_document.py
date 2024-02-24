@@ -5,7 +5,6 @@ import pytest
 from rest_framework.test import APIClient
 
 from core import factories
-from core.tests.utils import OIDCToken
 
 pytestmark = pytest.mark.django_db
 
@@ -50,16 +49,17 @@ def test_api_templates_generate_document_anonymous_not_public():
 def test_api_templates_generate_document_authenticated_public():
     """Authenticated users can generate pdf document with public templates."""
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(is_public=True)
     data = {"body": "# Test markdown body"}
 
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/templates/{template.id!s}/generate-document/",
         data,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
@@ -72,16 +72,17 @@ def test_api_templates_generate_document_authenticated_not_public():
     that are not marked as public.
     """
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     template = factories.TemplateFactory(is_public=False)
     data = {"body": "# Test markdown body"}
 
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/templates/{template.id!s}/generate-document/",
         data,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 404
@@ -91,16 +92,17 @@ def test_api_templates_generate_document_authenticated_not_public():
 def test_api_templates_generate_document_related():
     """Users related to a template can generate pdf document."""
     user = factories.UserFactory()
-    jwt_token = OIDCToken.for_user(user)
+
+    client = APIClient()
+    client.force_login(user)
 
     access = factories.TemplateAccessFactory(user=user)
     data = {"body": "# Test markdown body"}
 
-    response = APIClient().post(
+    response = client.post(
         f"/api/v1.0/templates/{access.template.id!s}/generate-document/",
         data,
         format="json",
-        HTTP_AUTHORIZATION=f"Bearer {jwt_token}",
     )
 
     assert response.status_code == 200
