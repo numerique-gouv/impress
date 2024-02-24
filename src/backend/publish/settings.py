@@ -554,3 +554,20 @@ class PreProduction(Production):
 
     nota bene: it should inherit from the Production environment.
     """
+
+
+class Demo(Production):
+    """
+    Demonstration environment settings
+
+    nota bene: it should inherit from the Production environment.
+    """
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
