@@ -44,7 +44,7 @@ def get_release():
 
 class Base(Configuration):
     """
-    This is the base configuration every configuration (aka environnement) should inherit from. It
+    This is the base configuration every configuration (aka environment) should inherit from. It
     is recommended to configure third-party applications by creating a configuration mixins in
     ./configurations and compose the Base configuration with those mixins.
 

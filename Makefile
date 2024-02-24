@@ -262,11 +262,11 @@ mails-install: ## install the mail generator
 
 # -- TS client generator
 
-tsclient-install: ## Install the Typescipt API client generator
+tsclient-install: ## Install the Typescript API client generator
 	@$(TSCLIENT_YARN) install
 .PHONY: tsclient-install
 
-tsclient: tsclient-install ## Generate a Typescipt API client
+tsclient: tsclient-install ## Generate a Typescript API client
 	@$(TSCLIENT_YARN) generate:api:client:local ../frontend/tsclient
 .PHONY: tsclient-install
 
