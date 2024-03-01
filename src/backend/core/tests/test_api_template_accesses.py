@@ -10,7 +10,6 @@ from rest_framework.test import APIClient
 from core import factories, models
 from core.api import serializers
 
-
 pytestmark = pytest.mark.django_db
 
 
