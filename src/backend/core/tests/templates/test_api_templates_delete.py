@@ -7,6 +7,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from core import factories, models
+from core.tests.conftest import TEAM, USER, VIA
 
 pytestmark = pytest.mark.django_db
 
@@ -45,17 +46,27 @@ def test_api_templates_delete_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("role", ["member", "administrator"])
-def test_api_templates_delete_authenticated_member(role):
+@pytest.mark.parametrize("via", VIA)
+def test_api_templates_delete_authenticated_member_or_administrator(
+    via, role, mock_user_get_teams
+):
     """
     Authenticated users should not be allowed to delete a template for which they are
-    only a member.
+    only a member or administrator.
     """
     user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
-    template = factories.TemplateFactory(users=[(user, role)])
+    template = factories.TemplateFactory()
+    if via == USER:
+        factories.UserTemplateAccessFactory(template=template, user=user, role=role)
+    elif via == TEAM:
+        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamTemplateAccessFactory(
+            template=template, team="lasuite", role=role
+        )
 
     response = client.delete(
         f"/api/v1.0/templates/{template.id}/",
@@ -68,17 +79,24 @@ def test_api_templates_delete_authenticated_member(role):
     assert models.Template.objects.count() == 1
 
 
-def test_api_templates_delete_authenticated_owner():
+@pytest.mark.parametrize("via", VIA)
+def test_api_templates_delete_authenticated_owner(via, mock_user_get_teams):
     """
-    Authenticated users should be able to delete a template for which they are directly
-    owner.
+    Authenticated users should be able to delete a template they own.
     """
     user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
-    template = factories.TemplateFactory(users=[(user, "owner")])
+    template = factories.TemplateFactory()
+    if via == USER:
+        factories.UserTemplateAccessFactory(template=template, user=user, role="owner")
+    elif via == TEAM:
+        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamTemplateAccessFactory(
+            template=template, team="lasuite", role="owner"
+        )
 
     response = client.delete(
         f"/api/v1.0/templates/{template.id}/",

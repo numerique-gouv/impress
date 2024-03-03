@@ -1,4 +1,5 @@
 """Client serializers for the publish core app."""
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import exceptions, serializers
@@ -31,7 +32,7 @@ class TemplateAccessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.TemplateAccess
-        fields = ["id", "user", "role", "abilities"]
+        fields = ["id", "user", "team", "role", "abilities"]
         read_only_fields = ["id", "abilities"]
 
     def update(self, instance, validated_data):
@@ -68,6 +69,7 @@ class TemplateAccessSerializer(serializers.ModelSerializer):
 
         # Create
         else:
+            teams = user.get_teams()
             try:
                 template_id = self.context["template_id"]
             except KeyError as exc:
@@ -76,8 +78,8 @@ class TemplateAccessSerializer(serializers.ModelSerializer):
                 ) from exc
 
             if not models.TemplateAccess.objects.filter(
+                Q(user=user) | Q(team__in=teams),
                 template=template_id,
-                user=user,
                 role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
             ).exists():
                 raise exceptions.PermissionDenied(
@@ -87,8 +89,8 @@ class TemplateAccessSerializer(serializers.ModelSerializer):
             if (
                 role == models.RoleChoices.OWNER
                 and not models.TemplateAccess.objects.filter(
+                    Q(user=user) | Q(team__in=teams),
                     template=template_id,
-                    user=user,
                     role=models.RoleChoices.OWNER,
                 ).exists()
             ):

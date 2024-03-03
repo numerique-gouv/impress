@@ -1,6 +1,7 @@
 """API endpoints"""
 from io import BytesIO
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import (
     OuterRef,
     Q,
@@ -156,14 +157,22 @@ class TemplateViewSet(
         if not self.request.user.is_authenticated:
             return models.Template.objects.filter(is_public=True)
 
-        user_role_query = models.TemplateAccess.objects.filter(
-            user=self.request.user, template=OuterRef("pk")
-        ).values("role")[:1]
+        user = self.request.user
+        teams = user.get_teams()
+
+        user_roles_query = (
+            models.TemplateAccess.objects.filter(
+                Q(user=user) | Q(team__in=teams), template=OuterRef("pk")
+            )
+            .values("template")
+            .annotate(roles_array=ArrayAgg("role"))
+            .values("roles_array")
+        )
         return (
             models.Template.objects.filter(
-                Q(accesses__user=self.request.user) | Q(is_public=True)
+                Q(accesses__user=user) | Q(accesses__team__in=teams) | Q(is_public=True)
             )
-            .annotate(user_role=Subquery(user_role_query))
+            .annotate(user_roles=Subquery(user_roles_query))
             .distinct()
         )
 
@@ -263,19 +272,30 @@ class TemplateAccessViewSet(
         queryset = queryset.filter(template=self.kwargs["template_id"])
 
         if self.action == "list":
+            user = self.request.user
+            teams = user.get_teams()
+
+            user_roles_query = (
+                models.TemplateAccess.objects.filter(
+                    Q(user=user) | Q(team__in=teams),
+                    template=self.kwargs["template_id"],
+                )
+                .values("template")
+                .annotate(roles_array=ArrayAgg("role"))
+                .values("roles_array")
+            )
+
             # Limit to template access instances related to a template THAT also has
             # a template access
             # instance for the logged-in user (we don't want to list only the template
             # access instances pointing to the logged-in user)
-            user_role_query = models.TemplateAccess.objects.filter(
-                template=self.kwargs["template_id"],
-                template__accesses__user=self.request.user,
-            ).values("role")[:1]
             queryset = (
                 queryset.filter(
-                    template__accesses__user=self.request.user,
+                    Q(template__accesses__user=user)
+                    | Q(template__accesses__team__in=teams),
+                    template=self.kwargs["template_id"],
                 )
-                .annotate(user_role=Subquery(user_role_query))
+                .annotate(user_roles=Subquery(user_roles_query))
                 .distinct()
             )
         return queryset

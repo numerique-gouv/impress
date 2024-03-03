@@ -28,10 +28,10 @@ def test_api_templates_list_anonymous():
     assert expected_ids == results_id
 
 
-def test_api_templates_list_authenticated():
+def test_api_templates_list_authenticated_direct():
     """
-    Authenticated users should be able to list templates they are
-    an owner/administrator/member of.
+    Authenticated users should be able to list templates they are a direct
+    owner/administrator/member of.
     """
     user = factories.UserFactory()
 
@@ -40,7 +40,7 @@ def test_api_templates_list_authenticated():
 
     related_templates = [
         access.template
-        for access in factories.TemplateAccessFactory.create_batch(5, user=user)
+        for access in factories.UserTemplateAccessFactory.create_batch(5, user=user)
     ]
     public_templates = factories.TemplateFactory.create_batch(2, is_public=True)
     factories.TemplateFactory.create_batch(2, is_public=False)
@@ -52,6 +52,43 @@ def test_api_templates_list_authenticated():
     response = client.get(
         "/api/v1.0/templates/",
     )
+
+    assert response.status_code == HTTP_200_OK
+    results = response.json()["results"]
+    assert len(results) == 7
+    results_id = {result["id"] for result in results}
+    assert expected_ids == results_id
+
+
+def test_api_templates_list_authenticated_via_team(mock_user_get_teams):
+    """
+    Authenticated users should be able to list templates they are a
+    owner/administrator/member of via a team.
+    """
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    mock_user_get_teams.return_value = ["team1", "team2", "unknown"]
+
+    templates_team1 = [
+        access.template
+        for access in factories.TeamTemplateAccessFactory.create_batch(2, team="team1")
+    ]
+    templates_team2 = [
+        access.template
+        for access in factories.TeamTemplateAccessFactory.create_batch(3, team="team2")
+    ]
+    public_templates = factories.TemplateFactory.create_batch(2, is_public=True)
+    factories.TemplateFactory.create_batch(2, is_public=False)
+
+    expected_ids = {
+        str(template.id)
+        for template in templates_team1 + templates_team2 + public_templates
+    }
+
+    response = client.get("/api/v1.0/templates/")
 
     assert response.status_code == HTTP_200_OK
     results = response.json()["results"]
@@ -72,7 +109,7 @@ def test_api_templates_list_pagination(
 
     template_ids = [
         str(access.template.id)
-        for access in factories.TemplateAccessFactory.create_batch(3, user=user)
+        for access in factories.UserTemplateAccessFactory.create_batch(3, user=user)
     ]
 
     # Get page 1
