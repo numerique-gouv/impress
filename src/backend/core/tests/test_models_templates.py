@@ -104,7 +104,7 @@ def test_models_templates_get_abilities_authenticated_not_public():
 def test_models_templates_get_abilities_owner():
     """Check abilities returned for the owner of a template."""
     user = factories.UserFactory()
-    access = factories.TemplateAccessFactory(role="owner", user=user)
+    access = factories.UserTemplateAccessFactory(role="owner", user=user)
     abilities = access.template.get_abilities(access.user)
     assert abilities == {
         "destroy": True,
@@ -117,7 +117,7 @@ def test_models_templates_get_abilities_owner():
 
 def test_models_templates_get_abilities_administrator():
     """Check abilities returned for the administrator of a template."""
-    access = factories.TemplateAccessFactory(role="administrator")
+    access = factories.UserTemplateAccessFactory(role="administrator")
     abilities = access.template.get_abilities(access.user)
     assert abilities == {
         "destroy": False,
@@ -130,7 +130,7 @@ def test_models_templates_get_abilities_administrator():
 
 def test_models_templates_get_abilities_member_user(django_assert_num_queries):
     """Check abilities returned for the member of a template."""
-    access = factories.TemplateAccessFactory(role="member")
+    access = factories.UserTemplateAccessFactory(role="member")
 
     with django_assert_num_queries(1):
         abilities = access.template.get_abilities(access.user)
@@ -146,8 +146,8 @@ def test_models_templates_get_abilities_member_user(django_assert_num_queries):
 
 def test_models_templates_get_abilities_preset_role(django_assert_num_queries):
     """No query is done if the role is preset e.g. with query annotation."""
-    access = factories.TemplateAccessFactory(role="member")
-    access.template.user_role = "member"
+    access = factories.UserTemplateAccessFactory(role="member")
+    access.template.user_roles = ["member"]
 
     with django_assert_num_queries(0):
         abilities = access.template.get_abilities(access.user)

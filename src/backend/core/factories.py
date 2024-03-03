@@ -41,12 +41,12 @@ class TemplateFactory(factory.django.DjangoModelFactory):
         if create and extracted:
             for item in extracted:
                 if isinstance(item, models.User):
-                    TemplateAccessFactory(template=self, user=item)
+                    UserTemplateAccessFactory(template=self, user=item)
                 else:
-                    TemplateAccessFactory(template=self, user=item[0], role=item[1])
+                    UserTemplateAccessFactory(template=self, user=item[0], role=item[1])
 
 
-class TemplateAccessFactory(factory.django.DjangoModelFactory):
+class UserTemplateAccessFactory(factory.django.DjangoModelFactory):
     """Create fake template user accesses for testing."""
 
     class Meta:
@@ -54,4 +54,15 @@ class TemplateAccessFactory(factory.django.DjangoModelFactory):
 
     template = factory.SubFactory(TemplateFactory)
     user = factory.SubFactory(UserFactory)
+    role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])
+
+
+class TeamTemplateAccessFactory(factory.django.DjangoModelFactory):
+    """Create fake template team accesses for testing."""
+
+    class Meta:
+        model = models.TemplateAccess
+
+    template = factory.SubFactory(TemplateFactory)
+    team = factory.Sequence(lambda n: f"team{n}")
     role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])

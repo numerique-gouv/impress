@@ -5,6 +5,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from core import factories
+from core.tests.conftest import TEAM, USER, VIA
 
 pytestmark = pytest.mark.django_db
 
@@ -89,14 +90,20 @@ def test_api_templates_generate_document_authenticated_not_public():
     assert response.json() == {"detail": "Not found."}
 
 
-def test_api_templates_generate_document_related():
+@pytest.mark.parametrize("via", VIA)
+def test_api_templates_generate_document_related(via, mock_user_get_teams):
     """Users related to a template can generate pdf document."""
     user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
-    access = factories.TemplateAccessFactory(user=user)
+    if via == USER:
+        access = factories.UserTemplateAccessFactory(user=user)
+    elif via == TEAM:
+        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        access = factories.TeamTemplateAccessFactory(team="lasuite")
+
     data = {"body": "# Test markdown body"}
 
     response = client.post(

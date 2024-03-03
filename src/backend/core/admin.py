@@ -77,8 +77,3 @@ class TemplateAdmin(admin.ModelAdmin):
     """Template admin interface declaration."""
 
     inlines = (TemplateAccessInline,)
-
-
-@admin.register(models.Team)
-class TeamAdmin(admin.ModelAdmin):
-    """Team admin interface declaration."""

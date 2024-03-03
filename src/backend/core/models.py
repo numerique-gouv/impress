@@ -147,20 +147,12 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             raise ValueError("User has no email address.")
         mail.send_mail(subject, message, from_email, [self.email], **kwargs)
 
-
-class Team(BaseModel):
-    """Team used for role based access control when matched with templates in OIDC tokens."""
-
-    name = models.CharField(max_length=100, unique=True)
-
-    class Meta:
-        db_table = "publish_role"
-        ordering = ("name",)
-        verbose_name = _("Team")
-        verbose_name_plural = _("Teams")
-
-    def __str__(self):
-        return self.name
+    def get_teams(self):
+        """
+        Get list of teams in which the user is, as a list of strings.
+        Must be cached if retrieved remotely.
+        """
+        return []
 
 
 class Template(BaseModel):
@@ -213,21 +205,25 @@ class Template(BaseModel):
         Compute and return abilities for a given user on the template.
         """
         # Compute user role
-        role = None
+        roles = []
         if user.is_authenticated:
             try:
-                role = self.user_role
+                roles = self.user_roles or []
             except AttributeError:
+                teams = user.get_teams()
                 try:
-                    role = self.accesses.filter(user=user).values("role")[0]["role"]
+                    roles = self.accesses.filter(
+                        models.Q(user=user) | models.Q(team__in=teams)
+                    ).values_list("role", flat=True)
                 except (TemplateAccess.DoesNotExist, IndexError):
-                    role = None
-
-        is_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
-        can_get = self.is_public or role is not None
+                    roles = []
+        is_owner_or_admin = bool(
+            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+        )
+        can_get = self.is_public or bool(roles)
 
         return {
-            "destroy": role == RoleChoices.OWNER,
+            "destroy": RoleChoices.OWNER in roles,
             "generate_document": can_get,
             "manage_accesses": is_owner_or_admin,
             "update": is_owner_or_admin,
@@ -250,13 +246,7 @@ class TemplateAccess(BaseModel):
         null=True,
         blank=True,
     )
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="accesses",
-        null=True,
-        blank=True,
-    )
+    team = models.CharField(max_length=100, blank=True)
     role = models.CharField(
         max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
     )
@@ -268,13 +258,21 @@ class TemplateAccess(BaseModel):
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "template"],
+                condition=models.Q(user__isnull=False),  # Exclude null users
                 name="unique_template_user",
                 violation_error_message=_("This user is already in this template."),
             ),
             models.UniqueConstraint(
                 fields=["team", "template"],
+                condition=models.Q(team__gt=""),  # Exclude empty string teams
                 name="unique_template_team",
                 violation_error_message=_("This team is already in this template."),
+            ),
+            models.CheckConstraint(
+                check=models.Q(user__isnull=False, team="")
+                | models.Q(user__isnull=True, team__gt=""),
+                name="check_either_user_or_team",
+                violation_error_message=_("Either user or team must be set, not both."),
             ),
         ]
 
@@ -287,32 +285,34 @@ class TemplateAccess(BaseModel):
         the current state of the object.
         """
         is_template_owner_or_admin = False
-        role = None
 
+        roles = []
         if user.is_authenticated:
+            teams = user.get_teams()
             try:
-                role = self.user_role
+                roles = self.user_roles or []
             except AttributeError:
                 try:
-                    role = self._meta.model.objects.filter(
+                    roles = self._meta.model.objects.filter(
+                        models.Q(user=user) | models.Q(team__in=teams),
                         template=self.template_id,
-                        user=user,
-                    ).values("role")[0]["role"]
+                    ).values_list("role", flat=True)
                 except (self._meta.model.DoesNotExist, IndexError):
-                    role = None
+                    roles = []
 
-        is_template_owner_or_admin = role in [RoleChoices.OWNER, RoleChoices.ADMIN]
-
+        is_template_owner_or_admin = bool(
+            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+        )
         if self.role == RoleChoices.OWNER:
             can_delete = (
-                role == RoleChoices.OWNER
+                RoleChoices.OWNER in roles
                 and self.template.accesses.filter(role=RoleChoices.OWNER).count() > 1
             )
             set_role_to = [RoleChoices.ADMIN, RoleChoices.MEMBER] if can_delete else []
         else:
             can_delete = is_template_owner_or_admin
             set_role_to = []
-            if role == RoleChoices.OWNER:
+            if RoleChoices.OWNER in roles:
                 set_role_to.append(RoleChoices.OWNER)
             if is_template_owner_or_admin:
                 set_role_to.extend([RoleChoices.ADMIN, RoleChoices.MEMBER])
@@ -326,6 +326,6 @@ class TemplateAccess(BaseModel):
         return {
             "destroy": can_delete,
             "update": bool(set_role_to),
-            "retrieve": bool(role),
+            "retrieve": bool(roles),
             "set_role_to": set_role_to,
         }
