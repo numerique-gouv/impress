@@ -1,5 +1,5 @@
 """
-Tests for Templates API endpoint in publish's core app: create
+Tests for Templates API endpoint in impress's core app: create
 """
 import pytest
 from rest_framework.test import APIClient

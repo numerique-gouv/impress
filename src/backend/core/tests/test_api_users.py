@@ -1,5 +1,5 @@
 """
-Test users API endpoints in the publish core app.
+Test users API endpoints in the impress core app.
 """
 import pytest
 from rest_framework.test import APIClient

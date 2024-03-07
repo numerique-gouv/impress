@@ -1,5 +1,5 @@
 """
-Tests for Templates API endpoint in publish's core app: update
+Tests for Templates API endpoint in impress's core app: update
 """
 import random
 

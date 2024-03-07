@@ -1,9 +1,9 @@
-# Publish
+# Impress
 
-publish is an application to handle users and templates.
+Impress prints your markdown to pdf from predefined templates with user and role based access rights.
 
-publish is built on top of [Django Rest
-Framework](https://www.django-rest-framework.org/).
+Impress is built on top of [Django Rest
+Framework](https://www.django-rest-framework.org/) and [Next.js](https://nextjs.org/).
 
 ## Getting started
 

@@ -7,6 +7,6 @@ _dc_run \
     app-dev \
     python manage.py spectacular \
     --api-version 'v1.0' \
-    --urlconf 'publish.api_urls' \
+    --urlconf 'impress.api_urls' \
     --format openapi-json \
     --file /app/core/tests/swagger/swagger.json

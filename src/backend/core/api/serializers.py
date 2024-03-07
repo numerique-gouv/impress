@@ -1,4 +1,4 @@
-"""Client serializers for the publish core app."""
+"""Client serializers for the impress core app."""
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
