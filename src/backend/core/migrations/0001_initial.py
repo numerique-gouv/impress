@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Template',
                 'verbose_name_plural': 'Templates',
-                'db_table': 'publish_template',
+                'db_table': 'impress_template',
                 'ordering': ('title',),
             },
         ),
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'user',
                 'verbose_name_plural': 'users',
-                'db_table': 'publish_user',
+                'db_table': 'impress_user',
             },
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Template/user relation',
                 'verbose_name_plural': 'Template/user relations',
-                'db_table': 'publish_template_access',
+                'db_table': 'impress_template_access',
             },
         ),
         migrations.AddConstraint(

@@ -1,4 +1,4 @@
-"""URL configuration for the publish project"""
+"""URL configuration for the impress project"""
 
 from django.conf import settings
 from django.conf.urls.static import static

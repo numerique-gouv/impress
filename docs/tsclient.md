@@ -1,10 +1,10 @@
 # Api client TypeScript
 
 The backend application can automatically create a TypeScript client to be used in frontend
-applications. It is used in the publish front application itself.
+applications. It is used in the impress front application itself.
 
 This client is made with [openapi-typescript-codegen](https://github.com/ferdikoomen/openapi-typescript-codegen)
-and publish's backend OpenAPI schema (available [here](http://localhost:8071/v1.0/swagger/) if you have the backend running).
+and impress's backend OpenAPI schema (available [here](http://localhost:8071/v1.0/swagger/) if you have the backend running).
 
 ## Requirements
 

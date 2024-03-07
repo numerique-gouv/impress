@@ -1,5 +1,5 @@
 """
-Declare and configure the models for the publish core application
+Declare and configure the models for the impress core application
 """
 import textwrap
 import uuid
@@ -134,7 +134,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     REQUIRED_FIELDS = []
 
     class Meta:
-        db_table = "publish_user"
+        db_table = "impress_user"
         verbose_name = _("user")
         verbose_name_plural = _("users")
 
@@ -169,7 +169,7 @@ class Template(BaseModel):
     )
 
     class Meta:
-        db_table = "publish_template"
+        db_table = "impress_template"
         ordering = ("title",)
         verbose_name = _("Template")
         verbose_name_plural = _("Templates")
@@ -252,7 +252,7 @@ class TemplateAccess(BaseModel):
     )
 
     class Meta:
-        db_table = "publish_template_access"
+        db_table = "impress_template_access"
         verbose_name = _("Template/user relation")
         verbose_name_plural = _("Template/user relations")
         constraints = [

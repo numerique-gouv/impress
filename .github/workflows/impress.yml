@@ -1,4 +1,4 @@
-name: publish Workflow
+name: impress Workflow
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
         run: git log
       - name: Enforce absence of print statements in code
         run: |
-          ! git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- . ':(exclude)**/publish.yml' | grep "print("
+          ! git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- . ':(exclude)**/impress.yml' | grep "print("
       - name: Check absence of fixup commits
         run: |
           ! git log | grep 'fixup!'
@@ -79,13 +79,13 @@ jobs:
         uses: actions/checkout@v2
       - name: Generate a version.json file describing app release
         run: |
-          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/publish/version.json
+          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/impress/version.json
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Build production image
-        run: docker build -t publish:${{ github.sha }} --target production .
+        run: docker build -t impress:${{ github.sha }} --target production .
       - name: Check built image availability
-        run: docker images "publish:${{ github.sha }}*"
+        run: docker images "impress:${{ github.sha }}*"
 
   lint-back:
     runs-on: ubuntu-latest
@@ -102,11 +102,11 @@ jobs:
       - name: Install development dependencies
         run: pip install --user .[dev]
       - name: Check code formatting with ruff
-        run: ~/.local/bin/ruff format publish --diff
+        run: ~/.local/bin/ruff format impress --diff
       - name: Lint code with ruff
-        run: ~/.local/bin/ruff check publish
+        run: ~/.local/bin/ruff check impress
       - name: Lint code with pylint
-        run: ~/.local/bin/pylint publish
+        run: ~/.local/bin/pylint impress
 
   test-back:
     runs-on: ubuntu-latest
@@ -118,7 +118,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: publish
+          POSTGRES_DB: impress
           POSTGRES_USER: dinum
           POSTGRES_PASSWORD: pass
         ports:
@@ -128,11 +128,11 @@ jobs:
 
     env:
       DJANGO_CONFIGURATION: Test
-      DJANGO_SETTINGS_MODULE: publish.settings
+      DJANGO_SETTINGS_MODULE: impress.settings
       DJANGO_SECRET_KEY: ThisIsAnExampleKeyForTestPurposeOnly
       OIDC_OP_JWKS_ENDPOINT: /endpoint-for-test-purpose-only
       DB_HOST: localhost
-      DB_NAME: publish
+      DB_NAME: impress
       DB_USER: dinum
       DB_PASSWORD: pass
       DB_PORT: 5432
@@ -196,13 +196,13 @@ jobs:
         uses: actions/checkout@v2
       - name: Generate a version.json file describing app release
         run: |
-          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/publish/version.json
+          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/impress/version.json
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Build production image
-        run: docker build -t publish:${{ github.sha }} --target production .
+        run: docker build -t impress:${{ github.sha }} --target production .
       - name: Check built images availability
-        run: docker images "publish:${{ github.sha }}*"
+        run: docker images "impress:${{ github.sha }}*"
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
       - name: Tag images
@@ -210,17 +210,17 @@ jobs:
           DOCKER_TAG=$([[ -z "${{ github.event.ref }}" ]] && echo "${{ github.event.ref }}" || echo "${{ github.event.ref }}" | sed 's/^v//')
           RELEASE_TYPE=$([[ -z "${{ github.event.ref }}" ]] && echo "branch" || echo "tag ")
           echo "DOCKER_TAG: ${DOCKER_TAG} (Git ${RELEASE_TYPE}${{ github.event.ref }})"
-          docker tag publish:${{ github.sha }} numerique-gouv/publish:${DOCKER_TAG}
+          docker tag impress:${{ github.sha }} numerique-gouv/impress:${DOCKER_TAG}
           if [[ -n "${{ github.event.ref }}" ]]; then
-            docker tag publish:${{ github.sha }} numerique-gouv/publish:latest
+            docker tag impress:${{ github.sha }} numerique-gouv/impress:latest
           fi
-          docker images | grep -E "^numerique-gouv/publish\s*(${DOCKER_TAG}.*|latest|main)"
-      - name: Publish images
+          docker images | grep -E "^numerique-gouv/impress\s*(${DOCKER_TAG}.*|latest|main)"
+      - name: impress images
         run: |
           DOCKER_TAG=$([[ -z "${{ github.event.ref }}" ]] && echo "${{ github.event.ref }}" || echo "${{ github.event.ref }}" | sed 's/^v//')
           RELEASE_TYPE=$([[ -z "${{ github.event.ref }}" ]] && echo "branch" || echo "tag ")
           echo "DOCKER_TAG: ${DOCKER_TAG} (Git ${RELEASE_TYPE}${{ github.event.ref }})"
-          docker push numerique-gouv/publish:${DOCKER_TAG}
+          docker push numerique-gouv/impress:${DOCKER_TAG}
           if [[ -n "${{ github.event.ref }}" ]]; then
-            docker push numerique-gouv/publish:latest
+            docker push numerique-gouv/impress:latest
           fi

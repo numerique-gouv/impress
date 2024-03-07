@@ -1,20 +1,20 @@
 # Django
 DJANGO_ALLOWED_HOSTS=*
 DJANGO_SECRET_KEY=ThisIsAnExampleKeyForDevPurposeOnly
-DJANGO_SETTINGS_MODULE=publish.settings
+DJANGO_SETTINGS_MODULE=impress.settings
 DJANGO_SUPERUSER_PASSWORD=admin
 
 # Python
 PYTHONPATH=/app
 
-# publish settings
+# impress settings
 
 # Mail
 DJANGO_EMAIL_HOST="mailcatcher"
 DJANGO_EMAIL_PORT=1025
 
 # Backend url
-publish_BASE_URL="http://localhost:8072"
+IMPRESS_BASE_URL="http://localhost:8072"
 
 # OIDC
 OIDC_OP_JWKS_ENDPOINT=http://nginx:8083/realms/impress/protocol/openid-connect/certs

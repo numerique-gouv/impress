@@ -1,5 +1,5 @@
 """
-Test template accesses API endpoints for users in publish's core app.
+Test template accesses API endpoints for users in impress's core app.
 """
 import random
 from uuid import uuid4

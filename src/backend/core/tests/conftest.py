@@ -1,4 +1,4 @@
-"""Fixtures for tests in the publish core application"""
+"""Fixtures for tests in the impress core application"""
 from unittest import mock
 
 import pytest
