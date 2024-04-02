@@ -1,0 +1,24 @@
+{
+  "name": "packages-i18n",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "extract-translation": "yarn extract-translation:impress",
+    "extract-translation:impress": "yarn i18next ../../apps/impress/**/*.{ts,tsx} -c ./i18next-parser.config.mjs -o ./locales/impress/translations-crowdin.json",
+    "format-deploy": "yarn format-deploy:impress",
+    "format-deploy:impress": "node ./format-deploy.mjs --app=impress --output=../../apps/impress/src/i18n/translations.json",
+    "lint": "eslint --ext .js,.ts,.mjs .",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/jest": "29.5.12",
+    "@types/node": "*",
+    "eslint-config-impress": "*",
+    "eslint-plugin-import": "2.29.1",
+    "i18next-parser": "8.8.0",
+    "jest": "29.7.0",
+    "ts-jest": "29.1.2",
+    "typescript": "*",
+    "yargs": "17.7.2"
+  }
+}
