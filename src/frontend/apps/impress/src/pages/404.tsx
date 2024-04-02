@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import Icon404 from '@/assets/icons/icon-404.svg';
 import { Box, StyledLink, Text } from '@/components';
-import { MainLayout } from '@/core';
+import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const StyledButton = styled(Button)`
