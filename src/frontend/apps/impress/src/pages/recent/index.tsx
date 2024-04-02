@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 
 import { Box } from '@/components';
-import { MainLayout } from '@/core/';
+import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
