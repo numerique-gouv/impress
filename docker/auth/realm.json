@@ -69,7 +69,7 @@
       },
       {
         "id": "1bfe401a-08fc-4d94-80e0-86c4f5195f99",
-        "name": "default-roles-people",
+        "name": "default-roles-impress",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -404,7 +404,7 @@
   "groups": [],
   "defaultRole": {
     "id": "1bfe401a-08fc-4d94-80e0-86c4f5195f99",
-    "name": "default-roles-people",
+    "name": "default-roles-impress",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
@@ -501,12 +501,12 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/people/account/",
+      "baseUrl": "/realms/impress/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "redirectUris": ["/realms/people/account/*"],
+      "redirectUris": ["/realms/impress/account/*"],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
