@@ -51,6 +51,10 @@ MANAGE              = $(COMPOSE_RUN_APP) python manage.py
 MAIL_YARN           = $(COMPOSE_RUN) -w /app/src/mail node yarn
 TSCLIENT_YARN       = $(COMPOSE_RUN) -w /app/src/tsclient node yarn
 
+# -- Frontend
+PATH_FRONT          = ./src/frontend
+PATH_FRONT_IMPRESS  = $(PATH_FRONT)/apps/impress
+
 # ==============================================================================
 # RULES
 
@@ -75,9 +79,10 @@ bootstrap: \
 	build \
 	run \
 	migrate \
-	i18n-compile \
+	back-i18n-compile \
 	mails-install \
-	mails-build
+	mails-build \
+	install-front-impress
 .PHONY: bootstrap
 
 # -- Docker/compose
@@ -215,18 +220,24 @@ crowdin-download: ## Download translated message from crowdin
 	@$(COMPOSE_RUN_CROWDIN) download -c crowdin/config.yml
 .PHONY: crowdin-download
 
+crowdin-download-sources: ## Download sources from Crowdin
+	@$(COMPOSE_RUN_CROWDIN) download sources -c crowdin/config.yml
+.PHONY: crowdin-download-sources
+
 crowdin-upload: ## Upload source translations to crowdin
 	@$(COMPOSE_RUN_CROWDIN) upload sources -c crowdin/config.yml
 .PHONY: crowdin-upload
 
 i18n-compile: ## compile all translations
 i18n-compile: \
-	back-i18n-compile
+	back-i18n-compile \
+	frontend-i18n-compile
 .PHONY: i18n-compile
 
 i18n-generate: ## create the .pot files and extract frontend messages
 i18n-generate: \
-	back-i18n-generate
+	back-i18n-generate \
+	frontend-i18n-generate
 .PHONY: i18n-generate
 
 i18n-download-and-compile: ## download all translated messages and compile them to be used by all applications
@@ -235,7 +246,7 @@ i18n-download-and-compile: \
   i18n-compile
 .PHONY: i18n-download-and-compile
 
-i18n-generate-and-upload: ## generate source translations for all applications and upload them to crowdin
+i18n-generate-and-upload: ## generate source translations for all applications and upload them to Crowdin
 i18n-generate-and-upload: \
   i18n-generate \
   crowdin-upload
@@ -280,3 +291,26 @@ help:
 	@echo "Please use 'make $(BOLD)target$(RESET)' where $(BOLD)target$(RESET) is one of:"
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)%-30s$(RESET) %s\n", $$1, $$2}'
 .PHONY: help
+
+# Front 
+install-front-impress: ## Install the frontend dependencies of app Desk  
+	cd $(PATH_FRONT_IMPRESS) && yarn
+.PHONY: install-front-impress
+
+run-front-impress: ## Start app Desk  
+	cd $(PATH_FRONT_IMPRESS) && yarn dev
+.PHONY: run-front-impress
+
+frontend-i18n-extract: ## Extract the frontend translation inside a json to be used for crowdin
+	cd $(PATH_FRONT) && yarn i18n:extract
+.PHONY: frontend-i18n-extract
+
+frontend-i18n-generate: ## Generate the frontend json files used for crowdin
+frontend-i18n-generate: \
+	crowdin-download-sources \
+	frontend-i18n-extract
+.PHONY: frontend-i18n-generate
+
+frontend-i18n-compile: ## Format the crowin json files used deploy to the apps
+	cd $(PATH_FRONT) && yarn i18n:deploy
+.PHONY: frontend-i18n-compile
