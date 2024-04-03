@@ -108,7 +108,7 @@ def test_api_templates_list_pagination(
     client.force_login(user)
 
     template_ids = [
-        str(access.template.id)
+        str(access.template_id)
         for access in factories.UserTemplateAccessFactory.create_batch(3, user=user)
     ]
 

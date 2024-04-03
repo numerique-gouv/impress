@@ -25,15 +25,10 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "is_device", "is_staff"]
 
 
-class TemplateAccessSerializer(serializers.ModelSerializer):
+class BaseAccessSerializer(serializers.ModelSerializer):
     """Serialize template accesses."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = models.TemplateAccess
-        fields = ["id", "user", "team", "role", "abilities"]
-        read_only_fields = ["id", "abilities"]
 
     def update(self, instance, validated_data):
         """Make "user" field is readonly but only on update."""
@@ -71,54 +66,87 @@ class TemplateAccessSerializer(serializers.ModelSerializer):
         else:
             teams = user.get_teams()
             try:
-                template_id = self.context["template_id"]
+                resource_id = self.context["resource_id"]
             except KeyError as exc:
                 raise exceptions.ValidationError(
-                    "You must set a template ID in kwargs to create a new template access."
+                    "You must set a resource ID in kwargs to create a new access."
                 ) from exc
 
-            if not models.TemplateAccess.objects.filter(
+            if not self.Meta.model.objects.filter(  # pylint: disable=no-member
                 Q(user=user) | Q(team__in=teams),
-                template=template_id,
                 role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
             ).exists():
                 raise exceptions.PermissionDenied(
-                    "You are not allowed to manage accesses for this template."
+                    "You are not allowed to manage accesses for this resource."
                 )
 
             if (
                 role == models.RoleChoices.OWNER
-                and not models.TemplateAccess.objects.filter(
+                and not self.Meta.model.objects.filter(  # pylint: disable=no-member
                     Q(user=user) | Q(team__in=teams),
-                    template=template_id,
                     role=models.RoleChoices.OWNER,
+                    **{self.Meta.resource_field_name: resource_id},  # pylint: disable=no-member
                 ).exists()
             ):
                 raise exceptions.PermissionDenied(
-                    "Only owners of a template can assign other users as owners."
+                    "Only owners of a resource can assign other users as owners."
                 )
 
-        attrs["template_id"] = self.context["template_id"]
+        # pylint: disable=no-member
+        attrs[f"{self.Meta.resource_field_name}_id"] = self.context["resource_id"]
         return attrs
 
 
-class TemplateSerializer(serializers.ModelSerializer):
-    """Serialize templates."""
+class DocumentAccessSerializer(BaseAccessSerializer):
+    """Serialize document accesses."""
+
+    class Meta:
+        model = models.DocumentAccess
+        resource_field_name = "document"
+        fields = ["id", "user", "team", "role", "abilities"]
+        read_only_fields = ["id", "abilities"]
+
+
+class TemplateAccessSerializer(BaseAccessSerializer):
+    """Serialize template accesses."""
+
+    class Meta:
+        model = models.TemplateAccess
+        resource_field_name = "template"
+        fields = ["id", "user", "team", "role", "abilities"]
+        read_only_fields = ["id", "abilities"]
+
+
+class BaseResourceSerializer(serializers.ModelSerializer):
+    """Serialize documents."""
 
     abilities = serializers.SerializerMethodField(read_only=True)
     accesses = TemplateAccessSerializer(many=True, read_only=True)
+
+    def get_abilities(self, document) -> dict:
+        """Return abilities of the logged-in user on the instance."""
+        request = self.context.get("request")
+        if request:
+            return document.get_abilities(request.user)
+        return {}
+
+
+class DocumentSerializer(BaseResourceSerializer):
+    """Serialize documents."""
+
+    class Meta:
+        model = models.Document
+        fields = ["id", "title", "accesses", "abilities"]
+        read_only_fields = ["id", "accesses", "abilities"]
+
+
+class TemplateSerializer(BaseResourceSerializer):
+    """Serialize templates."""
 
     class Meta:
         model = models.Template
         fields = ["id", "title", "accesses", "abilities"]
         read_only_fields = ["id", "accesses", "abilities"]
-
-    def get_abilities(self, template) -> dict:
-        """Return abilities of the logged-in user on the instance."""
-        request = self.context.get("request")
-        if request:
-            return template.get_abilities(request.user)
-        return {}
 
 
 # pylint: disable=abstract-method

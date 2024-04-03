@@ -10,7 +10,16 @@ from core.api import viewsets
 # - Main endpoints
 router = DefaultRouter()
 router.register("templates", viewsets.TemplateViewSet, basename="templates")
+router.register("documents", viewsets.DocumentViewSet, basename="documents")
 router.register("users", viewsets.UserViewSet, basename="users")
+
+# - Routes nested under a document
+document_related_router = DefaultRouter()
+document_related_router.register(
+    "accesses",
+    viewsets.DocumentAccessViewSet,
+    basename="document_accesses",
+)
 
 # - Routes nested under a template
 template_related_router = DefaultRouter()
@@ -29,7 +38,11 @@ urlpatterns = [
                 *router.urls,
                 *oidc_urls,
                 re_path(
-                    r"^templates/(?P<template_id>[0-9a-z-]*)/",
+                    r"^documents/(?P<resource_id>[0-9a-z-]*)/",
+                    include(document_related_router.urls),
+                ),
+                re_path(
+                    r"^templates/(?P<resource_id>[0-9a-z-]*)/",
                     include(template_related_router.urls),
                 ),
             ]

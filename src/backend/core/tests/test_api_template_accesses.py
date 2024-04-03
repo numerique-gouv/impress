@@ -130,7 +130,7 @@ def test_api_template_accesses_retrieve_anonymous():
     access = factories.UserTemplateAccessFactory()
 
     response = APIClient().get(
-        f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
+        f"/api/v1.0/templates/{access.template_id!s}/accesses/{access.id!s}/",
     )
 
     assert response.status_code == 401
@@ -326,7 +326,7 @@ def test_api_template_accesses_create_authenticated_administrator(
 
     assert response.status_code == 403
     assert response.json() == {
-        "detail": "Only owners of a template can assign other users as owners."
+        "detail": "Only owners of a resource can assign other users as owners."
     }
 
     # It should be allowed to create a lower access
@@ -413,7 +413,7 @@ def test_api_template_accesses_update_anonymous():
     api_client = APIClient()
     for field, value in new_values.items():
         response = api_client.put(
-            f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
+            f"/api/v1.0/templates/{access.template_id!s}/accesses/{access.id!s}/",
             {**old_values, field: value},
             format="json",
         )
@@ -445,7 +445,7 @@ def test_api_template_accesses_update_authenticated_unrelated():
 
     for field, value in new_values.items():
         response = client.put(
-            f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
+            f"/api/v1.0/templates/{access.template_id!s}/accesses/{access.id!s}/",
             {**old_values, field: value},
             format="json",
         )
@@ -484,7 +484,7 @@ def test_api_template_accesses_update_authenticated_member(via, mock_user_get_te
 
     for field, value in new_values.items():
         response = client.put(
-            f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
+            f"/api/v1.0/templates/{access.template_id!s}/accesses/{access.id!s}/",
             {**old_values, field: value},
             format="json",
         )
@@ -770,7 +770,7 @@ def test_api_template_accesses_delete_anonymous():
     access = factories.UserTemplateAccessFactory()
 
     response = APIClient().delete(
-        f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
+        f"/api/v1.0/templates/{access.template_id!s}/accesses/{access.id!s}/",
     )
 
     assert response.status_code == 401
@@ -790,7 +790,7 @@ def test_api_template_accesses_delete_authenticated():
     access = factories.UserTemplateAccessFactory()
 
     response = client.delete(
-        f"/api/v1.0/templates/{access.template.id!s}/accesses/{access.id!s}/",
+        f"/api/v1.0/templates/{access.template_id!s}/accesses/{access.id!s}/",
     )
 
     assert response.status_code == 403
