@@ -159,31 +159,55 @@ jobs:
       - name: Run tests
         run: ~/.local/bin/pytest -n 2
 
-  i18n-back:
+  i18n-crowdin:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
       - name: Install gettext (required to make messages)
         run: |
           sudo apt-get update
           sudo apt-get install -y gettext
+      
       - name: Install Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.10'
+
       - name: Install development dependencies
         working-directory: src/backend
         run: pip install --user .[dev]
+
       - name: Generate the translation base file
         run: ~/.local/bin/django-admin makemessages --keep-pot --all
+        
+      - name: Load sops secrets
+        uses: rouja/actions-sops@main
+        with:
+          secret-file: .github/workflows/secrets.enc.env
+          age-key: ${{ secrets.SOPS_PRIVATE }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'yarn'
+          cache-dependency-path: src/frontend/yarn.lock
+
+      - name: Install dependencies
+        run: cd src/frontend/ && yarn install --frozen-lockfile
+
+      - name: Extract the frontend translation
+        run: make frontend-i18n-extract
+      
       - name: Upload files to Crowdin
         run: |
           docker run \
           --rm \
-          -e CROWDIN_API_TOKEN=${{ secrets.CROWDIN_API_TOKEN }} \
-          -e CROWDIN_PROJECT_ID=${{ vars.CROWDIN_PROJECT_ID }} \
-          -e CROWDIN_BASE_PATH=${{ vars.CROWDIN_BASE_PATH }} \
+          -e CROWDIN_API_TOKEN=$CROWDIN_API_TOKEN \
+          -e CROWDIN_PROJECT_ID=$CROWDIN_PROJECT_ID \
+          -e CROWDIN_BASE_PATH=$CROWDIN_BASE_PATH \
           -v "${{ github.workspace }}:/app" \
           crowdin/cli:3.16.0 \
           crowdin upload sources -c /app/crowdin/config.yml
