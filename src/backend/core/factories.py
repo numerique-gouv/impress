@@ -25,12 +25,57 @@ class UserFactory(factory.django.DjangoModelFactory):
     password = make_password("password")
 
 
+class DocumentFactory(factory.django.DjangoModelFactory):
+    """A factory to create documents"""
+
+    class Meta:
+        model = models.Document
+        django_get_or_create = ("title",)
+        skip_postgeneration_save = True
+
+    title = factory.Sequence(lambda n: f"document{n}")
+    is_public = factory.Faker("boolean")
+
+    @factory.post_generation
+    def users(self, create, extracted, **kwargs):
+        """Add users to document from a given list of users with or without roles."""
+        if create and extracted:
+            for item in extracted:
+                if isinstance(item, models.User):
+                    UserDocumentAccessFactory(document=self, user=item)
+                else:
+                    UserDocumentAccessFactory(document=self, user=item[0], role=item[1])
+
+
+class UserDocumentAccessFactory(factory.django.DjangoModelFactory):
+    """Create fake document user accesses for testing."""
+
+    class Meta:
+        model = models.DocumentAccess
+
+    document = factory.SubFactory(DocumentFactory)
+    user = factory.SubFactory(UserFactory)
+    role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])
+
+
+class TeamDocumentAccessFactory(factory.django.DjangoModelFactory):
+    """Create fake document team accesses for testing."""
+
+    class Meta:
+        model = models.DocumentAccess
+
+    document = factory.SubFactory(DocumentFactory)
+    team = factory.Sequence(lambda n: f"team{n}")
+    role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])
+
+
 class TemplateFactory(factory.django.DjangoModelFactory):
     """A factory to create templates"""
 
     class Meta:
         model = models.Template
         django_get_or_create = ("title",)
+        skip_postgeneration_save = True
 
     title = factory.Sequence(lambda n: f"template{n}")
     is_public = factory.Faker("boolean")

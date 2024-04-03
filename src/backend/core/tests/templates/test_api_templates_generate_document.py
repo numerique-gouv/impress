@@ -107,7 +107,7 @@ def test_api_templates_generate_document_related(via, mock_user_get_teams):
     data = {"body": "# Test markdown body"}
 
     response = client.post(
-        f"/api/v1.0/templates/{access.template.id!s}/generate-document/",
+        f"/api/v1.0/templates/{access.template_id!s}/generate-document/",
         data,
         format="json",
     )

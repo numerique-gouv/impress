@@ -22,6 +22,23 @@ from weasyprint import CSS, HTML
 from weasyprint.text.fonts import FontConfiguration
 
 
+def get_resource_roles(resource, user):
+    """Compute the roles a user has on a resource."""
+    roles = []
+    if user.is_authenticated:
+        try:
+            roles = resource.user_roles or []
+        except AttributeError:
+            teams = user.get_teams()
+            try:
+                roles = resource.accesses.filter(
+                    models.Q(user=user) | models.Q(team__in=teams),
+                ).values_list("role", flat=True)
+            except (models.ObjectDoesNotExist, IndexError):
+                roles = []
+    return roles
+
+
 class RoleChoices(models.TextChoices):
     """Defines the possible roles a user can have in a template."""
 
@@ -156,6 +173,154 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         return []
 
 
+class BaseAccess(BaseModel):
+    """Base model for accesses to handle resources."""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    team = models.CharField(max_length=100, blank=True)
+    role = models.CharField(
+        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
+    )
+
+    class Meta:
+        abstract = True
+
+    def _get_abilities(self, resource, user):
+        """
+        Compute and return abilities for a given user taking into account
+        the current state of the object.
+        """
+        roles = []
+        if user.is_authenticated:
+            teams = user.get_teams()
+            try:
+                roles = self.user_roles or []
+            except AttributeError:
+                try:
+                    roles = resource.accesses.filter(
+                        models.Q(user=user) | models.Q(team__in=teams),
+                    ).values_list("role", flat=True)
+                except (self._meta.model.DoesNotExist, IndexError):
+                    roles = []
+
+        is_owner_or_admin = bool(
+            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+        )
+        if self.role == RoleChoices.OWNER:
+            can_delete = (
+                RoleChoices.OWNER in roles
+                and resource.accesses.filter(role=RoleChoices.OWNER).count() > 1
+            )
+            set_role_to = [RoleChoices.ADMIN, RoleChoices.MEMBER] if can_delete else []
+        else:
+            can_delete = is_owner_or_admin
+            set_role_to = []
+            if RoleChoices.OWNER in roles:
+                set_role_to.append(RoleChoices.OWNER)
+            if is_owner_or_admin:
+                set_role_to.extend([RoleChoices.ADMIN, RoleChoices.MEMBER])
+
+        # Remove the current role as we don't want to propose it as an option
+        try:
+            set_role_to.remove(self.role)
+        except ValueError:
+            pass
+
+        return {
+            "destroy": can_delete,
+            "update": bool(set_role_to),
+            "retrieve": bool(roles),
+            "set_role_to": set_role_to,
+        }
+
+
+class Document(BaseModel):
+    """Pad document carrying the content."""
+
+    title = models.CharField(_("title"), max_length=255)
+    is_public = models.BooleanField(
+        _("public"),
+        default=False,
+        help_text=_("Whether this document is public for anyone to use."),
+    )
+
+    class Meta:
+        db_table = "impress_document"
+        ordering = ("title",)
+        verbose_name = _("Document")
+        verbose_name_plural = _("Documents")
+
+    def __str__(self):
+        return self.title
+
+    def get_abilities(self, user):
+        """
+        Compute and return abilities for a given user on the document.
+        """
+        roles = get_resource_roles(self, user)
+        is_owner_or_admin = bool(
+            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+        )
+        can_get = self.is_public or bool(roles)
+
+        return {
+            "destroy": RoleChoices.OWNER in roles,
+            "manage_accesses": is_owner_or_admin,
+            "update": is_owner_or_admin,
+            "retrieve": can_get,
+        }
+
+
+class DocumentAccess(BaseAccess):
+    """Relation model to give access to a document for a user or a team with a role."""
+
+    document = models.ForeignKey(
+        Document,
+        on_delete=models.CASCADE,
+        related_name="accesses",
+    )
+
+    class Meta:
+        db_table = "impress_document_access"
+        ordering = ("-created_at",)
+        verbose_name = _("Document/user relation")
+        verbose_name_plural = _("Document/user relations")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "document"],
+                condition=models.Q(user__isnull=False),  # Exclude null users
+                name="unique_document_user",
+                violation_error_message=_("This user is already in this document."),
+            ),
+            models.UniqueConstraint(
+                fields=["team", "document"],
+                condition=models.Q(team__gt=""),  # Exclude empty string teams
+                name="unique_document_team",
+                violation_error_message=_("This team is already in this document."),
+            ),
+            models.CheckConstraint(
+                check=models.Q(user__isnull=False, team="")
+                | models.Q(user__isnull=True, team__gt=""),
+                name="check_document_access_either_user_or_team",
+                violation_error_message=_("Either user or team must be set, not both."),
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user!s} is {self.role:s} in document {self.document!s}"
+
+    def get_abilities(self, user):
+        """
+        Compute and return abilities for a given user on the document access.
+        """
+        return self._get_abilities(self.document, user)
+
+
 class Template(BaseModel):
     """HTML and CSS code used for formatting the print around the MarkDown body."""
 
@@ -177,6 +342,24 @@ class Template(BaseModel):
 
     def __str__(self):
         return self.title
+
+    def get_abilities(self, user):
+        """
+        Compute and return abilities for a given user on the template.
+        """
+        roles = get_resource_roles(self, user)
+        is_owner_or_admin = bool(
+            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+        )
+        can_get = self.is_public or bool(roles)
+
+        return {
+            "destroy": RoleChoices.OWNER in roles,
+            "generate_document": can_get,
+            "manage_accesses": is_owner_or_admin,
+            "update": is_owner_or_admin,
+            "retrieve": can_get,
+        }
 
     def generate_document(self, body):
         """
@@ -201,38 +384,8 @@ class Template(BaseModel):
         )
         return document_html.write_pdf(stylesheets=[css], zoom=1)
 
-    def get_abilities(self, user):
-        """
-        Compute and return abilities for a given user on the template.
-        """
-        # Compute user role
-        roles = []
-        if user.is_authenticated:
-            try:
-                roles = self.user_roles or []
-            except AttributeError:
-                teams = user.get_teams()
-                try:
-                    roles = self.accesses.filter(
-                        models.Q(user=user) | models.Q(team__in=teams)
-                    ).values_list("role", flat=True)
-                except (TemplateAccess.DoesNotExist, IndexError):
-                    roles = []
-        is_owner_or_admin = bool(
-            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
-        )
-        can_get = self.is_public or bool(roles)
 
-        return {
-            "destroy": RoleChoices.OWNER in roles,
-            "generate_document": can_get,
-            "manage_accesses": is_owner_or_admin,
-            "update": is_owner_or_admin,
-            "retrieve": can_get,
-        }
-
-
-class TemplateAccess(BaseModel):
+class TemplateAccess(BaseAccess):
     """Relation model to give access to a template for a user or a team with a role."""
 
     template = models.ForeignKey(
@@ -240,20 +393,10 @@ class TemplateAccess(BaseModel):
         on_delete=models.CASCADE,
         related_name="accesses",
     )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="accesses",
-        null=True,
-        blank=True,
-    )
-    team = models.CharField(max_length=100, blank=True)
-    role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
-    )
 
     class Meta:
         db_table = "impress_template_access"
+        ordering = ("-created_at",)
         verbose_name = _("Template/user relation")
         verbose_name_plural = _("Template/user relations")
         constraints = [
@@ -272,7 +415,7 @@ class TemplateAccess(BaseModel):
             models.CheckConstraint(
                 check=models.Q(user__isnull=False, team="")
                 | models.Q(user__isnull=True, team__gt=""),
-                name="check_either_user_or_team",
+                name="check_template_access_either_user_or_team",
                 violation_error_message=_("Either user or team must be set, not both."),
             ),
         ]
@@ -282,51 +425,6 @@ class TemplateAccess(BaseModel):
 
     def get_abilities(self, user):
         """
-        Compute and return abilities for a given user taking into account
-        the current state of the object.
+        Compute and return abilities for a given user on the template access.
         """
-        is_template_owner_or_admin = False
-
-        roles = []
-        if user.is_authenticated:
-            teams = user.get_teams()
-            try:
-                roles = self.user_roles or []
-            except AttributeError:
-                try:
-                    roles = self._meta.model.objects.filter(
-                        models.Q(user=user) | models.Q(team__in=teams),
-                        template=self.template_id,
-                    ).values_list("role", flat=True)
-                except (self._meta.model.DoesNotExist, IndexError):
-                    roles = []
-
-        is_template_owner_or_admin = bool(
-            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
-        )
-        if self.role == RoleChoices.OWNER:
-            can_delete = (
-                RoleChoices.OWNER in roles
-                and self.template.accesses.filter(role=RoleChoices.OWNER).count() > 1
-            )
-            set_role_to = [RoleChoices.ADMIN, RoleChoices.MEMBER] if can_delete else []
-        else:
-            can_delete = is_template_owner_or_admin
-            set_role_to = []
-            if RoleChoices.OWNER in roles:
-                set_role_to.append(RoleChoices.OWNER)
-            if is_template_owner_or_admin:
-                set_role_to.extend([RoleChoices.ADMIN, RoleChoices.MEMBER])
-
-        # Remove the current role as we don't want to propose it as an option
-        try:
-            set_role_to.remove(self.role)
-        except ValueError:
-            pass
-
-        return {
-            "destroy": can_delete,
-            "update": bool(set_role_to),
-            "retrieve": bool(roles),
-            "set_role_to": set_role_to,
-        }
+        return self._get_abilities(self.template, user)
