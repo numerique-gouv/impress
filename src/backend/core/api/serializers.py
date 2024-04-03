@@ -136,7 +136,7 @@ class DocumentSerializer(BaseResourceSerializer):
 
     class Meta:
         model = models.Document
-        fields = ["id", "title", "accesses", "abilities", "is_public"]
+        fields = ["id", "content", "title", "accesses", "abilities", "is_public"]
         read_only_fields = ["id", "accesses", "abilities"]
 
 
