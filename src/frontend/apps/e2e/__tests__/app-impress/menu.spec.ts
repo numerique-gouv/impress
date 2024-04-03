@@ -47,7 +47,7 @@ test.describe('Menu', () => {
     }) => {
       await expect(
         page.getByRole('button', {
-          name: 'Create a new team',
+          name: 'Create a new pad',
         }),
       ).toBeVisible();
 
@@ -61,13 +61,13 @@ test.describe('Menu', () => {
       if (isDefault) {
         await expect(
           page.getByRole('button', {
-            name: 'Create a new team',
+            name: 'Create a new pad',
           }),
         ).toBeVisible();
       } else {
         await expect(
           page.getByRole('button', {
-            name: 'Create a new team',
+            name: 'Create a new pad',
           }),
         ).toBeHidden();
 

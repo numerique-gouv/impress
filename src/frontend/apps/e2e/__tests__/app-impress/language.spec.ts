@@ -11,7 +11,7 @@ test.describe('Language', () => {
   test('checks the language picker', async ({ page }) => {
     await expect(
       page.getByRole('button', {
-        name: 'Create a new team',
+        name: 'Create a new pad',
       }),
     ).toBeVisible();
 
@@ -22,7 +22,7 @@ test.describe('Language', () => {
 
     await expect(
       page.getByRole('button', {
-        name: 'Créer un nouveau groupe',
+        name: 'Créer un nouveau pad',
       }),
     ).toBeVisible();
   });
