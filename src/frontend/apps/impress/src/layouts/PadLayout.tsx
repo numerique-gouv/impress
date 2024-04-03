@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Panel } from '@/features/pads-panel';
+import { Panel } from '@/features/pads';
 
 import { MainLayout } from './MainLayout';
 

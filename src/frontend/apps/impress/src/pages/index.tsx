@@ -1,16 +1,16 @@
 import type { ReactElement } from 'react';
 
-import { TeamLayout } from '@/features/teams/';
+import { PadLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
-import Teams from './teams/';
+import Pads from './pads/';
 
 const Page: NextPageWithLayout = () => {
-  return <Teams />;
+  return <Pads />;
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <TeamLayout>{page}</TeamLayout>;
+  return <PadLayout>{page}</PadLayout>;
 };
 
 export default Page;
