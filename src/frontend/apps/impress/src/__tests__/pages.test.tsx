@@ -11,7 +11,7 @@ describe('Page', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /Create a new team/i,
+        name: /Create a new pad/i,
       }),
     ).toBeInTheDocument();
   });

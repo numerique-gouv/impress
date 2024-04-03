@@ -19,7 +19,9 @@ describe('checks all the frontend translation are made', () => {
     Object.keys(jsonimpress)
       .filter((key) => key !== 'en')
       .forEach((key) => {
-        const listKeysimpress = Object.keys(jsonimpress[key].translation).sort();
+        const listKeysimpress = Object.keys(
+          jsonimpress[key].translation,
+        ).sort();
         const missingKeys = listKeysCrowdin.filter(
           (element) => !listKeysimpress.includes(element),
         );

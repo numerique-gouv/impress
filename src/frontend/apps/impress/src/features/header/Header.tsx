@@ -8,8 +8,8 @@ import { ApplicationsMenu } from '@/features/header/ApplicationsMenu';
 
 import { LanguagePicker } from '../language/';
 
-import { default as IconImpress } from './assets/icon-impress.svg?url';
 import { default as IconGouv } from './assets/icon-gouv.svg?url';
+import { default as IconImpress } from './assets/icon-impress.svg?url';
 import { default as IconMarianne } from './assets/icon-marianne.svg?url';
 import IconMyAccount from './assets/icon-my-account.png';
 

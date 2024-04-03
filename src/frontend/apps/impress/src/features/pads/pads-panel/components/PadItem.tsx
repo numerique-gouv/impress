@@ -67,7 +67,7 @@ export const PadItem = ({ pad }: PadItemProps) => {
         <Box $align="center" $direction="row" $gap="0.5rem">
           {hasMembers ? (
             <IconGroup
-              aria-label={t(`Teams icon`)}
+              aria-label={t(`Pads icon`)}
               color={colorsTokens()['primary-500']}
               {...commonProps}
               style={{
@@ -77,7 +77,7 @@ export const PadItem = ({ pad }: PadItemProps) => {
             />
           ) : (
             <IconNone
-              aria-label={t(`Empty teams icon`)}
+              aria-label={t(`Empty pads icon`)}
               color={colorsTokens()['greyscale-500']}
               {...commonProps}
               style={{
