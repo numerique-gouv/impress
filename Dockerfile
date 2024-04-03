@@ -136,4 +136,4 @@ COPY --from=link-collector ${IMPRESS_STATIC_ROOT} ${IMPRESS_STATIC_ROOT}
 COPY --from=mail-builder /mail/backend/core/templates/mail /app/core/templates/mail
 
 # The default command runs gunicorn WSGI server in impress's main module
-CMD gunicorn -c /usr/local/etc/gunicorn/impress.py impress.wsgi:application
+CMD ["gunicorn", "-c", "/usr/local/etc/gunicorn/impress.py", "impress.wsgi:application"]
