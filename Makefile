@@ -68,14 +68,19 @@ data/static:
 
 # -- Project
 
+create-env-files: ## Copy the dist env files to env files
+create-env-files: \
+	env.d/development/common \
+	env.d/development/crowdin \
+	env.d/development/postgresql \
+	env.d/development/kc_postgresql
+.PHONY: create-env-files
+
 bootstrap: ## Prepare Docker images for the project
 bootstrap: \
 	data/media \
 	data/static \
-	env.d/development/common \
-	env.d/development/crowdin \
-	env.d/development/postgresql \
-	env.d/development/kc_postgresql \
+	create-env-files \
 	build \
 	run \
 	migrate \

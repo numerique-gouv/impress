@@ -1,0 +1,3 @@
+# For the CI job test-e2e
+SUSTAINED_THROTTLE_RATES="200/hour"
+BURST_THROTTLE_RATES="200/minute"

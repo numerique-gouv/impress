@@ -1,0 +1,152 @@
+name: impress Workflow
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  install-front:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Restore the frontend cache
+        uses: actions/cache@v4
+        id: front-node_modules
+        with:
+          path: 'src/frontend/**/node_modules'
+          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
+
+      - name: Install dependencies
+        if: steps.front-node_modules.outputs.cache-hit != 'true'
+        run: cd src/frontend/ && yarn install --frozen-lockfile
+
+      - name: Cache install frontend
+        if: steps.front-node_modules.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: 'src/frontend/**/node_modules'
+          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
+
+  build-front:
+    runs-on: ubuntu-latest
+    needs: install-front
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore the frontend cache
+        uses: actions/cache@v4
+        id: front-node_modules
+        with:
+          path: 'src/frontend/**/node_modules'
+          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
+
+      - name: Build CI App
+        run: cd src/frontend/ && yarn ci:build
+
+      - name: Cache build frontend
+        uses: actions/cache@v4
+        with:
+          path: src/frontend/apps/impress/out/
+          key: build-front-${{ github.run_id }}
+
+  test-front:
+    runs-on: ubuntu-latest
+    needs: install-front
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore the frontend cache
+        uses: actions/cache@v4
+        id: front-node_modules
+        with:
+          path: 'src/frontend/**/node_modules'
+          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
+
+      - name: Test App
+        run: cd src/frontend/ && yarn app:test
+
+  lint-front:
+    runs-on: ubuntu-latest
+    needs: install-front
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore the frontend cache
+        uses: actions/cache@v4
+        id: front-node_modules
+        with:
+          path: 'src/frontend/**/node_modules'
+          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
+        
+      - name: Check linting
+        run: cd src/frontend/ && yarn lint
+
+  test-e2e:
+    runs-on: ubuntu-latest
+    needs: build-front
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+            
+      - name: Set services env variables
+        run: |
+          make create-env-files
+          cat env.d/development/common.e2e.dist >> env.d/development/common
+
+      - name: Restore the frontend cache
+        uses: actions/cache@v4
+        id: front-node_modules
+        with:
+          path: 'src/frontend/**/node_modules'
+          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
+
+      - name: Restore the build cache
+        uses: actions/cache@v4
+        id: cache-build
+        with:
+          path: src/frontend/apps/impress/out/
+          key: build-front-${{ github.run_id }}
+    
+      - name: Build and Start Docker Servers
+        env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
+        run: |
+          docker-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
+          make run
+        
+      - name: Apply DRF migrations
+        run: |
+          make migrate
+
+      - name: Install Playwright Browsers
+        run: cd src/frontend/apps/e2e && yarn install
+
+      - name: Run e2e tests
+        run: cd src/frontend/ && yarn e2e:test
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: src/frontend/apps/e2e/report/
+          retention-days: 7
+
