@@ -43,7 +43,7 @@ describe('fetchAPI', () => {
       },
     });
 
-    useAuthStore.setState({ userData: { email: 'test@test.com' } });
+    useAuthStore.setState({ userData: { email: 'test@test.com', id: '1234' } });
 
     fetchMock.mock('http://some.api.url/api/v1.0/some/url', 401);
 

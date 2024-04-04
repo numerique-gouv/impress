@@ -8,7 +8,7 @@
     "build:ci": "cp .env.development .env.local && yarn build",
     "build-theme": "cunningham -g css,ts -o src/cunningham --utility-classes",
     "start": "npx -y serve@latest out",
-    "lint": "next lint",
+    "lint": "tsc --noEmit && next lint",
     "prettier": "prettier --write .",
     "stylelint": "stylelint \"**/*.css\"",
     "test": "jest",
