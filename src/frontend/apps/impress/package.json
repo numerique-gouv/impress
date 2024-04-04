@@ -15,6 +15,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@blocknote/core": "0.12.4",
+    "@blocknote/react": "0.12.4",
     "@openfun/cunningham-react": "2.7.0",
     "@tanstack/react-query": "5.28.14",
     "i18next": "23.10.1",
@@ -27,6 +29,8 @@
     "react-i18next": "14.1.0",
     "react-select": "5.8.0",
     "styled-components": "6.1.8",
+    "y-webrtc": "10.3.0",
+    "yjs": "13.6.14",
     "zustand": "4.5.2"
   },
   "devDependencies": {
