@@ -1,0 +1,4 @@
+apiVersion: v2
+type: application
+name: desk
+version: 0.0.1
