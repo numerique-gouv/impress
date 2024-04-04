@@ -1,19 +1,62 @@
 # Django impress
 
 # ---- base image to inherit from ----
-FROM python:3.10-slim-bookworm as base
+FROM python:3.10-slim-bullseye as base
 
 # Upgrade pip to its latest release to speed up dependencies installation
 RUN python -m pip install --upgrade pip
 
 # Upgrade system packages to install security updates
-    # python3-pip python3-cffi python3-brotli \
 RUN apt-get update && \
   apt-get -y upgrade && \
-  apt-get -y install \
-    gettext \
-    libpango-1.0-0 libpangoft2-1.0-0 pango1.0-tools && \
   rm -rf /var/lib/apt/lists/*
+
+### ---- Front-end dependencies image ----
+FROM node:20 as frontend-deps
+
+WORKDIR /deps
+
+COPY ./src/frontend/package.json ./package.json
+COPY ./src/frontend/yarn.lock ./yarn.lock
+COPY ./src/frontend/apps/impress/package.json ./apps/impress/package.json
+COPY ./src/frontend/packages/i18n/package.json ./packages/i18n/package.json
+COPY ./src/frontend/packages/eslint-config-impress/package.json ./packages/eslint-config-impress/package.json
+
+RUN yarn --frozen-lockfile
+
+### ---- Front-end builder image ----
+FROM node:20 as frontend-builder
+
+WORKDIR /builder
+
+COPY --from=frontend-deps /deps/node_modules ./node_modules
+COPY ./src/frontend .
+
+WORKDIR /builder/apps/impress
+
+RUN yarn build
+
+
+# ---- Front-end image ----
+FROM nginxinc/nginx-unprivileged:1.25 as frontend-production
+
+# Un-privileged user running the application
+ARG DOCKER_USER
+USER ${DOCKER_USER}
+
+COPY --from=frontend-builder \
+    /builder/apps/impress/out \
+    /usr/share/nginx/html
+
+COPY ./src/frontend/apps/impress/conf/default.conf /etc/nginx/conf.d
+
+# Copy entrypoint
+COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
+
+CMD ["nginx", "-g", "daemon off;"]
+
 
 # ---- Back-end builder image ----
 FROM base as back-builder
@@ -26,8 +69,9 @@ COPY ./src/backend /builder
 RUN mkdir /install && \
   pip install --prefix=/install .
 
+
 # ---- mails ----
-FROM node:18 as mail-builder
+FROM node:20 as mail-builder
 
 COPY ./src/mail /mail/app
 
@@ -36,13 +80,15 @@ WORKDIR /mail/app
 RUN yarn install --frozen-lockfile && \
     yarn build
 
+
 # ---- static link collector ----
 FROM base as link-collector
-ARG IMPRESS_STATIC_ROOT=/data/static
+ARG PEOPLE_STATIC_ROOT=/data/static
 
-# Install rdfind
+# Install libpangocairo & rdfind
 RUN apt-get update && \
     apt-get install -y \
+      libpangocairo-1.0-0 \
       rdfind && \
     rm -rf /var/lib/apt/lists/*
 
@@ -55,7 +101,7 @@ COPY ./src/backend /app/
 WORKDIR /app
 
 # collectstatic
-RUN DJANGO_CONFIGURATION=Build \
+RUN DJANGO_CONFIGURATION=Build DJANGO_JWT_PRIVATE_SIGNING_KEY=Dummy \
     python manage.py collectstatic --noinput
 
 # Replace duplicated file by a symlink to decrease the overall size of the
@@ -66,6 +112,18 @@ RUN rdfind -makesymlinks true -followsymlinks true -makeresultsfile false ${IMPR
 FROM base as core
 
 ENV PYTHONUNBUFFERED=1
+
+# Install required system libs
+RUN apt-get update && \
+    apt-get install -y \
+      gettext \
+      libcairo2 \
+      libffi-dev \
+      libgdk-pixbuf2.0-0 \
+      libpango-1.0-0 \
+      libpangocairo-1.0-0 \
+      shared-mime-info && \
+  rm -rf /var/lib/apt/lists/*
 
 # Copy entrypoint
 COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
@@ -89,7 +147,7 @@ WORKDIR /app
 ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 
 # ---- Development image ----
-FROM core as development
+FROM core as backend-development
 
 # Switch back to the root user to install development dependencies
 USER root:root
@@ -114,10 +172,10 @@ ENV DB_HOST=postgresql \
     DB_PORT=5432
 
 # Run django development server
-CMD python manage.py runserver 0.0.0.0:8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # ---- Production image ----
-FROM core as production
+FROM core as backend-production
 
 ARG IMPRESS_STATIC_ROOT=/data/static
 
