@@ -1,0 +1,20 @@
+{{- $envVars := include "desk.common.env" (list . .Values.frontend) -}}
+{{- $fullName := include "desk.frontend.fullname" . -}}
+{{- $component := "frontend" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "desk.common.labels" (list . $component) | nindent 4 }}
+  annotations:
+    {{- toYaml $.Values.frontend.service.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.frontend.service.type }}
+  ports:
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "desk.common.selectorLabels" (list . $component) | nindent 4 }}

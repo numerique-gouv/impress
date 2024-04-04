@@ -1,0 +1,91 @@
+image:
+  repository: lasuite/people-backend
+  pullPolicy: Always
+  tag: "main"
+
+backend:
+  migrateJobAnnotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+  envVars:
+    DJANGO_CSRF_TRUSTED_ORIGINS: http://desk-staging.beta.numerique.gouv.fr,https://desk-staging.beta.numerique.gouv.fr
+    DJANGO_CONFIGURATION: Production
+    DJANGO_ALLOWED_HOSTS: "*"
+    DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
+    DJANGO_SETTINGS_MODULE: people.settings
+    DJANGO_SUPERUSER_PASSWORD: admin
+    DJANGO_EMAIL_HOST: "snap-mail.numerique.gouv.fr"
+    DJANGO_EMAIL_PORT: 465
+    DJANGO_EMAIL_USE_SSL: True
+    DJANGO_SILENCED_SYSTEM_CHECKS: security.W008,security.W004
+    OIDC_OP_JWKS_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/jwks
+    OIDC_OP_AUTHORIZATION_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/authorize
+    OIDC_OP_TOKEN_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/token
+    OIDC_OP_USER_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/userinfo
+    OIDC_RP_CLIENT_ID: {{ .Values.oidc.clientId }}
+    OIDC_RP_CLIENT_SECRET: {{ .Values.oidc.clientSecret }}
+    OIDC_RP_SIGN_ALGO: RS256
+    OIDC_RP_SCOPES: "openid email"
+    OIDC_REDIRECT_ALLOWED_HOSTS: https://desk-staging.beta.numerique.gouv.fr
+    OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
+    LOGIN_REDIRECT_URL: https://desk-staging.beta.numerique.gouv.fr
+    LOGIN_REDIRECT_URL_FAILURE: https://desk-staging.beta.numerique.gouv.fr
+    LOGOUT_REDIRECT_URL: https://desk-staging.beta.numerique.gouv.fr/login
+    DB_HOST:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: host
+    DB_NAME:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: database
+    DB_USER:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: username
+    DB_PASSWORD:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: password
+    DB_PORT:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: port
+    POSTGRES_USER:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: username
+    POSTGRES_DB:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: database
+    POSTGRES_PASSWORD:
+      secretKeyRef:
+        name: postgresql.postgres.libre.sh
+        key: password
+    REDIS_URL:
+      secretKeyRef:
+        name: redis.redis.libre.sh
+        key: url
+
+frontend:
+  image:
+    repository: lasuite/people-frontend
+    pullPolicy: Always
+    tag: "main"
+
+ingress:
+  enabled: true
+  host: desk-staging.beta.numerique.gouv.fr
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+ingressAdmin:
+  enabled: true
+  host: desk-staging.beta.numerique.gouv.fr
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-preprod.beta.numerique.gouv.fr/oauth2/start
+    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-preprod.beta.numerique.gouv.fr/oauth2/auth
