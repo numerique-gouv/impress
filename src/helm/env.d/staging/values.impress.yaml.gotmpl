@@ -1,5 +1,5 @@
 image:
-  repository: lasuite/people-backend
+  repository: lasuite/impress-backend
   pullPolicy: Always
   tag: "main"
 
@@ -8,11 +8,11 @@ backend:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
   envVars:
-    DJANGO_CSRF_TRUSTED_ORIGINS: http://desk-staging.beta.numerique.gouv.fr,https://desk-staging.beta.numerique.gouv.fr
+    DJANGO_CSRF_TRUSTED_ORIGINS: http://impress-staging.beta.numerique.gouv.fr,https://impress-staging.beta.numerique.gouv.fr
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"
     DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
-    DJANGO_SETTINGS_MODULE: people.settings
+    DJANGO_SETTINGS_MODULE: impress.settings
     DJANGO_SUPERUSER_PASSWORD: admin
     DJANGO_EMAIL_HOST: "snap-mail.numerique.gouv.fr"
     DJANGO_EMAIL_PORT: 465
@@ -26,11 +26,11 @@ backend:
     OIDC_RP_CLIENT_SECRET: {{ .Values.oidc.clientSecret }}
     OIDC_RP_SIGN_ALGO: RS256
     OIDC_RP_SCOPES: "openid email"
-    OIDC_REDIRECT_ALLOWED_HOSTS: https://desk-staging.beta.numerique.gouv.fr
+    OIDC_REDIRECT_ALLOWED_HOSTS: https://impress-staging.beta.numerique.gouv.fr
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
-    LOGIN_REDIRECT_URL: https://desk-staging.beta.numerique.gouv.fr
-    LOGIN_REDIRECT_URL_FAILURE: https://desk-staging.beta.numerique.gouv.fr
-    LOGOUT_REDIRECT_URL: https://desk-staging.beta.numerique.gouv.fr/login
+    LOGIN_REDIRECT_URL: https://impress-staging.beta.numerique.gouv.fr
+    LOGIN_REDIRECT_URL_FAILURE: https://impress-staging.beta.numerique.gouv.fr
+    LOGOUT_REDIRECT_URL: https://impress-staging.beta.numerique.gouv.fr/login
     DB_HOST:
       secretKeyRef:
         name: postgresql.postgres.libre.sh
@@ -70,20 +70,20 @@ backend:
 
 frontend:
   image:
-    repository: lasuite/people-frontend
+    repository: lasuite/impress-frontend
     pullPolicy: Always
     tag: "main"
 
 ingress:
   enabled: true
-  host: desk-staging.beta.numerique.gouv.fr
+  host: impress-staging.beta.numerique.gouv.fr
   className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
 ingressAdmin:
   enabled: true
-  host: desk-staging.beta.numerique.gouv.fr
+  host: impress-staging.beta.numerique.gouv.fr
   className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod

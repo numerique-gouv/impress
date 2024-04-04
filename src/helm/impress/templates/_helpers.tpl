@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "desk.name" -}}
+{{- define "impress.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "desk.fullname" -}}
+{{- define "impress.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "desk.chart" -}}
+{{- define "impress.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
-desk.labels
+impress.labels
 */}}
-{{- define "desk.labels" -}}
-helm.sh/chart: {{ include "desk.chart" . }}
-{{ include "desk.selectorLabels" . }}
+{{- define "impress.labels" -}}
+helm.sh/chart: {{ include "impress.chart" . }}
+{{ include "impress.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,14 +45,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "desk.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "desk.name" . }}
+{{- define "impress.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "impress.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 transform dictionnary of environment variables
-Usage : {{ include "desk.env.transformDict" .Values.envVars }}
+Usage : {{ include "impress.env.transformDict" .Values.envVars }}
 
 Example:
 envVars:
@@ -69,7 +69,7 @@ envVars:
       name: secret-name
       key: "key_in_secret"
 */}}
-{{- define "desk.env.transformDict" -}}
+{{- define "impress.env.transformDict" -}}
 {{- range $key, $value := . }}
 - name: {{ $key | quote }}
 {{- if $value | kindIs "map" }}
@@ -82,12 +82,12 @@ envVars:
 
 
 {{/*
-desk env vars
+impress env vars
 */}}
-{{- define "desk.common.env" -}}
+{{- define "impress.common.env" -}}
 {{- $topLevelScope := index . 0 -}}
 {{- $workerScope := index . 1 -}}
-{{- include "desk.env.transformDict" $workerScope.envVars -}}
+{{- include "impress.env.transformDict" $workerScope.envVars -}}
 {{- end }}
 
 {{/*
@@ -95,10 +95,10 @@ Common labels
 
 Requires array with top level scope and component name
 */}}
-{{- define "desk.common.labels" -}}
+{{- define "impress.common.labels" -}}
 {{- $topLevelScope := index . 0 -}}
 {{- $component := index . 1 -}}
-{{- include "desk.labels" $topLevelScope }}
+{{- include "impress.labels" $topLevelScope }}
 app.kubernetes.io/component: {{ $component }}
 {{- end }}
 
@@ -107,14 +107,14 @@ Common selector labels
 
 Requires array with top level scope and component name
 */}}
-{{- define "desk.common.selectorLabels" -}}
+{{- define "impress.common.selectorLabels" -}}
 {{- $topLevelScope := index . 0 -}}
 {{- $component := index . 1 -}}
-{{- include "desk.selectorLabels" $topLevelScope }}
+{{- include "impress.selectorLabels" $topLevelScope }}
 app.kubernetes.io/component: {{ $component }}
 {{- end }}
 
-{{- define "desk.probes.abstract" -}}
+{{- define "impress.probes.abstract" -}}
 {{- if .exec -}}
 exec:
 {{- toYaml .exec | nindent 2 }}
@@ -135,8 +135,8 @@ Full name for the backend
 
 Requires top level scope
 */}}
-{{- define "desk.backend.fullname" -}}
-{{ include "desk.fullname" . }}-backend
+{{- define "impress.backend.fullname" -}}
+{{ include "impress.fullname" . }}-backend
 {{- end }}
 
 {{/*
@@ -144,32 +144,32 @@ Full name for the frontend
 
 Requires top level scope
 */}}
-{{- define "desk.frontend.fullname" -}}
-{{ include "desk.fullname" . }}-frontend
+{{- define "impress.frontend.fullname" -}}
+{{ include "impress.fullname" . }}-frontend
 {{- end }}
 
 {{/*
-Usage : {{ include "desk.secret.dockerconfigjson.name" (dict "fullname" (include "desk.fullname" .) "imageCredentials" .Values.path.to.the.image1) }}
+Usage : {{ include "impress.secret.dockerconfigjson.name" (dict "fullname" (include "impress.fullname" .) "imageCredentials" .Values.path.to.the.image1) }}
 */}}
-{{- define "desk.secret.dockerconfigjson.name" }}
+{{- define "impress.secret.dockerconfigjson.name" }}
 {{- if (default (dict) .imageCredentials).name }}{{ .imageCredentials.name }}{{ else }}{{ .fullname | trunc 63 | trimSuffix "-" }}-dockerconfig{{ end -}}
 {{- end }}
 
 {{/*
-Usage : {{ include "desk.secret.dockerconfigjson" (dict "fullname" (include "desk.fullname" .) "imageCredentials" .Values.path.to.the.image1) }}
+Usage : {{ include "impress.secret.dockerconfigjson" (dict "fullname" (include "impress.fullname" .) "imageCredentials" .Values.path.to.the.image1) }}
 */}}
-{{- define "desk.secret.dockerconfigjson" }}
+{{- define "impress.secret.dockerconfigjson" }}
 {{- if .imageCredentials -}}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ template "desk.secret.dockerconfigjson.name" (dict "fullname" .fullname "imageCredentials" .imageCredentials) }}
+  name: {{ template "impress.secret.dockerconfigjson.name" (dict "fullname" .fullname "imageCredentials" .imageCredentials) }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": before-hook-creation
 type: kubernetes.io/dockerconfigjson
 data:
-  .dockerconfigjson: {{ template "desk.secret.dockerconfigjson.data" .imageCredentials }}
+  .dockerconfigjson: {{ template "impress.secret.dockerconfigjson.data" .imageCredentials }}
 {{- end -}}
 {{- end }}

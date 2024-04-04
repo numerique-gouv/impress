@@ -1,18 +1,18 @@
-# Default values for desk.
+# Default values for impress.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 ## @section General configuration
 
-## @param image.repository Repository to use to pull desk's container image
-## @param image.tag desk's container tag
+## @param image.repository Repository to use to pull impress's container image
+## @param image.tag impress's container tag
 ## @param image.pullPolicy Container image pull policy
 ## @extra image.credentials.username Username for container registry authentication
 ## @extra image.credentials.password Password for container registry authentication
 ## @extra image.credentials.registry Registry url for which the credentials are specified
 ## @extra image.credentials.name Name of the generated secret for imagePullSecrets
 image:
-  repository: lasuite/people-backend
+  repository: lasuite/impress-backend
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -32,7 +32,7 @@ commonEnvVars: &commonEnvVars
 ingress:
   enabled: false
   className: null
-  host: desk.example.com
+  host: impress.example.com
   path: /
   ## @param ingress.hosts Additional host to configure for the Ingress
   hosts: []
@@ -55,7 +55,7 @@ ingress:
 ingressAdmin:
   enabled: false
   className: null
-  host: desk.example.com
+  host: impress.example.com
   path: /admin
   ## @param ingressAdmin.hosts Additional host to configure for the Ingress
   hosts: [ ]
@@ -175,11 +175,11 @@ backend:
 ## @section frontend
 
 frontend:
-  ## @param frontend.image.repository Repository to use to pull desk's frontend container image
-  ## @param frontend.image.tag desk's frontend container tag
+  ## @param frontend.image.repository Repository to use to pull impress's frontend container image
+  ## @param frontend.image.tag impress's frontend container tag
   ## @param frontend.image.pullPolicy frontend container image pull policy
   image:
-    repository: lasuite/people-frontend
+    repository: lasuite/impress-frontend
     pullPolicy: IfNotPresent
     tag: "latest"
 

@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "desk.fullname" . -}}
+{{- $fullName := include "impress.fullname" . -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -16,7 +16,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "desk.labels" . | nindent 4 }}
+    {{- include "impress.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
   {{- toYaml . | nindent 4 }}
@@ -52,11 +52,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "desk.frontend.fullname" . }}
+                name: {{ include "impress.frontend.fullname" . }}
                 port:
                   number: {{ .Values.frontend.service.port }}
               {{- else }}
-              serviceName: {{ include "desk.frontend.fullname" . }}
+              serviceName: {{ include "impress.frontend.fullname" . }}
               servicePort: {{ .Values.frontend.service.port }}
             {{- end }}
           - path: /api
@@ -66,11 +66,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "desk.backend.fullname" . }}
+                name: {{ include "impress.backend.fullname" . }}
                 port:
                   number: {{ .Values.backend.service.port }}
               {{- else }}
-              serviceName: {{ include "desk.backend.fullname" . }}
+              serviceName: {{ include "impress.backend.fullname" . }}
               servicePort: {{ .Values.backend.service.port }}
             {{- end }}
           {{- with .Values.ingress.customBackends }}
@@ -88,11 +88,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "desk.frontend.fullname" $ }}
+                name: {{ include "impress.frontend.fullname" $ }}
                 port:
                   number: {{ $.Values.frontend.service.port }}
               {{- else }}
-              serviceName: {{ include "desk.frontend.fullname" $ }}
+              serviceName: {{ include "impress.frontend.fullname" $ }}
               servicePort: {{ $.Values.frontend.service.port }}
             {{- end }}
           - path: /api
@@ -102,11 +102,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "desk.backend.fullname" $ }}
+                name: {{ include "impress.backend.fullname" $ }}
                 port:
                   number: {{ $.Values.backend.service.port }}
               {{- else }}
-              serviceName: {{ include "desk.backend.fullname" $ }}
+              serviceName: {{ include "impress.backend.fullname" $ }}
               servicePort: {{ $.Values.backend.service.port }}
             {{- end }}
           {{- with $.Values.ingress.customBackends }}

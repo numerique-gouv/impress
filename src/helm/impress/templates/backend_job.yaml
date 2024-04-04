@@ -1,5 +1,5 @@
-{{- $envVars := include "desk.common.env" (list . .Values.backend) -}}
-{{- $fullName := include "desk.backend.fullname" . -}}
+{{- $envVars := include "impress.common.env" (list . .Values.backend) -}}
+{{- $fullName := include "impress.backend.fullname" . -}}
 {{- $component := "backend" -}}
 apiVersion: batch/v1
 kind: Job
@@ -10,7 +10,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
-    {{- include "desk.common.labels" (list . $component) | nindent 4 }}
+    {{- include "impress.common.labels" (list . $component) | nindent 4 }}
 spec:
   template:
     metadata:
@@ -19,11 +19,11 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        {{- include "desk.common.selectorLabels" (list . $component) | nindent 8 }}
+        {{- include "impress.common.selectorLabels" (list . $component) | nindent 8 }}
     spec:
       {{- if $.Values.image.credentials }}
       imagePullSecrets:
-        - name: {{ include "desk.secret.dockerconfigjson.name" (dict "fullname" (include "desk.fullname" .) "imageCredentials" $.Values.image.credentials) }}
+        - name: {{ include "impress.secret.dockerconfigjson.name" (dict "fullname" (include "impress.fullname" .) "imageCredentials" $.Values.image.credentials) }}
       {{- end}}
       shareProcessNamespace: {{ .Values.backend.shareProcessNamespace }}
       containers:
@@ -86,7 +86,7 @@ spec:
         {{- range $index, $value := .Values.mountFiles }}
         - name: "files-{{ $index }}"
           configMap:
-            name: "{{ include "desk.fullname" $ }}-files-{{ $index }}"
+            name: "{{ include "impress.fullname" $ }}-files-{{ $index }}"
         {{- end }}
         {{- range $name, $volume := .Values.backend.persistence }}
         - name: "{{ $name }}"

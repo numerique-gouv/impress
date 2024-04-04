@@ -1,15 +1,15 @@
 image:
-  repository: localhost:5001/people-backend
+  repository: localhost:5001/impress-backend
   pullPolicy: Always
   tag: "latest"
 
 backend:
   envVars:
-    DJANGO_CSRF_TRUSTED_ORIGINS: https://desk.127.0.0.1.nip.io,http://desk.127.0.0.1.nip.io
+    DJANGO_CSRF_TRUSTED_ORIGINS: https://impress.127.0.0.1.nip.io,http://impress.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"
     DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
-    DJANGO_SETTINGS_MODULE: people.settings
+    DJANGO_SETTINGS_MODULE: impress.settings
     DJANGO_SUPERUSER_PASSWORD: admin
     DJANGO_EMAIL_HOST: "mailcatcher"
     DJANGO_EMAIL_PORT: 1025
@@ -22,31 +22,31 @@ backend:
     OIDC_RP_CLIENT_SECRET: {{ .Values.oidc.clientSecret }}
     OIDC_RP_SIGN_ALGO: RS256
     OIDC_RP_SCOPES: "openid email"
-    OIDC_REDIRECT_ALLOWED_HOSTS: https://desk.127.0.0.1.nip.io
+    OIDC_REDIRECT_ALLOWED_HOSTS: https://impress.127.0.0.1.nip.io
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
-    LOGIN_REDIRECT_URL: https://desk.127.0.0.1.nip.io
-    LOGIN_REDIRECT_URL_FAILURE: https://desk.127.0.0.1.nip.io
-    LOGOUT_REDIRECT_URL: https://desk.127.0.0.1.nip.io/login
+    LOGIN_REDIRECT_URL: https://impress.127.0.0.1.nip.io
+    LOGIN_REDIRECT_URL_FAILURE: https://impress.127.0.0.1.nip.io
+    LOGOUT_REDIRECT_URL: https://impress.127.0.0.1.nip.io/login
     DB_HOST: postgres-postgresql
-    DB_NAME: people
+    DB_NAME: impress
     DB_USER: dinum
     DB_PASSWORD: pass
     DB_PORT: 5432
-    POSTGRES_DB: people
+    POSTGRES_DB: impress
     POSTGRES_USER: dinum
     POSTGRES_PASSWORD: pass
     REDIS_URL: redis://default:pass@redis-master:6379/1
 
 frontend:
   image:
-    repository: localhost:5001/people-frontend
+    repository: localhost:5001/impress-frontend
     pullPolicy: Always
     tag: "latest"
 
 ingress:
   enabled: true
-  host: desk.127.0.0.1.nip.io
+  host: impress.127.0.0.1.nip.io
 
 ingressAdmin:
   enabled: true
-  host: desk.127.0.0.1.nip.io
+  host: impress.127.0.0.1.nip.io
