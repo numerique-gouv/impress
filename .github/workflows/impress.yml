@@ -72,21 +72,6 @@ jobs:
       - name: Build mails
         run: yarn build
 
-  build-docker:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Generate a version.json file describing app release
-        run: |
-          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/impress/version.json
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Build production image
-        run: docker build -t impress:${{ github.sha }} --target production .
-      - name: Check built image availability
-        run: docker images "impress:${{ github.sha }}*"
-
   lint-back:
     runs-on: ubuntu-latest
     defaults:
@@ -212,39 +197,3 @@ jobs:
           crowdin/cli:3.16.0 \
           crowdin upload sources -c /app/crowdin/config.yml
 
-  hub:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Generate a version.json file describing app release
-        run: |
-          printf '{"commit":"${{ github.sha }}","version":"${{ github.ref }}","source":"https://github.com/${{ github.repository_owner }}/${{ github.repository }}","build":"${{ github.run_id }}"}\n' > src/backend/impress/version.json
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Build production image
-        run: docker build -t impress:${{ github.sha }} --target production .
-      - name: Check built images availability
-        run: docker images "impress:${{ github.sha }}*"
-      - name: Login to DockerHub
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
-      - name: Tag images
-        run: |
-          DOCKER_TAG=$([[ -z "${{ github.event.ref }}" ]] && echo "${{ github.event.ref }}" || echo "${{ github.event.ref }}" | sed 's/^v//')
-          RELEASE_TYPE=$([[ -z "${{ github.event.ref }}" ]] && echo "branch" || echo "tag ")
-          echo "DOCKER_TAG: ${DOCKER_TAG} (Git ${RELEASE_TYPE}${{ github.event.ref }})"
-          docker tag impress:${{ github.sha }} numerique-gouv/impress:${DOCKER_TAG}
-          if [[ -n "${{ github.event.ref }}" ]]; then
-            docker tag impress:${{ github.sha }} numerique-gouv/impress:latest
-          fi
-          docker images | grep -E "^numerique-gouv/impress\s*(${DOCKER_TAG}.*|latest|main)"
-      - name: impress images
-        run: |
-          DOCKER_TAG=$([[ -z "${{ github.event.ref }}" ]] && echo "${{ github.event.ref }}" || echo "${{ github.event.ref }}" | sed 's/^v//')
-          RELEASE_TYPE=$([[ -z "${{ github.event.ref }}" ]] && echo "branch" || echo "tag ")
-          echo "DOCKER_TAG: ${DOCKER_TAG} (Git ${RELEASE_TYPE}${{ github.event.ref }})"
-          docker push numerique-gouv/impress:${DOCKER_TAG}
-          if [[ -n "${{ github.event.ref }}" ]]; then
-            docker push numerique-gouv/impress:latest
-          fi
