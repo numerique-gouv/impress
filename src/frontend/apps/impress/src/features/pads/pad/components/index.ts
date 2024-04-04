@@ -1,1 +1,1 @@
-export * from './PadInfo';
+export * from './PadEditor';
