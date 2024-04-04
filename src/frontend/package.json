@@ -24,8 +24,8 @@
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
-    "@types/node": "20.12.2",
-    "@types/react-dom": "18.2.23",
+    "@types/node": "20.12.4",
+    "@types/react-dom": "18.2.24",
     "typescript": "5.4.3"
   }
 }

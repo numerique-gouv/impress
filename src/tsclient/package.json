@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/numerique-gouv/impress#readme",
   "devDependencies": {
-    "openapi-typescript-codegen": "0.25.0"
+    "openapi-typescript-codegen": "0.28.0"
   }
 }
