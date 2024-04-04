@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { usePad } from '@/features/pads';
+import { PadInfo, usePad } from '@/features/pads/pad';
 import { PadLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
@@ -46,7 +46,7 @@ const Pad = ({ id }: PadProps) => {
     );
   }
 
-  return <>Toto</>;
+  return <PadInfo pad={pad} />;
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
