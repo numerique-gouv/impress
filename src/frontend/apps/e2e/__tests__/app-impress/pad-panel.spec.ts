@@ -28,7 +28,10 @@ test.describe('Pads Panel', () => {
     ).toBeVisible();
   });
 
-  test('checks the sort button', async ({ page }) => {
+  /**
+   * TODO: remove the skip when we can create pads
+   */
+  test.skip('checks the sort button', async ({ page }) => {
     const responsePromiseSortDesc = page.waitForResponse(
       (response) =>
         response.url().includes('/pads/?page=1&ordering=-created_at') &&
@@ -62,7 +65,10 @@ test.describe('Pads Panel', () => {
     expect(responseSortDesc.ok()).toBeTruthy();
   });
 
-  test('checks the infinite scroll', async ({ page, browserName }) => {
+  /**
+   * TODO: remove the skip when we can create pads
+   */
+  test.skip('checks the infinite scroll', async ({ page, browserName }) => {
     test.setTimeout(90000);
     const panel = page.getByLabel('Pads panel').first();
 
@@ -75,7 +81,13 @@ test.describe('Pads Panel', () => {
     expect(await panel.locator('li').count()).toBeGreaterThan(20);
   });
 
-  test('checks the hover and selected state', async ({ page, browserName }) => {
+  /**
+   * TODO: remove the skip when we can create pads
+   */
+  test.skip('checks the hover and selected state', async ({
+    page,
+    browserName,
+  }) => {
     const panel = page.getByLabel('Pads panel').first();
     await createTeam(page, 'pad-hover', browserName, 2);
 

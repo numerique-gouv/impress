@@ -6,7 +6,7 @@ import IconGroup from '@/assets/icons/icon-group2.svg';
 import { Box, Card, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
-import { Pad, Role } from '../types';
+import { Pad } from '../types';
 
 const format: DateTimeFormatOptions = {
   month: '2-digit',
@@ -16,7 +16,6 @@ const format: DateTimeFormatOptions = {
 
 interface PadInfoProps {
   pad: Pad;
-  currentRole: Role;
 }
 
 export const PadInfo = ({ pad }: PadInfoProps) => {
