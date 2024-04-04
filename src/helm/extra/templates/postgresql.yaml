@@ -4,4 +4,4 @@ metadata:
   name: postgresql
   namespace: {{ .Release.Namespace | quote }}
 spec:
-  database: desk
+  database: impress

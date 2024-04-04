@@ -1,17 +1,17 @@
-{{- $envVars := include "desk.common.env" (list . .Values.frontend) -}}
-{{- $fullName := include "desk.frontend.fullname" . -}}
+{{- $envVars := include "impress.common.env" (list . .Values.frontend) -}}
+{{- $fullName := include "impress.frontend.fullname" . -}}
 {{- $component := "frontend" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "desk.common.labels" (list . $component) | nindent 4 }}
+    {{- include "impress.common.labels" (list . $component) | nindent 4 }}
 spec:
   replicas: {{ .Values.frontend.replicas }}
   selector:
     matchLabels:
-      {{- include "desk.common.selectorLabels" (list . $component) | nindent 6 }}
+      {{- include "impress.common.selectorLabels" (list . $component) | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -19,11 +19,11 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        {{- include "desk.common.selectorLabels" (list . $component) | nindent 8 }}
+        {{- include "impress.common.selectorLabels" (list . $component) | nindent 8 }}
     spec:
       {{- if $.Values.image.credentials }}
       imagePullSecrets:
-        - name: {{ include "desk.secret.dockerconfigjson.name" (dict "fullname" (include "desk.fullname" .) "imageCredentials" $.Values.image.credentials) }}
+        - name: {{ include "impress.secret.dockerconfigjson.name" (dict "fullname" (include "impress.fullname" .) "imageCredentials" $.Values.image.credentials) }}
       {{- end}}
       shareProcessNamespace: {{ .Values.frontend.shareProcessNamespace }}
       containers:
@@ -55,15 +55,15 @@ spec:
               protocol: TCP
           {{- if .Values.frontend.probes.liveness }}
           livenessProbe:
-            {{- include "desk.probes.abstract" (merge .Values.frontend.probes.liveness (dict "targetPort" .Values.frontend.service.targetPort )) | nindent 12 }}
+            {{- include "impress.probes.abstract" (merge .Values.frontend.probes.liveness (dict "targetPort" .Values.frontend.service.targetPort )) | nindent 12 }}
           {{- end }}
           {{- if .Values.frontend.probes.readiness }}
           readinessProbe:
-            {{- include "desk.probes.abstract" (merge .Values.frontend.probes.readiness (dict "targetPort" .Values.frontend.service.targetPort )) | nindent 12 }}
+            {{- include "impress.probes.abstract" (merge .Values.frontend.probes.readiness (dict "targetPort" .Values.frontend.service.targetPort )) | nindent 12 }}
           {{- end }}
           {{- if .Values.frontend.probes.startup }}
           startupProbe:
-            {{- include "desk.probes.abstract" (merge .Values.frontend.probes.startup (dict "targetPort" .Values.frontend.service.targetPort )) | nindent 12 }}
+            {{- include "impress.probes.abstract" (merge .Values.frontend.probes.startup (dict "targetPort" .Values.frontend.service.targetPort )) | nindent 12 }}
           {{- end }}
           {{- with .Values.frontend.resources }}
           resources:
@@ -101,7 +101,7 @@ spec:
         {{- range $index, $value := .Values.mountFiles }}
         - name: "files-{{ $index }}"
           configMap:
-            name: "{{ include "desk.fullname" $ }}-files-{{ $index }}"
+            name: "{{ include "impress.fullname" $ }}-files-{{ $index }}"
         {{- end }}
         {{- range $name, $volume := .Values.frontend.persistence }}
         - name: "{{ $name }}"

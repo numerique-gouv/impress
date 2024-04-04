@@ -1,4 +1,4 @@
-# Desk helm chart
+# Impress helm chart
 
 ## Parameters
 
@@ -6,8 +6,8 @@
 
 | Name                                       | Description                                          | Value                    |
 | ------------------------------------------ | ---------------------------------------------------- | ------------------------ |
-| `image.repository`                         | Repository to use to pull desk's container image     | `lasuite/people-backend` |
-| `image.tag`                                | desk's container tag                                 | `latest`                 |
+| `image.repository`                         | Repository to use to pull impress's container image     | `lasuite/impress-backend` |
+| `image.tag`                                | impress's container tag                                 | `latest`                 |
 | `image.pullPolicy`                         | Container image pull policy                          | `IfNotPresent`           |
 | `image.credentials.username`               | Username for container registry authentication       |                          |
 | `image.credentials.password`               | Password for container registry authentication       |                          |
@@ -17,7 +17,7 @@
 | `fullnameOverride`                         | Override the full application name                   | `""`                     |
 | `ingress.enabled`                          | whether to enable the Ingress or not                 | `false`                  |
 | `ingress.className`                        | IngressClass to use for the Ingress                  | `nil`                    |
-| `ingress.host`                             | Host for the Ingress                                 | `desk.example.com`       |
+| `ingress.host`                             | Host for the Ingress                                 | `impress.example.com`       |
 | `ingress.path`                             | Path to use for the Ingress                          | `/`                      |
 | `ingress.hosts`                            | Additional host to configure for the Ingress         | `[]`                     |
 | `ingress.tls.enabled`                      | Weather to enable TLS for the Ingress                | `true`                   |
@@ -26,7 +26,7 @@
 | `ingress.customBackends`                   | Add custom backends to ingress                       | `[]`                     |
 | `ingressAdmin.enabled`                     | whether to enable the Ingress or not                 | `false`                  |
 | `ingressAdmin.className`                   | IngressClass to use for the Ingress                  | `nil`                    |
-| `ingressAdmin.host`                        | Host for the Ingress                                 | `desk.example.com`       |
+| `ingressAdmin.host`                        | Host for the Ingress                                 | `impress.example.com`       |
 | `ingressAdmin.path`                        | Path to use for the Ingress                          | `/admin`                 |
 | `ingressAdmin.hosts`                       | Additional host to configure for the Ingress         | `[]`                     |
 | `ingressAdmin.tls.enabled`                 | Weather to enable TLS for the Ingress                | `true`                   |
@@ -83,8 +83,8 @@
 
 | Name                                                   | Description                                                                         | Value                     |
 | ------------------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------- |
-| `frontend.image.repository`                            | Repository to use to pull desk's frontend container image                           | `lasuite/people-frontend` |
-| `frontend.image.tag`                                   | desk's frontend container tag                                                       | `latest`                  |
+| `frontend.image.repository`                            | Repository to use to pull impress's frontend container image                           | `lasuite/impress-frontend` |
+| `frontend.image.tag`                                   | impress's frontend container tag                                                       | `latest`                  |
 | `frontend.image.pullPolicy`                            | frontend container image pull policy                                                | `IfNotPresent`            |
 | `frontend.command`                                     | Override the frontend container command                                             | `[]`                      |
 | `frontend.args`                                        | Override the frontend container args                                                | `[]`                      |
