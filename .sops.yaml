@@ -1,0 +1,13 @@
+creation_rules:
+  # Here we have
+  # - Jacques key-id: age15fyxdwmg5mvldtqqus87xspuws2u0cpvwheehrtvkexj4tnsqqysw6re2x
+  # - github-repo key-id: age16hnlml8yv4ynwy0seer57g8qww075crd0g7nsundz3pj4wk7m3vqftszg7
+  # - Anthony Le-Courric key-id: age1plkp8td6zzfcavjusmsfrlk54t9vn8jjxm8zaz7cmnr7kzl2nfnsd54hwg
+  # - Antoine Lebaud key-id: age12g6f5fse25tgrwweleh4jls3qs52hey2edh759smulwmk5lnzadslu2cp3
+  # - argocd key-id: age1qy04neuzwpasmvljqrcvhwnf0kz5cpyteze38c8avp0czewskasszv9pyw
+  - age:
+      age15fyxdwmg5mvldtqqus87xspuws2u0cpvwheehrtvkexj4tnsqqysw6re2x,
+      age16hnlml8yv4ynwy0seer57g8qww075crd0g7nsundz3pj4wk7m3vqftszg7,
+      age1plkp8td6zzfcavjusmsfrlk54t9vn8jjxm8zaz7cmnr7kzl2nfnsd54hwg,
+      age12g6f5fse25tgrwweleh4jls3qs52hey2edh759smulwmk5lnzadslu2cp3,
+      age1qy04neuzwpasmvljqrcvhwnf0kz5cpyteze38c8avp0czewskasszv9pyw
