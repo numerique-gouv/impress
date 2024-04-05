@@ -16,6 +16,31 @@ services:
     ports:
       - "1081:1080"
 
+  minio:
+    user: ${DOCKER_USER:-1000}
+    image: minio/minio
+    environment:
+      - MINIO_ROOT_USER=impress
+      - MINIO_ROOT_PASSWORD=password
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    entrypoint: ""
+    command: minio server --console-address :9001 /data
+    volumes:
+      - ./data/media:/data
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      sh -c "
+      /usr/bin/mc alias set impress http://minio:9000 impress password && \
+      /usr/bin/mc mb impress/impress-media-storage && \
+      /usr/bin/mc version enable impress/impress-media-storage && \
+      exit 0;"
+
   app-dev:
     build:
       context: .
@@ -40,6 +65,7 @@ services:
         - postgresql
         - mailcatcher
         - redis
+        - createbuckets
   
   celery-dev:
     user: ${DOCKER_USER:-1000}
@@ -75,6 +101,7 @@ services:
     depends_on:
       - postgresql
       - redis
+      - minio
 
   celery:
     user: ${DOCKER_USER:-1000}
