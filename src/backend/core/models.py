@@ -1,6 +1,8 @@
 """
 Declare and configure the models for the impress core application
 """
+import hashlib
+import json
 import textwrap
 import uuid
 
@@ -8,6 +10,8 @@ from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core import mail, validators
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import models
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
@@ -249,6 +253,8 @@ class Document(BaseModel):
         help_text=_("Whether this document is public for anyone to use."),
     )
 
+    _content = None
+
     class Meta:
         db_table = "impress_document"
         ordering = ("title",)
@@ -257,6 +263,49 @@ class Document(BaseModel):
 
     def __str__(self):
         return self.title
+
+    @property
+    def content(self):
+        """Return the json content from object storage if available"""
+        if self._content is None and self.id:
+            try:
+                # Load content from object storage
+                with default_storage.open(str(self.id)) as f:
+                    self._content = json.load(f)
+            except FileNotFoundError:
+                pass
+        return self._content
+
+    @content.setter
+    def content(self, content):
+        """Cache the content, don't write to object storage yet"""
+        if isinstance(content, str):
+            content = json.loads(content)
+        if not isinstance(content, dict):
+            raise ValueError("content should be a json object.")
+        self._content = content
+
+    def save(self, *args, **kwargs):
+        """Write content to object storage only if _content has changed."""
+        super().save(*args, **kwargs)
+
+        if self._content:
+            file_key = str(self.pk)
+            bytes_content = json.dumps(self._content).encode("utf-8")
+
+            if default_storage.exists(file_key):
+                response = default_storage.connection.meta.client.head_object(
+                    Bucket=default_storage.bucket_name, Key=file_key
+                )
+                has_changed = (
+                    response["ETag"].strip('"')
+                    != hashlib.md5(bytes_content).hexdigest()  # noqa
+                )
+            else:
+                has_changed = True
+            if has_changed:
+                content_file = ContentFile(bytes_content)
+                default_storage.save(file_key, content_file)
 
     def get_abilities(self, user):
         """

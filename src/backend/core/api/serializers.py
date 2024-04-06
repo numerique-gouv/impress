@@ -7,6 +7,8 @@ from timezone_field.rest_framework import TimeZoneSerializerField
 
 from core import models
 
+from .fields import JSONField
+
 
 class UserSerializer(serializers.ModelSerializer):
     """Serialize users."""
@@ -133,6 +135,8 @@ class BaseResourceSerializer(serializers.ModelSerializer):
 
 class DocumentSerializer(BaseResourceSerializer):
     """Serialize documents."""
+
+    content = JSONField(required=False)
 
     class Meta:
         model = models.Document

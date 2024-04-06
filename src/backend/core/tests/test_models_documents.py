@@ -3,8 +3,10 @@ Unit tests for the Document model
 """
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 
 import pytest
+import requests
 
 from core import factories, models
 
@@ -159,3 +161,47 @@ def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
         "manage_accesses": False,
         "partial_update": False,
     }
+
+
+def test_models_documents_file_upload_to_minio():
+    """Validate read/write from/to minio"""
+    document = factories.DocumentFactory()
+    document.content = {"foé": "çar"}
+    document.save()
+
+    # Check that the file exists in MinIO:
+    file_key = str(document.pk)
+    # - through the storage backend
+    assert default_storage.exists(file_key) is True
+    # - directly from minio
+    signed_url = default_storage.url(file_key)
+    response = requests.get(signed_url, timeout=1)
+    assert response.json() == {"foé": "çar"}
+
+
+def test_models_documents_version_duplicate():
+    """A new version should be created in object storage only if the content has changed."""
+    document = factories.DocumentFactory()
+
+    file_key = str(document.pk)
+    response = default_storage.connection.meta.client.list_object_versions(
+        Bucket=default_storage.bucket_name, Prefix=file_key
+    )
+    assert len(response["Versions"]) == 1
+
+    # Save again with the same content
+    document.save()
+
+    response = default_storage.connection.meta.client.list_object_versions(
+        Bucket=default_storage.bucket_name, Prefix=file_key
+    )
+    assert len(response["Versions"]) == 1
+
+    # Save modified content
+    document.content = {"foo": "spam"}
+    document.save()
+
+    response = default_storage.connection.meta.client.list_object_versions(
+        Bucket=default_storage.bucket_name, Prefix=file_key
+    )
+    assert len(response["Versions"]) == 2

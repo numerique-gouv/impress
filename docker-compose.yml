@@ -59,7 +59,6 @@ services:
       - "8071:8000"
     volumes:
       - ./src/backend:/app
-      - ./data/media:/data/media
       - ./data/static:/data/static
     depends_on:
         - postgresql
@@ -78,7 +77,6 @@ services:
       - env.d/development/postgresql
     volumes:
       - ./src/backend:/app
-      - ./data/media:/data/media
       - ./data/static:/data/static
     depends_on:
       - app-dev
@@ -96,8 +94,6 @@ services:
     env_file:
       - env.d/development/common
       - env.d/development/postgresql
-    volumes:
-      - ./data/media:/data/media
     depends_on:
       - postgresql
       - redis

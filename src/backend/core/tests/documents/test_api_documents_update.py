@@ -6,7 +6,7 @@ import random
 import pytest
 from rest_framework.test import APIClient
 
-from core import factories
+from core import factories, models
 from core.api import serializers
 from core.tests.conftest import TEAM, USER, VIA
 
@@ -138,7 +138,7 @@ def test_api_documents_update_authenticated_administrator_or_owner(
     )
     assert response.status_code == 200
 
-    document.refresh_from_db()
+    document = models.Document.objects.get(pk=document.pk)
     document_values = serializers.DocumentSerializer(instance=document).data
     for key, value in document_values.items():
         if key in ["id", "accesses"]:
@@ -175,7 +175,7 @@ def test_api_documents_update_authenticated_owners(via, mock_user_get_teams):
     )
 
     assert response.status_code == 200
-    document.refresh_from_db()
+    document = models.Document.objects.get(pk=document.pk)
     document_values = serializers.DocumentSerializer(instance=document).data
     for key, value in document_values.items():
         if key in ["id", "accesses"]:
