@@ -35,6 +35,7 @@ class DocumentFactory(factory.django.DjangoModelFactory):
 
     title = factory.Sequence(lambda n: f"document{n}")
     is_public = factory.Faker("boolean")
+    content = factory.LazyFunction(lambda: {"foo": fake.word()})
 
     @factory.post_generation
     def users(self, create, extracted, **kwargs):

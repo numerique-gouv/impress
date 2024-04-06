@@ -108,12 +108,34 @@ class Base(Configuration):
 
     STORAGES = {
         "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "BACKEND": "storages.backends.s3.S3Storage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": values.Value(
+                "whitenoise.storage.CompressedManifestStaticFilesStorage",
+                environ_name="STORAGES_STATICFILES_BACKEND",
+            ),
         },
     }
+
+    # Media
+    AWS_S3_ENDPOINT_URL = values.Value(
+        environ_name="AWS_S3_ENDPOINT_URL", environ_prefix=None
+    )
+    AWS_S3_ACCESS_KEY_ID = values.Value(
+        environ_name="AWS_S3_ACCESS_KEY_ID", environ_prefix=None
+    )
+    AWS_S3_SECRET_ACCESS_KEY = values.Value(
+        environ_name="AWS_S3_SECRET_ACCESS_KEY", environ_prefix=None
+    )
+    AWS_S3_REGION_NAME = values.Value(
+        environ_name="AWS_S3_REGION_NAME", environ_prefix=None
+    )
+    AWS_STORAGE_BUCKET_NAME = values.Value(
+        "impress-media-storage",
+        environ_name="AWS_STORAGE_BUCKET_NAME",
+        environ_prefix=None,
+    )
 
     # Internationalization
     # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -451,15 +473,6 @@ class Test(Base):
     ]
     USE_SWAGGER = True
 
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
-
     CELERY_TASK_ALWAYS_EAGER = values.BooleanValue(True)
 
     def __init__(self):
@@ -506,33 +519,8 @@ class Production(Base):
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
-    # For static files in production, we want to use a backend that includes a hash in
-    # the filename, that is calculated from the file content, so that browsers always
-    # get the updated version of each file.
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-        },
-        "staticfiles": {
-            # For static files in production, we want to use a backend that includes a hash in
-            # the filename, that is calculated from the file content, so that browsers always
-            # get the updated version of each file.
-            "BACKEND": values.Value(
-                "whitenoise.storage.CompressedManifestStaticFilesStorage",
-                environ_name="STORAGES_STATICFILES_BACKEND",
-            )
-        },
-    }
-
     # Privacy
     SECURE_REFERRER_POLICY = "same-origin"
-
-    # Media
-    AWS_S3_ENDPOINT_URL = values.Value()
-    AWS_S3_ACCESS_KEY_ID = values.Value()
-    AWS_S3_SECRET_ACCESS_KEY = values.Value()
-    AWS_STORAGE_BUCKET_NAME = values.Value("tf-default-impress-media-storage")
-    AWS_S3_REGION_NAME = values.Value()
 
     CACHES = {
         "default": {
