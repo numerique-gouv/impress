@@ -1,21 +1,37 @@
 import { BlockNoteView, useCreateBlockNote } from '@blocknote/react';
 import '@blocknote/react/style.css';
-import React from 'react';
-import { WebrtcProvider } from 'y-webrtc';
-import * as Y from 'yjs';
+import React, { useCallback } from 'react';
 
-const doc = new Y.Doc();
-const provider = new WebrtcProvider('my-document-id4', doc, {
-  signaling: ['ws://localhost:4444'],
-});
+import { useAuthStore } from '@/core/auth';
 
-export const BlockNoteEditor = () => {
+import { PadStore, usePadStore } from '../store';
+import { Pad } from '../types';
+
+interface BlockNoteEditorProps {
+  pad: Pad;
+}
+
+export const BlockNoteEditor = ({ pad }: BlockNoteEditorProps) => {
+  const { userData } = useAuthStore();
+  const getProvider = useCallback(
+    (state: PadStore) => {
+      if (!state.providers[pad.id]) {
+        return state.createProvider(pad.id);
+      }
+
+      return state.providers[pad.id];
+    },
+    [pad.id],
+  );
+
+  const provider = usePadStore(getProvider);
+
   const editor = useCreateBlockNote({
     collaboration: {
       provider,
-      fragment: doc.getXmlFragment('document-store'),
+      fragment: provider.doc.getXmlFragment('document-store'),
       user: {
-        name: 'My Username',
+        name: userData?.name || userData?.email || 'Anonymous',
         color: '#ff0000',
       },
     },
