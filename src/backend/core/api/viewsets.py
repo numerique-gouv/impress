@@ -1,4 +1,5 @@
 """API endpoints"""
+import json
 from io import BytesIO
 
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -7,8 +8,9 @@ from django.db.models import (
     Q,
     Subquery,
 )
-from django.http import FileResponse
+from django.http import FileResponse, Http404
 
+from botocore.exceptions import ClientError
 from rest_framework import (
     decorators,
     exceptions,
@@ -290,6 +292,62 @@ class DocumentViewSet(
     access_model_class = models.DocumentAccess
     resource_field_name = "document"
     queryset = models.Document.objects.all()
+
+    @decorators.action(detail=True, methods=["get"], url_path="versions")
+    def versions_list(self, request, *args, **kwargs):
+        """
+        Return the document's versions but only those created after the user got access
+        to the document
+        """
+        document = self.get_object()
+        from_datetime = min(
+            access.created_at
+            for access in document.accesses.filter(
+                Q(user=request.user) | Q(team__in=request.user.get_teams()),
+            )
+        )
+        return drf_response.Response(
+            document.get_versions_slice(from_datetime=from_datetime)
+        )
+
+    @decorators.action(
+        detail=True,
+        methods=["get", "delete"],
+        url_path="versions/(?P<version_id>[0-9a-f-]{36})",
+    )
+    # pylint: disable=unused-argument
+    def versions_detail(self, request, pk, version_id, *args, **kwargs):
+        """Custom action to retrieve a specific version of a document"""
+        document = self.get_object()
+
+        try:
+            response = document.get_content_response(version_id=version_id)
+        except (FileNotFoundError, ClientError) as err:
+            raise Http404 from err
+
+        # Don't let users access versions that were created before they were given access
+        # to the document
+        from_datetime = min(
+            access.created_at
+            for access in document.accesses.filter(
+                Q(user=request.user) | Q(team__in=request.user.get_teams()),
+            )
+        )
+        if response["LastModified"] < from_datetime:
+            raise Http404
+
+        if request.method == "DELETE":
+            response = document.delete_version(version_id)
+            return drf_response.Response(
+                status=response["ResponseMetadata"]["HTTPStatusCode"]
+            )
+
+        return drf_response.Response(
+            {
+                "content": json.loads(response["Body"].read()),
+                "last_modified": response["LastModified"],
+            }
+        )
 
 
 class DocumentAccessViewSet(

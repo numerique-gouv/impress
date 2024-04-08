@@ -6,7 +6,6 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 
 import pytest
-import requests
 
 from core import factories, models
 
@@ -61,6 +60,9 @@ def test_models_documents_get_abilities_anonymous_public():
         "update": False,
         "manage_accesses": False,
         "partial_update": False,
+        "versions_destroy": False,
+        "versions_list": False,
+        "versions_retrieve": False,
     }
 
 
@@ -74,10 +76,13 @@ def test_models_documents_get_abilities_anonymous_not_public():
         "update": False,
         "manage_accesses": False,
         "partial_update": False,
+        "versions_destroy": False,
+        "versions_list": False,
+        "versions_retrieve": False,
     }
 
 
-def test_models_documents_get_abilities_authenticated_public():
+def test_models_documents_get_abilities_authenticated_unrelated_public():
     """Check abilities returned for an authenticated user if the user is public."""
     document = factories.DocumentFactory(is_public=True)
     abilities = document.get_abilities(factories.UserFactory())
@@ -87,10 +92,13 @@ def test_models_documents_get_abilities_authenticated_public():
         "update": False,
         "manage_accesses": False,
         "partial_update": False,
+        "versions_destroy": False,
+        "versions_list": False,
+        "versions_retrieve": False,
     }
 
 
-def test_models_documents_get_abilities_authenticated_not_public():
+def test_models_documents_get_abilities_authenticated_unrelated_not_public():
     """Check abilities returned for an authenticated user if the document is private."""
     document = factories.DocumentFactory(is_public=False)
     abilities = document.get_abilities(factories.UserFactory())
@@ -100,6 +108,9 @@ def test_models_documents_get_abilities_authenticated_not_public():
         "update": False,
         "manage_accesses": False,
         "partial_update": False,
+        "versions_destroy": False,
+        "versions_list": False,
+        "versions_retrieve": False,
     }
 
 
@@ -114,6 +125,9 @@ def test_models_documents_get_abilities_owner():
         "update": True,
         "manage_accesses": True,
         "partial_update": True,
+        "versions_destroy": True,
+        "versions_list": True,
+        "versions_retrieve": True,
     }
 
 
@@ -127,6 +141,9 @@ def test_models_documents_get_abilities_administrator():
         "update": True,
         "manage_accesses": True,
         "partial_update": True,
+        "versions_destroy": True,
+        "versions_list": True,
+        "versions_retrieve": True,
     }
 
 
@@ -143,6 +160,9 @@ def test_models_documents_get_abilities_member_user(django_assert_num_queries):
         "update": False,
         "manage_accesses": False,
         "partial_update": False,
+        "versions_destroy": False,
+        "versions_list": True,
+        "versions_retrieve": True,
     }
 
 
@@ -160,23 +180,51 @@ def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
         "update": False,
         "manage_accesses": False,
         "partial_update": False,
+        "versions_destroy": False,
+        "versions_list": True,
+        "versions_retrieve": True,
     }
 
 
-def test_models_documents_file_upload_to_minio():
-    """Validate read/write from/to minio"""
-    document = factories.DocumentFactory()
-    document.content = {"foé": "çar"}
-    document.save()
+def test_models_documents_get_versions_slice(settings):
+    """
+    The "get_versions_slice" method should allow navigating all versions of
+    the document with pagination.
+    """
+    settings.S3_VERSIONS_PAGE_SIZE = 4
 
-    # Check that the file exists in MinIO:
-    file_key = str(document.pk)
-    # - through the storage backend
-    assert default_storage.exists(file_key) is True
-    # - directly from minio
-    signed_url = default_storage.url(file_key)
-    response = requests.get(signed_url, timeout=1)
-    assert response.json() == {"foé": "çar"}
+    # Create a document with 7 versions
+    document = factories.DocumentFactory()
+    for i in range(6):
+        document.content = {"foo": f"bar{i:d}"}
+        document.save()
+
+    # Add a version not related to the first document
+    factories.DocumentFactory()
+
+    # - Get default max versions
+    response = document.get_versions_slice()
+    assert response["is_truncated"] is True
+    assert len(response["versions"]) == 4
+    assert response["next_version_id_marker"] != ""
+
+    expected_keys = ["etag", "is_latest", "last_modified", "version_id"]
+    for i in range(4):
+        assert list(response["versions"][i].keys()) == expected_keys
+
+    # - Get page 2
+    response = document.get_versions_slice(
+        from_version_id=response["next_version_id_marker"]
+    )
+    assert response["is_truncated"] is False
+    assert len(response["versions"]) == 3
+    assert response["next_version_id_marker"] == ""
+
+    # - Get custom max versions
+    response = document.get_versions_slice(page_size=2)
+    assert response["is_truncated"] is True
+    assert len(response["versions"]) == 2
+    assert response["next_version_id_marker"] != ""
 
 
 def test_models_documents_version_duplicate():

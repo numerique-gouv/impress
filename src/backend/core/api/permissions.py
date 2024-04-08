@@ -3,6 +3,10 @@ from django.core import exceptions
 
 from rest_framework import permissions
 
+ACTION_FOR_METHOD_TO_PERMISSION = {
+    "versions_detail": {"DELETE": "versions_destroy", "GET": "versions_retrieve"}
+}
+
 
 class IsAuthenticated(permissions.BasePermission):
     """
@@ -60,4 +64,9 @@ class AccessPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         """Check permission for a given object."""
         abilities = obj.get_abilities(request.user)
-        return abilities.get(view.action, False)
+        action = view.action
+        try:
+            action = ACTION_FOR_METHOD_TO_PERMISSION[view.action][request.method]
+        except KeyError:
+            pass
+        return abilities.get(action, False)
