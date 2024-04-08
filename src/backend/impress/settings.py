@@ -137,6 +137,8 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    S3_VERSIONS_PAGE_SIZE = 50
+
     # Internationalization
     # https://docs.djangoproject.com/en/3.1/topics/i18n/
 

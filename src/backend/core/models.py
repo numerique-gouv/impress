@@ -21,6 +21,7 @@ from django.utils.translation import gettext_lazy as _
 
 import frontmatter
 import markdown
+from botocore.exceptions import ClientError
 from timezone_field import TimeZoneField
 from weasyprint import CSS, HTML
 from weasyprint.text.fonts import FontConfiguration
@@ -265,15 +266,22 @@ class Document(BaseModel):
         return self.title
 
     @property
+    def file_key(self):
+        """Key of the object storage file to which the document content is stored"""
+        if not self.pk:
+            return None
+        return str(self.pk)
+
+    @property
     def content(self):
         """Return the json content from object storage if available"""
         if self._content is None and self.id:
             try:
-                # Load content from object storage
-                with default_storage.open(str(self.id)) as f:
-                    self._content = json.load(f)
-            except FileNotFoundError:
+                response = self.get_content_response()
+            except (FileNotFoundError, ClientError):
                 pass
+            else:
+                self._content = json.loads(response["Body"].read())
         return self._content
 
     @content.setter
@@ -285,12 +293,18 @@ class Document(BaseModel):
             raise ValueError("content should be a json object.")
         self._content = content
 
+    def get_content_response(self, version_id=""):
+        """Get the content in a specific version of the document"""
+        return default_storage.connection.meta.client.get_object(
+            Bucket=default_storage.bucket_name, Key=self.file_key, VersionId=version_id
+        )
+
     def save(self, *args, **kwargs):
         """Write content to object storage only if _content has changed."""
         super().save(*args, **kwargs)
 
         if self._content:
-            file_key = str(self.pk)
+            file_key = self.file_key
             bytes_content = json.dumps(self._content).encode("utf-8")
 
             if default_storage.exists(file_key):
@@ -307,6 +321,81 @@ class Document(BaseModel):
                 content_file = ContentFile(bytes_content)
                 default_storage.save(file_key, content_file)
 
+    def get_versions_slice(
+        self, from_version_id="", from_datetime=None, page_size=None
+    ):
+        """Get document versions from object storage with pagination and starting conditions"""
+        # /!\ Trick here /!\
+        # The "KeyMarker" and "VersionIdMarker" fields must either be both set or both not set.
+        # The error we get otherwise is not helpful at all.
+        token = {}
+        if from_version_id:
+            token.update(
+                {"KeyMarker": self.file_key, "VersionIdMarker": from_version_id}
+            )
+
+        if from_datetime:
+            response = default_storage.connection.meta.client.list_object_versions(
+                Bucket=default_storage.bucket_name,
+                Prefix=self.file_key,
+                MaxKeys=settings.S3_VERSIONS_PAGE_SIZE,
+                **token,
+            )
+
+            # Find the first version after the given datetime
+            version = None
+            for version in response.get("Versions", []):
+                if version["LastModified"] >= from_datetime:
+                    token = {
+                        "KeyMarker": self.file_key,
+                        "VersionIdMarker": version["VersionId"],
+                    }
+                    break
+            else:
+                if version is None or version["LastModified"] < from_datetime:
+                    if response["NextVersionIdMarker"]:
+                        return self.get_versions_slice(
+                            from_version_id=response["NextVersionIdMarker"],
+                            page_size=settings.S3_VERSIONS_PAGE_SIZE,
+                            from_datetime=from_datetime,
+                        )
+                    return {
+                        "next_version_id_marker": "",
+                        "is_truncated": False,
+                        "versions": [],
+                    }
+
+        response = default_storage.connection.meta.client.list_object_versions(
+            Bucket=default_storage.bucket_name,
+            Prefix=self.file_key,
+            MaxKeys=min(page_size, settings.S3_VERSIONS_PAGE_SIZE)
+            if page_size
+            else settings.S3_VERSIONS_PAGE_SIZE,
+            **token,
+        )
+        return {
+            "next_version_id_marker": response["NextVersionIdMarker"],
+            "is_truncated": response["IsTruncated"],
+            "versions": [
+                {
+                    key_snake: version[key_camel]
+                    for key_camel, key_snake in [
+                        ("ETag", "etag"),
+                        ("IsLatest", "is_latest"),
+                        ("LastModified", "last_modified"),
+                        ("VersionId", "version_id"),
+                    ]
+                }
+                for version in response.get("Versions", [])
+            ],
+        }
+
+    def delete_version(self, version_id):
+        """Delete a version from object storage given its version id"""
+        return default_storage.connection.meta.client.delete_object(
+            Bucket=default_storage.bucket_name, Key=self.file_key, VersionId=version_id
+        )
+
     def get_abilities(self, user):
         """
         Compute and return abilities for a given user on the document.
@@ -316,9 +405,13 @@ class Document(BaseModel):
             set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
         can_get = self.is_public or bool(roles)
+        can_get_versions = bool(roles)
 
         return {
             "destroy": RoleChoices.OWNER in roles,
+            "versions_destroy": is_owner_or_admin,
+            "versions_list": can_get_versions,
+            "versions_retrieve": can_get_versions,
             "manage_accesses": is_owner_or_admin,
             "update": is_owner_or_admin,
             "partial_update": is_owner_or_admin,
