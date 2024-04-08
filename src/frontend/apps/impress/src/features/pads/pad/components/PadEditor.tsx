@@ -14,7 +14,7 @@ export const PadEditor = ({ pad }: PadEditorProps) => {
   return (
     <Card className="m-b p-b" $height="100%">
       <Text as="h2">{pad.name}</Text>
-      <BlockNoteEditor />
+      <BlockNoteEditor pad={pad} />
     </Card>
   );
 };
