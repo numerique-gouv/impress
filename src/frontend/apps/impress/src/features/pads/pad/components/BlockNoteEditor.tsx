@@ -6,6 +6,7 @@ import { useAuthStore } from '@/core/auth';
 
 import { PadStore, usePadStore } from '../store';
 import { Pad } from '../types';
+import { randomColor } from '../utils';
 
 interface BlockNoteEditorProps {
   pad: Pad;
@@ -32,7 +33,7 @@ export const BlockNoteEditor = ({ pad }: BlockNoteEditorProps) => {
       fragment: provider.doc.getXmlFragment('document-store'),
       user: {
         name: userData?.name || userData?.email || 'Anonymous',
-        color: '#ff0000',
+        color: randomColor(),
       },
     },
   });
