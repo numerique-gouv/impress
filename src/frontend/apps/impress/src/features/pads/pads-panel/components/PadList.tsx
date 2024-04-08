@@ -7,7 +7,7 @@ import { InfiniteScroll } from '@/components/InfiniteScroll';
 import { Pad } from '@/features/pads/pad';
 
 import { usePads } from '../api';
-import { usePadStore } from '../store';
+import { usePadPanelStore } from '../store';
 
 import { PadItem } from './PadItem';
 
@@ -57,7 +57,7 @@ const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
 };
 
 export const PadList = () => {
-  const ordering = usePadStore((state) => state.ordering);
+  const ordering = usePadPanelStore((state) => state.ordering);
   const {
     data,
     isError,

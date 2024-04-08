@@ -7,11 +7,11 @@ import { useCunninghamTheme } from '@/cunningham';
 import { PadsOrdering } from '../api';
 import IconAdd from '../assets/icon-add.svg';
 import IconSort from '../assets/icon-sort.svg';
-import { usePadStore } from '../store';
+import { usePadPanelStore } from '../store';
 
 export const PanelActions = () => {
   const { t } = useTranslation();
-  const { changeOrdering, ordering } = usePadStore();
+  const { changeOrdering, ordering } = usePadPanelStore();
   const { colorsTokens } = useCunninghamTheme();
 
   const isSortAsc = ordering === PadsOrdering.BY_CREATED_ON;
