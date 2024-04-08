@@ -118,21 +118,17 @@ services:
     volumes:
       - ".:/app"
 
-  terraform-state:
-    image: hashicorp/terraform:1.6
-    environment:
-      - TF_WORKSPACE=${PROJECT:-} # avoid env conflict in local state
-    user: ${DOCKER_USER:-1000}
-    working_dir: /app
+  y-webrtc-signaling:
+    build: 
+      context: ./src/frontend/
+    restart: unless-stopped
+    ports:
+      - "4444:4444"
     volumes:
-      - ./src/terraform/create_state_bucket:/app
+      - ./src/frontend/apps/y-webrtc-signaling:/home/frontend/apps/y-webrtc-signaling
+      - /home/frontend/apps/y-webrtc-signaling/node_modules/
+      - /home/frontend/apps/y-webrtc-signaling/dist/
 
-  terraform:
-    image: hashicorp/terraform:1.6
-    user: ${DOCKER_USER:-1000}
-    working_dir: /app
-    volumes:
-      - ./src/terraform:/app
 
   kc_postgresql:
     image: postgres:14.3
