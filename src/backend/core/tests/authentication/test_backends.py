@@ -1,11 +1,11 @@
-"""Unit tests for the `get_or_create_user` function."""
+"""Unit tests for the Authentication Backends."""
 
 from django.core.exceptions import SuspiciousOperation
 
 import pytest
 
 from core import models
-from core.authentication import OIDCAuthenticationBackend
+from core.authentication.backends import OIDCAuthenticationBackend
 from core.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
