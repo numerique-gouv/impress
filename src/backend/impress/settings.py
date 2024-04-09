@@ -333,6 +333,9 @@ class Base(Configuration):
     OIDC_OP_USER_ENDPOINT = values.Value(
         None, environ_name="OIDC_OP_USER_ENDPOINT", environ_prefix=None
     )
+    OIDC_OP_LOGOUT_ENDPOINT = values.Value(
+        None, environ_name="OIDC_OP_LOGOUT_ENDPOINT", environ_prefix=None
+    )
     OIDC_AUTH_REQUEST_EXTRA_PARAMS = values.DictValue(
         {}, environ_name="OIDC_AUTH_REQUEST_EXTRA_PARAMS", environ_prefix=None
     )
@@ -356,6 +359,12 @@ class Base(Configuration):
     )
     OIDC_REDIRECT_ALLOWED_HOSTS = values.ListValue(
         default=[], environ_name="OIDC_REDIRECT_ALLOWED_HOSTS", environ_prefix=None
+    )
+    OIDC_STORE_ID_TOKEN = values.BooleanValue(
+        default=True, environ_name="OIDC_STORE_ID_TOKEN", environ_prefix=None
+    )
+    ALLOW_LOGOUT_GET_METHOD = values.BooleanValue(
+        default=True, environ_name="ALLOW_LOGOUT_GET_METHOD", environ_prefix=None
     )
 
     # pylint: disable=invalid-name
