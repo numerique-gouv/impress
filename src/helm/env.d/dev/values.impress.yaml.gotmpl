@@ -19,6 +19,7 @@ backend:
     OIDC_OP_AUTHORIZATION_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/authorize
     OIDC_OP_TOKEN_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/token
     OIDC_OP_USER_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/userinfo
+    OIDC_OP_LOGOUT_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/session/end
     OIDC_RP_CLIENT_ID: {{ .Values.oidc.clientId }}
     OIDC_RP_CLIENT_SECRET: {{ .Values.oidc.clientSecret }}
     OIDC_RP_SIGN_ALGO: RS256
@@ -27,7 +28,7 @@ backend:
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
     LOGIN_REDIRECT_URL: https://impress.127.0.0.1.nip.io
     LOGIN_REDIRECT_URL_FAILURE: https://impress.127.0.0.1.nip.io
-    LOGOUT_REDIRECT_URL: https://impress.127.0.0.1.nip.io/login
+    LOGOUT_REDIRECT_URL: https://impress.127.0.0.1.nip.io
     DB_HOST: postgres-postgresql
     DB_NAME: impress
     DB_USER: dinum
