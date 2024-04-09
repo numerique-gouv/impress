@@ -1,4 +1,4 @@
-"""Authentication for the Impress core app."""
+"""Authentication Backends for the Impress core app."""
 
 from django.core.exceptions import SuspiciousOperation
 from django.utils.translation import gettext_lazy as _
@@ -8,7 +8,7 @@ from mozilla_django_oidc.auth import (
     OIDCAuthenticationBackend as MozillaOIDCAuthenticationBackend,
 )
 
-from .models import User
+from core.models import User
 
 
 class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):

@@ -206,7 +206,7 @@ class Base(Configuration):
 
     AUTHENTICATION_BACKENDS = [
         "django.contrib.auth.backends.ModelBackend",
-        "core.authentication.OIDCAuthenticationBackend",
+        "core.authentication.backends.OIDCAuthenticationBackend",
     ]
 
     # Django applications from the highest priority to the lowest
