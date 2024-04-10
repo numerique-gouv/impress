@@ -11,6 +11,7 @@ from django.core import mail, validators
 from django.db import models
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
+from django.utils.html import format_html
 from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
 
@@ -191,7 +192,7 @@ class Template(BaseModel):
 
         document_html = HTML(
             string=DjangoTemplate(self.code).render(
-                Context({"body": body_html, **metadata})
+                Context({"body": format_html(body_html), **metadata})
             )
         )
         css = CSS(
