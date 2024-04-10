@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Card, Text } from '@/components';
 
+import { PadToolBox } from '../../pad-tools';
 import { Pad } from '../types';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
@@ -12,9 +13,14 @@ interface PadEditorProps {
 
 export const PadEditor = ({ pad }: PadEditorProps) => {
   return (
-    <Card className="m-b p-b" $height="100%">
-      <Text as="h2">{pad.name}</Text>
-      <BlockNoteEditor pad={pad} />
-    </Card>
+    <>
+      <PadToolBox pad={pad} />
+      <Card className="m-b p-b" $css="margin-top:0;flex:1;" $overflow="auto">
+        <Text as="h2" $align="center">
+          {pad.name}
+        </Text>
+        <BlockNoteEditor pad={pad} />
+      </Card>
+    </>
   );
 };
