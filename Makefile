@@ -84,6 +84,7 @@ bootstrap: \
 	build \
 	run \
 	migrate \
+	demo \
 	back-i18n-compile \
 	mails-install \
 	mails-build \
