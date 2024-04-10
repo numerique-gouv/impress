@@ -11,7 +11,12 @@
   "devDependencies": {
     "@playwright/test": "1.42.1",
     "@types/node": "*",
+    "@types/pdf-parse": "1.1.4",
     "eslint-config-impress": "*",
     "typescript": "*"
+  },
+  "dependencies": {
+    "convert-stream": "1.0.2",
+    "pdf-parse": "^1.1.1"
   }
 }

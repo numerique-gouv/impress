@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import cs from 'convert-stream';
+import pdf from 'pdf-parse';
 
 import { keyCloakSignIn } from './common';
 
@@ -41,5 +43,31 @@ test.describe('Pad Editor', () => {
 
     const typeCases = ['publish', 'subscribe', 'unsubscribe', 'ping'];
     expect(typeCases.includes(payload.type)).toBeTruthy();
+  });
+
+  test('it converts the pad to pdf with a template integrated', async ({
+    page,
+  }) => {
+    const downloadPromise = page.waitForEvent('download', (download) => {
+      return download.suggestedFilename().includes('impress-document.pdf');
+    });
+
+    await page.getByText('My mocked pad').first().click();
+    await expect(page.locator('h2').getByText('My mocked pad')).toBeVisible();
+
+    await page.locator('.ProseMirror.bn-editor').click();
+    await page.locator('.ProseMirror.bn-editor').fill('Hello World');
+
+    await page.getByText('Print the pad').first().click();
+
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('impress-document.pdf');
+
+    const pdfBuffer = await cs.toBuffer(await download.createReadStream());
+    const pdfText = (await pdf(pdfBuffer)).text;
+
+    expect(pdfText).toContain('Monsieur le Premier Ministre'); // This is the template text
+    expect(pdfText).toContain('La directrice'); // This is the template text
+    expect(pdfText).toContain('Hello World'); // This is the pad text
   });
 });
