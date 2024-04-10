@@ -1,10 +1,12 @@
 import { BlockNoteView, useCreateBlockNote } from '@blocknote/react';
 import '@blocknote/react/style.css';
-import React, { useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
+import { WebrtcProvider } from 'y-webrtc';
 
+import { Box } from '@/components';
 import { useAuthStore } from '@/core/auth';
 
-import { PadStore, usePadStore } from '../store';
+import { usePadStore } from '../stores';
 import { Pad } from '../types';
 import { randomColor } from '../utils';
 
@@ -13,19 +15,34 @@ interface BlockNoteEditorProps {
 }
 
 export const BlockNoteEditor = ({ pad }: BlockNoteEditorProps) => {
-  const { userData } = useAuthStore();
-  const getProvider = useCallback(
-    (state: PadStore) => {
-      if (!state.providers[pad.id]) {
-        return state.createProvider(pad.id);
-      }
-
-      return state.providers[pad.id];
-    },
-    [pad.id],
+  const { createProvider, padsStore } = usePadStore();
+  const [provider, setProvider] = useState<WebrtcProvider>(
+    padsStore?.[pad.id]?.provider,
   );
 
-  const provider = usePadStore(getProvider);
+  useEffect(() => {
+    if (provider) {
+      return;
+    }
+
+    setProvider(createProvider(pad.id));
+  }, [createProvider, pad.id, provider]);
+
+  if (!provider) {
+    return null;
+  }
+
+  return <BlockNoteContent pad={pad} provider={provider} />;
+};
+
+interface BlockNoteContentProps {
+  pad: Pad;
+  provider: WebrtcProvider;
+}
+
+export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
+  const { userData } = useAuthStore();
+  const { setEditor } = usePadStore();
 
   const editor = useCreateBlockNote({
     collaboration: {
@@ -38,5 +55,19 @@ export const BlockNoteEditor = ({ pad }: BlockNoteEditorProps) => {
     },
   });
 
-  return <BlockNoteView editor={editor} />;
+  useEffect(() => {
+    setEditor(pad.id, editor);
+  }, [setEditor, pad.id, editor]);
+
+  return (
+    <Box
+      $css={`
+        &, & > .bn-container, & .ProseMirror {
+          height:100%
+        };
+      `}
+    >
+      <BlockNoteView editor={editor} />
+    </Box>
+  );
 };
