@@ -4,6 +4,7 @@ image:
   tag: "latest"
 
 backend:
+  replicas: 1
   envVars:
     DJANGO_CSRF_TRUSTED_ORIGINS: https://impress.127.0.0.1.nip.io,http://impress.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Production
@@ -38,6 +39,15 @@ backend:
     REDIS_URL: redis://default:pass@redis-master:6379/1
 
 frontend:
+  envVars:
+    PORT: 8080
+    NEXT_PUBLIC_API_URL: https://impress.127.0.0.1.nip.io/api/v1.0/
+
+  replicas: 1
+  command:
+    - yarn
+    - dev
+
   image:
     repository: localhost:5001/impress-frontend
     pullPolicy: Always

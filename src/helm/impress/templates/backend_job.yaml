@@ -5,6 +5,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ $fullName }}-migrate
+  namespace: {{ .Release.Namespace | quote }}
   {{- with .Values.backend.migrateJobAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

@@ -25,7 +25,7 @@ COPY ./src/frontend/packages/eslint-config-impress/package.json ./packages/eslin
 RUN yarn --frozen-lockfile
 
 ### ---- Front-end builder image ----
-FROM node:20 as frontend-builder
+FROM node:20 as frontend-builder-1
 
 WORKDIR /builder
 
@@ -33,6 +33,8 @@ COPY --from=frontend-deps /deps/node_modules ./node_modules
 COPY ./src/frontend .
 
 WORKDIR /builder/apps/impress
+
+FROM frontend-builder-1 as frontend-builder-2
 
 RUN yarn build
 
@@ -44,7 +46,7 @@ FROM nginxinc/nginx-unprivileged:1.25 as frontend-production
 ARG DOCKER_USER
 USER ${DOCKER_USER}
 
-COPY --from=frontend-builder \
+COPY --from=frontend-builder-2 \
     /builder/apps/impress/out \
     /usr/share/nginx/html
 
@@ -83,7 +85,7 @@ RUN yarn install --frozen-lockfile && \
 
 # ---- static link collector ----
 FROM base as link-collector
-ARG PEOPLE_STATIC_ROOT=/data/static
+ARG IMPRESS_STATIC_ROOT=/data/static
 
 # Install libpangocairo & rdfind
 RUN apt-get update && \
