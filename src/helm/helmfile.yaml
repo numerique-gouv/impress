@@ -26,6 +26,7 @@ releases:
     values:
       - auth:
           password: pass
+        architecture: standalone
 
   - name: extra
     installed: {{ ne .Environment.Name "dev" | toYaml }}

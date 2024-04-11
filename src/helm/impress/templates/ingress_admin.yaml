@@ -15,6 +15,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-admin
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "impress.labels" . | nindent 4 }}
   {{- with .Values.ingressAdmin.annotations }}
