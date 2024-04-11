@@ -301,11 +301,11 @@ help:
 .PHONY: help
 
 # Front 
-install-front-impress: ## Install the frontend dependencies of app Desk  
+install-front-impress: ## Install the frontend dependencies of app Impress  
 	cd $(PATH_FRONT_IMPRESS) && yarn
 .PHONY: install-front-impress
 
-run-front-impress: ## Start app Desk  
+run-front-impress: ## Start app Impress  
 	cd $(PATH_FRONT_IMPRESS) && yarn dev
 .PHONY: run-front-impress
 
