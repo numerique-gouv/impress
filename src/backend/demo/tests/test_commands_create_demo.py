@@ -9,8 +9,6 @@ import pytest
 
 from core import models
 
-
-
 pytestmark = pytest.mark.django_db
 
 

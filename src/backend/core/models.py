@@ -11,8 +11,8 @@ from django.core import mail, validators
 from django.db import models
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
-from django.utils.html import format_html
 from django.utils.functional import lazy
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 import frontmatter
