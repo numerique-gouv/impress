@@ -137,7 +137,7 @@ def create_demo(stdout):
     <div class="body">{{ body }}</div>
   </div>
 </page>
-""",         
+""",
                 css="""
 body {
   background: white; 
@@ -207,7 +207,7 @@ p {
   text-align: justify;
   ligne-height: 0.8;
 }
-""",       
+""",
                 is_public=True,
             )
         )
