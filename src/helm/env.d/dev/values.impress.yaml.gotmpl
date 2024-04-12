@@ -38,6 +38,15 @@ backend:
     POSTGRES_PASSWORD: pass
     REDIS_URL: redis://default:pass@redis-master:6379/1
 
+  migrate:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - |
+        python manage.py migrate --no-input &&
+        python manage.py create_demo --force
+    restartPolicy: Never
+
 frontend:
   envVars:
     PORT: 8080
