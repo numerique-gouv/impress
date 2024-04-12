@@ -32,6 +32,8 @@ dependencies = [
     "django-cors-headers==4.3.1",
     "django-countries==7.5.1",
     "django-parler==2.3",
+    "redis==5.0.3",
+    "django-redis==5.4.0",
     "django-storages==1.14.2",
     "django-timezone-field>=5.1",
     "django==5.0.3",

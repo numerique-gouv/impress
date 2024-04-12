@@ -277,6 +277,7 @@ class Base(Configuration):
 
     # Session
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
     SESSION_COOKIE_AGE = 60 * 60 * 12
 
     # OIDC - Authorization Code Flow
@@ -530,6 +531,20 @@ class Production(Base):
     AWS_S3_SECRET_ACCESS_KEY = values.Value()
     AWS_STORAGE_BUCKET_NAME = values.Value("tf-default-impress-media-storage")
     AWS_S3_REGION_NAME = values.Value()
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": values.Value(
+                "redis://redis:6379/1",
+                environ_name="REDIS_URL",
+                environ_prefix=None,
+            ),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        },
+    }
 
 
 class Feature(Production):
