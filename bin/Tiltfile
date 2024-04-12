@@ -4,12 +4,12 @@ namespace_create('impress')
 
 docker_build(
     'localhost:5001/impress-backend:latest',
-    context='.',
-    dockerfile='./Dockerfile',
+    context='..',
+    dockerfile='../Dockerfile',
     only=['./src/backend', './src/mail', './docker'],
     target = 'backend-development',
     live_update=[
-        sync('./src/backend', '/app'),
+        sync('../src/backend', '/app'),
         run(
             'pip install -r /app/requirements.txt',
             trigger=['./api/requirements.txt']
@@ -19,17 +19,17 @@ docker_build(
 
 docker_build(
     'localhost:5001/impress-frontend:latest',
-    context='.',
-    dockerfile='./Dockerfile',
+    context='..',
+    dockerfile='../Dockerfile',
     build_args={'ENV': 'dev'},
     only=['./src/frontend', './src/mail', './docker'],
     target = 'frontend-builder-1',
     live_update=[
-        sync('./src/frontend', '/builder'),
+        sync('../src/frontend', '/builder'),
     ]
 )
 
-k8s_yaml(local('cd src/helm && helmfile -n impress -e dev template .'))
+k8s_yaml(local('cd ../src/helm && helmfile -n impress -e dev template .'))
 
 migration = '''
 set -eu
