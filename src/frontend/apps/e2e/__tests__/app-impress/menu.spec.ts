@@ -10,6 +10,7 @@ test.beforeEach(async ({ page, browserName }) => {
 test.describe('Menu', () => {
   const menuItems = [
     { name: 'Search', isDefault: true },
+    { name: 'Template', isDefault: false },
     { name: 'Favorite', isDefault: false },
     { name: 'Recent', isDefault: false },
     { name: 'Contacts', isDefault: false },
