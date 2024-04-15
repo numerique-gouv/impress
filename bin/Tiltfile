@@ -18,6 +18,17 @@ docker_build(
 )
 
 docker_build(
+    'localhost:5001/impress-y-webrtc-signaling:latest',
+    context='..',
+    dockerfile='../src/frontend/Dockerfile',
+    only=['./src/frontend/', './docker/', './dockerignore'],
+    target = 'y-webrtc-signaling',
+    live_update=[
+        sync('../src/frontend', '/home/frontend'),
+    ]
+)
+
+docker_build(
     'localhost:5001/impress-frontend:latest',
     context='..',
     dockerfile='../src/frontend/Dockerfile',
