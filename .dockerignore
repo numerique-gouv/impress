@@ -31,3 +31,6 @@ db.sqlite3
 .mypy_cache
 .pylint.d
 .pytest_cache
+
+# Frontend
+node_modules

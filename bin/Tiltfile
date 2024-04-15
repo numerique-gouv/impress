@@ -20,12 +20,11 @@ docker_build(
 docker_build(
     'localhost:5001/impress-frontend:latest',
     context='..',
-    dockerfile='../Dockerfile',
-    build_args={'ENV': 'dev'},
-    only=['./src/frontend', './src/mail', './docker'],
-    target = 'frontend-builder-1',
+    dockerfile='../src/frontend/Dockerfile',
+    only=['./src/frontend', './docker', './dockerignore'],
+    target = 'impress',
     live_update=[
-        sync('../src/frontend', '/builder'),
+        sync('../src/frontend', '/home/frontend'),
     ]
 )
 

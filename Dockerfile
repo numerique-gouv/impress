@@ -11,55 +11,6 @@ RUN apt-get update && \
   apt-get -y upgrade && \
   rm -rf /var/lib/apt/lists/*
 
-### ---- Front-end dependencies image ----
-FROM node:20 as frontend-deps
-
-WORKDIR /deps
-
-COPY ./src/frontend/package.json ./package.json
-COPY ./src/frontend/yarn.lock ./yarn.lock
-COPY ./src/frontend/apps/impress/package.json ./apps/impress/package.json
-COPY ./src/frontend/packages/i18n/package.json ./packages/i18n/package.json
-COPY ./src/frontend/packages/eslint-config-impress/package.json ./packages/eslint-config-impress/package.json
-
-RUN yarn --frozen-lockfile
-
-### ---- Front-end builder image ----
-FROM node:20 as frontend-builder-1
-
-WORKDIR /builder
-
-COPY --from=frontend-deps /deps/node_modules ./node_modules
-COPY ./src/frontend .
-
-WORKDIR /builder/apps/impress
-
-FROM frontend-builder-1 as frontend-builder-2
-
-RUN yarn build
-
-
-# ---- Front-end image ----
-FROM nginxinc/nginx-unprivileged:1.25 as frontend-production
-
-# Un-privileged user running the application
-ARG DOCKER_USER
-USER ${DOCKER_USER}
-
-COPY --from=frontend-builder-2 \
-    /builder/apps/impress/out \
-    /usr/share/nginx/html
-
-COPY ./src/frontend/apps/impress/conf/default.conf /etc/nginx/conf.d
-
-# Copy entrypoint
-COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
-
-CMD ["nginx", "-g", "daemon off;"]
-
-
 # ---- Back-end builder image ----
 FROM base as back-builder
 

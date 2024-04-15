@@ -120,7 +120,9 @@ services:
 
   y-webrtc-signaling:
     build: 
-      context: ./src/frontend/
+      context: .
+      dockerfile: ./src/frontend/Dockerfile
+      target: y-webrtc-signaling
     restart: unless-stopped
     ports:
       - "4444:4444"
