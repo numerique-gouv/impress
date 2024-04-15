@@ -94,11 +94,7 @@ test.describe('Pad Editor', () => {
     await expect(page.getByText('[test markdown]')).toBeVisible();
 
     await page.getByText('[test markdown]').dblclick();
-    await page
-      .getByRole('button', {
-        name: 'M',
-      })
-      .click();
+    await page.locator('button[data-test="convertMarkdown"]').click();
 
     await expect(page.getByText('[test markdown]')).toBeHidden();
     await expect(
