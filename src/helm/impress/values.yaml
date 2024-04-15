@@ -48,6 +48,9 @@ ingress:
   ## @param ingress.customBackends Add custom backends to ingress
   customBackends: []
 
+  annotations: 
+    nginx.ingress.kubernetes.io/enable-websocket: "true" 
+
 ## @param ingressAdmin.enabled whether to enable the Ingress or not
 ## @param ingressAdmin.className IngressClass to use for the Ingress
 ## @param ingressAdmin.host Host for the Ingress
@@ -261,4 +264,98 @@ frontend:
   extraVolumeMounts: []
 
   ## @param frontend.extraVolumes Additional volumes to mount on the frontend.
+  extraVolumes: []
+
+## @section webrtc
+
+webrtc:
+  ## @param webrtc.image.repository Repository to use to pull impress's webrtc container image
+  ## @param webrtc.image.tag impress's webrtc container tag
+  ## @param webrtc.image.pullPolicy webrtc container image pull policy
+  image:
+    repository: lasuite/impress-y-webrtc-signaling
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+  ## @param webrtc.command Override the webrtc container command
+  command: []
+
+  ## @param webrtc.args Override the webrtc container args
+  args: []
+
+  ## @param webrtc.replicas Amount of webrtc replicas
+  replicas: 3
+
+  ## @param webrtc.shareProcessNamespace Enable share process namewebrtc between containers
+  shareProcessNamespace: false
+
+  ## @param webrtc.sidecars Add sidecars containers to webrtc deployment
+  sidecars: []
+
+  ## @param webrtc.securityContext Configure webrtc Pod security context
+  securityContext: null
+
+  ## @param webrtc.envVars Configure webrtc container environment variables
+  ## @extra webrtc.envVars.BY_VALUE Example environment variable by setting value directly
+  ## @extra webrtc.envVars.FROM_CONFIGMAP.configMapKeyRef.name Name of a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra webrtc.envVars.FROM_CONFIGMAP.configMapKeyRef.key Key within a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra webrtc.envVars.FROM_SECRET.secretKeyRef.name Name of a Secret when configuring env vars from a Secret
+  ## @extra webrtc.envVars.FROM_SECRET.secretKeyRef.key Key within a Secret when configuring env vars from a Secret
+  ## @skip webrtc.envVars
+  envVars:
+    <<: *commonEnvVars
+
+  ## @param webrtc.podAnnotations Annotations to add to the webrtc Pod
+  podAnnotations: {}
+
+  ## @param webrtc.service.type webrtc Service type
+  ## @param webrtc.service.port webrtc Service listening port
+  ## @param webrtc.service.targetPort webrtc container listening port
+  ## @param webrtc.service.annotations Annotations to add to the webrtc Service
+  service:
+    type: ClusterIP
+    port: 443
+    targetPort: 4444
+    annotations: {}
+
+  ## @param webrtc.probes Configure probe for webrtc
+  ## @extra webrtc.probes.liveness.path Configure path for webrtc HTTP liveness probe
+  ## @extra webrtc.probes.liveness.targetPort Configure port for webrtc HTTP liveness probe
+  ## @extra webrtc.probes.liveness.initialDelaySeconds Configure initial delay for webrtc liveness probe
+  ## @extra webrtc.probes.liveness.initialDelaySeconds Configure timeout for webrtc liveness probe
+  ## @extra webrtc.probes.startup.path Configure path for webrtc HTTP startup probe
+  ## @extra webrtc.probes.startup.targetPort Configure port for webrtc HTTP startup probe
+  ## @extra webrtc.probes.startup.initialDelaySeconds Configure initial delay for webrtc startup probe
+  ## @extra webrtc.probes.startup.initialDelaySeconds Configure timeout for webrtc startup probe
+  ## @extra webrtc.probes.readiness.path Configure path for webrtc HTTP readiness probe
+  ## @extra webrtc.probes.readiness.targetPort Configure port for webrtc HTTP readiness probe
+  ## @extra webrtc.probes.readiness.initialDelaySeconds Configure initial delay for webrtc readiness probe
+  ## @extra webrtc.probes.readiness.initialDelaySeconds Configure timeout for webrtc readiness probe
+  probes:
+    liveness:
+      path: /ping
+      initialDelaySeconds: 10
+
+  ## @param webrtc.resources Resource requirements for the webrtc container
+  resources: {}
+
+  ## @param webrtc.nodeSelector Node selector for the webrtc Pod
+  nodeSelector: {}
+
+  ## @param webrtc.tolerations Tolerations for the webrtc Pod
+  tolerations: []
+
+  ## @param webrtc.affinity Affinity for the webrtc Pod
+  affinity: {}
+
+  ## @param webrtc.persistence Additional volumes to create and mount on the webrtc. Used for debugging purposes
+  ## @extra webrtc.persistence.volume-name.size Size of the additional volume
+  ## @extra webrtc.persistence.volume-name.type Type of the additional volume, persistentVolumeClaim or emptyDir
+  ## @extra webrtc.persistence.volume-name.mountPath Path where the volume should be mounted to
+  persistence: {}
+
+  ## @param webrtc.extraVolumeMounts Additional volumes to mount on the webrtc.
+  extraVolumeMounts: []
+
+  ## @param webrtc.extraVolumes Additional volumes to mount on the webrtc.
   extraVolumes: []
