@@ -45,6 +45,35 @@ export const createPad = async (
   return randomPads;
 };
 
+export const createTemplate = async (
+  page: Page,
+  templateName: string,
+  browserName: string,
+  length: number,
+) => {
+  const menu = page.locator('menu').first();
+  await menu.getByLabel(`Template button`).click();
+
+  const panel = page.getByLabel('Templates panel').first();
+  const buttonCreate = page.getByRole('button', {
+    name: 'Create the template',
+  });
+
+  const randomTemplates = randomName(templateName, browserName, length);
+
+  for (let i = 0; i < randomTemplates.length; i++) {
+    await panel.getByRole('button', { name: 'Add a template' }).click();
+    await page.getByText('Template name').fill(randomTemplates[i]);
+    await expect(buttonCreate).toBeEnabled();
+    await buttonCreate.click();
+    await expect(
+      panel.locator('li').getByText(randomTemplates[i]),
+    ).toBeVisible();
+  }
+
+  return randomTemplates;
+};
+
 export const addNewMember = async (
   page: Page,
   index: number,
