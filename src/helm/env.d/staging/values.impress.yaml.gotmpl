@@ -68,18 +68,15 @@ backend:
         name: redis.redis.libre.sh
         key: url
 
-  migrate:
-    command:
-      - "/bin/sh"
-      - "-c"
-      - |
-        python manage.py migrate --no-input &&
-        python manage.py create_demo --force
-    restartPolicy: Never
-
 frontend:
   image:
     repository: lasuite/impress-frontend
+    pullPolicy: Always
+    tag: "main"
+
+webrtc:
+  image:
+    repository: lasuite/impress-y-webrtc-signaling
     pullPolicy: Always
     tag: "main"
 

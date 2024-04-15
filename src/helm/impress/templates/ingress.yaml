@@ -46,6 +46,24 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
+          - path: /ws
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "impress.webrtc.fullname" . }}
+                port:
+                  number: {{ .Values.webrtc.service.port }}
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "impress.webrtc.fullname" . }}
+                port:
+                  number: {{ .Values.webrtc.service.port }}
+              {{- else }}
+              serviceName: {{ include "impress.webrtc.fullname" . }}
+              servicePort: {{ .Values.webrtc.service.port }}
+            {{- end }}
           - path: {{ .Values.ingress.path | quote }}
             {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Prefix

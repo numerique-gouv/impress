@@ -51,6 +51,7 @@ frontend:
   envVars:
     PORT: 8080
     NEXT_PUBLIC_API_URL: https://impress.127.0.0.1.nip.io/api/v1.0/
+    NEXT_PUBLIC_SIGNALING_URL: wss://impress.127.0.0.1.nip.io/ws
 
   replicas: 1
   command:
@@ -59,6 +60,14 @@ frontend:
 
   image:
     repository: localhost:5001/impress-frontend
+    pullPolicy: Always
+    tag: "latest"
+
+webrtc:
+  replicas: 1
+
+  image:
+    repository: localhost:5001/impress-y-webrtc-signaling
     pullPolicy: Always
     tag: "latest"
 
