@@ -10,6 +10,8 @@ import { usePadStore } from '../stores';
 import { Pad } from '../types';
 import { randomColor } from '../utils';
 
+import { BlockNoteToolbar } from './BlockNoteToolbar';
+
 interface BlockNoteEditorProps {
   pad: Pad;
 }
@@ -67,7 +69,9 @@ export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
         };
       `}
     >
-      <BlockNoteView editor={editor} />
+      <BlockNoteView editor={editor} formattingToolbar={false}>
+        <BlockNoteToolbar />
+      </BlockNoteView>
     </Box>
   );
 };
