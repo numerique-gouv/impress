@@ -42,6 +42,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True, help_text='date and time at which a record was last updated', verbose_name='updated on')),
                 ('title', models.CharField(max_length=255, verbose_name='title')),
                 ('description', models.TextField(blank=True, verbose_name='description')),
+                ('code_editor', models.JSONField(blank=True, default=dict, help_text='A JSON object with all the editor information', verbose_name='code editor')),
                 ('code', models.TextField(blank=True, verbose_name='code')),
                 ('css', models.TextField(blank=True, verbose_name='css')),
                 ('is_public', models.BooleanField(default=False, help_text='Whether this template is public for anyone to use.', verbose_name='public')),
