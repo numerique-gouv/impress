@@ -2,21 +2,24 @@ import { useMutation } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-interface CreatePdfFromMarkdownParams {
+interface CreatePdfParams {
   templateId: string;
-  markdown: string;
+  body: string;
+  body_type: 'html' | 'markdown';
 }
 
-export const createPdfFromMarkdown = async ({
+export const createPdf = async ({
   templateId,
-  markdown,
-}: CreatePdfFromMarkdownParams): Promise<Blob> => {
+  body,
+  body_type,
+}: CreatePdfParams): Promise<Blob> => {
   const response = await fetchAPI(
     `templates/${templateId}/generate-document/`,
     {
       method: 'POST',
       body: JSON.stringify({
-        body: markdown,
+        body,
+        body_type,
       }),
     },
   );
@@ -28,8 +31,8 @@ export const createPdfFromMarkdown = async ({
   return await response.blob();
 };
 
-export function useCreatePdfFromMarkdown() {
-  return useMutation<Blob, APIError, CreatePdfFromMarkdownParams>({
-    mutationFn: createPdfFromMarkdown,
+export function useCreatePdf() {
+  return useMutation<Blob, APIError, CreatePdfParams>({
+    mutationFn: createPdf,
   });
 }
