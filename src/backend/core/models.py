@@ -326,6 +326,12 @@ class Template(BaseModel):
 
     title = models.CharField(_("title"), max_length=255)
     description = models.TextField(_("description"), blank=True)
+    code_editor = models.JSONField(
+        _("code editor"),
+        help_text=_("A JSON object with all the editor information"),
+        blank=True,
+        default=dict,
+    )
     code = models.TextField(_("code"), blank=True)
     css = models.TextField(_("css"), blank=True)
     is_public = models.BooleanField(

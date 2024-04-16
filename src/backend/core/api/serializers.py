@@ -145,7 +145,7 @@ class TemplateSerializer(BaseResourceSerializer):
 
     class Meta:
         model = models.Template
-        fields = ["id", "title", "accesses", "abilities"]
+        fields = ["id", "title", "code_editor", "accesses", "abilities"]
         read_only_fields = ["id", "accesses", "abilities"]
 
 
