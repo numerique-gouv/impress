@@ -1,15 +1,13 @@
-import { User } from '@/core/auth';
-
 export interface Access {
   id: string;
   role: Role;
-  user: User;
+  team: string;
+  user: string;
   abilities: {
-    delete: boolean;
-    get: boolean;
-    patch: boolean;
-    put: boolean;
+    destroy: boolean;
+    retrieve: boolean;
     set_role_to: Role[];
+    update: boolean;
   };
 }
 
@@ -21,15 +19,14 @@ export enum Role {
 
 export interface Pad {
   id: string;
-  name: string;
+  title: string;
   accesses: Access[];
   created_at: string;
   updated_at: string;
   abilities: {
-    delete: boolean;
-    get: boolean;
+    destroy: boolean;
+    retrieve: boolean;
     manage_accesses: boolean;
-    patch: boolean;
-    put: boolean;
+    update: boolean;
   };
 }

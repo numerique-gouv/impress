@@ -5,14 +5,14 @@ import { KEY_LIST_PAD } from '@/features/pads';
 
 type CreatePadResponse = {
   id: string;
-  name: string;
+  title: string;
 };
 
-export const createPad = async (name: string): Promise<CreatePadResponse> => {
-  const response = await fetchAPI(`pads/`, {
+export const createPad = async (title: string): Promise<CreatePadResponse> => {
+  const response = await fetchAPI(`documents/`, {
     method: 'POST',
     body: JSON.stringify({
-      name,
+      title,
     }),
   });
 

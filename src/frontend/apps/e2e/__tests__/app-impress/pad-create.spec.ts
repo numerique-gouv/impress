@@ -71,7 +71,7 @@ test.describe('Pad Create', () => {
     await page.getByText('Pad name').fill(padName);
     await page.getByRole('button', { name: 'Create the pad' }).click();
 
-    const elPad = page.getByText(`Members of “${padName}“`);
+    const elPad = page.locator('h2').getByText(padName);
     await expect(elPad).toBeVisible();
 
     await panel.getByRole('button', { name: 'Add a pad' }).click();
@@ -93,25 +93,6 @@ test.describe('Pad Create', () => {
     await page.goto('/pads');
     await expect(buttonCreateHomepage).toBeVisible();
     await expect(page).toHaveURL(/\/pads$/);
-  });
-
-  test('checks error when duplicate pad', async ({ page, browserName }) => {
-    const panel = page.getByLabel('Pads panel').first();
-
-    await panel.getByRole('button', { name: 'Add a pad' }).click();
-
-    const padName = `My duplicate pad ${browserName}-${Math.floor(Math.random() * 1000)}`;
-    await page.getByText('Pad name').fill(padName);
-    await page.getByRole('button', { name: 'Create the pad' }).click();
-
-    await panel.getByRole('button', { name: 'Add a pad' }).click();
-
-    await page.getByText('Pad name').fill(padName);
-    await page.getByRole('button', { name: 'Create the pad' }).click();
-
-    await expect(
-      page.getByText('Pad with this Slug already exists.'),
-    ).toBeVisible();
   });
 
   test('checks 404 on pads/[id] page', async ({ page }) => {

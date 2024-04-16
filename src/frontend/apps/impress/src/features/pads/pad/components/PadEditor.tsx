@@ -17,7 +17,7 @@ export const PadEditor = ({ pad }: PadEditorProps) => {
       <PadToolBox pad={pad} />
       <Card className="m-b p-b" $css="margin-top:0;flex:1;" $overflow="auto">
         <Text as="h2" $align="center">
-          {pad.name}
+          {pad.title}
         </Text>
         <BlockNoteEditor pad={pad} />
       </Card>
