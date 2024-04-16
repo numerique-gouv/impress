@@ -22,11 +22,8 @@ describe('PanelPads', () => {
     fetchMock.restore();
   });
 
-  /**
-   * TODO: When the backend endpoint `pads` is ready, unskip this test
-   */
-  it.skip('renders with no pad to display', async () => {
-    fetchMock.mock(`/api/pads/?page=1&ordering=-created_at`, {
+  it('renders with no pad to display', async () => {
+    fetchMock.mock(`/api/documents/?page=1&ordering=-created_at`, {
       count: 0,
       results: [],
     });
@@ -42,11 +39,8 @@ describe('PanelPads', () => {
     ).toBeInTheDocument();
   });
 
-  /**
-   * TODO: When the backend endpoint `pads` is ready, unskip this test
-   */
-  it.skip('renders an empty pad', async () => {
-    fetchMock.mock(`/api/pads/?page=1&ordering=-created_at`, {
+  it('renders an empty pad', async () => {
+    fetchMock.mock(`/api/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -64,11 +58,8 @@ describe('PanelPads', () => {
     expect(await screen.findByLabelText('Empty pads icon')).toBeInTheDocument();
   });
 
-  /**
-   * TODO: When the backend endpoint `pads` is ready, unskip this test
-   */
-  it.skip('renders a pad with only 1 member', async () => {
-    fetchMock.mock(`/api/pads/?page=1&ordering=-created_at`, {
+  it('renders a pad with only 1 member', async () => {
+    fetchMock.mock(`/api/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -91,11 +82,8 @@ describe('PanelPads', () => {
     expect(await screen.findByLabelText('Empty pads icon')).toBeInTheDocument();
   });
 
-  /**
-   * TODO: When the backend endpoint `pads` is ready, unskip this test
-   */
-  it.skip('renders a non-empty pad', async () => {
-    fetchMock.mock(`/api/pads/?page=1&ordering=-created_at`, {
+  it('renders a non-empty pad', async () => {
+    fetchMock.mock(`/api/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -122,11 +110,8 @@ describe('PanelPads', () => {
     expect(await screen.findByLabelText('Pads icon')).toBeInTheDocument();
   });
 
-  /**
-   * TODO: When the backend endpoint `pads` is ready, unskip this test
-   */
-  it.skip('renders the error', async () => {
-    fetchMock.mock(`/api/pads/?page=1&ordering=-created_at`, {
+  it('renders the error', async () => {
+    fetchMock.mock(`/api/documents/?page=1&ordering=-created_at`, {
       status: 500,
     });
 
@@ -142,7 +127,7 @@ describe('PanelPads', () => {
   });
 
   it('renders with pad panel open', async () => {
-    fetchMock.mock(`/api/pads/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`/api/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
     });
@@ -157,7 +142,7 @@ describe('PanelPads', () => {
   });
 
   it('closes and opens the pad panel', async () => {
-    fetchMock.mock(`/api/pads/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`/api/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
     });

@@ -93,7 +93,7 @@ export const PadItem = ({ pad }: PadItemProps) => {
               min-width: 14rem;
             `}
           >
-            {pad.name}
+            {pad.title}
           </Text>
         </Box>
       </StyledLink>

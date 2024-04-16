@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 import { waitForElementCount } from '../helpers';
 
-import { createTeam, keyCloakSignIn } from './common';
+import { createPad, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
@@ -28,19 +28,16 @@ test.describe('Pads Panel', () => {
     ).toBeVisible();
   });
 
-  /**
-   * TODO: remove the skip when we can create pads
-   */
-  test.skip('checks the sort button', async ({ page }) => {
+  test('checks the sort button', async ({ page }) => {
     const responsePromiseSortDesc = page.waitForResponse(
       (response) =>
-        response.url().includes('/pads/?page=1&ordering=-created_at') &&
+        response.url().includes('/documents/?page=1&ordering=-created_at') &&
         response.status() === 200,
     );
 
     const responsePromiseSortAsc = page.waitForResponse(
       (response) =>
-        response.url().includes('/pads/?page=1&ordering=created_at') &&
+        response.url().includes('/documents/?page=1&ordering=created_at') &&
         response.status() === 200,
     );
 
@@ -65,40 +62,31 @@ test.describe('Pads Panel', () => {
     expect(responseSortDesc.ok()).toBeTruthy();
   });
 
-  /**
-   * TODO: remove the skip when we can create pads
-   */
-  test.skip('checks the infinite scroll', async ({ page, browserName }) => {
+  test('checks the infinite scroll', async ({ page, browserName }) => {
     test.setTimeout(90000);
     const panel = page.getByLabel('Pads panel').first();
 
-    const randomTeams = await createTeam(page, 'pad-infinite', browserName, 40);
+    const randomPads = await createPad(page, 'pad-infinite', browserName, 40);
 
     await expect(panel.locator('li')).toHaveCount(20);
-    await panel.getByText(randomTeams[24]).click();
+    await panel.getByText(randomPads[24]).click();
 
     await waitForElementCount(panel.locator('li'), 21, 10000);
     expect(await panel.locator('li').count()).toBeGreaterThan(20);
   });
 
-  /**
-   * TODO: remove the skip when we can create pads
-   */
-  test.skip('checks the hover and selected state', async ({
-    page,
-    browserName,
-  }) => {
+  test('checks the hover and selected state', async ({ page, browserName }) => {
     const panel = page.getByLabel('Pads panel').first();
-    await createTeam(page, 'pad-hover', browserName, 2);
+    await createPad(page, 'pad-hover', browserName, 2);
 
-    const selectedTeam = panel.locator('li').nth(0);
-    await expect(selectedTeam).toHaveCSS(
+    const selectedPad = panel.locator('li').nth(0);
+    await expect(selectedPad).toHaveCSS(
       'background-color',
       'rgb(202, 202, 251)',
     );
 
-    const hoverTeam = panel.locator('li').nth(1);
-    await hoverTeam.hover();
-    await expect(hoverTeam).toHaveCSS('background-color', 'rgb(227, 227, 253)');
+    const hoverPad = panel.locator('li').nth(1);
+    await hoverPad.hover();
+    await expect(hoverPad).toHaveCSS('background-color', 'rgb(227, 227, 253)');
   });
 });

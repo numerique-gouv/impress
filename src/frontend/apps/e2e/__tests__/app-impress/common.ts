@@ -23,28 +23,26 @@ export const randomName = (name: string, browserName: string, length: number) =>
     return `${browserName}-${Math.floor(Math.random() * 10000)}-${index}-${name}`;
   });
 
-export const createTeam = async (
+export const createPad = async (
   page: Page,
-  teamName: string,
+  padName: string,
   browserName: string,
   length: number,
 ) => {
-  const panel = page.getByLabel('Teams panel').first();
-  const buttonCreate = page.getByRole('button', { name: 'Create the team' });
+  const panel = page.getByLabel('Pads panel').first();
+  const buttonCreate = page.getByRole('button', { name: 'Create the pad' });
 
-  const randomTeams = randomName(teamName, browserName, length);
+  const randomPads = randomName(padName, browserName, length);
 
-  for (let i = 0; i < randomTeams.length; i++) {
-    await panel.getByRole('button', { name: 'Add a team' }).click();
-    await page.getByText('Team name').fill(randomTeams[i]);
+  for (let i = 0; i < randomPads.length; i++) {
+    await panel.getByRole('button', { name: 'Add a pad' }).click();
+    await page.getByText('Pad name').fill(randomPads[i]);
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();
-    await expect(
-      panel.locator('li').nth(0).getByText(randomTeams[i]),
-    ).toBeVisible();
+    await expect(panel.locator('li').getByText(randomPads[i])).toBeVisible();
   }
 
-  return randomTeams;
+  return randomPads;
 };
 
 export const addNewMember = async (

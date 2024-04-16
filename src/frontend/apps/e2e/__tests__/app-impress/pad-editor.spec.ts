@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import cs from 'convert-stream';
 import pdf from 'pdf-parse';
 
-import { keyCloakSignIn } from './common';
+import { createPad, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
@@ -10,23 +10,29 @@ test.beforeEach(async ({ page, browserName }) => {
 });
 
 test.describe('Pad Editor', () => {
-  test('checks the Pad Editor interact correctly', async ({ page }) => {
-    await page.getByText('My mocked pad').first().click();
+  test('checks the Pad Editor interact correctly', async ({
+    page,
+    browserName,
+  }) => {
+    const randomPad = await createPad(page, 'pad-editor', browserName, 1);
 
-    await expect(page.locator('h2').getByText('My mocked pad')).toBeVisible();
+    await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();
 
     await page.locator('.ProseMirror.bn-editor').click();
     await page.locator('.ProseMirror.bn-editor').fill('Hello World');
     await expect(page.getByText('Hello World')).toBeVisible();
   });
 
-  test('checks the Pad is connected to the webrtc server', async ({ page }) => {
+  test('checks the Pad is connected to the webrtc server', async ({
+    page,
+    browserName,
+  }) => {
     const webSocketPromise = page.waitForEvent('websocket', (webSocket) => {
       return webSocket.url().includes('ws://localhost:4444/');
     });
 
-    await page.getByText('My mocked pad').first().click();
-    await expect(page.locator('h2').getByText('My mocked pad')).toBeVisible();
+    const randomPad = await createPad(page, 'pad-editor', browserName, 1);
+    await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();
 
     const webSocket = await webSocketPromise;
     expect(webSocket.url()).toBe('ws://localhost:4444/');
@@ -47,13 +53,14 @@ test.describe('Pad Editor', () => {
 
   test('it converts the pad to pdf with a template integrated', async ({
     page,
+    browserName,
   }) => {
     const downloadPromise = page.waitForEvent('download', (download) => {
       return download.suggestedFilename().includes('impress-document.pdf');
     });
 
-    await page.getByText('My mocked pad').first().click();
-    await expect(page.locator('h2').getByText('My mocked pad')).toBeVisible();
+    const randomPad = await createPad(page, 'pad-editor', browserName, 1);
+    await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();
 
     await page.locator('.ProseMirror.bn-editor').click();
     await page.locator('.ProseMirror.bn-editor').fill('Hello World');
