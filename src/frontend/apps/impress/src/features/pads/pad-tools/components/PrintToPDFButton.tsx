@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Pad, usePadStore } from '@/features/pads/pad';
 
-import { useCreatePdfFromMarkdown } from '../api/useCreatePdfFromMarkdown';
+import { useCreatePdf } from '../api/useCreatePdf';
 import { downloadFile } from '../utils';
 
 interface PrintToPDFButtonProps {
@@ -21,12 +21,12 @@ const PrintToPDFButton = ({ pad }: PrintToPDFButtonProps) => {
   const { toast } = useToastProvider();
   const { padsStore } = usePadStore();
   const {
-    mutate: createPdfFromMarkdown,
+    mutate: createPdf,
     data: pdf,
     isSuccess,
     isPending,
     error,
-  } = useCreatePdfFromMarkdown();
+  } = useCreatePdf();
 
   useEffect(() => {
     setIsFetching(isPending);
@@ -61,11 +61,12 @@ const PrintToPDFButton = ({ pad }: PrintToPDFButtonProps) => {
       return;
     }
 
-    const markdown = await editor.blocksToMarkdownLossy(editor.document);
+    const body = await editor.blocksToHTMLLossy(editor.document);
 
-    createPdfFromMarkdown({
+    createPdf({
       templateId: '472d0633-20b8-4cb1-998a-1134ade092ba',
-      markdown,
+      body,
+      body_type: 'markdown',
     });
   }
 
