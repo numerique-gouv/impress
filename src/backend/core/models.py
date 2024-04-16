@@ -361,17 +361,21 @@ class Template(BaseModel):
             "retrieve": can_get,
         }
 
-    def generate_document(self, body):
+    def generate_document(self, body, body_type):
         """
         Generate and return a PDF document for this template around the
-        markdown body passed as argument.
+        body passed as argument.
         """
         document = frontmatter.loads(body)
         metadata = document.metadata
-        markdown_body = document.content.strip()
-        body_html = (
-            markdown.markdown(textwrap.dedent(markdown_body)) if markdown_body else ""
-        )
+        strip_body = document.content.strip()
+
+        if body_type == "html":
+            body_html = strip_body
+        else:
+            body_html = (
+                markdown.markdown(textwrap.dedent(strip_body)) if strip_body else ""
+            )
 
         document_html = HTML(
             string=DjangoTemplate(self.code).render(

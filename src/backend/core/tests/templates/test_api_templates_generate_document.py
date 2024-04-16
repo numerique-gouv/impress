@@ -114,3 +114,67 @@ def test_api_templates_generate_document_related(via, mock_user_get_teams):
 
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
+
+
+def test_api_templates_generate_document_type_html():
+    """Generate pdf document with the body type html."""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    template = factories.TemplateFactory(is_public=True)
+    data = {"body": "<p>Test body</p>", "body_type": "html"}
+
+    response = client.post(
+        f"/api/v1.0/templates/{template.id!s}/generate-document/",
+        data,
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+
+
+def test_api_templates_generate_document_type_markdown():
+    """Generate pdf document with the body type markdown."""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    template = factories.TemplateFactory(is_public=True)
+    data = {"body": "# Test markdown body", "body_type": "markdown"}
+
+    response = client.post(
+        f"/api/v1.0/templates/{template.id!s}/generate-document/",
+        data,
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+
+
+def test_api_templates_generate_document_type_unknown():
+    """Generate pdf document with the body type unknown."""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    template = factories.TemplateFactory(is_public=True)
+    data = {"body": "# Test markdown body", "body_type": "unknown"}
+
+    response = client.post(
+        f"/api/v1.0/templates/{template.id!s}/generate-document/",
+        data,
+        format="json",
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "body_type": [
+            '"unknown" is not a valid choice.',
+        ]
+    }
