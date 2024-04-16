@@ -27,10 +27,6 @@ test.describe('Header', () => {
       /Marianne/i,
     );
 
-    await expect(
-      header.getByText('Les applications de La Suite numérique'),
-    ).toBeVisible();
-
     await expect(header.getByAltText('Language Icon')).toBeVisible();
 
     await expect(header.getByText('John Doe')).toBeVisible();

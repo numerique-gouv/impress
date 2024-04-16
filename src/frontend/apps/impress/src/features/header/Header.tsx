@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
-import { ApplicationsMenu } from '@/features/header/ApplicationsMenu';
 
 import { LanguagePicker } from '../language/';
 
@@ -89,7 +88,6 @@ export const Header = () => {
                 alt={t(`Profile picture`)}
               />
             </Box>
-            <ApplicationsMenu />
           </Box>
         </Box>
       </Box>
