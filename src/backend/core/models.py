@@ -272,6 +272,7 @@ class Document(BaseModel):
             "destroy": RoleChoices.OWNER in roles,
             "manage_accesses": is_owner_or_admin,
             "update": is_owner_or_admin,
+            "partial_update": is_owner_or_admin,
             "retrieve": can_get,
         }
 
@@ -364,6 +365,7 @@ class Template(BaseModel):
             "generate_document": can_get,
             "manage_accesses": is_owner_or_admin,
             "update": is_owner_or_admin,
+            "partial_update": is_owner_or_admin,
             "retrieve": can_get,
         }
 

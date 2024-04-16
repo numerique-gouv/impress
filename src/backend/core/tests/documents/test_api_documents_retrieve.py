@@ -21,6 +21,7 @@ def test_api_documents_retrieve_anonymous_public():
         "abilities": {
             "destroy": False,
             "manage_accesses": False,
+            "partial_update": False,
             "retrieve": True,
             "update": False,
         },
@@ -60,6 +61,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public():
         "abilities": {
             "destroy": False,
             "manage_accesses": False,
+            "partial_update": False,
             "retrieve": True,
             "update": False,
         },
