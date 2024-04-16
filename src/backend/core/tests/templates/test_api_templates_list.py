@@ -164,3 +164,59 @@ def test_api_templates_list_authenticated_distinct():
     content = response.json()
     assert len(content["results"]) == 1
     assert content["results"][0]["id"] == str(template.id)
+
+
+def test_api_templates_order():
+    """
+    Test that the endpoint GET templates is sorted in 'created_at' descending order by default.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    template_ids = [
+        str(template.id)
+        for template in factories.TemplateFactory.create_batch(5, is_public=True)
+    ]
+
+    response = APIClient().get(
+        "/api/v1.0/templates/",
+    )
+
+    assert response.status_code == 200
+
+    response_data = response.json()
+    response_template_ids = [template["id"] for template in response_data["results"]]
+
+    template_ids.reverse()
+    assert (
+        response_template_ids == template_ids
+    ), "created_at values are not sorted from newest to oldest"
+
+
+def test_api_templates_order_param():
+    """
+    Test that the 'created_at' field is sorted in ascending order
+    when the 'ordering' query parameter is set.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    templates_ids = [
+        str(template.id)
+        for template in factories.TemplateFactory.create_batch(5, is_public=True)
+    ]
+
+    response = APIClient().get(
+        "/api/v1.0/templates/?ordering=created_at",
+    )
+    assert response.status_code == 200
+
+    response_data = response.json()
+
+    response_template_ids = [template["id"] for template in response_data["results"]]
+
+    assert (
+        response_template_ids == templates_ids
+    ), "created_at values are not sorted from oldest to newest"

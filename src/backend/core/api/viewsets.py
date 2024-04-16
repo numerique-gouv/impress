@@ -12,6 +12,7 @@ from django.http import FileResponse
 from rest_framework import (
     decorators,
     exceptions,
+    filters,
     mixins,
     pagination,
     status,
@@ -137,6 +138,10 @@ class UserViewSet(
 
 class ResourceViewsetMixin:
     """Mixin with methods common to all resource viewsets that are managed with accesses."""
+
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["created_at"]
+    ordering = ["-created_at"]
 
     def get_queryset(self):
         """Custom queryset to get user related resources."""
