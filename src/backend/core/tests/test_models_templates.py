@@ -58,6 +58,7 @@ def test_models_templates_get_abilities_anonymous_public():
         "retrieve": True,
         "update": False,
         "manage_accesses": False,
+        "partial_update": False,
         "generate_document": True,
     }
 
@@ -71,6 +72,7 @@ def test_models_templates_get_abilities_anonymous_not_public():
         "retrieve": False,
         "update": False,
         "manage_accesses": False,
+        "partial_update": False,
         "generate_document": False,
     }
 
@@ -84,6 +86,7 @@ def test_models_templates_get_abilities_authenticated_public():
         "retrieve": True,
         "update": False,
         "manage_accesses": False,
+        "partial_update": False,
         "generate_document": True,
     }
 
@@ -97,6 +100,7 @@ def test_models_templates_get_abilities_authenticated_not_public():
         "retrieve": False,
         "update": False,
         "manage_accesses": False,
+        "partial_update": False,
         "generate_document": False,
     }
 
@@ -111,6 +115,7 @@ def test_models_templates_get_abilities_owner():
         "retrieve": True,
         "update": True,
         "manage_accesses": True,
+        "partial_update": True,
         "generate_document": True,
     }
 
@@ -124,6 +129,7 @@ def test_models_templates_get_abilities_administrator():
         "retrieve": True,
         "update": True,
         "manage_accesses": True,
+        "partial_update": True,
         "generate_document": True,
     }
 
@@ -140,6 +146,7 @@ def test_models_templates_get_abilities_member_user(django_assert_num_queries):
         "retrieve": True,
         "update": False,
         "manage_accesses": False,
+        "partial_update": False,
         "generate_document": True,
     }
 
@@ -157,8 +164,10 @@ def test_models_templates_get_abilities_preset_role(django_assert_num_queries):
         "retrieve": True,
         "update": False,
         "manage_accesses": False,
+        "partial_update": False,
         "generate_document": True,
     }
+
 
 def test_models_templates_get_code_editor():
     """Check code_editor in the template model"""
