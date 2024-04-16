@@ -1,3 +1,5 @@
+import { ProjectData } from 'grapesjs';
+
 export enum Role {
   MEMBER = 'member',
   ADMIN = 'administrator',
@@ -27,5 +29,6 @@ export interface Template {
     update: boolean;
   };
   accesses: Access[];
+  code_editor: ProjectData;
   title: string;
 }

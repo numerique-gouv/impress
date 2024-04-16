@@ -26,7 +26,18 @@ interface TemplateProps {
 }
 
 const Template = ({ id }: TemplateProps) => {
-  const { data: template, isLoading, isError, error } = useTemplate({ id });
+  const {
+    data: template,
+    isLoading,
+    isError,
+    error,
+  } = useTemplate(
+    { id },
+    {
+      queryKey: ['template', { id }],
+      staleTime: 0,
+    },
+  );
   const navigate = useNavigate();
 
   if (isError && error) {

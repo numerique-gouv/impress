@@ -2,6 +2,7 @@ import GjsEditor from '@grapesjs/react';
 import grapesjs, { Editor, ProjectData } from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import pluginBlocksBasic from 'grapesjs-blocks-basic';
+import { useEffect, useState } from 'react';
 
 import { Card, Text } from '@/components';
 
@@ -13,7 +14,44 @@ interface TemplateEditorProps {
 }
 
 export const TemplateEditor = ({ template }: TemplateEditorProps) => {
-  const onEditor = (editor: Editor) => {};
+  const { mutate: updateCodeEditor } = useUpdateTemplateCodeEditor();
+  const [editor, setEditor] = useState<Editor>();
+
+  useEffect(() => {
+    if (!editor?.loadProjectData) {
+      return;
+    }
+
+    editor.loadProjectData(template.code_editor);
+  }, [template.code_editor, editor]);
+
+  useEffect(() => {
+    editor?.Storage.add('remote', {
+      load() {
+        return Promise.resolve(template.code_editor);
+      },
+      store(data: ProjectData) {
+        updateCodeEditor({
+          code_editor: data,
+          id: template.id,
+        });
+        return Promise.resolve();
+      },
+    });
+  }, [editor, template.code_editor, template.id, updateCodeEditor]);
+
+  const onEditor = (editor: Editor) => {
+    setEditor(editor);
+
+    editor?.Storage.add('remote', {
+      load() {
+        return Promise.resolve(template.code_editor);
+      },
+      store() {
+        return Promise.resolve();
+      },
+    });
+  };
 
   return (
     <>
@@ -24,7 +62,9 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
         <GjsEditor
           grapesjs={grapesjs}
           options={{
-            storageManager: false,
+            storageManager: {
+              type: 'remote',
+            },
           }}
           plugins={[(editor) => pluginBlocksBasic(editor, {})]}
           onEditor={onEditor}
