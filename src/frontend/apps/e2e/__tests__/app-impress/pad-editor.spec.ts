@@ -77,4 +77,34 @@ test.describe('Pad Editor', () => {
     expect(pdfText).toContain('La directrice'); // This is the template text
     expect(pdfText).toContain('Hello World'); // This is the pad text
   });
+
+  test('markdown button converts from markdown to the editor syntax json', async ({
+    page,
+    browserName,
+  }) => {
+    const randomPad = await createPad(page, 'pad-markdown', browserName, 1);
+
+    await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();
+
+    await page.locator('.ProseMirror.bn-editor').click();
+    await page
+      .locator('.ProseMirror.bn-editor')
+      .fill('[test markdown](http://test-markdown.html)');
+
+    await expect(page.getByText('[test markdown]')).toBeVisible();
+
+    await page.getByText('[test markdown]').dblclick();
+    await page
+      .getByRole('button', {
+        name: 'M',
+      })
+      .click();
+
+    await expect(page.getByText('[test markdown]')).toBeHidden();
+    await expect(
+      page.getByRole('link', {
+        name: 'test markdown',
+      }),
+    ).toHaveAttribute('href', 'http://test-markdown.html');
+  });
 });
