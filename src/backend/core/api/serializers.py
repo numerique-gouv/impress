@@ -153,4 +153,10 @@ class TemplateSerializer(BaseResourceSerializer):
 class DocumentGenerationSerializer(serializers.Serializer):
     """Serializer to receive a request to generate a document on a template."""
 
-    body = serializers.CharField(label=_("Markdown Body"))
+    body = serializers.CharField(label=_("Body"))
+    body_type = serializers.ChoiceField(
+        choices=["html", "markdown"],
+        label=_("Body type"),
+        required=False,
+        default="html",
+    )

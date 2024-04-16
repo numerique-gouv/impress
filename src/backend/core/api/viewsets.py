@@ -372,9 +372,10 @@ class TemplateViewSet(
             )
 
         body = serializer.validated_data["body"]
+        body_type = serializer.validated_data["body_type"]
 
         template = self.get_object()
-        pdf_content = template.generate_document(body)
+        pdf_content = template.generate_document(body, body_type)
 
         response = FileResponse(BytesIO(pdf_content), content_type="application/pdf")
         response["Content-Disposition"] = f"attachment; filename={template.title}.pdf"
