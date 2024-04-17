@@ -27,6 +27,7 @@ def test_api_documents_retrieve_anonymous_public():
         },
         "accesses": [],
         "title": document.title,
+        "is_public": True,
     }
 
 
@@ -67,6 +68,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public():
         },
         "accesses": [],
         "title": document.title,
+        "is_public": True,
     }
 
 
@@ -131,6 +133,7 @@ def test_api_documents_retrieve_authenticated_related_direct():
         "id": str(document.id),
         "title": document.title,
         "abilities": document.get_abilities(user),
+        'is_public': document.is_public,
     }
 
 
@@ -244,6 +247,7 @@ def test_api_documents_retrieve_authenticated_related_team_members(
         "id": str(document.id),
         "title": document.title,
         "abilities": document.get_abilities(user),
+        'is_public': False,
     }
 
 
@@ -340,6 +344,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
         "id": str(document.id),
         "title": document.title,
         "abilities": document.get_abilities(user),
+        'is_public': False,
     }
 
 
@@ -440,4 +445,5 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
         "id": str(document.id),
         "title": document.title,
         "abilities": document.get_abilities(user),
+        'is_public': False,
     }

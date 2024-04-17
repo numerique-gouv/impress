@@ -136,7 +136,7 @@ class DocumentSerializer(BaseResourceSerializer):
 
     class Meta:
         model = models.Document
-        fields = ["id", "title", "accesses", "abilities"]
+        fields = ["id", "title", "accesses", "abilities", "is_public"]
         read_only_fields = ["id", "accesses", "abilities"]
 
 
@@ -145,7 +145,16 @@ class TemplateSerializer(BaseResourceSerializer):
 
     class Meta:
         model = models.Template
-        fields = ["id", "title", "code_editor", "accesses", "abilities", "css", "code"]
+        fields = [
+            "id",
+            "title",
+            "code_editor",
+            "accesses",
+            "abilities",
+            "css",
+            "code",
+            "is_public",
+        ]
         read_only_fields = ["id", "accesses", "abilities"]
 
     def to_representation(self, instance):
