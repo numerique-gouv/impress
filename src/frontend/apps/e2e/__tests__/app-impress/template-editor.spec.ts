@@ -31,6 +31,12 @@ test.describe('Template Editor', () => {
     page,
     browserName,
   }) => {
+    // eslint-disable-next-line playwright/no-skipped-test
+    test.skip(
+      browserName !== 'chromium',
+      'This test failed with safary because of the dragNdrop',
+    );
+
     const randomTemplate = await createTemplate(
       page,
       'template-editor',
@@ -64,6 +70,12 @@ test.describe('Template Editor', () => {
     page,
     browserName,
   }) => {
+    // eslint-disable-next-line playwright/no-skipped-test
+    test.skip(
+      browserName !== 'chromium',
+      'This test failed with safary because of the dragNdrop',
+    );
+
     const randomTemplate = await createTemplate(
       page,
       'template-html',
@@ -85,5 +97,43 @@ test.describe('Template Editor', () => {
 
     await page.getByText('Save template').click();
     await expect(page.getByText('Template save successfully')).toBeVisible();
+  });
+
+  test('it shows a warning if body tag not present', async ({
+    page,
+    browserName,
+  }) => {
+    // eslint-disable-next-line playwright/no-skipped-test
+    test.skip(
+      browserName !== 'chromium',
+      'This test failed with safary because of the dragNdrop',
+    );
+
+    const randomTemplate = await createTemplate(
+      page,
+      'template-html',
+      browserName,
+      1,
+    );
+
+    await expect(page.locator('h2').getByText(randomTemplate[0])).toBeVisible();
+
+    await expect(
+      page.getByText('The {{body}} tag is necessary to works with the pads.'),
+    ).toBeVisible();
+
+    const iframe = page.frameLocator('iFrame.gjs-frame');
+
+    await page.getByTitle('Open Blocks').click();
+    await page
+      .locator('.gjs-editor .gjs-block[title="Text"]')
+      .dragTo(iframe.locator('body.gjs-dashed'));
+
+    await iframe.getByText('Insert your text here').fill('{{body}}');
+    await iframe.locator('body.gjs-dashed').click();
+
+    await expect(
+      page.getByText('The {{body}} tag is necessary to works with the pads.'),
+    ).toBeHidden();
   });
 });

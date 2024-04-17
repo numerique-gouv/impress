@@ -1,5 +1,6 @@
 import GjsEditor from '@grapesjs/react';
 import {
+  Alert,
   Button,
   VariantType,
   useToastProvider,
@@ -30,6 +31,17 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
     },
   });
   const [editor, setEditor] = useState<Editor>();
+  const [showWarning, setShowWarning] = useState(false);
+
+  const html = editor?.getHtml();
+
+  useEffect(() => {
+    if (showWarning || !html) {
+      return;
+    }
+
+    setShowWarning(html.includes('{{body}}') === false);
+  }, [html, showWarning]);
 
   useEffect(() => {
     if (!editor?.loadProjectData) {
@@ -84,7 +96,7 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
               updateTemplate({
                 id: template.id,
                 css: editor.getCss(),
-                html: editor.getHtml(),
+                html,
               });
             }
           }}
@@ -92,6 +104,18 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
           {t('Save template')}
         </Button>
       </Box>
+      {showWarning && html && (
+        <Box
+          className="m-b"
+          $css="margin-top:0;"
+          $effect={html.includes('{{body}}') ? 'hide' : 'show'}
+        >
+          <Alert
+            type={VariantType.WARNING}
+          >{`The {{body}} tag is necessary to works with the pads.`}</Alert>
+        </Box>
+      )}
+
       <Box className="m-b" $css="margin-top:0;flex:1;" $overflow="auto">
         <GjsEditor
           grapesjs={grapesjs}
