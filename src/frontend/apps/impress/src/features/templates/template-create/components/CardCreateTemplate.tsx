@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button, Switch } from '@openfun/cunningham-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,13 +52,16 @@ export const CardCreateTemplate = () => {
           label={t('Template name')}
           {...{ error, isError, isPending, setTemplateName }}
         />
+        <Switch label={t('Is it public ?')} labelSide="right" />
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
         <StyledLink href="/">
           <Button color="secondary">{t('Cancel')}</Button>
         </StyledLink>
         <Button
-          onClick={() => createTemplate(templateName)}
+          onClick={() =>
+            createTemplate({ title: templateName, is_public: true })
+          }
           disabled={!templateName}
         >
           {t('Create the template')}

@@ -1,4 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
+import { Button, Switch } from '@openfun/cunningham-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,12 +52,16 @@ export const CardCreatePad = () => {
           label={t('Pad name')}
           {...{ error, isError, isPending, setPadName }}
         />
+        <Switch label={t('Is it public ?')} labelSide="right" />
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
         <StyledLink href="/">
           <Button color="secondary">{t('Cancel')}</Button>
         </StyledLink>
-        <Button onClick={() => createPad(padName)} disabled={!padName}>
+        <Button
+          onClick={() => createPad({ title: padName, is_public: true })}
+          disabled={!padName}
+        >
           {t('Create the pad')}
         </Button>
       </Box>

@@ -1,20 +1,22 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { KEY_LIST_TEMPLATE } from '@/features/templates';
+import { KEY_LIST_TEMPLATE, Template } from '@/features/templates';
 
-type CreateTemplateResponse = {
-  id: string;
+type CreateTemplateParam = {
   title: string;
+  is_public: boolean;
 };
 
-export const createTemplate = async (
-  title: string,
-): Promise<CreateTemplateResponse> => {
+export const createTemplate = async ({
+  title,
+  is_public,
+}: CreateTemplateParam): Promise<Template> => {
   const response = await fetchAPI(`templates/`, {
     method: 'POST',
     body: JSON.stringify({
       title,
+      is_public,
     }),
   });
 
@@ -25,16 +27,16 @@ export const createTemplate = async (
     );
   }
 
-  return response.json() as Promise<CreateTemplateResponse>;
+  return response.json() as Promise<Template>;
 };
 
 interface CreateTemplateProps {
-  onSuccess: (data: CreateTemplateResponse) => void;
+  onSuccess: (data: Template) => void;
 }
 
 export function useCreateTemplate({ onSuccess }: CreateTemplateProps) {
   const queryClient = useQueryClient();
-  return useMutation<CreateTemplateResponse, APIError, string>({
+  return useMutation<Template, APIError, CreateTemplateParam>({
     mutationFn: createTemplate,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({
