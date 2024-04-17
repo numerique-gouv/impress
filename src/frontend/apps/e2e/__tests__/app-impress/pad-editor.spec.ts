@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import cs from 'convert-stream';
 import pdf from 'pdf-parse';
 
-import { createPad, keyCloakSignIn } from './common';
+import { createPad, createTemplate, keyCloakSignIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
@@ -51,33 +51,6 @@ test.describe('Pad Editor', () => {
     expect(typeCases.includes(payload.type)).toBeTruthy();
   });
 
-  test('it converts the pad to pdf with a template integrated', async ({
-    page,
-    browserName,
-  }) => {
-    const downloadPromise = page.waitForEvent('download', (download) => {
-      return download.suggestedFilename().includes('impress-document.pdf');
-    });
-
-    const randomPad = await createPad(page, 'pad-editor', browserName, 1);
-    await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();
-
-    await page.locator('.ProseMirror.bn-editor').click();
-    await page.locator('.ProseMirror.bn-editor').fill('Hello World');
-
-    await page.getByText('Print the pad').first().click();
-
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe('impress-document.pdf');
-
-    const pdfBuffer = await cs.toBuffer(await download.createReadStream());
-    const pdfText = (await pdf(pdfBuffer)).text;
-
-    expect(pdfText).toContain('Monsieur le Premier Ministre'); // This is the template text
-    expect(pdfText).toContain('La directrice'); // This is the template text
-    expect(pdfText).toContain('Hello World'); // This is the pad text
-  });
-
   test('markdown button converts from markdown to the editor syntax json', async ({
     page,
     browserName,
@@ -102,5 +75,63 @@ test.describe('Pad Editor', () => {
         name: 'test markdown',
       }),
     ).toHaveAttribute('href', 'http://test-markdown.html');
+  });
+
+  test('it converts the pad to pdf with a template created', async ({
+    page,
+    browserName,
+  }) => {
+    // eslint-disable-next-line playwright/no-skipped-test
+    test.skip(
+      browserName !== 'chromium',
+      'This test failed with safary because of the dragNdrop',
+    );
+
+    const downloadPromise = page.waitForEvent('download', (download) => {
+      return download.suggestedFilename().includes('impress-document.pdf');
+    });
+
+    const templates = await createTemplate(
+      page,
+      'template-pad',
+      browserName,
+      1,
+    );
+
+    const iframe = page.frameLocator('iFrame.gjs-frame');
+    await page.getByTitle('Open Blocks').click();
+    await page
+      .locator('.gjs-editor .gjs-block[title="Text"]')
+      .dragTo(iframe.locator('body.gjs-dashed'));
+
+    await iframe
+      .getByText('Insert your text here')
+      .fill('My template ! {{body}}');
+    await iframe.locator('body.gjs-dashed').click();
+
+    await page.getByText('Save template').click();
+
+    const menu = page.locator('menu').first();
+    await menu.getByLabel(`Search button`).click();
+
+    const randomPad = await createPad(page, 'pad-editor', browserName, 1);
+    await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();
+
+    await page.locator('.ProseMirror.bn-editor').click();
+    await page.locator('.ProseMirror.bn-editor').fill('And my pad !');
+
+    await page.getByRole('combobox', { name: 'Template' }).click();
+    await page.getByRole('option', { name: templates[0] }).click();
+
+    await page.getByText('Generate PDF').first().click();
+
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('impress-document.pdf');
+
+    const pdfBuffer = await cs.toBuffer(await download.createReadStream());
+    const pdfText = (await pdf(pdfBuffer)).text;
+
+    expect(pdfText).toContain('My template !');
+    expect(pdfText).toContain('And my pad !');
   });
 });
