@@ -145,8 +145,18 @@ class TemplateSerializer(BaseResourceSerializer):
 
     class Meta:
         model = models.Template
-        fields = ["id", "title", "code_editor", "accesses", "abilities"]
+        fields = ["id", "title", "code_editor", "accesses", "abilities", "css", "code"]
         read_only_fields = ["id", "accesses", "abilities"]
+
+    def to_representation(self, instance):
+        """
+        Modify the output of serialization.
+        """
+        representation = super().to_representation(instance)
+        # Remove 'css' and 'code' from the representation
+        representation.pop("css", None)
+        representation.pop("code", None)
+        return representation
 
 
 # pylint: disable=abstract-method
