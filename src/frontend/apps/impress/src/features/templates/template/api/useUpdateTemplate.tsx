@@ -7,16 +7,25 @@ import { Template } from '../types';
 
 import { KEY_TEMPLATE } from './useTemplate';
 
-type UpdateTemplateProps = Pick<Template, 'title' | 'id'>;
+type UpdateTemplateProps = {
+  id: Template['id'];
+  css?: string;
+  html?: string;
+  title?: Template['title'];
+};
 
 export const updateTemplate = async ({
-  title,
   id,
+  title,
+  css,
+  html,
 }: UpdateTemplateProps): Promise<Template> => {
   const response = await fetchAPI(`templates/${id}/`, {
     method: 'PATCH',
     body: JSON.stringify({
       title,
+      css,
+      code: html,
     }),
   });
 

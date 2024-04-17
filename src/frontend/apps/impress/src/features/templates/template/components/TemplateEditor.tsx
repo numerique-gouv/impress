@@ -1,11 +1,18 @@
 import GjsEditor from '@grapesjs/react';
+import {
+  Button,
+  VariantType,
+  useToastProvider,
+} from '@openfun/cunningham-react';
 import grapesjs, { Editor, ProjectData } from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import pluginBlocksBasic from 'grapesjs-blocks-basic';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Card, Text } from '@/components';
+import { Box, Text } from '@/components';
 
+import { useUpdateTemplate } from '../api/useUpdateTemplate';
 import { useUpdateTemplateCodeEditor } from '../api/useUpdateTemplateCodeEditor';
 import { Template } from '../types';
 
@@ -14,7 +21,14 @@ interface TemplateEditorProps {
 }
 
 export const TemplateEditor = ({ template }: TemplateEditorProps) => {
+  const { t } = useTranslation();
+  const { toast } = useToastProvider();
   const { mutate: updateCodeEditor } = useUpdateTemplateCodeEditor();
+  const { mutate: updateTemplate } = useUpdateTemplate({
+    onSuccess: () => {
+      toast(t('Template save successfully'), VariantType.SUCCESS);
+    },
+  });
   const [editor, setEditor] = useState<Editor>();
 
   useEffect(() => {
@@ -55,10 +69,30 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
 
   return (
     <>
-      <Text as="h2" $align="center">
-        {template.title}
-      </Text>
-      <Card className="m-b p-b" $css="margin-top:0;flex:1;" $overflow="auto">
+      <Box
+        className="m-b mb-t mt-t"
+        $direction="row"
+        $align="center"
+        $justify="space-between"
+      >
+        <Text as="h2" $align="center">
+          {template.title}
+        </Text>
+        <Button
+          onClick={() => {
+            if (editor) {
+              updateTemplate({
+                id: template.id,
+                css: editor.getCss(),
+                html: editor.getHtml(),
+              });
+            }
+          }}
+        >
+          {t('Save template')}
+        </Button>
+      </Box>
+      <Box className="m-b" $css="margin-top:0;flex:1;" $overflow="auto">
         <GjsEditor
           grapesjs={grapesjs}
           options={{
@@ -69,7 +103,7 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
           plugins={[(editor) => pluginBlocksBasic(editor, {})]}
           onEditor={onEditor}
         />
-      </Card>
+      </Box>
     </>
   );
 };
