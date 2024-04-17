@@ -2,6 +2,8 @@ import { ComponentPropsWithRef, ReactHTML } from 'react';
 import styled from 'styled-components';
 import { CSSProperties } from 'styled-components/dist/types';
 
+import { hideEffect, showEffect } from './Effect';
+
 export interface BoxProps {
   as?: keyof ReactHTML;
   $align?: CSSProperties['alignItems'];
@@ -10,6 +12,7 @@ export interface BoxProps {
   $css?: string;
   $direction?: CSSProperties['flexDirection'];
   $display?: CSSProperties['display'];
+  $effect?: 'show' | 'hide';
   $flex?: boolean;
   $gap?: CSSProperties['gap'];
   $height?: CSSProperties['height'];
@@ -43,4 +46,12 @@ export const Box = styled('div')<BoxProps>`
   ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
   ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
   ${({ $css }) => $css && `${$css};`}
+  ${({ $effect }) => {
+    switch ($effect) {
+      case 'show':
+        return showEffect;
+      case 'hide':
+        return hideEffect;
+    }
+  }}
 `;
