@@ -7,15 +7,17 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Pad, usePadStore } from '@/features/pads/pad';
+import { Template } from '@/features/templates/template';
 
 import { useCreatePdf } from '../api/useCreatePdf';
 import { downloadFile } from '../utils';
 
 interface PrintToPDFButtonProps {
   pad: Pad;
+  templateId: Template['id'];
 }
 
-const PrintToPDFButton = ({ pad }: PrintToPDFButtonProps) => {
+const PrintToPDFButton = ({ pad, templateId }: PrintToPDFButtonProps) => {
   const { t } = useTranslation();
   const [isFetching, setIsFetching] = useState(false);
   const { toast } = useToastProvider();
@@ -64,7 +66,7 @@ const PrintToPDFButton = ({ pad }: PrintToPDFButtonProps) => {
     const body = await editor.blocksToHTMLLossy(editor.document);
 
     createPdf({
-      templateId: '472d0633-20b8-4cb1-998a-1134ade092ba',
+      templateId,
       body,
       body_type: 'markdown',
     });
