@@ -1,18 +1,22 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { KEY_LIST_PAD } from '@/features/pads';
+import { KEY_LIST_PAD, Pad } from '@/features/pads';
 
-type CreatePadResponse = {
-  id: string;
+type CreatePadParam = {
   title: string;
+  is_public: boolean;
 };
 
-export const createPad = async (title: string): Promise<CreatePadResponse> => {
+export const createPad = async ({
+  title,
+  is_public,
+}: CreatePadParam): Promise<Pad> => {
   const response = await fetchAPI(`documents/`, {
     method: 'POST',
     body: JSON.stringify({
       title,
+      is_public,
     }),
   });
 
@@ -20,16 +24,16 @@ export const createPad = async (title: string): Promise<CreatePadResponse> => {
     throw new APIError('Failed to create the pad', await errorCauses(response));
   }
 
-  return response.json() as Promise<CreatePadResponse>;
+  return response.json() as Promise<Pad>;
 };
 
 interface CreatePadProps {
-  onSuccess: (data: CreatePadResponse) => void;
+  onSuccess: (data: Pad) => void;
 }
 
 export function useCreatePad({ onSuccess }: CreatePadProps) {
   const queryClient = useQueryClient();
-  return useMutation<CreatePadResponse, APIError, string>({
+  return useMutation<Pad, APIError, CreatePadParam>({
     mutationFn: createPad,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({

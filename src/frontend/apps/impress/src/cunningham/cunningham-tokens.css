@@ -486,6 +486,9 @@
   );
   --c--components--forms-switch--handle-border-radius: 2px;
   --c--components--forms-switch--rail-border-radius: 4px;
+  --c--components--forms-switch--accent-color: var(
+    --c--theme--colors--primary-text
+  );
   --c--components--forms-textarea--border-radius: 0;
 }
 

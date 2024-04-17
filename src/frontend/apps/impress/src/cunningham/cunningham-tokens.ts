@@ -487,6 +487,7 @@ export const tokens = {
         'forms-switch': {
           'handle-border-radius': '2px',
           'rail-border-radius': '4px',
+          'accent-color': 'var(--c--theme--colors--primary-text)',
         },
         'forms-textarea': { 'border-radius': '0' },
       },
