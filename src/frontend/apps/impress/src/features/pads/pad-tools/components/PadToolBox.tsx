@@ -6,7 +6,7 @@ import { Box } from '@/components';
 import { Pad } from '@/features/pads/pad';
 import { TemplatesOrdering, useTemplates } from '@/features/templates';
 
-import PrintToPDFButton from './PrintToPDFButton';
+import PDFButton from './PDFButton';
 
 interface PadToolBoxProps {
   pad: Pad;
@@ -58,7 +58,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
         }
       />
       {templateIdSelected && (
-        <PrintToPDFButton pad={pad} templateId={templateIdSelected} />
+        <PDFButton pad={pad} templateId={templateIdSelected} />
       )}
     </Box>
   );

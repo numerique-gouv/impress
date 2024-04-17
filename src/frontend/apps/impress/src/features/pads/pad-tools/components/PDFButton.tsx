@@ -12,12 +12,12 @@ import { Template } from '@/features/templates/template';
 import { useCreatePdf } from '../api/useCreatePdf';
 import { downloadFile } from '../utils';
 
-interface PrintToPDFButtonProps {
+interface PDFButtonProps {
   pad: Pad;
   templateId: Template['id'];
 }
 
-const PrintToPDFButton = ({ pad, templateId }: PrintToPDFButtonProps) => {
+const PDFButton = ({ pad, templateId }: PDFButtonProps) => {
   const { t } = useTranslation();
   const [isFetching, setIsFetching] = useState(false);
   const { toast } = useToastProvider();
@@ -68,7 +68,7 @@ const PrintToPDFButton = ({ pad, templateId }: PrintToPDFButtonProps) => {
     createPdf({
       templateId,
       body,
-      body_type: 'markdown',
+      body_type: 'html',
     });
   }
 
@@ -80,9 +80,9 @@ const PrintToPDFButton = ({ pad, templateId }: PrintToPDFButtonProps) => {
       }}
       disabled={isFetching}
     >
-      {t('Print the pad')}
+      {t('Generate PDF')}
     </Button>
   );
 };
 
-export default PrintToPDFButton;
+export default PDFButton;
