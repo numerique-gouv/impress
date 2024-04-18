@@ -44,17 +44,19 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
   }, [html, showWarning]);
 
   useEffect(() => {
-    if (!editor?.loadProjectData) {
+    if (!editor?.loadProjectData || !editor?.Storage) {
       return;
     }
 
-    editor.loadProjectData(template.code_editor);
-  }, [template.code_editor, editor]);
+    const projectData = Object.keys(template.code_editor).length
+      ? template.code_editor
+      : editor.getProjectData();
 
-  useEffect(() => {
-    editor?.Storage.add('remote', {
+    editor.loadProjectData(projectData);
+
+    editor.Storage.add('remote', {
       load() {
-        return Promise.resolve(template.code_editor);
+        return Promise.resolve(projectData);
       },
       store(data: ProjectData) {
         updateCodeEditor({
@@ -71,7 +73,7 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
 
     editor?.Storage.add('remote', {
       load() {
-        return Promise.resolve(template.code_editor);
+        return Promise.resolve(editor.getProjectData());
       },
       store() {
         return Promise.resolve();
