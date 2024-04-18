@@ -112,7 +112,7 @@ test.describe('Pad Editor', () => {
     await page.getByText('Save template').click();
 
     const menu = page.locator('menu').first();
-    await menu.getByLabel(`Search button`).click();
+    await menu.getByLabel(`Pad button`).click();
 
     const randomPad = await createPad(page, 'pad-editor', browserName, 1);
     await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();

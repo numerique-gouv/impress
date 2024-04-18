@@ -1,15 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import IconGroup from '@/assets/icons/icon-group.svg';
 import { Box } from '@/components/';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import MenuItem from './MenuItems';
-import IconRecent from './assets/icon-clock.svg';
-import IconContacts from './assets/icon-contacts.svg';
-import IconSearch from './assets/icon-search.svg';
-import IconFavorite from './assets/icon-stars.svg';
+import IconPad from './assets/icon-pad.svg';
 import IconTemplate from './assets/icon-template.svg';
 
 export const Menu = () => {
@@ -25,12 +21,8 @@ export const Menu = () => {
       $justify="space-between"
     >
       <Box className="pt-l" $direction="column" $gap="0.8rem">
-        <MenuItem Icon={IconSearch} label={t('Search')} href="/" />
+        <MenuItem Icon={IconPad} label={t('Pad')} href="/pads" />
         <MenuItem Icon={IconTemplate} label={t('Template')} href="/templates" />
-        <MenuItem Icon={IconFavorite} label={t('Favorite')} href="/favorite" />
-        <MenuItem Icon={IconRecent} label={t('Recent')} href="/recent" />
-        <MenuItem Icon={IconContacts} label={t('Contacts')} href="/contacts" />
-        <MenuItem Icon={IconGroup} label={t('Groups')} href="/groups" />
       </Box>
     </Box>
   );
