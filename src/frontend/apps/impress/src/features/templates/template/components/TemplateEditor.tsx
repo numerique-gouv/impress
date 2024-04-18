@@ -124,13 +124,26 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
         </Box>
       )}
 
-      <Box className="m-b" $css="margin-top:0;flex:1;" $overflow="auto">
+      <Box
+        className="m-b"
+        $overflow="auto"
+        $css={`
+          margin-top:0;
+          flex:1;
+          & .gjs-pn-panel.gjs-pn-options,
+          & .gjs-pn-panel.gjs-pn-views span[title='Settings'] {
+            display: none;
+          }
+        `}
+      >
         <GjsEditor
           grapesjs={grapesjs}
           options={{
             storageManager: {
               type: 'remote',
             },
+            showToolbar: false,
+            showDevices: false,
           }}
           plugins={[(editor) => pluginBlocksBasic(editor, {})]}
           onEditor={onEditor}
