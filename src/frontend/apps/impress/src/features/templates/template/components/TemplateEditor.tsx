@@ -31,17 +31,17 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
     },
   });
   const [editor, setEditor] = useState<Editor>();
-  const [showWarning, setShowWarning] = useState(false);
-
   const html = editor?.getHtml();
 
+  const [showWarning, setShowWarning] = useState(!!html);
+
   useEffect(() => {
-    if (showWarning || !html) {
+    if (!html) {
       return;
     }
 
-    setShowWarning(html.includes('{{body}}') === false);
-  }, [html, showWarning]);
+    setShowWarning(!html.includes('{{body}}'));
+  }, [html]);
 
   useEffect(() => {
     if (!editor?.loadProjectData || !editor?.Storage) {
@@ -106,17 +106,15 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
           {t('Save template')}
         </Button>
       </Box>
-      {showWarning && html && (
-        <Box
-          className="m-b"
-          $css="margin-top:0;"
-          $effect={html.includes('{{body}}') ? 'hide' : 'show'}
-        >
-          <Alert
-            type={VariantType.WARNING}
-          >{`The {{body}} tag is necessary to works with the pads.`}</Alert>
-        </Box>
-      )}
+      <Box
+        className="m-b"
+        $css="margin-top:0;"
+        $effect={showWarning ? 'show' : 'hide'}
+      >
+        <Alert
+          type={VariantType.WARNING}
+        >{`The {{body}} tag is necessary to works with the pads.`}</Alert>
+      </Box>
 
       {!template.abilities.partial_update && (
         <Box className="m-b" $css="margin-top:0;">

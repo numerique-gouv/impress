@@ -47,11 +47,22 @@ export const Box = styled('div')<BoxProps>`
   ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
   ${({ $css }) => $css && `${$css};`}
   ${({ $effect }) => {
+    let effect;
     switch ($effect) {
       case 'show':
-        return showEffect;
+        effect = showEffect;
+        break;
       case 'hide':
-        return hideEffect;
+        effect = hideEffect;
+        break;
     }
+
+    return (
+      effect &&
+      ` 
+        transition: all 0.3s ease-in-out;
+        ${effect}
+      `
+    );
   }}
 `;
