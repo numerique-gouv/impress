@@ -1,35 +1,23 @@
 import GjsEditor from '@grapesjs/react';
-import {
-  Alert,
-  Button,
-  VariantType,
-  useToastProvider,
-} from '@openfun/cunningham-react';
+import { Alert, VariantType } from '@openfun/cunningham-react';
 import grapesjs, { Editor, ProjectData } from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import pluginBlocksBasic from 'grapesjs-blocks-basic';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { Box, Text } from '@/components';
+import { Box } from '@/components';
 
-import { useUpdateTemplate } from '../api/useUpdateTemplate';
 import { useUpdateTemplateCodeEditor } from '../api/useUpdateTemplateCodeEditor';
 import { Template } from '../types';
+
+import { TemplateTools } from './TemplateTools';
 
 interface TemplateEditorProps {
   template: Template;
 }
 
 export const TemplateEditor = ({ template }: TemplateEditorProps) => {
-  const { t } = useTranslation();
-  const { toast } = useToastProvider();
   const { mutate: updateCodeEditor } = useUpdateTemplateCodeEditor();
-  const { mutate: updateTemplate } = useUpdateTemplate({
-    onSuccess: () => {
-      toast(t('Template save successfully'), VariantType.SUCCESS);
-    },
-  });
   const [editor, setEditor] = useState<Editor>();
   const html = editor?.getHtml();
 
@@ -83,29 +71,11 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
 
   return (
     <>
-      <Box
-        className="m-b mb-t mt-t"
-        $direction="row"
-        $align="center"
-        $justify="space-between"
-      >
-        <Text as="h2" $align="center">
-          {template.title}
-        </Text>
-        <Button
-          onClick={() => {
-            if (editor) {
-              updateTemplate({
-                id: template.id,
-                css: editor.getCss(),
-                html,
-              });
-            }
-          }}
-        >
-          {t('Save template')}
-        </Button>
-      </Box>
+      <TemplateTools
+        template={template}
+        html={html}
+        cssStyle={editor?.getCss()}
+      />
       <Box
         className="m-b"
         $css="margin-top:0;"
