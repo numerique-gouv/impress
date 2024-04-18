@@ -52,7 +52,7 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
       ? template.code_editor
       : editor.getProjectData();
 
-    editor.loadProjectData(projectData);
+    editor?.loadProjectData(projectData);
 
     editor.Storage.add('remote', {
       load() {
@@ -115,6 +115,14 @@ export const TemplateEditor = ({ template }: TemplateEditorProps) => {
           <Alert
             type={VariantType.WARNING}
           >{`The {{body}} tag is necessary to works with the pads.`}</Alert>
+        </Box>
+      )}
+
+      {!template.abilities.partial_update && (
+        <Box className="m-b" $css="margin-top:0;">
+          <Alert
+            type={VariantType.WARNING}
+          >{`Read only, you don't have the right to update this template.`}</Alert>
         </Box>
       )}
 

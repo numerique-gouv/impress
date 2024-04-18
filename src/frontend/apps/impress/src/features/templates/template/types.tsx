@@ -27,6 +27,7 @@ export interface Template {
     manage_accesses: boolean;
     retrieve: boolean;
     update: boolean;
+    partial_update: boolean;
   };
   accesses: Access[];
   code_editor: ProjectData;
