@@ -28,5 +28,6 @@ export interface Pad {
     retrieve: boolean;
     manage_accesses: boolean;
     update: boolean;
+    partial_update: boolean;
   };
 }
