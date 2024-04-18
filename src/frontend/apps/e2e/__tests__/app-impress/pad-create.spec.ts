@@ -28,6 +28,8 @@ test.describe('Pad Create', () => {
       }),
     ).toBeVisible();
 
+    await expect(card.getByText('Is it public ?')).toBeVisible();
+
     await expect(
       card.getByRole('button', {
         name: 'Create the pad',
@@ -104,5 +106,25 @@ test.describe('Pad Create', () => {
     ).toBeVisible({
       timeout: 15000,
     });
+  });
+
+  test('checks that the pad is public', async ({ page, browserName }) => {
+    const responsePromisePad = page.waitForResponse(
+      (response) =>
+        response.url().includes('/documents/') && response.status() === 201,
+    );
+
+    const panel = page.getByLabel('Pads panel').first();
+
+    await panel.getByRole('button', { name: 'Add a pad' }).click();
+
+    const padName = `My routing pad ${browserName}-${Math.floor(Math.random() * 1000)}`;
+    await page.getByText('Pad name').fill(padName);
+    await page.getByText('Is it public ?').click();
+    await page.getByRole('button', { name: 'Create the pad' }).click();
+
+    const responsePad = await responsePromisePad;
+    const is_public = (await responsePad.json()).is_public;
+    expect(is_public).toBeTruthy();
   });
 });
