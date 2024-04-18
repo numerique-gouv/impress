@@ -32,4 +32,7 @@ export interface Template {
   accesses: Access[];
   code_editor: ProjectData;
   title: string;
+  is_public: boolean;
+  css: string;
+  code: string;
 }

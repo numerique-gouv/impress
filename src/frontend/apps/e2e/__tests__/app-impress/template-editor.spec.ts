@@ -136,4 +136,39 @@ test.describe('Template Editor', () => {
       page.getByText('The {{body}} tag is necessary to works with the pads.'),
     ).toBeHidden();
   });
+
+  test('it duplicates the template', async ({ page, browserName }) => {
+    // eslint-disable-next-line playwright/no-skipped-test
+    test.skip(
+      browserName !== 'chromium',
+      'This test failed with safary because of the dragNdrop',
+    );
+
+    const randomTemplate = await createTemplate(
+      page,
+      'template-duplicate',
+      browserName,
+      1,
+    );
+
+    await expect(page.locator('h2').getByText(randomTemplate[0])).toBeVisible();
+
+    const iframe = page.frameLocator('iFrame.gjs-frame');
+
+    await page.getByTitle('Open Blocks').click();
+    await page
+      .locator('.gjs-editor .gjs-block[title="Text"]')
+      .dragTo(iframe.locator('body.gjs-dashed'));
+
+    await iframe.getByText('Insert your text here').fill('Hello World');
+    await iframe.locator('body.gjs-dashed').click();
+
+    await page.getByText('Duplicate template').click();
+
+    await expect(
+      page.getByText('Template duplicated successfully'),
+    ).toBeVisible();
+    const panel = page.getByLabel('Templates panel').first();
+    await expect(panel.getByText(`${randomTemplate[0]} - Copy`)).toBeVisible();
+  });
 });

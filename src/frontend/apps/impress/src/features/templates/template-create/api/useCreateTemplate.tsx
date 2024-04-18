@@ -3,21 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { KEY_LIST_TEMPLATE, Template } from '@/features/templates';
 
-type CreateTemplateParam = {
-  title: string;
-  is_public: boolean;
-};
+type CreateTemplateParam = Partial<Template>;
 
-export const createTemplate = async ({
-  title,
-  is_public,
-}: CreateTemplateParam): Promise<Template> => {
+export const createTemplate = async (
+  props: CreateTemplateParam,
+): Promise<Template> => {
   const response = await fetchAPI(`templates/`, {
     method: 'POST',
-    body: JSON.stringify({
-      title,
-      is_public,
-    }),
+    body: JSON.stringify(props),
   });
 
   if (!response.ok) {
