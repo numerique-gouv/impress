@@ -1,6 +1,7 @@
 # ruff: noqa: S311, S106
 """create_demo management command"""
 
+import json
 import logging
 import random
 import time
@@ -109,105 +110,22 @@ def create_demo(stdout):
     queue = BulkQueue(stdout)
 
     with Timeit(stdout, "Creating Template"):
+        with open("demo/data/template/code_editor.json", "r") as file:
+            json_data = json.load(file)
+
+        with open("demo/data/template/code.txt", "r") as text_file:
+            code_data = text_file.read()
+
+        with open("demo/data/template/css.txt", "r") as text_file:
+            css_data = text_file.read()
+
         queue.push(
             models.Template(
-                id="472d0633-20b8-4cb1-998a-1134ade092ba",
                 title="Demo Template",
                 description="This is the demo template",
-                code="""
-<page size="A4">
-  <div class="header">
-    <image src="https://upload.wikimedia.org/wikipedia/fr/7/72/Logo_du_Gouvernement_de_la_R%C3%A9publique_fran%C3%A7aise_%282020%29.svg"/>
-    <h2 class="header-title">Direction<br/>Interministérielle<br/>du numérique</h2>
-  </div>
-  <div class="second-row">
-    <div class="who-ref">
-      <div class="who">La directrice</div>
-      <p class="ref">Réf: 1200001</p>
-    </div>
-    <div class="date">Paris, le 28/09/2023</div>
-  </div>
-  <div class="third-row">
-    <h4 class="title">Note</h4>
-    <h5 class="subtitle">à Monsieur le Premier Ministre</h5>
-  </div>
-
-  <div class="content">
-    <div class="object">Objet: Generated PDF</div>
-    <div class="body">{{ body }}</div>
-  </div>
-</page>
-""",
-                css="""
-body {
-  background: white; 
-  font-family: arial
-}
-
-img {
-  width: 5cm;
-  margin-left: -0.4cm;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.header-title {
-  text-align: right;
-  margin-top: 3rem;
-  font-size: 1.2rem;
-}
-
-.second-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.2cm;
-}
-
-.ref {
-  margin-top: 0;
-}
-
-.who {
-  font-weight: medium;
-}
-
-.date, .ref {
-  font-size: 12px;
-}
-
-.title, .subtitle {
-  margin: 0;
-}
-
-.subtitle {
-  font-weight: normal;
-}
-
-.object {
-  font-weight: bold;
-  margin-bottom: 1.2cm;
-  margin-top: 3rem
-}
-.body{
-  margin-top: 1.5rem
-}
-
-h1 {
-  font-size: 18px;
-}
-
-h2 {
-  font-size: 14px;
-}
-
-p {
-  text-align: justify;
-  ligne-height: 0.8;
-}
-""",
+                code_editor=json_data,
+                code=code_data,
+                css=css_data,
                 is_public=True,
             )
         )
