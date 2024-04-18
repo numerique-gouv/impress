@@ -30,6 +30,8 @@ def test_api_templates_retrieve_anonymous_public():
         "title": template.title,
         "code_editor": {},
         "is_public": True,
+        "code": template.code,
+        "css": template.css,
     }
 
 
@@ -73,6 +75,8 @@ def test_api_templates_retrieve_authenticated_unrelated_public():
         "title": template.title,
         "code_editor": {},
         "is_public": True,
+        "code": template.code,
+        "css": template.css,
     }
 
 
@@ -139,6 +143,8 @@ def test_api_templates_retrieve_authenticated_related_direct():
         "abilities": template.get_abilities(user),
         "code_editor": {},
         "is_public": template.is_public,
+        "code": template.code,
+        "css": template.css,
     }
 
 
@@ -254,6 +260,8 @@ def test_api_templates_retrieve_authenticated_related_team_members(
         "abilities": template.get_abilities(user),
         "code_editor": {},
         "is_public": False,
+        "code": template.code,
+        "css": template.css,
     }
 
 
@@ -351,6 +359,8 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
         "abilities": template.get_abilities(user),
         "code_editor": {},
         "is_public": False,
+        "code": template.code,
+        "css": template.css,
     }
 
 
@@ -452,4 +462,6 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
         "abilities": template.get_abilities(user),
         "code_editor": {},
         "is_public": False,
+        "code": template.code,
+        "css": template.css,
     }
