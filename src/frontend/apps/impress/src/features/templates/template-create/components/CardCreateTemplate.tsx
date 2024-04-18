@@ -25,6 +25,7 @@ export const CardCreateTemplate = () => {
     },
   });
   const [templateName, setTemplateName] = useState('');
+  const [templatePublic, setTemplatePublic] = useState(false);
   const { colorsTokens } = useCunninghamTheme();
 
   return (
@@ -52,7 +53,11 @@ export const CardCreateTemplate = () => {
           label={t('Template name')}
           {...{ error, isError, isPending, setTemplateName }}
         />
-        <Switch label={t('Is it public ?')} labelSide="right" />
+        <Switch
+          label={t('Is it public ?')}
+          labelSide="right"
+          onChange={() => setTemplatePublic(!templatePublic)}
+        />
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
         <StyledLink href="/">
@@ -60,7 +65,7 @@ export const CardCreateTemplate = () => {
         </StyledLink>
         <Button
           onClick={() =>
-            createTemplate({ title: templateName, is_public: true })
+            createTemplate({ title: templateName, is_public: templatePublic })
           }
           disabled={!templateName}
         >

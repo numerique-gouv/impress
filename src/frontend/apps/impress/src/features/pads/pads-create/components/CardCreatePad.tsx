@@ -25,6 +25,7 @@ export const CardCreatePad = () => {
     },
   });
   const [padName, setPadName] = useState('');
+  const [padPublic, setPadPublic] = useState(false);
   const { colorsTokens } = useCunninghamTheme();
 
   return (
@@ -52,14 +53,18 @@ export const CardCreatePad = () => {
           label={t('Pad name')}
           {...{ error, isError, isPending, setPadName }}
         />
-        <Switch label={t('Is it public ?')} labelSide="right" />
+        <Switch
+          label={t('Is it public ?')}
+          labelSide="right"
+          onChange={() => setPadPublic(!padPublic)}
+        />
       </Box>
       <Box $justify="space-between" $direction="row" $align="center">
         <StyledLink href="/">
           <Button color="secondary">{t('Cancel')}</Button>
         </StyledLink>
         <Button
-          onClick={() => createPad({ title: padName, is_public: true })}
+          onClick={() => createPad({ title: padName, is_public: padPublic })}
           disabled={!padName}
         >
           {t('Create the pad')}
