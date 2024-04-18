@@ -9,12 +9,8 @@ test.beforeEach(async ({ page, browserName }) => {
 
 test.describe('Menu', () => {
   const menuItems = [
-    { name: 'Search', isDefault: true },
+    { name: 'Pad', isDefault: true },
     { name: 'Template', isDefault: false },
-    { name: 'Favorite', isDefault: false },
-    { name: 'Recent', isDefault: false },
-    { name: 'Contacts', isDefault: false },
-    { name: 'Groups', isDefault: false },
   ];
   for (const { name, isDefault } of menuItems) {
     test(`checks that ${name} menu item is displaying correctly`, async ({
