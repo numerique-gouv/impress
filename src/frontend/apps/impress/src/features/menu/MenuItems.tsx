@@ -12,16 +12,22 @@ interface MenuItemProps {
   Icon: SVGComponent;
   label: string;
   href: string;
+  alias?: string[];
 }
 
-const MenuItem = ({ Icon, label, href }: MenuItemProps) => {
+const MenuItem = ({ Icon, label, href, alias }: MenuItemProps) => {
   const { t } = useTranslation();
   const pathname = usePathname();
   const { colorsTokens } = useCunninghamTheme();
   const parentRef = useRef(null);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
-  const isActive = pathname === href;
+  const isActive =
+    pathname === href ||
+    alias?.includes(pathname) ||
+    pathname.startsWith(`${href}/`) ||
+    alias?.some((a) => pathname.startsWith(`${a}/`));
+
   const { color, background, colorTooltip, backgroundTooltip } = isActive
     ? {
         color: colorsTokens()['primary-600'],
@@ -42,7 +48,7 @@ const MenuItem = ({ Icon, label, href }: MenuItemProps) => {
       aria-current={isActive && 'page'}
       ref={parentRef}
       onMouseOver={() => setIsTooltipOpen(true)}
-      onMouseOut={() => setIsTooltipOpen(false)}
+      onMouseLeave={() => setIsTooltipOpen(false)}
       style={{ display: 'block' }}
     >
       <Box

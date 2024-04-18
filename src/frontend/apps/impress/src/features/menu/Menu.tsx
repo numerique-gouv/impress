@@ -21,7 +21,7 @@ export const Menu = () => {
       $justify="space-between"
     >
       <Box className="pt-l" $direction="column" $gap="0.8rem">
-        <MenuItem Icon={IconPad} label={t('Pad')} href="/pads" />
+        <MenuItem Icon={IconPad} label={t('Pad')} href="/" alias={['/pads']} />
         <MenuItem Icon={IconTemplate} label={t('Template')} href="/templates" />
       </Box>
     </Box>
