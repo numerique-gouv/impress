@@ -134,4 +134,39 @@ test.describe('Pad Editor', () => {
     expect(pdfText).toContain('My template !');
     expect(pdfText).toContain('And my pad !');
   });
+
+  test('it renders correctly when we switch from one pad to another', async ({
+    page,
+    browserName,
+  }) => {
+    const [firstPad, secondPad] = await createPad(
+      page,
+      'pad-multiple',
+      browserName,
+      2,
+    );
+
+    const panel = page.getByLabel('Pads panel').first();
+
+    // Check the first pad
+    await panel.getByText(firstPad).click();
+    await expect(page.locator('h2').getByText(firstPad)).toBeVisible();
+    await page.locator('.ProseMirror.bn-editor').click();
+    await page.locator('.ProseMirror.bn-editor').fill('Hello World Pad 1');
+    await expect(page.getByText('Hello World Pad 1')).toBeVisible();
+
+    // Check the second pad
+    await panel.getByText(secondPad).click();
+    await expect(page.locator('h2').getByText(secondPad)).toBeVisible();
+    await expect(page.getByText('Hello World Pad 1')).toBeHidden();
+    await page.locator('.ProseMirror.bn-editor').click();
+    await page.locator('.ProseMirror.bn-editor').fill('Hello World Pad 2');
+    await expect(page.getByText('Hello World Pad 2')).toBeVisible();
+
+    // Check the first pad again
+    await panel.getByText(firstPad).click();
+    await expect(page.locator('h2').getByText(firstPad)).toBeVisible();
+    await expect(page.getByText('Hello World Pad 2')).toBeHidden();
+    await expect(page.getByText('Hello World Pad 1')).toBeVisible();
+  });
 });

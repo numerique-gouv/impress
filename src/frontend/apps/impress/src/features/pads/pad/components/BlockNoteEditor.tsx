@@ -1,7 +1,8 @@
-import { BlockNoteView, useCreateBlockNote } from '@blocknote/react';
+import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
+import { BlockNoteView } from '@blocknote/react';
 import '@blocknote/react/style.css';
 import { Alert, VariantType } from '@openfun/cunningham-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { WebrtcProvider } from 'y-webrtc';
 
 import { Box } from '@/components';
@@ -19,19 +20,10 @@ interface BlockNoteEditorProps {
 
 export const BlockNoteEditor = ({ pad }: BlockNoteEditorProps) => {
   const { createProvider, padsStore } = usePadStore();
-  const [provider, setProvider] = useState<WebrtcProvider>(
-    padsStore?.[pad.id]?.provider,
-  );
-
-  useEffect(() => {
-    if (provider) {
-      return;
-    }
-
-    setProvider(createProvider(pad.id));
-  }, [createProvider, pad.id, provider]);
+  const provider = padsStore?.[pad.id]?.provider;
 
   if (!provider) {
+    createProvider(pad.id);
     return null;
   }
 
@@ -45,18 +37,25 @@ interface BlockNoteContentProps {
 
 export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
   const { userData } = useAuthStore();
-  const { setEditor } = usePadStore();
+  const { setEditor, padsStore } = usePadStore();
 
-  const editor = useCreateBlockNote({
-    collaboration: {
-      provider,
-      fragment: provider.doc.getXmlFragment('document-store'),
-      user: {
-        name: userData?.name || userData?.email || 'Anonymous',
-        color: randomColor(),
+  const storedEditor = padsStore?.[pad.id]?.editor;
+  const editor = useMemo(() => {
+    if (storedEditor) {
+      return storedEditor;
+    }
+
+    return BlockNoteEditorCore.create({
+      collaboration: {
+        provider,
+        fragment: provider.doc.getXmlFragment('document-store'),
+        user: {
+          name: userData?.name || userData?.email || 'Anonymous',
+          color: randomColor(),
+        },
       },
-    },
-  });
+    });
+  }, [provider, storedEditor, userData?.email, userData?.name]);
 
   editor.isEditable = pad.abilities.partial_update;
 
