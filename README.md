@@ -28,8 +28,19 @@ $ docker compose -v
 The easiest way to start working on the project is to use GNU Make:
 
 ```bash
-$ make bootstrap
+$ make bootstrap FLUSH_ARGS='--no-input'
 ```
+
+Then you can run the following command to start the project in development mode:
+```bash
+$ make run-front-impress
+```
+You will be prompted to log in, the default credentials are:
+```bash
+username: impress
+password: impress
+```
+---
 
 This command builds the `app` container, installs dependencies, performs
 database migrations and compile translations. It's a good idea to use this
