@@ -1,7 +1,6 @@
 import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
 import { BlockNoteView } from '@blocknote/react';
 import '@blocknote/react/style.css';
-import { Alert, VariantType } from '@openfun/cunningham-react';
 import React, { useEffect, useMemo } from 'react';
 import { WebrtcProvider } from 'y-webrtc';
 
@@ -57,8 +56,6 @@ export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
     });
   }, [provider, storedEditor, userData?.email, userData?.name]);
 
-  editor.isEditable = pad.abilities.partial_update;
-
   useEffect(() => {
     setEditor(pad.id, editor);
   }, [setEditor, pad.id, editor]);
@@ -71,13 +68,6 @@ export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
         };
       `}
     >
-      {!pad.abilities.partial_update && (
-        <Box className="m-b" $css="margin-top:0;">
-          <Alert
-            type={VariantType.WARNING}
-          >{`Read only, you don't have the right to update this pad.`}</Alert>
-        </Box>
-      )}
       <BlockNoteView editor={editor} formattingToolbar={false}>
         <BlockNoteToolbar />
       </BlockNoteView>
