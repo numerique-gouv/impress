@@ -11,9 +11,15 @@ backend:
     DJANGO_CSRF_TRUSTED_ORIGINS: http://impress-staging.beta.numerique.gouv.fr,https://impress-staging.beta.numerique.gouv.fr
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"
-    DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
+    DJANGO_SECRET_KEY:
+      secretKeyRef:
+        name: backend
+        key: DJANGO_SECRET_KEY
     DJANGO_SETTINGS_MODULE: impress.settings
-    DJANGO_SUPERUSER_PASSWORD: admin
+    DJANGO_SUPERUSER_PASSWORD:
+      secretKeyRef:
+        name: backend
+        key: DJANGO_SUPERUSER_PASSWORD
     DJANGO_EMAIL_HOST: "snap-mail.numerique.gouv.fr"
     DJANGO_EMAIL_PORT: 465
     DJANGO_EMAIL_USE_SSL: True
@@ -22,8 +28,14 @@ backend:
     OIDC_OP_AUTHORIZATION_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/authorize
     OIDC_OP_TOKEN_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/token
     OIDC_OP_USER_ENDPOINT: https://fca.integ01.dev-agentconnect.fr/api/v2/userinfo
-    OIDC_RP_CLIENT_ID: {{ .Values.oidc.clientId }}
-    OIDC_RP_CLIENT_SECRET: {{ .Values.oidc.clientSecret }}
+    OIDC_RP_CLIENT_ID:
+      secretKeyRef:
+        name: backend
+        key: OIDC_RP_CLIENT_ID
+    OIDC_RP_CLIENT_SECRET:
+      secretKeyRef:
+        name: backend
+        key: OIDC_RP_CLIENT_SECRET
     OIDC_RP_SIGN_ALGO: RS256
     OIDC_RP_SCOPES: "openid email"
     OIDC_REDIRECT_ALLOWED_HOSTS: https://impress-staging.beta.numerique.gouv.fr
