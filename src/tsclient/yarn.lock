@@ -88,10 +88,10 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-openapi-typescript-codegen@0.28.0:
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/openapi-typescript-codegen/-/openapi-typescript-codegen-0.28.0.tgz#2becaba1c655feb851d04e1f2fac07c55d168e57"
-  integrity sha512-BZTsMUwhA/h2zCzisjagLUPQNHE64N1EN074yGB+WqA0LFlJwy8sKQYrXH5G4phbjj9KSPx7xuWKO4hkPIOARw==
+openapi-typescript-codegen@0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/openapi-typescript-codegen/-/openapi-typescript-codegen-0.29.0.tgz#e98a1daa223ccdeb1cc51b2e2dc11bafae6fe746"
+  integrity sha512-/wC42PkD0LGjDTEULa/XiWQbv4E9NwLjwLjsaJ/62yOsoYhwvmBR31kPttn1DzQ2OlGe5stACcF/EIkZk43M6w==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^11.5.4"
     camelcase "^6.3.0"
