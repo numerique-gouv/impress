@@ -13,7 +13,7 @@
       "enabled": false,
       "groupName": "ignored js dependencies",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["node", "node-fetch", "i18next-parser"]
+      "matchPackageNames": ["node", "node-fetch", "i18next-parser", "eslint"]
     }
   ]
 }
