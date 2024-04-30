@@ -1,8 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = process.env.PORT || 3000;
+const baseURL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
-const baseURL = `http://localhost:${PORT}`;
+console.log('AGENT_CONNECT_SIGNIN:', process.env.AGENT_CONNECT_SIGNIN);
+console.log('BASEURL:', baseURL);
+console.log('process.env.CI:', process.env.CI);
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -25,30 +28,37 @@ export default defineConfig({
   reporter: [['html', { outputFolder: './report' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: baseURL,
+    baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
 
   webServer: {
-    command: `cd ../.. && yarn app:${
-      process.env.CI ? 'start -p ' : 'dev --port '
-    } ${PORT}`,
+    command: !process.env.CI ? `cd ../.. && yarn app:dev --port ${PORT}` : '',
     url: baseURL,
     timeout: 120 * 1000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
+    ignoreHTTPSErrors: true,
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], locale: 'en-US' },
+      use: {
+        ...devices['Desktop Chrome'],
+        locale: 'en-US',
+        ignoreHTTPSErrors: true,
+      },
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'], locale: 'en-US' },
+      use: {
+        ...devices['Desktop Safari'],
+        locale: 'en-US',
+        ignoreHTTPSErrors: true,
+      },
     },
   ],
 });
