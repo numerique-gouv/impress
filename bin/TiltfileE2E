@@ -1,0 +1,4 @@
+load('ext://namespace', 'namespace_create', 'namespace_inject')
+namespace_create('impress')
+
+k8s_yaml(local('cd ../src/helm && helmfile -n impress -e dev template .'))
