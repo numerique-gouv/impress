@@ -159,6 +159,7 @@ jobs:
           
       - name: Wait for all pods to be ready
         run: |
+          sleep 60
           # Continuously check until all pods are ready or until timeout
           for i in {1..30}; do  # attempts for up to 5 minutes
             NOT_READY=$(kubectl get pods -A --no-headers | awk '$4 != "Running" && $4 != "Completed" {print $1, $2, $4}')
@@ -183,7 +184,7 @@ jobs:
         env: 
           SOPS_AGE_KEY: ${{ secrets.SOPS_PRIVATE }}
         # run: tilt up -f ./bin/TiltfileE2E
-        run: tilt ci --debug --verbose -f ./bin/Tiltfile
+        run: tilt ci --debug --verbose -f ./bin/TiltfileE2E
 
       - name: Install Playwright Browsers
         run: cd src/frontend/apps/e2e && yarn install
