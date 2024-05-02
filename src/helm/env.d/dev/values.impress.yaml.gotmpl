@@ -54,9 +54,11 @@ frontend:
     NEXT_PUBLIC_SIGNALING_URL: wss://impress.127.0.0.1.nip.io/ws
 
   replicas: 1
+  {{ if .Values.localDev }}
   command:
     - yarn
     - dev
+  {{ end }}
 
   image:
     repository: localhost:5001/impress-frontend
