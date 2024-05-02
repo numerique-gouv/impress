@@ -76,8 +76,10 @@ frontend:
 
   replicas: 1
   command:
+  {{ if .Values.localDev }}
     - yarn
     - dev
+  {{ end }}
 
   image:
     repository: localhost:5001/impress-frontend
