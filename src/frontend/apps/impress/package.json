@@ -35,7 +35,6 @@
     "zustand": "4.5.2"
   },
   "devDependencies": {
-    "@grapesjs/react": "1.0.0",
     "@svgr/webpack": "8.1.0",
     "@tanstack/react-query-devtools": "5.32.0",
     "@testing-library/jest-dom": "6.4.2",
