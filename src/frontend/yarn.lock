@@ -1482,11 +1482,6 @@
   dependencies:
     tslib "^2.4.0"
 
-"@grapesjs/react@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@grapesjs/react/-/react-1.0.0.tgz#bfa938128db7b69ca1c23439b66decf4eaa0ca9a"
-  integrity sha512-HHttzxwgvhbxQqqsiiQzb+OJtKFl8yWI9Yp3IgPgiKXqwY19lEJWSkCukvfqxugbYRxi0M1uERLAt209AmY5vQ==
-
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.14.tgz#d78e481a039f7566ecc9660b4ea7fe6b1fec442b"
