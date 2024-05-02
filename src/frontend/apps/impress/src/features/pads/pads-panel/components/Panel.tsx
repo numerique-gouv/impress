@@ -61,13 +61,11 @@ export const Panel = () => {
         `}
       >
         <Box
-          className="pr-l pl-s pt-s pb-s"
+          $padding={{ all: 'small', right: 'large' }}
           $direction="row"
           $align="center"
           $justify="space-between"
-          $css={`
-            border-bottom: 1px solid ${colorsTokens()['primary-300']};
-          `}
+          $css={`border-bottom: 1px solid ${colorsTokens()['primary-300']};`}
         >
           <Text $weight="bold" $size="1.25rem">
             {t('Recents')}

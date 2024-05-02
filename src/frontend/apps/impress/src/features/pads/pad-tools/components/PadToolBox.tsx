@@ -43,7 +43,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
 
   return (
     <Box
-      className="m-b"
+      $margin="big"
       $align="center"
       $direction="row"
       $gap="1rem"
