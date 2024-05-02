@@ -6,7 +6,8 @@ import {
 } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
-import { Template } from '@/features/templates/template';
+
+import { Template } from '../types';
 
 export enum TemplatesOrdering {
   BY_CREATED_ON = 'created_at',
