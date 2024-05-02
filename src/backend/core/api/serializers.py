@@ -148,7 +148,6 @@ class TemplateSerializer(BaseResourceSerializer):
         fields = [
             "id",
             "title",
-            "code_editor",
             "accesses",
             "abilities",
             "css",

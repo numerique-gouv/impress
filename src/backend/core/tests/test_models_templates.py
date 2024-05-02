@@ -167,9 +167,3 @@ def test_models_templates_get_abilities_preset_role(django_assert_num_queries):
         "partial_update": False,
         "generate_document": True,
     }
-
-
-def test_models_templates_get_code_editor():
-    """Check code_editor in the template model"""
-    template = factories.TemplateFactory(code_editor={"test": "ok"})
-    assert template.code_editor == {"test": "ok"}
