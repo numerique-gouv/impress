@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// process.env.BASE_URL = 'https://impress.127.0.0.1.nip.io';
+// process.env.AGENT_CONNECT_SIGNIN = 'true';
+
 const PORT = process.env.PORT || 3000;
 const baseURL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
@@ -45,6 +48,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         locale: 'en-US',
+        ignoreHTTPSErrors: true,
       },
     },
     {
@@ -52,6 +56,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         locale: 'en-US',
+        ignoreHTTPSErrors: true,
       },
     },
   ],
