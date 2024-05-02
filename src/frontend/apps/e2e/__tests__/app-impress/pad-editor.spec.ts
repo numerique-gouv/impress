@@ -2,11 +2,11 @@ import { expect, test } from '@playwright/test';
 import cs from 'convert-stream';
 import pdf from 'pdf-parse';
 
-import { createPad, keyCloakSignIn } from './common';
+import { createPad, signIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
+  await signIn(page, browserName);
 });
 
 test.describe('Pad Editor', () => {

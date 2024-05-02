@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-import { keyCloakSignIn } from './common';
+import { signIn } from './common';
 
 test.beforeEach(async ({ page, browserName }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
+  await signIn(page, browserName);
 });
 
 test.describe('Menu', () => {
