@@ -1,95 +1,55 @@
-* {
-  box-sizing: border-box;
-}
 body {
+  background: white; 
+  font-family: arial
+}
+img {
+  width: 5cm;
+  margin-left: -0.4cm;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+.header-title {
+  text-align: right;
+  margin-top: 3rem;
+  font-size: 1.2rem;
+}
+.second-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.2cm;
+}
+.ref {
+  margin-top: 0;
+}
+.who {
+  font-weight: medium;
+}
+.date, .ref {
+  font-size: 12px;
+}
+.title, .subtitle {
   margin: 0;
 }
-.gjs-row {
-  width: 100%;
-  display: table;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 10px;
+.subtitle {
+  font-weight: normal;
 }
-.gjs-cell {
-  width: 8%;
-  height: 75px;
-  display: table-cell;
+.object {
+  font-weight: bold;
+  margin-bottom: 1.2cm;
+  margin-top: 3rem
 }
-#ix1a {
-  height: 100%;
-  padding: 0px 0px 0px 0px;
+.body{
+  margin-top: 1.5rem
 }
-#ioje {
-  color: black;
-  width: 214px;
-  height: 128px;
-  margin: 0px 0px 0px -12px;
+h1 {
+  font-size: 18px;
 }
-#i1v9 {
-  top: -5px;
-  float: right;
-  margin: -13px 0px 0px 0px;
-  display: block;
-  padding: 0px 10px 0px 0px;
-  position: relative;
-  font-size: 19px;
-  text-align: right;
-  font-family: Arial Black, Gadget, sans-serif;
-  font-weight: 800;
-  line-height: 26px;
-  letter-spacing: 0px;
-}
-#ipfx3 {
-  margin: 60px 0px 0px 0px;
-}
-#ix7wo {
-  padding: 10px 10px 3px 0px;
-  font-family: Georgia, serif;
-}
-#ij1wk {
-  padding: 0px 10px 10px 0px;
-  font-size: 12px;
-  font-family: Georgia, serif;
-}
-#iwp89 {
-  padding: 10px 0px 3px 10px;
+h2 {
   font-size: 14px;
-  text-align: right;
-  font-family: Georgia, serif;
 }
-#i59gh {
-  padding: 10px;
-  font-size: 15px;
-  font-family: Georgia, serif;
-}
-#i2egv {
-  padding: 29px 10px 10px 10px;
-  font-size: 20px;
-  font-family: Georgia, serif;
-  font-weight: 900;
-}
-#icpsv {
-  padding: 30px 10px 10px 10px;
-  font-family: Georgia, serif;
-}
-#ifn8 {
-  padding: 0px 0px 0px 0px;
-}
-#ip2l {
-  padding: 0px 0px 0px 0px;
-}
-#iqn81 {
-  bottom: 0px;
-  padding: 10px 10px 0px 10px;
-  position: fixed;
-  font-size: 12px;
-  font-family: Georgia, serif;
-}
-@media (max-width: 768px) {
-  .gjs-cell {
-    width: 100%;
-    display: block;
-  }
+p {
+  text-align: justify;
+  ligne-height: 0.8;
 }

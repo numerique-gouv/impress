@@ -1,37 +1,21 @@
-<body id="iubr">
-  <div id="ix1a" class="gjs-row">
-    <div id="iqey" class="gjs-cell">
-      <div id="ip2l" class="gjs-row">
-        <div id="i9ps" class="gjs-cell">
-          <img
-            id="ioje"
-            src="https://upload.wikimedia.org/wikipedia/fr/7/72/Logo_du_Gouvernement_de_la_R%C3%A9publique_fran%C3%A7aise_%282020%29.svg"
-          />
-        </div>
-        <div id="ifn8" class="gjs-cell">
-          <div id="i1v9">
-            Direction <br />Interministérielle <br />du numérique
-          </div>
-        </div>
-      </div>
-      <div id="ipfx3" class="gjs-row">
-        <div id="isc8e" class="gjs-cell">
-          <div id="ix7wo">La directrice</div>
-          <div id="ij1wk">Réf: 12000001</div>
-        </div>
-        <div id="iei3g" class="gjs-cell">
-          <div id="iwp89">Paris, le 28/09/2023</div>
-        </div>
-      </div>
-      <div id="i59gh"><b>Note</b><br />à Monsieur Le Premier Ministre</div>
-      <div id="i2egv">Objet: Generated PDF</div>
-      <div id="icpsv">{{ body }}<br /></div>
+<page size="A4">
+  <div class="header">
+    <image src="https://upload.wikimedia.org/wikipedia/fr/7/72/Logo_du_Gouvernement_de_la_R%C3%A9publique_fran%C3%A7aise_%282020%29.svg"/>
+    <h2 class="header-title">Direction<br/>Interministérielle<br/>du numérique</h2>
+  </div>
+  <div class="second-row">
+    <div class="who-ref">
+      <div class="who">La directrice</div>
+      <p class="ref">Réf: 1200001</p>
     </div>
+    <div class="date">Paris, le 28/09/2023</div>
   </div>
-  <div id="iqn81">
-    Footer: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-    commodo consequat
+  <div class="third-row">
+    <h4 class="title">Note</h4>
+    <h5 class="subtitle">à Monsieur le Premier Ministre</h5>
   </div>
-</body>
+  <div class="content">
+    <div class="object">Objet: Generated PDF</div>
+    <div class="body">{{ body }}</div>
+  </div>
+</page>

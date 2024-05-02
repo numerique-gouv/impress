@@ -110,9 +110,6 @@ def create_demo(stdout):
     queue = BulkQueue(stdout)
 
     with Timeit(stdout, "Creating Template"):
-        with open("demo/data/template/code_editor.json", "r") as file:
-            json_data = json.load(file)
-
         with open("demo/data/template/code.txt", "r") as text_file:
             code_data = text_file.read()
 
@@ -123,7 +120,6 @@ def create_demo(stdout):
             models.Template(
                 title="Demo Template",
                 description="This is the demo template",
-                code_editor=json_data,
                 code=code_data,
                 css=css_data,
                 is_public=True,
