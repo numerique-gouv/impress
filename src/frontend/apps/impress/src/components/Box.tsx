@@ -2,6 +2,12 @@ import { ComponentPropsWithRef, ReactHTML } from 'react';
 import styled from 'styled-components';
 import { CSSProperties } from 'styled-components/dist/types';
 
+import {
+  MarginPadding,
+  stylesMargin,
+  stylesPadding,
+} from '@/utils/styleBuilder';
+
 import { hideEffect, showEffect } from './Effect';
 
 export interface BoxProps {
@@ -18,11 +24,13 @@ export interface BoxProps {
   $height?: CSSProperties['height'];
   $justify?: CSSProperties['justifyContent'];
   $overflow?: CSSProperties['overflow'];
+  $margin?: MarginPadding;
+  $maxWidth?: CSSProperties['maxWidth'];
+  $minWidth?: CSSProperties['minWidth'];
+  $padding?: MarginPadding;
   $position?: CSSProperties['position'];
   $radius?: CSSProperties['borderRadius'];
   $width?: CSSProperties['width'];
-  $maxWidth?: CSSProperties['maxWidth'];
-  $minWidth?: CSSProperties['minWidth'];
 }
 
 export type BoxType = ComponentPropsWithRef<typeof Box>;
@@ -39,12 +47,14 @@ export const Box = styled('div')<BoxProps>`
   ${({ $gap }) => $gap && `gap: ${$gap};`}
   ${({ $height }) => $height && `height: ${$height};`}
   ${({ $justify }) => $justify && `justify-content: ${$justify};`}
+  ${({ $margin }) => $margin && stylesMargin($margin)}
+  ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
+  ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
   ${({ $overflow }) => $overflow && `overflow: ${$overflow};`}
+  ${({ $padding }) => $padding && stylesPadding($padding)}
   ${({ $position }) => $position && `position: ${$position};`}
   ${({ $radius }) => $radius && `border-radius: ${$radius};`}
   ${({ $width }) => $width && `width: ${$width};`}
-  ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
-  ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
   ${({ $css }) => $css && `${$css};`}
   ${({ $effect }) => {
     let effect;
