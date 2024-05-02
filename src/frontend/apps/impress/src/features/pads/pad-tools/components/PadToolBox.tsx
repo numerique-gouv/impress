@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box } from '@/components';
 import { Pad } from '@/features/pads/pad';
-import { TemplatesOrdering, useTemplates } from '@/features/templates';
+
+import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 
 import PDFButton from './PDFButton';
 

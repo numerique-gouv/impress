@@ -7,9 +7,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Pad, usePadStore } from '@/features/pads/pad';
-import { Template } from '@/features/templates/template';
 
 import { useCreatePdf } from '../api/useCreatePdf';
+import { Template } from '../types';
 import { downloadFile } from '../utils';
 
 interface PDFButtonProps {
