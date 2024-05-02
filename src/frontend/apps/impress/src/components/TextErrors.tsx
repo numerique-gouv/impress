@@ -20,7 +20,7 @@ export const TextErrors = ({
         causes.map((cause, i) => (
           <Text
             key={`causes-${i}`}
-            className="mt-s"
+            $margin={{ top: 'small' }}
             $theme="danger"
             $textAlign="center"
             {...textProps}
@@ -31,7 +31,7 @@ export const TextErrors = ({
 
       {!causes && (
         <Text
-          className="mt-s"
+          $margin={{ top: 'small' }}
           $theme="danger"
           $textAlign="center"
           {...textProps}

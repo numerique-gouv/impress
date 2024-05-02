@@ -30,7 +30,7 @@ export const CardCreatePad = () => {
 
   return (
     <Card
-      className="p-b"
+      $padding="big"
       $height="70%"
       $justify="space-between"
       $width="100%"

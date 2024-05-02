@@ -40,7 +40,7 @@ export const Header = () => {
     <StyledHeader>
       <RedStripe />
       <Box
-        className="ml-bx mr-bx"
+        $margin={{ horizontal: 'xbig' }}
         $align="center"
         $justify="space-between"
         $direction="row"
@@ -55,7 +55,7 @@ export const Header = () => {
             />
             <Box $align="center" $gap="1rem" $direction="row">
               <Image priority src={IconImpress} alt={t('Impress Logo')} />
-              <Text className="m-0" as="h2" $theme="primary">
+              <Text $margin="none" as="h2" $theme="primary">
                 {t('Impress')}
               </Text>
             </Box>

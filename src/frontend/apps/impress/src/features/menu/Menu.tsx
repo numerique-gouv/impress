@@ -14,12 +14,13 @@ export const Menu = () => {
   return (
     <Box
       as="menu"
-      className="m-0 p-0"
+      $padding="none"
+      $margin="none"
       $background={colorsTokens()['primary-800']}
       $height="100%"
       $justify="space-between"
     >
-      <Box className="pt-l" $direction="column" $gap="0.8rem">
+      <Box $padding={{ top: 'large' }} $direction="column" $gap="0.8rem">
         <MenuItem Icon={IconPad} label={t('Pad')} href="/" alias={['/pads/']} />
       </Box>
     </Box>

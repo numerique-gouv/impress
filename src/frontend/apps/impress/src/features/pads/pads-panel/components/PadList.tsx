@@ -22,7 +22,7 @@ const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
 
   if (isError) {
     return (
-      <Box $justify="center" className="mb-b">
+      <Box $justify="center" $margin={{ bottom: 'big' }}>
         <Text $theme="danger" $align="center" $textAlign="center">
           {t('Something bad happens, please refresh the page.')}
         </Text>
@@ -32,7 +32,7 @@ const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
 
   if (isLoading) {
     return (
-      <Box $align="center" className="m-l">
+      <Box $align="center" $margin="large">
         <Loader />
       </Box>
     );
@@ -40,8 +40,13 @@ const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
 
   if (!pads?.length) {
     return (
-      <Box $justify="center" className="m-s">
-        <Text as="p" className="mb-0 mt-0" $theme="greyscale" $variation="500">
+      <Box $justify="center" $margin="small">
+        <Text
+          as="p"
+          $margin={{ vertical: 'none' }}
+          $theme="greyscale"
+          $variation="500"
+        >
           {t('0 group to display.')}
         </Text>
         <Text as="p" $theme="greyscale" $variation="500">
@@ -85,7 +90,8 @@ export const PadList = () => {
         }}
         scrollContainer={containerRef.current}
         as="ul"
-        className="p-0 mt-0"
+        $padding="none"
+        $margin={{ top: 'none' }}
         role="listbox"
       >
         <PadListState isLoading={isLoading} isError={isError} pads={pads} />

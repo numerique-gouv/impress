@@ -26,7 +26,8 @@ export const Tooltip = ({
     <Popover parentRef={parentRef} onClickOutside={() => ''} borderless>
       <Box
         aria-label="tooltip"
-        className="ml-t p-t"
+        $padding="tiny"
+        $margin={{ left: 'tiny' }}
         $background={backgroundColor}
         $radius="4px"
         $css={`

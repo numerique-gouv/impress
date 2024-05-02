@@ -55,7 +55,7 @@ export const PadItem = ({ pad }: PadItemProps) => {
 
   return (
     <Box
-      className="m-0"
+      $margin="none"
       as="li"
       $css={`
         transition: all 0.2s ease-in; 

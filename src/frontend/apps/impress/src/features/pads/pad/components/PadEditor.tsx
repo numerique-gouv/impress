@@ -15,7 +15,12 @@ export const PadEditor = ({ pad }: PadEditorProps) => {
   return (
     <>
       <PadToolBox pad={pad} />
-      <Card className="m-b p-b" $css="margin-top:0;flex:1;" $overflow="auto">
+      <Card
+        $margin={{ top: 'none', all: 'big' }}
+        $padding="big"
+        $css="flex:1;"
+        $overflow="auto"
+      >
         <Text as="h2" $align="center">
           {pad.title}
         </Text>
