@@ -33,6 +33,7 @@ export interface BoxProps {
   $radius?: CSSProperties['borderRadius'];
   $transition?: CSSProperties['transition'];
   $width?: CSSProperties['width'];
+  $zIndex?: CSSProperties['zIndex'];
 }
 
 export type BoxType = ComponentPropsWithRef<typeof Box>;
@@ -61,6 +62,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $transition }) => $transition && `transition: ${$transition};`}
   ${({ $width }) => $width && `width: ${$width};`}
   ${({ $css }) => $css && `${$css};`}
+  ${({ $zIndex }) => $zIndex && `z-index: ${$zIndex};`}
   ${({ $effect }) => {
     let effect;
     switch ($effect) {

@@ -3,13 +3,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
+import { default as IconGouv } from '@/assets/icons/icon-gouv.svg?url';
+import { default as IconMarianne } from '@/assets/icons/icon-marianne.svg?url';
 import { Box, Text } from '@/components/';
 
 import { LanguagePicker } from '../language/';
 
-import { default as IconGouv } from './assets/icon-gouv.svg?url';
 import { default as IconImpress } from './assets/icon-impress.svg?url';
-import { default as IconMarianne } from './assets/icon-marianne.svg?url';
 import IconMyAccount from './assets/icon-my-account.png';
 
 export const HEADER_HEIGHT = '100px';
