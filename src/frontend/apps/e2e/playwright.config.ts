@@ -43,7 +43,13 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+      use: {
+        ignoreHTTPSErrors: true,
+      },
+    },
     {
       name: 'chromium',
       use: {
