@@ -1,10 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { signIn } from './common';
-
-test.beforeEach(async ({ page, browserName }) => {
-  await page.goto('/');
-  await signIn(page, browserName);
+test.beforeEach(async ({ page }) => {
   await page.goto('unknown-page404');
 });
 

@@ -1,10 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-import { signIn } from './common';
-
-test.beforeEach(async ({ page, browserName }) => {
+test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await signIn(page, browserName);
 });
 
 test.describe('Language', () => {
