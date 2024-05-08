@@ -93,8 +93,10 @@ jobs:
       - name: Lint code with pylint
         run: ~/.local/bin/pylint impress
 
+
   test-back:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: src/backend
@@ -121,26 +123,55 @@ jobs:
       DB_USER: dinum
       DB_PASSWORD: pass
       DB_PORT: 5432
+      STORAGES_STATICFILES_BACKEND: django.contrib.staticfiles.storage.StaticFilesStorage
+      AWS_S3_ENDPOINT_URL: http://localhost:9000
+      AWS_S3_ACCESS_KEY_ID: impress
+      AWS_S3_SECRET_ACCESS_KEY: password
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
       - name: Create writable /data
         run: |
           sudo mkdir -p /data/media && \
           sudo mkdir -p /data/static
+
+      - name: Start Minio
+        run: |
+          docker pull minio/minio
+          docker run -d --name minio \
+            -p 9000:9000 \
+            -e "MINIO_ACCESS_KEY=impress" \
+            -e "MINIO_SECRET_KEY=password" \
+            -v /data/media:/data \
+            minio/minio server --console-address :9001 /data
+
+      - name: Configure MinIO
+        run: |
+          MINIO=$(docker ps | grep minio/minio | sed -E 's/.*\s+([a-zA-Z0-9_-]+)$/\1/')
+          docker exec ${MINIO} sh -c \
+            "mc alias set impress http://localhost:9000 impress password && \
+            mc alias ls && \
+            mc mb impress/impress-media-storage && \
+            mc version enable impress/impress-media-storage"
+
       - name: Install Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.10'
+
       - name: Install development dependencies
         run: pip install --user .[dev]
+
       - name: Install gettext (required to compile messages)
         run: |
           sudo apt-get update
           sudo apt-get install -y gettext
+
       - name: Generate a MO file from strings extracted from the project
         run: python manage.py compilemessages
+
       - name: Run tests
         run: ~/.local/bin/pytest -n 2
 
@@ -149,12 +180,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
       - name: Install gettext (required to make messages)
         run: |
           sudo apt-get update
           sudo apt-get install -y gettext
-      
+
       - name: Install Python
         uses: actions/setup-python@v3
         with:
@@ -166,13 +197,13 @@ jobs:
 
       - name: Generate the translation base file
         run: ~/.local/bin/django-admin makemessages --keep-pot --all
-        
+
       - name: Load sops secrets
         uses: rouja/actions-sops@main
         with:
           secret-file: .github/workflows/secrets.enc.env
           age-key: ${{ secrets.SOPS_PRIVATE }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -185,7 +216,7 @@ jobs:
 
       - name: Extract the frontend translation
         run: make frontend-i18n-extract
-      
+
       - name: Upload files to Crowdin
         run: |
           docker run \
