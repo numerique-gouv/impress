@@ -47,6 +47,14 @@ backend:
         python manage.py create_demo --force
     restartPolicy: Never
 
+  createsuperuser:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - |
+        python manage.py createsuperuser --email admin@example.com --password admin
+    restartPolicy: Never
+
 frontend:
   envVars:
     PORT: 8080

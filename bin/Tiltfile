@@ -66,16 +66,3 @@ cmd_button('Migrate db',
            icon_name='developer_board',
            text='Run database migration',
 )
-
-pod_add_admin = '''
-set -eu
-# get k8s pod name from tilt resource name
-POD_NAME="$(tilt get kubernetesdiscovery impress-backend -ojsonpath='{.status.pods[0].name}')"
-kubectl -n impress exec "$POD_NAME" -- python manage.py createsuperuser --email admin@example.com --password admin
-'''
-cmd_button('Add admin',
-           argv=['sh', '-c', pod_add_admin],
-           resource='impress-backend',
-           icon_name='developer_board',
-           text='Create superadmin',
-)
