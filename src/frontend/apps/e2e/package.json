@@ -9,7 +9,7 @@
     "test:ui": "yarn test --ui"
   },
   "devDependencies": {
-    "@playwright/test": "1.43.1",
+    "@playwright/test": "1.44.0",
     "@types/node": "*",
     "@types/pdf-parse": "1.1.4",
     "eslint-config-impress": "*",
