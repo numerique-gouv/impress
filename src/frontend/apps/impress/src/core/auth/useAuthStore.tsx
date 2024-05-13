@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
+import { baseApiUrl } from '@/core/conf';
+
 import { User, getMe } from './api';
 
 export const login = () => {
-  window.location.replace(
-    new URL('authenticate/', process.env.NEXT_PUBLIC_API_URL).href,
-  );
+  window.location.replace(new URL('authenticate/', baseApiUrl()).href);
 };
 
 interface AuthStore {

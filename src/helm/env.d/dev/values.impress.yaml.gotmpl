@@ -50,7 +50,8 @@ backend:
 frontend:
   envVars:
     PORT: 8080
-    NEXT_PUBLIC_API_URL: https://impress.127.0.0.1.nip.io/api/v1.0/
+    NEXT_PUBLIC_API_ORIGIN: https://impress.127.0.0.1.nip.io
+    NEXT_PUBLIC_API_URL: /api/v1.0/
     NEXT_PUBLIC_SIGNALING_URL: wss://impress.127.0.0.1.nip.io/ws
 
   replicas: 1
