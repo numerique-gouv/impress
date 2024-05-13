@@ -32,10 +32,6 @@ docker_build(
     context='..',
     dockerfile='../src/frontend/Dockerfile',
     only=['./src/frontend', './docker', './dockerignore'],
-    env={
-        'NEXT_PUBLIC_API_URL': 'https://impress.127.0.0.1.nip.io/api/v1.0/',
-        'NEXT_PUBLIC_SIGNALING_URL': 'wss://impress.127.0.0.1.nip.io/ws',
-    },
     target = 'frontend-production',
     live_update=[
         sync('../src/frontend', '/home/frontend'),
