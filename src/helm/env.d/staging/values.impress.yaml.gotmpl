@@ -80,6 +80,14 @@ backend:
         name: redis.redis.libre.sh
         key: url
 
+  createsuperuser:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - |
+        python manage.py createsuperuser --email admin@staging.com --password {{ .Values.djangoSuperUserPass }}
+    restartPolicy: Never
+
 frontend:
   image:
     repository: lasuite/impress-frontend
