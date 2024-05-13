@@ -47,6 +47,13 @@ backend:
         python manage.py create_demo --force
     restartPolicy: Never
 
+  command:
+    - "gunicorn"
+    - "-c"
+    - "/usr/local/etc/gunicorn/impress.py"
+    - "impress.wsgi:application"
+    - "--reload"
+
   createsuperuser:
     command:
       - "/bin/sh"
