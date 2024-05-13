@@ -1,3 +1,4 @@
+import '@blocknote/mantine/style.css';
 import {
   BasicTextStyleButton,
   BlockTypeSelect,
@@ -9,11 +10,10 @@ import {
   NestBlockButton,
   ReplaceImageButton,
   TextAlignButton,
-  ToolbarButton,
   UnnestBlockButton,
   useBlockNoteEditor,
+  useComponentsContext,
 } from '@blocknote/react';
-import '@blocknote/react/style.css';
 import { forEach, isArray } from 'lodash';
 import React from 'react';
 
@@ -95,6 +95,7 @@ const recursiveContent = (content: Block[], base: string = '') => {
  */
 export function MarkdownButton() {
   const editor = useBlockNoteEditor();
+  const Components = useComponentsContext();
 
   const handleConvertMarkdown = () => {
     const blocks = editor.getSelection()?.blocks;
@@ -118,12 +119,16 @@ export function MarkdownButton() {
     });
   };
 
+  if (!Components) {
+    return null;
+  }
+
   return (
-    <ToolbarButton
+    <Components.FormattingToolbar.Button
       mainTooltip="Convert Markdown"
       onClick={handleConvertMarkdown}
     >
       M
-    </ToolbarButton>
+    </Components.FormattingToolbar.Button>
   );
 }

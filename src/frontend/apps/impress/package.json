@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@blocknote/core": "0.13.2",
+    "@blocknote/mantine": "0.13.2",
     "@blocknote/react": "0.13.2",
     "@openfun/cunningham-react": "2.9.0",
     "@tanstack/react-query": "5.36.0",
