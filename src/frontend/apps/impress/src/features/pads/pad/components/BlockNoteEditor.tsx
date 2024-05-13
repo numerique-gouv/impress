@@ -1,5 +1,5 @@
 import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
-import { BlockNoteView } from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/react/style.css';
 import React, { useEffect, useMemo } from 'react';
 import { WebrtcProvider } from 'y-webrtc';
