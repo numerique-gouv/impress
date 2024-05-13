@@ -1,0 +1,54 @@
+<mjml>
+  <mj-include path="./partial/header.mjml" />
+
+  <mj-body mj-class="bg--blue-100">
+    <mj-wrapper css-class="wrapper" padding="0 40px 40px 40px">
+      <mj-section background-url="{% base64_static 'images/mail-header-background.png' %}" background-size="cover" background-repeat="no-repeat" background-position="0 -30px">
+        <mj-column>
+            <mj-image align="center" src="{% base64_static 'images/logo-suite-numerique.png' %}" width="250px" align="left" alt="{%trans 'La Suite Numérique' %}" />
+        </mj-column>
+      </mj-section>
+      <mj-section mj-class="bg--white-100" padding="30px 20px 60px 20px">
+        <mj-column>
+          <mj-text font-size="14px">
+            <p>{% trans "Invitation to join a team" %}</p>
+          </mj-text>
+
+          <!-- Welcome Message -->
+          <mj-text>
+            <h1>{% blocktrans %}Welcome to <strong>Impress</strong>{% endblocktrans %}</h1>
+          </mj-text>
+          <mj-divider border-width="1px" border-style="solid" border-color="#DDDDDD" width="30%" align="left"/>
+
+          <mj-image src="{% base64_static 'images/logo.svg' %}" width="157px" align="left" alt="{%trans 'Logo' %}" />
+
+          <!-- Main Message -->
+          <mj-text>{% trans "We are delighted to welcome you to our community on Impress, your new companion to collaborate on documents efficiently, intuitively, and securely." %}</mj-text>
+          <mj-text>{% trans "Our application is designed to help you organize, collaborate, and manage permissions." %}</mj-text>
+          <mj-text>
+            {% trans "With Impress, you will be able to:" %}
+            <ul>
+              <li>{% trans "Create documents."%}</li>
+              <li>{% trans "Invite members of your document or community in just a few clicks."%}</li>
+            </ul>
+          </mj-text>
+          <mj-button href="//{{site.domain}}" background-color="#000091" color="white" padding-bottom="30px">
+            {% trans "Visit Impress"%}
+          </mj-button>
+          <mj-text>{% trans "We are confident that Impress will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
+          <mj-text>{% trans "Feel free to explore all the features of the application and share your feedback and suggestions with us. Your feedback is valuable to us and will enable us to continually improve our service." %}</mj-text>
+          <mj-text>{% trans "Once again, welcome aboard! We are eager to accompany you on you collaboration adventure." %}</mj-text>
+
+          <!-- Signature -->
+          <mj-text>
+            <p>{% trans "Sincerely," %}</p>
+            <p>{% trans "The La Suite Numérique Team" %}</p>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+
+  <mj-include path="./partial/footer.mjml" />
+</mjml>
+

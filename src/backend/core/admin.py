@@ -78,11 +78,13 @@ class TemplateAdmin(admin.ModelAdmin):
 
     inlines = (TemplateAccessInline,)
 
+
 class DocumentAccessInline(admin.TabularInline):
     """Inline admin class for template accesses."""
 
     model = models.DocumentAccess
     extra = 0
+
 
 @admin.register(models.Document)
 class DocumentAdmin(admin.ModelAdmin):
@@ -90,3 +92,31 @@ class DocumentAdmin(admin.ModelAdmin):
 
     inlines = (DocumentAccessInline,)
     
+
+@admin.register(models.Invitation)
+class InvitationAdmin(admin.ModelAdmin):
+    """Admin interface to handle invitations."""
+
+    fields = (
+        "email",
+        "document",
+        "role",
+        "created_at",
+        "issuer",
+    )
+    readonly_fields = (
+        "created_at",
+        "is_expired",
+        "issuer",
+    )
+    list_display = (
+        "email",
+        "document",
+        "created_at",
+        "is_expired",
+    )
+
+    def save_model(self, request, obj, form, change):
+        obj.issuer = request.user
+        obj.save()
+

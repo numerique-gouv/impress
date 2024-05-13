@@ -479,3 +479,78 @@ class TemplateAccessViewSet(
     queryset = models.TemplateAccess.objects.select_related("user").all()
     resource_field_name = "template"
     serializer_class = serializers.TemplateAccessSerializer
+
+
+class InvitationViewset(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """API ViewSet for user invitations to document.
+
+    GET /api/v1.0/documents/<document_id>/invitations/:<invitation_id>/
+        Return list of invitations related to that document or one
+        document access if an id is provided.
+
+    POST /api/v1.0/documents/<document_id>/invitations/ with expected data:
+        - email: str
+        - role: str [owner|admin|member]
+        Return newly created invitation (issuer and document are automatically set)
+
+    PUT / PATCH : Not permitted. Instead of updating your invitation,
+        delete and create a new one.
+
+    DELETE  /api/v1.0/documents/<document_id>/invitations/<invitation_id>/
+        Delete targeted invitation
+    """
+
+    lookup_field = "id"
+    pagination_class = Pagination
+    permission_classes = [permissions.IsAuthenticated, permissions.AccessPermission]
+    queryset = (
+        models.Invitation.objects.all()
+        .select_related("document")
+        .order_by("-created_at")
+    )
+    serializer_class = serializers.InvitationSerializer
+
+    def get_serializer_context(self):
+        """Extra context provided to the serializer class."""
+        context = super().get_serializer_context()
+        context["resource_id"] = self.kwargs["resource_id"]
+        return context
+
+    def get_queryset(self):
+        """Return the queryset according to the action."""
+        queryset = super().get_queryset()
+        queryset = queryset.filter(document=self.kwargs["resource_id"])
+
+        if self.action == "list":
+            user = self.request.user
+            teams = user.get_teams()
+
+            # Determine which role the logged-in user has in the document
+            user_roles_query = (
+                models.DocumentAccess.objects.filter(
+                    Q(user=user) | Q(team__in=teams),
+                    document=self.kwargs["resource_id"],
+                )
+                .values("document")
+                .annotate(roles_array=ArrayAgg("role"))
+                .values("roles_array")
+            )
+
+            queryset = (
+                # The logged-in user should be part of a document to see its accesses
+                queryset.filter(
+                    Q(document__accesses__user=user)
+                    | Q(document__accesses__team__in=teams),
+                )
+                # Abilities are computed based on logged-in user's role and
+                # the user role on each document access
+                .annotate(user_roles=Subquery(user_roles_query))
+                .distinct()
+            )
+        return queryset

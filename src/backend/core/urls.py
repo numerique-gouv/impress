@@ -20,6 +20,12 @@ document_related_router.register(
     viewsets.DocumentAccessViewSet,
     basename="document_accesses",
 )
+document_related_router.register(
+    "invitations",
+    viewsets.InvitationViewset,
+    basename="invitations",
+)
+
 
 # - Routes nested under a template
 template_related_router = DefaultRouter()

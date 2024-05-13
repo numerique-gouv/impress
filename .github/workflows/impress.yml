@@ -71,6 +71,11 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Build mails
         run: yarn build
+      - name: Persist mails' templates
+        uses: actions/upload-artifact@v4
+        with:
+            name: mails-templates
+            path: src/backend/core/templates/mail
 
   lint-back:
     runs-on: ubuntu-latest
@@ -96,6 +101,7 @@ jobs:
 
   test-back:
     runs-on: ubuntu-latest
+    needs: build-mails
 
     defaults:
       run:
@@ -136,6 +142,12 @@ jobs:
         run: |
           sudo mkdir -p /data/media && \
           sudo mkdir -p /data/static
+
+      - name: Download mails' templates
+        uses: actions/download-artifact@v4
+        with:
+          name: mails-templates
+          path: src/backend/core/templates/mail
 
       - name: Start Minio
         run: |
