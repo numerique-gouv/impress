@@ -1,0 +1,41 @@
+load('ext://namespace', 'namespace_create', 'namespace_inject')
+namespace_create('impress')
+
+docker_build(
+    'localhost:5001/impress-backend:latest',
+    context='..',
+    dockerfile='../Dockerfile',
+    only=['./src/backend', './src/mail', './docker'],
+    target = 'backend-development',
+    live_update=[
+        sync('../src/backend', '/app'),
+        run(
+            'pip install -r /app/requirements.txt',
+            trigger=['./api/requirements.txt']
+        )
+    ]
+)
+
+docker_build(
+    'localhost:5001/impress-y-webrtc-signaling:latest',
+    context='..',
+    dockerfile='../src/frontend/Dockerfile',
+    only=['./src/frontend/', './docker/', './dockerignore'],
+    target = 'y-webrtc-signaling',
+    live_update=[
+        sync('../src/frontend', '/home/frontend'),
+    ]
+)
+
+docker_build(
+    'localhost:5001/impress-frontend:latest',
+    context='..',
+    dockerfile='../src/frontend/Dockerfile',
+    only=['./src/frontend', './docker', './dockerignore'],
+    target = 'frontend-production',
+    live_update=[
+        sync('../src/frontend', '/home/frontend'),
+    ]
+)
+
+k8s_yaml(local('cd ../src/helm && helmfile -n impress --state-values-set "localDev=false" -e dev template .'))

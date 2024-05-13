@@ -1,18 +1,43 @@
 import { Page, expect } from '@playwright/test';
 
+import { conf } from './conf';
+
+export const signIn = async (page: Page, browserName: string) => {
+  const AGENT_CONNECT_SIGNIN = process.env.AGENT_CONNECT_SIGNIN === 'true';
+
+  AGENT_CONNECT_SIGNIN
+    ? await agentConnectSignIn(page)
+    : await keyCloakSignIn(page, browserName);
+};
+
+export const agentConnectSignIn = async (page: Page) => {
+  const title = await page.locator('h1').first().textContent({
+    timeout: 5000,
+  });
+
+  if (title?.includes('Se connecter à Impress')) {
+    await page.getByLabel('Email professionnel').fill(conf.loginAgentConnect);
+    await page.getByRole('button', { name: 'Se connecter' }).click();
+
+    await page
+      .getByLabel('Renseignez votre mot de passe')
+      .fill(conf.passwordAgentConnect);
+    await page.getByRole('button', { name: 'S’identifier' }).click();
+  }
+};
+
 export const keyCloakSignIn = async (page: Page, browserName: string) => {
   const title = await page.locator('h1').first().textContent({
     timeout: 5000,
   });
 
   if (title?.includes('Sign in to your account')) {
-    await page
-      .getByRole('textbox', { name: 'username' })
-      .fill(`user-e2e-${browserName}`);
+    const login = `user-e2e-${browserName}`;
+    const password = `password-e2e-${browserName}`;
 
-    await page
-      .getByRole('textbox', { name: 'password' })
-      .fill(`password-e2e-${browserName}`);
+    await page.getByRole('textbox', { name: 'username' }).fill(login);
+
+    await page.getByRole('textbox', { name: 'password' }).fill(password);
 
     await page.click('input[type="submit"]', { force: true });
   }

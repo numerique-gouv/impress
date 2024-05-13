@@ -39,7 +39,7 @@ docker_build(
     ]
 )
 
-k8s_yaml(local('cd ../src/helm && helmfile -n impress -e dev template .'))
+k8s_yaml(local('cd ../src/helm && helmfile -n impress --state-values-set "localDev=true" -e dev template .'))
 
 migration = '''
 set -eu

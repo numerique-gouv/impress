@@ -41,29 +41,6 @@ jobs:
           path: 'src/frontend/**/node_modules'
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
 
-  build-front:
-    runs-on: ubuntu-latest
-    needs: install-front
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Restore the frontend cache
-        uses: actions/cache@v4
-        id: front-node_modules
-        with:
-          path: 'src/frontend/**/node_modules'
-          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
-
-      - name: Build CI App
-        run: cd src/frontend/ && yarn ci:build
-
-      - name: Cache build frontend
-        uses: actions/cache@v4
-        with:
-          path: src/frontend/apps/impress/out/
-          key: build-front-${{ github.run_id }}
-
   test-front:
     runs-on: ubuntu-latest
     needs: install-front
@@ -100,52 +77,85 @@ jobs:
 
   test-e2e:
     runs-on: ubuntu-latest
-    needs: build-front
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-            
-      - name: Set services env variables
-        run: |
-          make data/media
-          make create-env-files
-          cat env.d/development/common.e2e.dist >> env.d/development/common
-
-      - name: Restore the frontend cache
-        uses: actions/cache@v4
-        id: front-node_modules
-        with:
-          path: 'src/frontend/**/node_modules'
-          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
-
-      - name: Restore the build cache
-        uses: actions/cache@v4
-        id: cache-build
-        with:
-          path: src/frontend/apps/impress/out/
-          key: build-front-${{ github.run_id }}
     
-      - name: Build and Start Docker Servers
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
+      - name: Install K8S Stacks
         run: |
-          docker-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
-          make run
-        
-      - name: Apply DRF migrations
-        run: |
-          make migrate
+          # Install Tilt
+          sudo curl -fsSL https://github.com/tilt-dev/tilt/releases/download/v0.33.12/tilt.0.33.12.linux-alpine.x86_64.tar.gz | tar -xzv tilt 
+          sudo mv tilt /usr/local/bin/tilt
 
-      - name: Add dummy data
+          # Install kubectl
+          sudo curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          sudo kubectl version --client
+          
+          # Install Helm
+          sudo curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm plugin install https://github.com/databus23/helm-diff
+          helm plugin install https://github.com/jkroepke/helm-secrets --version v4.6.0
+          sudo curl -fsSL https://github.com/helmfile/helmfile/releases/download/v0.163.1/helmfile_0.163.1_linux_amd64.tar.gz | tar -xzv helmfile
+          sudo mv helmfile /usr/local/bin/helmfile 
+
+          # Install mkcert
+          sudo curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+          sudo chmod +x mkcert-v*-linux-amd64
+          sudo cp mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+
+          # Install kind
+          sudo [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+          sudo chmod +x ./kind
+          sudo cp ./kind /usr/local/bin/kind
+          sudo rm -rf kind
+
+          # Install sops
+          sudo curl -LO https://github.com/getsops/sops/releases/download/v3.8.1/sops-v3.8.1.linux.amd64
+          sudo mv sops-v3.8.1.linux.amd64 /usr/local/bin/sops
+          sudo chmod +x /usr/local/bin/sops
+
+      - name: Start Kind
+        run: bash bin/start-kind.sh
+          
+      - name: Wait for all pods to be ready
         run: |
-          make demo FLUSH_ARGS='--no-input'
+          # Continuously check until all pods are ready or until timeout
+          for i in {1..30}; do  # attempts for up to 5 minutes
+            NOT_READY=$(kubectl get pods -A --no-headers | awk '$4 != "Running" && $4 != "Completed" {print $1, $2, $4}')
+            if [ -z "$NOT_READY" ]; then
+              echo "All pods are in the desired state (Running or Completed)."
+              break
+            else
+              echo "Waiting for all pods to be in Running or Completed state. Current statuses of pods not ready:"
+              echo "$NOT_READY"
+              sleep 10
+            fi
+          done
+      
+          # Final check, if still not ready, print and exit with error
+          if [ ! -z "$NOT_READY" ]; then
+            echo "Timeout reached. The following pods are not in Running or Completed state:"
+            echo "$NOT_READY"
+            exit 1
+          fi
+
+          echo "Wait a bit more to ensure all services are up"
+          sleep 15
+
+      - name: Start servers
+        env: 
+          SOPS_AGE_KEY: ${{ secrets.SOPS_PRIVATE }}
+        run: tilt ci --debug --verbose -f ./bin/TiltfileE2E
 
       - name: Install Playwright Browsers
         run: cd src/frontend/apps/e2e && yarn install
 
       - name: Run e2e tests
+        env:
+          AGENT_CONNECT_SIGNIN: true
+          BASE_URL: https://impress.127.0.0.1.nip.io
         run: cd src/frontend/ && yarn e2e:test
 
       - uses: actions/upload-artifact@v3
