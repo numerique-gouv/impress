@@ -1,4 +1,4 @@
-import { login, useAuthStore } from '@/core/auth';
+import { baseApiUrl, login, useAuthStore } from '@/core';
 
 /**
  * Retrieves the CSRF token from the document's cookies.
@@ -14,7 +14,7 @@ function getCSRFToken() {
 }
 
 export const fetchAPI = async (input: string, init?: RequestInit) => {
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}${input}`;
+  const apiUrl = `${baseApiUrl()}${input}`;
   const { logout } = useAuthStore.getState();
 
   const csrfToken = getCSRFToken();

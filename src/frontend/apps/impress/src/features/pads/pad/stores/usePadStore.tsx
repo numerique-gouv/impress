@@ -3,6 +3,8 @@ import { WebrtcProvider } from 'y-webrtc';
 import * as Y from 'yjs';
 import { create } from 'zustand';
 
+import { signalingUrl } from '@/core';
+
 import { Pad } from '../types';
 
 export interface PadStore {
@@ -24,7 +26,7 @@ export const usePadStore = create<PadStore>((set) => ({
   padsStore: initialState.padsStore,
   createProvider: (padId: string) => {
     const provider = new WebrtcProvider(padId, new Y.Doc(), {
-      signaling: [process.env.NEXT_PUBLIC_SIGNALING_URL || ''],
+      signaling: [signalingUrl()],
     });
 
     set(({ padsStore }) => {
