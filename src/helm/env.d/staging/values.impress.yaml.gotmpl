@@ -103,7 +103,7 @@ backend:
       - "/bin/sh"
       - "-c"
       - |
-        python manage.py createsuperuser --email admin@staging.com --password {{ .Values.djangoSuperUserPass }}
+        python manage.py createsuperuser --email admin@staging.com --password $DJANGO_SUPERUSER_PASSWORD
     restartPolicy: Never
 
 frontend:
