@@ -281,6 +281,7 @@ class Base(Configuration):
     EMAIL_FROM = values.Value("from@example.com")
 
     AUTH_USER_MODEL = "core.User"
+    INVITATION_VALIDITY_DURATION = 604800  # 7 days, in seconds
 
     # CORS
     CORS_ALLOW_CREDENTIALS = True

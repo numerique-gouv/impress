@@ -66,7 +66,6 @@ class BaseAccessSerializer(serializers.ModelSerializer):
 
         # Create
         else:
-            teams = user.get_teams()
             try:
                 resource_id = self.context["resource_id"]
             except KeyError as exc:
@@ -74,6 +73,7 @@ class BaseAccessSerializer(serializers.ModelSerializer):
                     "You must set a resource ID in kwargs to create a new access."
                 ) from exc
 
+            teams = user.get_teams()
             if not self.Meta.model.objects.filter(  # pylint: disable=no-member
                 Q(user=user) | Q(team__in=teams),
                 role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
@@ -172,3 +172,82 @@ class DocumentGenerationSerializer(serializers.Serializer):
         required=False,
         default="html",
     )
+
+
+class InvitationSerializer(serializers.ModelSerializer):
+    """Serialize invitations."""
+
+    abilities = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = models.Invitation
+        fields = [
+            "id",
+            "abilities",
+            "created_at",
+            "email",
+            "document",
+            "role",
+            "issuer",
+            "is_expired",
+        ]
+        read_only_fields = [
+            "id",
+            "abilities",
+            "created_at",
+            "document",
+            "issuer",
+            "is_expired",
+        ]
+
+    def get_abilities(self, invitation) -> dict:
+        """Return abilities of the logged-in user on the instance."""
+        request = self.context.get("request")
+        if request:
+            return invitation.get_abilities(request.user)
+        return {}
+
+    def validate(self, attrs):
+        """Validate and restrict invitation to new user based on email."""
+
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        role = attrs.get("role")
+
+        try:
+            document_id = self.context["resource_id"]
+        except KeyError as exc:
+            raise exceptions.ValidationError(
+                "You must set a document ID in kwargs to create a new document invitation."
+            ) from exc
+
+        if not user and user.is_authenticated:
+            raise exceptions.PermissionDenied(
+                "Anonymous users are not allowed to create invitations."
+            )
+
+        teams = user.get_teams()
+        if not models.DocumentAccess.objects.filter(
+            Q(user=user) | Q(team__in=teams),
+            document=document_id,
+            role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
+        ).exists():
+            raise exceptions.PermissionDenied(
+                "You are not allowed to manage invitations for this document."
+            )
+
+        if (
+            role == models.RoleChoices.OWNER
+            and not models.DocumentAccess.objects.filter(
+                Q(user=user) | Q(team__in=teams),
+                document=document_id,
+                role=models.RoleChoices.OWNER,
+            ).exists()
+        ):
+            raise exceptions.PermissionDenied(
+                "Only owners of a document can invite other users as owners."
+            )
+
+        attrs["document_id"] = document_id
+        attrs["issuer"] = user
+        return attrs

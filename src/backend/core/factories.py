@@ -112,3 +112,15 @@ class TeamTemplateAccessFactory(factory.django.DjangoModelFactory):
     template = factory.SubFactory(TemplateFactory)
     team = factory.Sequence(lambda n: f"team{n}")
     role = factory.fuzzy.FuzzyChoice([r[0] for r in models.RoleChoices.choices])
+
+
+class InvitationFactory(factory.django.DjangoModelFactory):
+    """A factory to create invitations for a user"""
+
+    class Meta:
+        model = models.Invitation
+
+    email = factory.Faker("email")
+    document = factory.SubFactory(DocumentFactory)
+    role = factory.fuzzy.FuzzyChoice([role[0] for role in models.RoleChoices.choices])
+    issuer = factory.SubFactory(UserFactory)

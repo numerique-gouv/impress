@@ -42,6 +42,7 @@ dependencies = [
     "dockerflow==2022.8.0",
     "easy_thumbnails==2.8.5",
     "factory_boy==3.3.0",
+    "freezegun==1.5.0",
     "gunicorn==22.0.0",
     "jsonschema==4.20.0",
     "markdown==3.5.1",
