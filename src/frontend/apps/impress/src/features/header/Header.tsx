@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { default as IconGouv } from '@/assets/icons/icon-gouv.svg?url';
 import { default as IconMarianne } from '@/assets/icons/icon-marianne.svg?url';
-import { Box, Text } from '@/components/';
+import { Box, StyledLink, Text } from '@/components/';
 
 import { LanguagePicker } from '../language/';
 
@@ -53,12 +53,14 @@ export const Header = () => {
               src={IconGouv}
               alt={t('Freedom Equality Fraternity Logo')}
             />
-            <Box $align="center" $gap="1rem" $direction="row">
-              <Image priority src={IconImpress} alt={t('Impress Logo')} />
-              <Text $margin="none" as="h2" $theme="primary">
-                {t('Impress')}
-              </Text>
-            </Box>
+            <StyledLink href="/">
+              <Box $align="center" $gap="1rem" $direction="row">
+                <Image priority src={IconImpress} alt={t('Impress Logo')} />
+                <Text $margin="none" as="h2" $theme="primary">
+                  {t('Impress')}
+                </Text>
+              </Box>
+            </StyledLink>
           </Box>
         </Box>
         <Box

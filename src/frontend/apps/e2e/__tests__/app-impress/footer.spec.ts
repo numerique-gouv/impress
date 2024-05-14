@@ -34,9 +34,43 @@ test.describe('Footer', () => {
     ).toBeVisible();
 
     await expect(
+      footer.getByRole('link', { name: 'Legal Notice' }),
+    ).toBeVisible();
+
+    await expect(
+      footer.getByRole('link', { name: 'Personal data and cookies' }),
+    ).toBeVisible();
+
+    await expect(
+      footer.getByRole('link', { name: 'Accessibility' }),
+    ).toBeVisible();
+
+    await expect(
       footer.getByText(
         'Unless otherwise stated, all content on this site is under licence',
       ),
     ).toBeVisible();
   });
+
+  const legalPages = [
+    { name: 'Legal Notice', url: '/legal-notice/' },
+    { name: 'Personal data and cookies', url: '/personal-data-cookies/' },
+    { name: 'Accessibility', url: '/accessibility/' },
+  ];
+  for (const { name, url } of legalPages) {
+    test(`checks ${name} page`, async ({ page }) => {
+      const footer = page.locator('footer').first();
+      await footer.getByRole('link', { name }).click();
+
+      await expect(
+        page
+          .getByRole('heading', {
+            name,
+          })
+          .first(),
+      ).toBeVisible();
+
+      await expect(page).toHaveURL(url);
+    });
+  }
 });

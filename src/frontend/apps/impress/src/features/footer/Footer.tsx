@@ -37,6 +37,7 @@ export const Footer = () => {
           $gap="1.5rem"
           $align="center"
           $justify="space-between"
+          $css="flex-wrap: wrap;"
         >
           <Box>
             <Box $align="center" $gap="6rem" $direction="row">
@@ -50,7 +51,6 @@ export const Footer = () => {
           </Box>
           <Box
             $direction="row"
-            $justify="flex-end"
             $css={`
               column-gap: 1.5rem;
               row-gap: .5rem;
@@ -92,6 +92,56 @@ export const Footer = () => {
               </StyledLink>
             ))}
           </Box>
+        </Box>
+        <Box
+          $direction="row"
+          $margin={{ top: 'big' }}
+          $padding={{ top: 'tiny' }}
+          $css={`
+            flex-wrap: wrap;
+            border-top: 1px solid var(--c--theme--colors--greyscale-200); 
+            column-gap: 1rem;
+            row-gap: .5rem;
+          `}
+        >
+          {[
+            {
+              label: t('Legal Notice'),
+              href: '/legal-notice',
+            },
+            {
+              label: t('Personal data and cookies'),
+              href: '/personal-data-cookies',
+            },
+            {
+              label: t('Accessibility'),
+              href: '/accessibility',
+            },
+          ].map(({ label, href }) => (
+            <StyledLink
+              key={label}
+              href={href}
+              $css={`
+                padding-right: 1rem;
+                &:not(:last-child) {
+                  box-shadow: inset -1px 0px 0px 0px var(--c--theme--colors--greyscale-200);
+                }
+              `}
+            >
+              <Text
+                $variation="600"
+                $size="m"
+                $transition="box-shadow 0.3s"
+                $css={`
+                  &:hover {
+                    box-shadow: 0px 2px 0 0 var(--c--theme--colors--greyscale-text);
+                  }
+                `}
+              >
+                {label}
+              </Text>
+            </StyledLink>
+          ))}
         </Box>
         <Text
           as="p"
