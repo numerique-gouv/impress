@@ -21,6 +21,7 @@ export interface BoxProps {
   $effect?: 'show' | 'hide';
   $flex?: boolean;
   $gap?: CSSProperties['gap'];
+  $hasTransition?: boolean;
   $height?: CSSProperties['height'];
   $justify?: CSSProperties['justifyContent'];
   $overflow?: CSSProperties['overflow'];
@@ -30,6 +31,7 @@ export interface BoxProps {
   $padding?: MarginPadding;
   $position?: CSSProperties['position'];
   $radius?: CSSProperties['borderRadius'];
+  $transition?: CSSProperties['transition'];
   $width?: CSSProperties['width'];
 }
 
@@ -46,6 +48,8 @@ export const Box = styled('div')<BoxProps>`
   ${({ $flex }) => $flex === false && `display: block;`}
   ${({ $gap }) => $gap && `gap: ${$gap};`}
   ${({ $height }) => $height && `height: ${$height};`}
+  ${({ $hasTransition }) =>
+    $hasTransition && `transition: all 0.3s ease-in-out;`}
   ${({ $justify }) => $justify && `justify-content: ${$justify};`}
   ${({ $margin }) => $margin && stylesMargin($margin)}
   ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
@@ -54,6 +58,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $padding }) => $padding && stylesPadding($padding)}
   ${({ $position }) => $position && `position: ${$position};`}
   ${({ $radius }) => $radius && `border-radius: ${$radius};`}
+  ${({ $transition }) => $transition && `transition: ${$transition};`}
   ${({ $width }) => $width && `width: ${$width};`}
   ${({ $css }) => $css && `${$css};`}
   ${({ $effect }) => {
