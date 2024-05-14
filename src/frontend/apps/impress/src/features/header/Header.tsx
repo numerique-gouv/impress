@@ -9,6 +9,7 @@ import { Box, StyledLink, Text } from '@/components/';
 
 import { LanguagePicker } from '../language/';
 
+import { LaGaufre } from './LaGaufre';
 import { default as IconImpress } from './assets/icon-impress.svg?url';
 import IconMyAccount from './assets/icon-my-account.png';
 
@@ -89,6 +90,7 @@ export const Header = () => {
                 src={IconMyAccount}
                 alt={t(`Profile picture`)}
               />
+              <LaGaufre />
             </Box>
           </Box>
         </Box>
