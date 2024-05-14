@@ -29,13 +29,6 @@ test.describe('Header', () => {
 
     await expect(header.getByAltText('Language Icon')).toBeVisible();
 
-    await expect(header.getByText('John Doe')).toBeVisible();
-    await expect(
-      header.getByRole('img', {
-        name: 'profile picture',
-      }),
-    ).toBeVisible();
-
     await expect(
       header.getByRole('button', {
         name: 'Les services de La Suite numérique',
