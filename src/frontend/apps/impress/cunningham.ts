@@ -3,7 +3,7 @@ const config = {
     default: {
       theme: {
         colors: {
-          'card-border': '#DDDDDD',
+          'card-border': '#ededed',
           'primary-bg': '#FAFAFA',
           'primary-100': '#EDF5FA',
           'primary-150': '#E5EEFA',
@@ -188,7 +188,7 @@ const config = {
     dsfr: {
       theme: {
         colors: {
-          'card-border': '#DDDDDD',
+          'card-border': '#ededed',
           'primary-text': '#000091',
           'primary-100': '#f5f5fe',
           'primary-150': '#F4F4FD',
