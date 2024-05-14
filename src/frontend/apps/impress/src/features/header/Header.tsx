@@ -9,6 +9,7 @@ import { Box, StyledLink, Text } from '@/components/';
 
 import { LanguagePicker } from '../language/';
 
+import { AccountDropdown } from './AccountDropdown';
 import { LaGaufre } from './LaGaufre';
 import { default as IconImpress } from './assets/icon-impress.svg?url';
 
@@ -59,7 +60,8 @@ export const Header = () => {
             </Box>
           </StyledLink>
         </Box>
-        <Box $align="center" $gap="1rem" $direction="row">
+        <Box $align="center" $gap="1.5rem" $direction="row">
+          <AccountDropdown />
           <LanguagePicker />
           <LaGaufre />
         </Box>

@@ -23,6 +23,10 @@ const StyledButton = styled(Button)`
   background: none;
   outline: none;
   transition: all 0.2s ease-in-out;
+  font-family: Marianne, Arial, serif;
+  font-weight: 500;
+  font-size: 0.938rem;
+  text-wrap: nowrap;
 `;
 
 interface DropButtonProps {
