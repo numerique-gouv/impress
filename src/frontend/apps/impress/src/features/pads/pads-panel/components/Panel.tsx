@@ -74,7 +74,7 @@ export const Panel = () => {
           $css={`border-bottom: 1px solid ${colorsTokens()['primary-300']};`}
         >
           <Text $weight="bold" $size="1.25rem">
-            {t('Recents')}
+            {t('Documents')}
           </Text>
           <PanelActions />
         </Box>

@@ -13,7 +13,7 @@ test.describe('Pads Panel', () => {
   test('checks all the elements are visible', async ({ page }) => {
     const panel = page.getByLabel('Pads panel').first();
 
-    await expect(panel.getByText('Recents')).toBeVisible();
+    await expect(panel.getByText('Documents')).toBeVisible();
 
     await expect(
       panel.getByRole('button', {
