@@ -138,7 +138,7 @@ describe('PanelPads', () => {
       screen.getByRole('button', { name: 'Close the pads panel' }),
     ).toBeVisible();
 
-    expect(await screen.findByText('Recents')).toBeVisible();
+    expect(await screen.findByText('Documents')).toBeVisible();
   });
 
   it('closes and opens the pad panel', async () => {
@@ -149,7 +149,7 @@ describe('PanelPads', () => {
 
     render(<Panel />, { wrapper: AppWrapper });
 
-    expect(await screen.findByText('Recents')).toBeVisible();
+    expect(await screen.findByText('Documents')).toBeVisible();
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -157,7 +157,7 @@ describe('PanelPads', () => {
       }),
     );
 
-    expect(await screen.findByText('Recents')).not.toBeVisible();
+    expect(await screen.findByText('Documents')).not.toBeVisible();
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -165,6 +165,6 @@ describe('PanelPads', () => {
       }),
     );
 
-    expect(await screen.findByText('Recents')).toBeVisible();
+    expect(await screen.findByText('Documents')).toBeVisible();
   });
 });
