@@ -35,5 +35,40 @@ test.describe('Header', () => {
         name: 'profile picture',
       }),
     ).toBeVisible();
+
+    await expect(
+      header.getByRole('button', {
+        name: 'Les services de La Suite numérique',
+      }),
+    ).toBeVisible();
+  });
+
+  test('checks La Gauffre interaction', async ({ page }) => {
+    const header = page.locator('header').first();
+
+    await expect(
+      header.getByRole('button', {
+        name: 'Les services de La Suite numérique',
+      }),
+    ).toBeVisible();
+
+    /**
+     * La gaufre load a js file from a remote server,
+     * it takes some time to load the file and have the interaction available
+     */
+    // eslint-disable-next-line playwright/no-wait-for-timeout
+    await page.waitForTimeout(1500);
+
+    await header
+      .getByRole('button', {
+        name: 'Les services de La Suite numérique',
+      })
+      .click();
+
+    await expect(
+      page.getByRole('link', { name: 'France Transfert' }),
+    ).toBeVisible();
+
+    await expect(page.getByRole('link', { name: 'Grist' })).toBeVisible();
   });
 });
