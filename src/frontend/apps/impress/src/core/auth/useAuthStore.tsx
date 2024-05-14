@@ -4,10 +4,6 @@ import { baseApiUrl } from '@/core/conf';
 
 import { User, getMe } from './api';
 
-export const login = () => {
-  window.location.replace(new URL('authenticate/', baseApiUrl()).href);
-};
-
 interface AuthStore {
   authenticated: boolean;
   initAuth: () => void;
@@ -30,11 +26,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
         set({ authenticated: true, userData: data });
       })
       .catch(() => {
-        // todo - implement a proper login screen to prevent automatic navigation.
-        login();
+        window.location.replace(new URL('authenticate/', baseApiUrl()).href);
       });
   },
   logout: () => {
-    set(initialState);
+    window.location.replace(new URL('logout/', baseApiUrl()).href);
   },
 }));

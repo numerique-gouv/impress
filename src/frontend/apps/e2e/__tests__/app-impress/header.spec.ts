@@ -64,4 +64,20 @@ test.describe('Header', () => {
 
     await expect(page.getByRole('link', { name: 'Grist' })).toBeVisible();
   });
+
+  test('checks logout button', async ({ page }) => {
+    await page
+      .getByRole('button', {
+        name: 'My account',
+      })
+      .click();
+
+    await page
+      .getByRole('button', {
+        name: 'Logout',
+      })
+      .click();
+
+    await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
+  });
 });

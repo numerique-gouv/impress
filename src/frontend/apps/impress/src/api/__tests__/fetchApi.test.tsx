@@ -31,25 +31,15 @@ describe('fetchAPI', () => {
   });
 
   it('logout if 401 response', async () => {
-    const mockReplace = jest.fn();
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      enumerable: true,
-      value: {
-        replace: mockReplace,
-      },
-    });
-
-    useAuthStore.setState({ userData: { email: 'test@test.com', id: '1234' } });
+    const logoutMock = jest.fn();
+    jest
+      .spyOn(useAuthStore.getState(), 'logout')
+      .mockImplementation(logoutMock);
 
     fetchMock.mock('http://test.jest/api/some/url', 401);
 
     await fetchAPI('some/url');
 
-    expect(useAuthStore.getState().userData).toBeUndefined();
-
-    expect(mockReplace).toHaveBeenCalledWith(
-      'http://test.jest/api/authenticate/',
-    );
+    expect(logoutMock).toHaveBeenCalled();
   });
 });

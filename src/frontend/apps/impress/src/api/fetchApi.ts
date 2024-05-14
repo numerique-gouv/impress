@@ -1,4 +1,4 @@
-import { baseApiUrl, login, useAuthStore } from '@/core';
+import { baseApiUrl, useAuthStore } from '@/core';
 
 /**
  * Retrieves the CSRF token from the document's cookies.
@@ -29,12 +29,8 @@ export const fetchAPI = async (input: string, init?: RequestInit) => {
     },
   });
 
-  // todo - handle 401, redirect to login screen
-  // todo - please have a look to this documentation page https://mozilla-django-oidc.readthedocs.io/en/stable/xhr.html
   if (response.status === 401) {
     logout();
-    // Fix - force re-logging the user, will be refactored
-    login();
   }
 
   return response;
