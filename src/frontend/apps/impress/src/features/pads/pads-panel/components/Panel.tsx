@@ -4,8 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Box, BoxButton, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
-import IconOpenClose from '../assets/icon-open-close.svg';
-
 import { PadList } from './PadList';
 import { PanelActions } from './PanelActions';
 
@@ -38,20 +36,28 @@ export const Panel = () => {
       {...closedOverridingStyles}
     >
       <BoxButton
+        className="material-icons"
         aria-label={
           isOpen ? t('Close the pads panel') : t('Open the pads panel')
         }
+        $background="white"
         $color={colorsTokens()['primary-600']}
+        $radius="100%"
+        $padding="0.3rem"
+        $position="absolute"
+        onClick={() => setIsOpen(!isOpen)}
         $css={`
-          position: absolute;
-          right: -1.2rem;
-          top: 1.03rem;
+          right: ${isOpen ? '-1.3' : '-2.8'}rem;
+          top: ${isOpen ? '0.7' : '0.25'}rem;
           transform: rotate(${isOpen ? '0' : '180'}deg);
           transition: ${transition};
+          font-size: 1.8rem;
+          border: 1px solid #fafafa;
+          box-shadow: ${isOpen ? '1px 1px' : '-1px -1px'} 3px #dfdfdf;
+          z-index: 1;
         `}
-        onClick={() => setIsOpen(!isOpen)}
       >
-        <IconOpenClose width={24} height={24} />
+        menu_open
       </BoxButton>
       <Box
         $css={`
