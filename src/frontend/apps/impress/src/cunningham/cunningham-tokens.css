@@ -69,7 +69,7 @@
   --c--theme--colors--success-text: var(--c--theme--colors--greyscale-000);
   --c--theme--colors--warning-text: var(--c--theme--colors--greyscale-000);
   --c--theme--colors--danger-text: var(--c--theme--colors--greyscale-000);
-  --c--theme--colors--card-border: #ddd;
+  --c--theme--colors--card-border: #ededed;
   --c--theme--colors--primary-bg: #fafafa;
   --c--theme--colors--primary-150: #e5eefa;
   --c--theme--colors--info-150: #e5eefa;
@@ -331,7 +331,7 @@
 }
 
 .cunningham-theme--dsfr {
-  --c--theme--colors--card-border: #ddd;
+  --c--theme--colors--card-border: #ededed;
   --c--theme--colors--primary-text: #000091;
   --c--theme--colors--primary-100: #f5f5fe;
   --c--theme--colors--primary-150: #f4f4fd;
