@@ -15,7 +15,7 @@ const Page: NextPageWithLayout = () => {
   } = useRouter();
 
   if (typeof id !== 'string') {
-    throw new Error('Invalid pad id');
+    return null;
   }
 
   return <Pad id={id} />;
