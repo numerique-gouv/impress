@@ -17,9 +17,13 @@ export enum Role {
   OWNER = 'owner',
 }
 
+export type Base64 = string;
+
 export interface Pad {
   id: string;
   title: string;
+  content: Base64;
+  is_public: boolean;
   accesses: Access[];
   created_at: string;
   updated_at: string;
