@@ -5,7 +5,7 @@ import { create } from 'zustand';
 
 import { signalingUrl } from '@/core';
 
-import { Pad } from '../types';
+import { Base64, Pad } from '../types';
 
 export interface PadStore {
   padsStore: {
@@ -14,7 +14,7 @@ export interface PadStore {
       editor?: BlockNoteEditor;
     };
   };
-  createProvider: (padId: Pad['id']) => WebrtcProvider;
+  createProvider: (padId: Pad['id'], initialDoc: Base64) => WebrtcProvider;
   setEditor: (padId: Pad['id'], editor: BlockNoteEditor) => void;
 }
 
@@ -24,8 +24,14 @@ const initialState = {
 
 export const usePadStore = create<PadStore>((set) => ({
   padsStore: initialState.padsStore,
-  createProvider: (padId: string) => {
-    const provider = new WebrtcProvider(padId, new Y.Doc(), {
+  createProvider: (padId: string, initialDoc: Base64) => {
+    const doc = new Y.Doc();
+
+    if (initialDoc) {
+      Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
+    }
+
+    const provider = new WebrtcProvider(padId, doc, {
       signaling: [signalingUrl()],
     });
 

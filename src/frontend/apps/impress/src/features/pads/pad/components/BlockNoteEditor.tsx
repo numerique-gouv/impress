@@ -23,7 +23,7 @@ export const BlockNoteEditor = ({ pad }: BlockNoteEditorProps) => {
   const provider = padsStore?.[pad.id]?.provider;
 
   if (!provider) {
-    createProvider(pad.id);
+    createProvider(pad.id, pad.content);
     return null;
   }
 
