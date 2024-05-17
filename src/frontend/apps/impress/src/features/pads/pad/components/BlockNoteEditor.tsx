@@ -7,6 +7,7 @@ import { WebrtcProvider } from 'y-webrtc';
 import { Box } from '@/components';
 import { useAuthStore } from '@/core/auth';
 
+import useSavePad from '../hook/useSavePad';
 import { usePadStore } from '../stores';
 import { Pad } from '../types';
 import { randomColor } from '../utils';
@@ -37,6 +38,7 @@ interface BlockNoteContentProps {
 export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
   const { userData } = useAuthStore();
   const { setEditor, padsStore } = usePadStore();
+  useSavePad(pad.id, provider.doc);
 
   const storedEditor = padsStore?.[pad.id]?.editor;
   const editor = useMemo(() => {
