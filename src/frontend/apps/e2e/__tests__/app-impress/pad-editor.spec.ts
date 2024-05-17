@@ -138,4 +138,63 @@ test.describe('Pad Editor', () => {
     await expect(page.getByText('Hello World Pad 2')).toBeHidden();
     await expect(page.getByText('Hello World Pad 1')).toBeVisible();
   });
+
+  test('it saves the doc when we change pages', async ({
+    page,
+    browserName,
+  }) => {
+    const [pad] = await createPad(page, 'pad-save-page', browserName, 1);
+
+    const panel = page.getByLabel('Pads panel').first();
+
+    // Check the first pad
+    await panel.getByText(pad).click();
+    await expect(page.locator('h2').getByText(pad)).toBeVisible();
+    await page.locator('.ProseMirror.bn-editor').click();
+    await page
+      .locator('.ProseMirror.bn-editor')
+      .fill('Hello World Pad persisted 1');
+    await expect(page.getByText('Hello World Pad persisted 1')).toBeVisible();
+
+    await panel
+      .getByRole('button', {
+        name: 'Add a pad',
+      })
+      .click();
+
+    const card = page.getByLabel('Create new pad card').first();
+    await expect(
+      card.getByRole('heading', {
+        name: 'Name the pad',
+        level: 3,
+      }),
+    ).toBeVisible();
+
+    await page.goto('/');
+
+    await panel.getByText(pad).click();
+
+    await expect(page.getByText('Hello World Pad persisted 1')).toBeVisible();
+  });
+
+  test('it saves the doc when we quit pages', async ({ page, browserName }) => {
+    const [pad] = await createPad(page, 'pad-save-quit', browserName, 1);
+
+    const panel = page.getByLabel('Pads panel').first();
+
+    // Check the first pad
+    await panel.getByText(pad).click();
+    await expect(page.locator('h2').getByText(pad)).toBeVisible();
+    await page.locator('.ProseMirror.bn-editor').click();
+    await page
+      .locator('.ProseMirror.bn-editor')
+      .fill('Hello World Pad persisted 2');
+    await expect(page.getByText('Hello World Pad persisted 2')).toBeVisible();
+
+    await page.goto('/');
+
+    await panel.getByText(pad).click();
+
+    await expect(page.getByText('Hello World Pad persisted 2')).toBeVisible();
+  });
 });
