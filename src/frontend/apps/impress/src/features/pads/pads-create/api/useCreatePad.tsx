@@ -3,10 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { KEY_LIST_PAD, Pad } from '@/features/pads';
 
-type CreatePadParam = {
-  title: string;
-  is_public: boolean;
-};
+type CreatePadParam = Pick<Pad, 'title' | 'is_public'>;
 
 export const createPad = async ({
   title,
