@@ -31,7 +31,7 @@ def test_api_documents_retrieve_anonymous_public():
         "accesses": [],
         "title": document.title,
         "is_public": True,
-        "content": {"foo": document.content["foo"]},
+        "content": document.content,
     }
 
 
@@ -76,7 +76,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public():
         "accesses": [],
         "title": document.title,
         "is_public": True,
-        "content": {"foo": document.content["foo"]},
+        "content": document.content,
     }
 
 
@@ -140,7 +140,7 @@ def test_api_documents_retrieve_authenticated_related_direct():
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,
-        "content": {"foo": document.content["foo"]},
+        "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": document.is_public,
     }
@@ -255,7 +255,7 @@ def test_api_documents_retrieve_authenticated_related_team_members(
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,
-        "content": {"foo": document.content["foo"]},
+        "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": False,
     }
@@ -353,7 +353,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,
-        "content": {"foo": document.content["foo"]},
+        "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": False,
     }
@@ -455,7 +455,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,
-        "content": {"foo": document.content["foo"]},
+        "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": False,
     }

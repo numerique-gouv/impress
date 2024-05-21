@@ -128,7 +128,7 @@ def test_api_document_versions_list_authenticated_related(via, mock_user_get_tea
     assert len(content["versions"]) == 0
 
     # Add a new version to the document
-    document.content = {"foo": "bar"}
+    document.content = "new content"
     document.save()
 
     response = client.get(
@@ -243,7 +243,7 @@ def test_api_document_versions_retrieve_authenticated_related(via, mock_user_get
 
     # Create a new version should make it available to the user
     time.sleep(1)  # minio stores datetimes with the precision of a second
-    document.content = {"foo": "bar"}
+    document.content = "new content"
     document.save()
 
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
@@ -253,7 +253,7 @@ def test_api_document_versions_retrieve_authenticated_related(via, mock_user_get
     )
 
     assert response.status_code == 200
-    assert response.json()["content"] == {"foo": "bar"}
+    assert response.json()["content"] == "new content"
 
 
 def test_api_document_versions_create_anonymous():
@@ -459,7 +459,7 @@ def test_api_document_versions_delete_member(via, mock_user_get_teams):
 
     # Create a new version should make it available to the user
     time.sleep(1)  # minio stores datetimes with the precision of a second
-    document.content = {"foo": "bar"}
+    document.content = "new content"
     document.save()
 
     versions = document.get_versions_slice()["versions"]
@@ -503,7 +503,7 @@ def test_api_document_versions_delete_administrator_or_owner(via, mock_user_get_
 
     # Create a new version should make it available to the user
     time.sleep(1)  # minio stores datetimes with the precision of a second
-    document.content = {"foo": "bar"}
+    document.content = "new content"
     document.save()
 
     versions = document.get_versions_slice()["versions"]
