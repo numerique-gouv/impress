@@ -6,9 +6,9 @@ import { Header } from '@/features/header';
 
 export function PageLayout({ children }: PropsWithChildren) {
   return (
-    <Box>
+    <Box $minHeight="100vh">
       <Header />
-      <Box as="main" $width="100%">
+      <Box as="main" $width="100%" $css="flex-grow:1;">
         {children}
       </Box>
       <Footer />
