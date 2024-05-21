@@ -26,6 +26,8 @@ export interface BoxProps {
   $justify?: CSSProperties['justifyContent'];
   $overflow?: CSSProperties['overflow'];
   $margin?: MarginPadding;
+  $maxHeight?: CSSProperties['maxHeight'];
+  $minHeight?: CSSProperties['minHeight'];
   $maxWidth?: CSSProperties['maxWidth'];
   $minWidth?: CSSProperties['minWidth'];
   $padding?: MarginPadding;
@@ -53,6 +55,8 @@ export const Box = styled('div')<BoxProps>`
     $hasTransition && `transition: all 0.3s ease-in-out;`}
   ${({ $justify }) => $justify && `justify-content: ${$justify};`}
   ${({ $margin }) => $margin && stylesMargin($margin)}
+  ${({ $maxHeight }) => $maxHeight && `max-height: ${$maxHeight};`}
+  ${({ $minHeight }) => $minHeight && `min-height: ${$minHeight};`}
   ${({ $maxWidth }) => $maxWidth && `max-width: ${$maxWidth};`}
   ${({ $minWidth }) => $minWidth && `min-width: ${$minWidth};`}
   ${({ $overflow }) => $overflow && `overflow: ${$overflow};`}
