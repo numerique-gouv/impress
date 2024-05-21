@@ -325,16 +325,15 @@ class Document(BaseModel):
             except (FileNotFoundError, ClientError):
                 pass
             else:
-                self._content = json.loads(response["Body"].read())
+                self._content = response["Body"].read().decode('utf-8')
         return self._content
 
     @content.setter
     def content(self, content):
         """Cache the content, don't write to object storage yet"""
-        if isinstance(content, str):
-            content = json.loads(content)
-        if not isinstance(content, dict):
-            raise ValueError("content should be a json object.")
+        if not isinstance(content, str):
+            raise ValueError("content should be a string.")
+        
         self._content = content
 
     def get_content_response(self, version_id=""):
@@ -349,7 +348,7 @@ class Document(BaseModel):
 
         if self._content:
             file_key = self.file_key
-            bytes_content = json.dumps(self._content).encode("utf-8")
+            bytes_content = self._content.encode("utf-8")
 
             if default_storage.exists(file_key):
                 response = default_storage.connection.meta.client.head_object(

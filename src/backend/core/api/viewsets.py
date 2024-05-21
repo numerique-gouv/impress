@@ -344,7 +344,7 @@ class DocumentViewSet(
 
         return drf_response.Response(
             {
-                "content": json.loads(response["Body"].read()),
+                "content": response["Body"].read().decode("utf-8"),
                 "last_modified": response["LastModified"],
             }
         )

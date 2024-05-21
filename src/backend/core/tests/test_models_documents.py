@@ -196,7 +196,7 @@ def test_models_documents_get_versions_slice(settings):
     # Create a document with 7 versions
     document = factories.DocumentFactory()
     for i in range(6):
-        document.content = {"foo": f"bar{i:d}"}
+        document.content = f"bar{i:d}"
         document.save()
 
     # Add a version not related to the first document
@@ -246,7 +246,7 @@ def test_models_documents_version_duplicate():
     assert len(response["Versions"]) == 1
 
     # Save modified content
-    document.content = {"foo": "spam"}
+    document.content = "new content"
     document.save()
 
     response = default_storage.connection.meta.client.list_object_versions(
