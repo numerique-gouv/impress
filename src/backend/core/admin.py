@@ -77,3 +77,16 @@ class TemplateAdmin(admin.ModelAdmin):
     """Template admin interface declaration."""
 
     inlines = (TemplateAccessInline,)
+
+class DocumentAccessInline(admin.TabularInline):
+    """Inline admin class for template accesses."""
+
+    model = models.DocumentAccess
+    extra = 0
+
+@admin.register(models.Document)
+class DocumentAdmin(admin.ModelAdmin):
+    """Document admin interface declaration."""
+
+    inlines = (DocumentAccessInline,)
+    
