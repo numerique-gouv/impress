@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
 import { Pad } from '@/features/pads/pad';
+import { ModalUpdatePad } from '@/features/pads/pads-create';
 
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 
@@ -18,6 +19,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
   const { data: templates } = useTemplates({
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
 
@@ -44,13 +46,23 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
         button={
           <IconOptions
             isOpen={isDropOpen}
-            aria-label={t('Open the team options')}
+            aria-label={t('Open the document options')}
           />
         }
         onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
         isOpen={isDropOpen}
       >
         <Box>
+          <Button
+            onClick={() => {
+              setIsModalUpdateOpen(true);
+              setIsDropOpen(false);
+            }}
+            color="primary-text"
+            icon={<span className="material-icons">edit</span>}
+          >
+            <Text $theme="primary">{t('Update document')}</Text>
+          </Button>
           <Button
             onClick={() => {
               setIsModalPDFOpen(true);
@@ -69,6 +81,9 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
           templateOptions={templateOptions}
           pad={pad}
         />
+      )}
+      {isModalUpdateOpen && (
+        <ModalUpdatePad onClose={() => setIsModalUpdateOpen(false)} pad={pad} />
       )}
     </Box>
   );

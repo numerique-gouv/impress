@@ -47,4 +47,59 @@ test.describe('Pad Tools', () => {
     expect(pdfText).toContain('La directrice'); // This is the template text
     expect(pdfText).toContain('Hello World'); // This is the pad text
   });
+
+  test('it updates the pad', async ({ page, browserName }) => {
+    const [randomPad] = await createPad(
+      page,
+      'pad-update',
+      browserName,
+      1,
+      true,
+    );
+    await expect(page.locator('h2').getByText(randomPad)).toBeVisible();
+
+    await page.getByLabel('Open the document options').click();
+    await page
+      .getByRole('button', {
+        name: 'Update document',
+      })
+      .click();
+
+    await expect(
+      page.locator('h2').getByText(`Update document "${randomPad}"`),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('checkbox', { name: 'Is it public ?' }),
+    ).toBeChecked();
+
+    await page.getByText('Pad name').fill(`${randomPad}-updated`);
+    await page.getByText('Is it public ?').click();
+
+    await page
+      .getByRole('button', {
+        name: 'Validate the modification',
+      })
+      .click();
+
+    await expect(
+      page.getByText('The document has been updated.'),
+    ).toBeVisible();
+
+    const panel = page.getByLabel('Pads panel').first();
+    await expect(
+      panel.locator('li').getByText(`${randomPad}-updated`),
+    ).toBeVisible();
+
+    await page.getByLabel('Open the document options').click();
+    await page
+      .getByRole('button', {
+        name: 'Update document',
+      })
+      .click();
+
+    await expect(
+      page.getByRole('checkbox', { name: 'Is it public ?' }),
+    ).not.toBeChecked();
+  });
 });
