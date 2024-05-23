@@ -102,4 +102,37 @@ test.describe('Pad Tools', () => {
       page.getByRole('checkbox', { name: 'Is it public ?' }),
     ).not.toBeChecked();
   });
+
+  test('it deletes the pad', async ({ page, browserName }) => {
+    const [randomPad] = await createPad(page, 'pad-delete', browserName, 1);
+    await expect(page.locator('h2').getByText(randomPad)).toBeVisible();
+
+    await page.getByLabel('Open the document options').click();
+    await page
+      .getByRole('button', {
+        name: 'Delete document',
+      })
+      .click();
+
+    await expect(
+      page.locator('h2').getByText(`Deleting the document "${randomPad}"`),
+    ).toBeVisible();
+
+    await page
+      .getByRole('button', {
+        name: 'Confirm deletion',
+      })
+      .click();
+
+    await expect(
+      page.getByText('The document has been deleted.'),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('button', { name: 'Create a new pad' }),
+    ).toBeVisible();
+
+    const panel = page.getByLabel('Pads panel').first();
+    await expect(panel.locator('li').getByText(randomPad)).toBeHidden();
+  });
 });
