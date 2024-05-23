@@ -8,6 +8,16 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- Update document (#68)
+- Remove document (#68)
+
+## Changed
+
+- Generate PDF from a modal (#68)
+- Remove trigger workflow on push tags on CI (#68)
+
 ## [0.1.0] - 2024-05-24
 
 ## Added

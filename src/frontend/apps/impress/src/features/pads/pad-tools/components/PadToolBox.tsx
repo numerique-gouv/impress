@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
 import { Pad } from '@/features/pads/pad';
-import { ModalUpdatePad } from '@/features/pads/pads-create';
+import { ModalRemovePad, ModalUpdatePad } from '@/features/pads/pads-create';
 
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 
@@ -20,6 +20,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
 
@@ -65,6 +66,16 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
           </Button>
           <Button
             onClick={() => {
+              setIsModalRemoveOpen(true);
+              setIsDropOpen(false);
+            }}
+            color="primary-text"
+            icon={<span className="material-icons">delete</span>}
+          >
+            <Text $theme="primary">{t('Delete document')}</Text>
+          </Button>
+          <Button
+            onClick={() => {
               setIsModalPDFOpen(true);
               setIsDropOpen(false);
             }}
@@ -84,6 +95,9 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
       )}
       {isModalUpdateOpen && (
         <ModalUpdatePad onClose={() => setIsModalUpdateOpen(false)} pad={pad} />
+      )}
+      {isModalRemoveOpen && (
+        <ModalRemovePad onClose={() => setIsModalRemoveOpen(false)} pad={pad} />
       )}
     </Box>
   );
