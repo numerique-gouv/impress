@@ -16,16 +16,21 @@ export const PadEditor = ({ pad }: PadEditorProps) => {
     <>
       <Box
         $direction="row"
-        className="ml-b"
+        $margin={{ all: 'big', right: 'none' }}
         $align="center"
-        $justify="space-between"
+        $position="relative"
       >
-        <Text as="h2" $align="center">
+        <Text as="h2" $align="center" $margin="auto">
           {pad.title}
         </Text>
         <PadToolBox pad={pad} />
       </Box>
-      <Card className="m-b p-b" $css="margin-top:0;flex:1;" $overflow="auto">
+      <Card
+        $margin={{ all: 'big', top: 'none' }}
+        $padding="big"
+        $css="flex:1;"
+        $overflow="auto"
+      >
         <BlockNoteEditor pad={pad} />
       </Card>
     </>
