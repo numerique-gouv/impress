@@ -1,3 +1,3 @@
 export * from './pad';
-export * from './pads-create';
+export * from './pad-management';
 export * from './pads-panel';
