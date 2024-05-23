@@ -1,13 +1,13 @@
-import { Select } from '@openfun/cunningham-react';
+import { Button } from '@openfun/cunningham-react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box } from '@/components';
+import { Box, DropButton, IconOptions, Text } from '@/components';
 import { Pad } from '@/features/pads/pad';
 
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 
-import PDFButton from './PDFButton';
+import { ModalPDF } from './ModalPDF';
 
 interface PadToolBoxProps {
   pad: Pad;
@@ -18,7 +18,8 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
   const { data: templates } = useTemplates({
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });
-  const [templateIdSelected, setTemplateIdSelected] = useState<string>();
+  const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
+  const [isDropOpen, setIsDropOpen] = useState(false);
 
   const templateOptions = useMemo(() => {
     if (!templates?.pages) {
@@ -34,32 +35,40 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
       )
       .flat();
 
-    if (templateOptions.length) {
-      setTemplateIdSelected(templateOptions[0].value);
-    }
-
     return templateOptions;
   }, [templates?.pages]);
 
   return (
-    <Box
-      $margin="big"
-      $align="center"
-      $direction="row"
-      $gap="1rem"
-      $justify="flex-end"
-    >
-      <Select
-        clearable={false}
-        label={t('Template')}
-        options={templateOptions}
-        value={templateIdSelected}
-        onChange={(options) =>
-          setTemplateIdSelected(options.target.value as string)
+    <Box $margin="big" $position="absolute" $css="right:1rem;">
+      <DropButton
+        button={
+          <IconOptions
+            isOpen={isDropOpen}
+            aria-label={t('Open the team options')}
+          />
         }
-      />
-      {templateIdSelected && (
-        <PDFButton pad={pad} templateId={templateIdSelected} />
+        onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
+        isOpen={isDropOpen}
+      >
+        <Box>
+          <Button
+            onClick={() => {
+              setIsModalPDFOpen(true);
+              setIsDropOpen(false);
+            }}
+            color="primary-text"
+            icon={<span className="material-icons">picture_as_pdf</span>}
+          >
+            <Text $theme="primary">{t('Generate PDF')}</Text>
+          </Button>
+        </Box>
+      </DropButton>
+      {isModalPDFOpen && (
+        <ModalPDF
+          onClose={() => setIsModalPDFOpen(false)}
+          templateOptions={templateOptions}
+          pad={pad}
+        />
       )}
     </Box>
   );

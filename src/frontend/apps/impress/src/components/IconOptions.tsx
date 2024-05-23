@@ -10,7 +10,6 @@ export const IconOptions = ({ isOpen, ...props }: IconOptionsProps) => {
     <Text
       aria-label={props['aria-label']}
       className="material-icons"
-      $theme="primary"
       $css={`
         transition: all 0.3s ease-in-out;
         transform: rotate(${isOpen ? '90' : '0'}deg);
