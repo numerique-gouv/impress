@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
 import { Pad } from '@/features/pads/pad';
-import { ModalRemovePad, ModalUpdatePad } from '@/features/pads/pads-create';
+import { ModalRemovePad, ModalUpdatePad } from '@/features/pads/pad-management';
 
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 
