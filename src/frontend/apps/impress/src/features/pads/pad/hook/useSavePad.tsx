@@ -2,7 +2,8 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
 
-import { useUpdatePad } from '../api/useUpdatePad';
+import { useUpdatePad } from '@/features/pads/pad-management/';
+
 import { toBase64 } from '../utils';
 
 const useSavePad = (padId: string, doc: Y.Doc) => {

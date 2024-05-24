@@ -6,10 +6,10 @@ import { WebrtcProvider } from 'y-webrtc';
 
 import { Box } from '@/components';
 import { useAuthStore } from '@/core/auth';
+import { Pad } from '@/features/pads/pad-management';
 
 import useSavePad from '../hook/useSavePad';
 import { usePadStore } from '../stores';
-import { Pad } from '../types';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';

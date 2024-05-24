@@ -11,11 +11,11 @@ import { useState } from 'react';
 
 import { Box, Text } from '@/components';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
-import { KEY_PAD, Pad } from '@/features/pads/pad';
-import { KEY_LIST_PAD } from '@/features/pads/pads-panel';
 
+import { KEY_LIST_PAD, KEY_PAD } from '../api';
 import { useUpdatePad } from '../api/useUpdatePad';
 import IconEdit from '../assets/icon-edit.svg';
+import { Pad } from '../types';
 
 import { InputPadName } from './InputPadName';
 

@@ -4,8 +4,7 @@ import * as Y from 'yjs';
 import { create } from 'zustand';
 
 import { signalingUrl } from '@/core';
-
-import { Base64, Pad } from '../types';
+import { Base64, Pad } from '@/features/pads/pad-management';
 
 export interface PadStore {
   padsStore: {

@@ -1,9 +1,8 @@
 import React from 'react';
 
 import { Box, Card, Text } from '@/components';
+import { Pad } from '@/features/pads/pad-management';
 import { PadToolBox } from '@/features/pads/pad-tools';
-
-import { Pad } from '../types';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
 

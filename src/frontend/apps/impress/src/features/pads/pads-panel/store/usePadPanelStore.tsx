@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { PadsOrdering } from '../api/usePads';
+import { PadsOrdering } from '@/features/pads/pad-management';
 
 interface PadPanelStore {
   ordering: PadsOrdering;
