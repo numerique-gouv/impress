@@ -32,6 +32,9 @@ jobs:
 
   check-changelog:
     runs-on: ubuntu-latest
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'noChangeLog') == false &&
+      github.event_name == 'pull_request'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
