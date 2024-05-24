@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { PadEditor } from '@/features/pads/pad';
+import { PadEditor } from '@/features/pads/pad-editor';
 import { usePad } from '@/features/pads/pad-management';
 import { PadLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';

@@ -11,7 +11,7 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 
 import { Box, Text } from '@/components';
-import { usePadStore } from '@/features/pads/pad/';
+import { usePadStore } from '@/features/pads/pad-editor/';
 import { Pad } from '@/features/pads/pad-management';
 
 import { useCreatePdf } from '../api/useCreatePdf';
