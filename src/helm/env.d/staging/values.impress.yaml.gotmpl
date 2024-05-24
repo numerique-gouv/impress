@@ -16,6 +16,10 @@ backend:
         name: backend
         key: DJANGO_SECRET_KEY
     DJANGO_SETTINGS_MODULE: impress.settings
+    DJANGO_SUPERUSER_EMAIL:
+      secretKeyRef:
+        name: backend
+        key: DJANGO_SUPERUSER_EMAIL
     DJANGO_SUPERUSER_PASSWORD:
       secretKeyRef:
         name: backend
@@ -104,7 +108,7 @@ backend:
       - "/bin/sh"
       - "-c"
       - |
-        python manage.py createsuperuser --email admin@staging.com --password $DJANGO_SUPERUSER_PASSWORD
+        python manage.py createsuperuser --email $DJANGO_SUPERUSER_EMAIL --password $DJANGO_SUPERUSER_PASSWORD
     restartPolicy: Never
 
 frontend:
