@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
-import { Pad } from '@/features/pads/pad';
+import { Pad } from '@/features/pads/pad-management';
 
 export enum PadsOrdering {
   BY_CREATED_ON = 'created_at',

@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, StyledLink } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { PadsOrdering } from '@/features/pads/pad-management';
 
-import { PadsOrdering } from '../api';
 import IconAdd from '../assets/icon-add.svg';
 import IconSort from '../assets/icon-sort.svg';
 import { usePadPanelStore } from '../store';

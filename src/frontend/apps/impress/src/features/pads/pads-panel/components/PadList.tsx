@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
 import { InfiniteScroll } from '@/components/InfiniteScroll';
-import { Pad } from '@/features/pads/pad';
+import { Pad, usePads } from '@/features/pads/pad-management';
 
-import { usePads } from '../api';
 import { usePadPanelStore } from '../store';
 
 import { PadItem } from './PadItem';

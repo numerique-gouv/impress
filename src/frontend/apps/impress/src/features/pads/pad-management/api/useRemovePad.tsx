@@ -6,7 +6,7 @@ import {
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-import { KEY_LIST_PAD } from '../../pads-panel';
+import { KEY_LIST_PAD } from './usePads';
 
 interface RemovePadProps {
   padId: string;

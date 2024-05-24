@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 
 import { Box } from '@/components';
-import { CardCreatePad } from '@/features/pads/';
+import { CardCreatePad } from '@/features/pads/pad-management';
 import { PadLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 

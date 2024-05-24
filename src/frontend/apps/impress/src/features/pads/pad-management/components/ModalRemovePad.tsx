@@ -11,10 +11,10 @@ import { useRouter } from 'next/navigation';
 import { Box, Text, TextErrors } from '@/components';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
-import { Pad } from '../../pad/types';
 import { useRemovePad } from '../api/useRemovePad';
 import IconPad from '../assets/icon-pad.svg';
 import IconRemove from '../assets/icon-trash.svg';
+import { Pad } from '../types';
 
 interface ModalRemovePadProps {
   onClose: () => void;

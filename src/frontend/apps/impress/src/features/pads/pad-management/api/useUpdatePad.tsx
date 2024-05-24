@@ -3,10 +3,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { Pad } from '@/features/pads';
 
-export type PadParams = Pick<Pad, 'id'> &
+export type UpdatePadParams = Pick<Pad, 'id'> &
   Partial<Pick<Pad, 'content' | 'title' | 'is_public'>>;
 
-export const updatePad = async ({ id, ...params }: PadParams): Promise<Pad> => {
+export const updatePad = async ({
+  id,
+  ...params
+}: UpdatePadParams): Promise<Pad> => {
   const response = await fetchAPI(`documents/${id}/`, {
     method: 'PATCH',
     body: JSON.stringify({
@@ -31,7 +34,7 @@ export function useUpdatePad({
   listInvalideQueries,
 }: UpdatePadProps = {}) {
   const queryClient = useQueryClient();
-  return useMutation<Pad, APIError, PadParams>({
+  return useMutation<Pad, APIError, UpdatePadParams>({
     mutationFn: updatePad,
     onSuccess: (data) => {
       listInvalideQueries?.forEach((queryKey) => {
