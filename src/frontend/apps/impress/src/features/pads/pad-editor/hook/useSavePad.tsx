@@ -6,11 +6,15 @@ import { useUpdatePad } from '@/features/pads/pad-management/';
 
 import { toBase64 } from '../utils';
 
-const useSavePad = (padId: string, doc: Y.Doc) => {
+const useSavePad = (padId: string, doc: Y.Doc, canSave: boolean) => {
   const { mutate: updatePad } = useUpdatePad();
   const [initialDoc, setInitialDoc] = useState<string>(
     toBase64(Y.encodeStateAsUpdate(doc)),
   );
+
+  useEffect(() => {
+    setInitialDoc(toBase64(Y.encodeStateAsUpdate(doc)));
+  }, [doc]);
 
   /**
    * Update initial doc when doc is updated by other users,
@@ -42,7 +46,7 @@ const useSavePad = (padId: string, doc: Y.Doc) => {
     /**
      * Save only if the doc has changed.
      */
-    if (initialDoc === newDoc) {
+    if (initialDoc === newDoc || !canSave) {
       return;
     }
 
@@ -52,7 +56,7 @@ const useSavePad = (padId: string, doc: Y.Doc) => {
       id: padId,
       content: newDoc,
     });
-  }, [initialDoc, padId, doc, updatePad]);
+  }, [initialDoc, padId, doc, updatePad, canSave]);
 
   const timeout = useRef<NodeJS.Timeout>();
   const router = useRouter();

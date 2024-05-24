@@ -1,3 +1,4 @@
+import { Alert, VariantType } from '@openfun/cunningham-react';
 import React from 'react';
 
 import { Box, Card, Text } from '@/components';
@@ -24,6 +25,13 @@ export const PadEditor = ({ pad }: PadEditorProps) => {
         </Text>
         <PadToolBox pad={pad} />
       </Box>
+      {!pad.abilities.partial_update && (
+        <Box className="m-b" $css="margin-top:0;">
+          <Alert
+            type={VariantType.WARNING}
+          >{`Read only, you don't have the right to update this document.`}</Alert>
+        </Box>
+      )}
       <Card
         $margin={{ all: 'big', top: 'none' }}
         $padding="big"

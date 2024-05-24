@@ -38,7 +38,7 @@ interface BlockNoteContentProps {
 export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
   const { userData } = useAuthStore();
   const { setEditor, padsStore } = usePadStore();
-  useSavePad(pad.id, provider.doc);
+  useSavePad(pad.id, provider.doc, pad.abilities.partial_update);
 
   const storedEditor = padsStore?.[pad.id]?.editor;
   const editor = useMemo(() => {
@@ -70,7 +70,11 @@ export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
         };
       `}
     >
-      <BlockNoteView editor={editor} formattingToolbar={false}>
+      <BlockNoteView
+        editor={editor}
+        formattingToolbar={false}
+        editable={pad.abilities.partial_update}
+      >
         <BlockNoteToolbar />
       </BlockNoteView>
     </Box>
