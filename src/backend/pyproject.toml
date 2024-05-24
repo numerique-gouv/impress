@@ -50,7 +50,7 @@ dependencies = [
     "psycopg[binary]==3.1.14",
     "PyJWT==2.8.0",
     "python-frontmatter==1.0.1",
-    "requests==2.31.0",
+    "requests==2.32.2",
     "sentry-sdk==1.38.0",
     "url-normalize==1.4.3",
     "WeasyPrint>=60.2",
