@@ -254,9 +254,12 @@ def test_api_document_accesses_create_authenticated_unrelated():
     assert not models.DocumentAccess.objects.filter(user=other_user).exists()
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_create_authenticated_member(via, mock_user_get_teams):
-    """Members of a document should not be allowed to create document accesses."""
+def test_api_document_accesses_create_authenticated_reader_or_editor(
+    via, role, mock_user_get_teams
+):
+    """Readers or editors of a document should not be allowed to create document accesses."""
     user = factories.UserFactory()
 
     client = APIClient()
@@ -264,21 +267,21 @@ def test_api_document_accesses_create_authenticated_member(via, mock_user_get_te
 
     document = factories.DocumentFactory()
     if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role="member")
+        factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role="member"
+            document=document, team="lasuite", role=role
         )
 
     other_user = factories.UserFactory()
 
-    for role in [role[0] for role in models.RoleChoices.choices]:
+    for new_role in [role[0] for role in models.RoleChoices.choices]:
         response = client.post(
             f"/api/v1.0/documents/{document.id!s}/accesses/",
             {
                 "user": str(other_user.id),
-                "role": role,
+                "role": new_role,
             },
             format="json",
         )
@@ -456,9 +459,12 @@ def test_api_document_accesses_update_authenticated_unrelated():
     assert updated_values == old_values
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_authenticated_member(via, mock_user_get_teams):
-    """Members of a document should not be allowed to update its accesses."""
+def test_api_document_accesses_update_authenticated_reader_or_editor(
+    via, role, mock_user_get_teams
+):
+    """Readers or editors of a document should not be allowed to update its accesses."""
     user = factories.UserFactory()
 
     client = APIClient()
@@ -466,11 +472,11 @@ def test_api_document_accesses_update_authenticated_member(via, mock_user_get_te
 
     document = factories.DocumentFactory()
     if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role="member")
+        factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role="member"
+            document=document, team="lasuite", role=role
         )
 
     access = factories.UserDocumentAccessFactory(document=document)
@@ -521,14 +527,14 @@ def test_api_document_accesses_update_administrator_except_owner(
 
     access = factories.UserDocumentAccessFactory(
         document=document,
-        role=random.choice(["administrator", "member"]),
+        role=random.choice(["administrator", "editor", "reader"]),
     )
     old_values = serializers.DocumentAccessSerializer(instance=access).data
 
     new_values = {
         "id": uuid4(),
         "user_id": factories.UserFactory().id,
-        "role": random.choice(["administrator", "member"]),
+        "role": random.choice(["administrator", "editor", "reader"]),
     }
 
     for field, value in new_values.items():
@@ -629,7 +635,7 @@ def test_api_document_accesses_update_administrator_to_owner(via, mock_user_get_
     access = factories.UserDocumentAccessFactory(
         document=document,
         user=other_user,
-        role=random.choice(["administrator", "member"]),
+        role=random.choice(["administrator", "editor", "reader"]),
     )
     old_values = serializers.DocumentAccessSerializer(instance=access).data
 
@@ -736,7 +742,7 @@ def test_api_document_accesses_update_owner_self(via, mock_user_get_teams):
         )
 
     old_values = serializers.DocumentAccessSerializer(instance=access).data
-    new_role = random.choice(["administrator", "member"])
+    new_role = random.choice(["administrator", "editor", "reader"])
 
     response = client.put(
         f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
@@ -797,11 +803,12 @@ def test_api_document_accesses_delete_authenticated():
     assert models.DocumentAccess.objects.count() == 1
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_delete_member(via, mock_user_get_teams):
+def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_get_teams):
     """
     Authenticated users should not be allowed to delete a document access for a
-    document in which they are a simple member.
+    document in which they are a simple reader or editor.
     """
     user = factories.UserFactory()
 
@@ -810,11 +817,11 @@ def test_api_document_accesses_delete_member(via, mock_user_get_teams):
 
     document = factories.DocumentFactory()
     if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role="member")
+        factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role="member"
+            document=document, team="lasuite", role=role
         )
 
     access = factories.UserDocumentAccessFactory(document=document)
@@ -855,7 +862,7 @@ def test_api_document_accesses_delete_administrators_except_owners(
         )
 
     access = factories.UserDocumentAccessFactory(
-        document=document, role=random.choice(["member", "administrator"])
+        document=document, role=random.choice(["reader", "editor", "administrator"])
     )
 
     assert models.DocumentAccess.objects.count() == 2

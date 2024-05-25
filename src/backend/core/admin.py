@@ -91,7 +91,7 @@ class DocumentAdmin(admin.ModelAdmin):
     """Document admin interface declaration."""
 
     inlines = (DocumentAccessInline,)
-    
+
 
 @admin.register(models.Invitation)
 class InvitationAdmin(admin.ModelAdmin):
@@ -119,4 +119,3 @@ class InvitationAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.issuer = request.user
         obj.save()
-

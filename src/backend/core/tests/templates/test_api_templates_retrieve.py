@@ -160,7 +160,10 @@ def test_api_templates_retrieve_authenticated_related_team_none(mock_user_get_te
     template = factories.TemplateFactory(is_public=False)
 
     factories.TeamTemplateAccessFactory(
-        template=template, team="members", role="member"
+        template=template, team="readers", role="reader"
+    )
+    factories.TeamTemplateAccessFactory(
+        template=template, team="editors", role="editor"
     )
     factories.TeamTemplateAccessFactory(
         template=template, team="administrators", role="administrator"
@@ -177,11 +180,13 @@ def test_api_templates_retrieve_authenticated_related_team_none(mock_user_get_te
 @pytest.mark.parametrize(
     "teams",
     [
-        ["members"],
-        ["unknown", "members"],
+        ["readers"],
+        ["unknown", "readers"],
+        ["editors"],
+        ["unknown", "editors"],
     ],
 )
-def test_api_templates_retrieve_authenticated_related_team_members(
+def test_api_templates_retrieve_authenticated_related_team_readers_or_editors(
     teams, mock_user_get_teams
 ):
     """
@@ -197,8 +202,11 @@ def test_api_templates_retrieve_authenticated_related_team_members(
 
     template = factories.TemplateFactory(is_public=False)
 
-    access_member = factories.TeamTemplateAccessFactory(
-        template=template, team="members", role="member"
+    access_reader = factories.TeamTemplateAccessFactory(
+        template=template, team="readers", role="reader"
+    )
+    access_editor = factories.TeamTemplateAccessFactory(
+        template=template, team="editors", role="editor"
     )
     access_administrator = factories.TeamTemplateAccessFactory(
         template=template, team="administrators", role="administrator"
@@ -221,10 +229,17 @@ def test_api_templates_retrieve_authenticated_related_team_members(
     assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
         [
             {
-                "id": str(access_member.id),
+                "id": str(access_reader.id),
                 "user": None,
-                "team": "members",
-                "role": access_member.role,
+                "team": "readers",
+                "role": access_reader.role,
+                "abilities": expected_abilities,
+            },
+            {
+                "id": str(access_editor.id),
+                "user": None,
+                "team": "editors",
+                "role": access_editor.role,
                 "abilities": expected_abilities,
             },
             {
@@ -285,8 +300,11 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
 
     template = factories.TemplateFactory(is_public=False)
 
-    access_member = factories.TeamTemplateAccessFactory(
-        template=template, team="members", role="member"
+    access_reader = factories.TeamTemplateAccessFactory(
+        template=template, team="readers", role="reader"
+    )
+    access_editor = factories.TeamTemplateAccessFactory(
+        template=template, team="editors", role="editor"
     )
     access_administrator = factories.TeamTemplateAccessFactory(
         template=template, team="administrators", role="administrator"
@@ -304,14 +322,26 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
     assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
         [
             {
-                "id": str(access_member.id),
+                "id": str(access_reader.id),
                 "user": None,
-                "team": "members",
-                "role": "member",
+                "team": "readers",
+                "role": "reader",
                 "abilities": {
                     "destroy": True,
                     "retrieve": True,
-                    "set_role_to": ["administrator"],
+                    "set_role_to": ["administrator", "editor"],
+                    "update": True,
+                },
+            },
+            {
+                "id": str(access_editor.id),
+                "user": None,
+                "team": "editors",
+                "role": "editor",
+                "abilities": {
+                    "destroy": True,
+                    "retrieve": True,
+                    "set_role_to": ["administrator", "reader"],
                     "update": True,
                 },
             },
@@ -323,7 +353,7 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
                 "abilities": {
                     "destroy": True,
                     "retrieve": True,
-                    "set_role_to": ["member"],
+                    "set_role_to": ["editor", "reader"],
                     "update": True,
                 },
             },
@@ -384,8 +414,11 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
 
     template = factories.TemplateFactory(is_public=False)
 
-    access_member = factories.TeamTemplateAccessFactory(
-        template=template, team="members", role="member"
+    access_reader = factories.TeamTemplateAccessFactory(
+        template=template, team="readers", role="reader"
+    )
+    access_editor = factories.TeamTemplateAccessFactory(
+        template=template, team="editors", role="editor"
     )
     access_administrator = factories.TeamTemplateAccessFactory(
         template=template, team="administrators", role="administrator"
@@ -403,14 +436,26 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
     assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
         [
             {
-                "id": str(access_member.id),
+                "id": str(access_reader.id),
                 "user": None,
-                "team": "members",
-                "role": "member",
+                "team": "readers",
+                "role": "reader",
                 "abilities": {
                     "destroy": True,
                     "retrieve": True,
-                    "set_role_to": ["owner", "administrator"],
+                    "set_role_to": ["owner", "administrator", "editor"],
+                    "update": True,
+                },
+            },
+            {
+                "id": str(access_editor.id),
+                "user": None,
+                "team": "editors",
+                "role": "editor",
+                "abilities": {
+                    "destroy": True,
+                    "retrieve": True,
+                    "set_role_to": ["owner", "administrator", "reader"],
                     "update": True,
                 },
             },
@@ -422,7 +467,7 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
                 "abilities": {
                     "destroy": True,
                     "retrieve": True,
-                    "set_role_to": ["owner", "member"],
+                    "set_role_to": ["owner", "editor", "reader"],
                     "update": True,
                 },
             },
@@ -435,7 +480,7 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
                     # editable only if there is another owner role than the user's team...
                     "destroy": other_access.role == "owner",
                     "retrieve": True,
-                    "set_role_to": ["administrator", "member"]
+                    "set_role_to": ["administrator", "editor", "reader"]
                     if other_access.role == "owner"
                     else [],
                     "update": other_access.role == "owner",

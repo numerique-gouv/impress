@@ -45,7 +45,7 @@ def test_api_templates_delete_authenticated_unrelated():
     assert models.Template.objects.count() == 1
 
 
-@pytest.mark.parametrize("role", ["member", "administrator"])
+@pytest.mark.parametrize("role", ["reader", "editor", "administrator"])
 @pytest.mark.parametrize("via", VIA)
 def test_api_templates_delete_authenticated_member_or_administrator(
     via, role, mock_user_get_teams

@@ -57,13 +57,20 @@ def test_api_document_invitations__create__authenticated_outsider():
 @pytest.mark.parametrize(
     "inviting,invited,is_allowed",
     (
-        ["member", "member", False],
-        ["member", "administrator", False],
-        ["member", "owner", False],
-        ["administrator", "member", True],
+        ["reader", "reader", False],
+        ["reader", "editor", False],
+        ["reader", "administrator", False],
+        ["reader", "owner", False],
+        ["editor", "reader", False],
+        ["editor", "editor", False],
+        ["editor", "administrator", False],
+        ["editor", "owner", False],
+        ["administrator", "reader", True],
+        ["administrator", "editor", True],
         ["administrator", "administrator", True],
         ["administrator", "owner", False],
-        ["owner", "member", True],
+        ["owner", "reader", True],
+        ["owner", "editor", True],
         ["owner", "administrator", True],
         ["owner", "owner", True],
     ),
@@ -146,7 +153,7 @@ def test_api_document_invitations__create__cannot_duplicate_invitation():
     # Create a new invitation to the same document with the exact same email address
     invitation_values = {
         "email": existing_invitation.email,
-        "role": random.choice(["administrator", "member"]),
+        "role": random.choice(["administrator", "editor", "reader"]),
     }
 
     client = APIClient()
@@ -222,12 +229,12 @@ def test_api_document_invitations__list__authenticated(
         document=document, role="administrator", issuer=user
     )
     other_invitations = factories.InvitationFactory.create_batch(
-        2, document=document, role="member", issuer=other_user
+        2, document=document, role="reader", issuer=other_user
     )
 
     # invitations from other documents should not be listed
     other_document = factories.DocumentFactory()
-    factories.InvitationFactory.create_batch(2, document=other_document, role="member")
+    factories.InvitationFactory.create_batch(2, document=other_document, role="reader")
 
     client = APIClient()
     client.force_login(user)
@@ -275,7 +282,7 @@ def test_api_document_invitations__list__expired_invitations_still_listed(settin
     settings.INVITATION_VALIDITY_DURATION = 1  # second
     expired_invitation = factories.InvitationFactory(
         document=document,
-        role="member",
+        role="reader",
         issuer=user,
     )
     time.sleep(1)
@@ -467,17 +474,20 @@ def test_api_document_invitations__delete__privileged_members(
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__delete__members(via, mock_user_get_teams):
-    """Member should not be able to cancel invitation."""
+def test_api_document_invitations_delete_readers_or_editors(
+    via, role, mock_user_get_teams
+):
+    """Readers or editors should not be able to cancel invitation."""
     user = factories.UserFactory()
     document = factories.DocumentFactory()
     if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role="member")
+        factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role="member"
+            document=document, team="lasuite", role=role
         )
 
     invitation = factories.InvitationFactory(document=document)

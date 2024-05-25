@@ -66,9 +66,9 @@ def test_api_documents_update_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_update_authenticated_members(via, mock_user_get_teams):
+def test_api_documents_update_authenticated_reader(via, mock_user_get_teams):
     """
-    Users who are members of a document but not administrators should
+    Users who are editors or reader of a document but not administrators should
     not be allowed to update it.
     """
     user = factories.UserFactory()
@@ -78,11 +78,11 @@ def test_api_documents_update_authenticated_members(via, mock_user_get_teams):
 
     document = factories.DocumentFactory()
     if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role="member")
+        factories.UserDocumentAccessFactory(document=document, user=user, role="reader")
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role="member"
+            document=document, team="lasuite", role="reader"
         )
 
     old_document_values = serializers.DocumentSerializer(instance=document).data
@@ -106,12 +106,12 @@ def test_api_documents_update_authenticated_members(via, mock_user_get_teams):
     assert document_values == old_document_values
 
 
-@pytest.mark.parametrize("role", ["administrator", "owner"])
+@pytest.mark.parametrize("role", ["editor", "administrator", "owner"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_update_authenticated_administrator_or_owner(
+def test_api_documents_update_authenticated_editor_administrator_or_owner(
     via, role, mock_user_get_teams
 ):
-    """Administrator or owner of a document should be allowed to update it."""
+    """A user who is editor, administrator or owner of a document should be allowed to update it."""
     user = factories.UserFactory()
 
     client = APIClient()

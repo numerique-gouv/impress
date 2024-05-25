@@ -437,11 +437,12 @@ def test_api_document_versions_delete_authenticated_private():
     assert response.json() == {"detail": "Not found."}
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_delete_member(via, mock_user_get_teams):
+def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_get_teams):
     """
     Authenticated users should not be allowed to delete a document version for a
-    document in which they are a simple member.
+    document in which they are a simple reader or editor.
     """
     user = factories.UserFactory()
 
@@ -450,11 +451,11 @@ def test_api_document_versions_delete_member(via, mock_user_get_teams):
 
     document = factories.DocumentFactory()
     if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role="member")
+        factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role="member"
+            document=document, team="lasuite", role=role
         )
 
     # Create a new version should make it available to the user

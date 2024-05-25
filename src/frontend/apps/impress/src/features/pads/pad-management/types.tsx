@@ -12,7 +12,8 @@ export interface Access {
 }
 
 export enum Role {
-  MEMBER = 'member',
+  READER = 'reader',
+  EDITOR = 'editor',
   ADMIN = 'administrator',
   OWNER = 'owner',
 }
