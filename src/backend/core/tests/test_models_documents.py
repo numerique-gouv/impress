@@ -147,9 +147,28 @@ def test_models_documents_get_abilities_administrator():
     }
 
 
-def test_models_documents_get_abilities_member_user(django_assert_num_queries):
-    """Check abilities returned for the member of a document."""
-    access = factories.UserDocumentAccessFactory(role="member")
+def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
+    """Check abilities returned for the editor of a document."""
+    access = factories.UserDocumentAccessFactory(role="editor")
+
+    with django_assert_num_queries(1):
+        abilities = access.document.get_abilities(access.user)
+
+    assert abilities == {
+        "destroy": False,
+        "retrieve": True,
+        "update": True,
+        "manage_accesses": False,
+        "partial_update": True,
+        "versions_destroy": False,
+        "versions_list": True,
+        "versions_retrieve": True,
+    }
+
+
+def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
+    """Check abilities returned for the reader of a document."""
+    access = factories.UserDocumentAccessFactory(role="reader")
 
     with django_assert_num_queries(1):
         abilities = access.document.get_abilities(access.user)
@@ -168,8 +187,8 @@ def test_models_documents_get_abilities_member_user(django_assert_num_queries):
 
 def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
     """No query is done if the role is preset e.g. with query annotation."""
-    access = factories.UserDocumentAccessFactory(role="member")
-    access.document.user_roles = ["member"]
+    access = factories.UserDocumentAccessFactory(role="reader")
+    access.document.user_roles = ["reader"]
 
     with django_assert_num_queries(0):
         abilities = access.document.get_abilities(access.user)

@@ -45,14 +45,12 @@ def test_api_documents_delete_authenticated_unrelated():
     assert models.Document.objects.count() == 1
 
 
-@pytest.mark.parametrize("role", ["member", "administrator"])
+@pytest.mark.parametrize("role", ["reader", "editor", "administrator"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_delete_authenticated_member_or_administrator(
-    via, role, mock_user_get_teams
-):
+def test_api_documents_delete_authenticated_not_owner(via, role, mock_user_get_teams):
     """
     Authenticated users should not be allowed to delete a document for which they are
-    only a member or administrator.
+    only a reader, editor or administrator.
     """
     user = factories.UserFactory()
 

@@ -2,7 +2,6 @@
 Declare and configure the models for the impress core application
 """
 import hashlib
-import json
 import smtplib
 import textwrap
 import uuid
@@ -55,8 +54,9 @@ def get_resource_roles(resource, user):
 class RoleChoices(models.TextChoices):
     """Defines the possible roles a user can have in a template."""
 
-    MEMBER = "member", _("Member")
-    ADMIN = "administrator", _("Administrator")
+    READER = "reader", _("Reader")  # Can read
+    EDITOR = "editor", _("Editor")  # Can read and edit
+    ADMIN = "administrator", _("Administrator")  # Can read, edit, delete and share
     OWNER = "owner", _("Owner")
 
 
@@ -233,7 +233,7 @@ class BaseAccess(BaseModel):
     )
     team = models.CharField(max_length=100, blank=True)
     role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
+        max_length=20, choices=RoleChoices.choices, default=RoleChoices.READER
     )
 
     class Meta:
@@ -265,14 +265,20 @@ class BaseAccess(BaseModel):
                 RoleChoices.OWNER in roles
                 and resource.accesses.filter(role=RoleChoices.OWNER).count() > 1
             )
-            set_role_to = [RoleChoices.ADMIN, RoleChoices.MEMBER] if can_delete else []
+            set_role_to = (
+                [RoleChoices.ADMIN, RoleChoices.EDITOR, RoleChoices.READER]
+                if can_delete
+                else []
+            )
         else:
             can_delete = is_owner_or_admin
             set_role_to = []
             if RoleChoices.OWNER in roles:
                 set_role_to.append(RoleChoices.OWNER)
             if is_owner_or_admin:
-                set_role_to.extend([RoleChoices.ADMIN, RoleChoices.MEMBER])
+                set_role_to.extend(
+                    [RoleChoices.ADMIN, RoleChoices.EDITOR, RoleChoices.READER]
+                )
 
         # Remove the current role as we don't want to propose it as an option
         try:
@@ -325,7 +331,7 @@ class Document(BaseModel):
             except (FileNotFoundError, ClientError):
                 pass
             else:
-                self._content = response["Body"].read().decode('utf-8')
+                self._content = response["Body"].read().decode("utf-8")
         return self._content
 
     @content.setter
@@ -333,7 +339,7 @@ class Document(BaseModel):
         """Cache the content, don't write to object storage yet"""
         if not isinstance(content, str):
             raise ValueError("content should be a string.")
-        
+
         self._content = content
 
     def get_content_response(self, version_id=""):
@@ -447,6 +453,7 @@ class Document(BaseModel):
         is_owner_or_admin = bool(
             set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
+        is_editor = bool(RoleChoices.EDITOR in roles)
         can_get = self.is_public or bool(roles)
         can_get_versions = bool(roles)
 
@@ -456,8 +463,8 @@ class Document(BaseModel):
             "versions_list": can_get_versions,
             "versions_retrieve": can_get_versions,
             "manage_accesses": is_owner_or_admin,
-            "update": is_owner_or_admin,
-            "partial_update": is_owner_or_admin,
+            "update": is_owner_or_admin or is_editor,
+            "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,
         }
 
@@ -537,14 +544,15 @@ class Template(BaseModel):
         is_owner_or_admin = bool(
             set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
+        is_editor = bool(RoleChoices.EDITOR in roles)
         can_get = self.is_public or bool(roles)
 
         return {
             "destroy": RoleChoices.OWNER in roles,
             "generate_document": can_get,
             "manage_accesses": is_owner_or_admin,
-            "update": is_owner_or_admin,
-            "partial_update": is_owner_or_admin,
+            "update": is_owner_or_admin or is_editor,
+            "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,
         }
 
@@ -631,7 +639,7 @@ class Invitation(BaseModel):
         related_name="invitations",
     )
     role = models.CharField(
-        max_length=20, choices=RoleChoices.choices, default=RoleChoices.MEMBER
+        max_length=20, choices=RoleChoices.choices, default=RoleChoices.READER
     )
     issuer = models.ForeignKey(
         User,

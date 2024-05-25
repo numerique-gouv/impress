@@ -1,5 +1,4 @@
 """API endpoints"""
-import json
 from io import BytesIO
 
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -368,15 +367,15 @@ class DocumentAccessViewSet(
 
     POST /api/v1.0/documents/<resource_id>/accesses/ with expected data:
         - user: str
-        - role: str [owner|admin|member]
+        - role: str [administrator|editor|reader]
         Return newly created document access
 
     PUT /api/v1.0/documents/<resource_id>/accesses/<document_access_id>/ with expected data:
-        - role: str [owner|admin|member]
+        - role: str [owner|admin|editor|reader]
         Return updated document access
 
     PATCH /api/v1.0/documents/<resource_id>/accesses/<document_access_id>/ with expected data:
-        - role: str [owner|admin|member]
+        - role: str [owner|admin|editor|reader]
         Return partially updated document access
 
     DELETE /api/v1.0/documents/<resource_id>/accesses/<document_access_id>/
@@ -458,15 +457,15 @@ class TemplateAccessViewSet(
 
     POST /api/v1.0/templates/<template_id>/accesses/ with expected data:
         - user: str
-        - role: str [owner|admin|member]
+        - role: str [administrator|editor|reader]
         Return newly created template access
 
     PUT /api/v1.0/templates/<template_id>/accesses/<template_access_id>/ with expected data:
-        - role: str [owner|admin|member]
+        - role: str [owner|admin|editor|reader]
         Return updated template access
 
     PATCH /api/v1.0/templates/<template_id>/accesses/<template_access_id>/ with expected data:
-        - role: str [owner|admin|member]
+        - role: str [owner|admin|editor|reader]
         Return partially updated template access
 
     DELETE /api/v1.0/templates/<template_id>/accesses/<template_access_id>/
@@ -496,7 +495,7 @@ class InvitationViewset(
 
     POST /api/v1.0/documents/<document_id>/invitations/ with expected data:
         - email: str
-        - role: str [owner|admin|member]
+        - role: str [administrator|editor|reader]
         Return newly created invitation (issuer and document are automatically set)
 
     PUT / PATCH : Not permitted. Instead of updating your invitation,

@@ -66,10 +66,9 @@ def test_api_templates_update_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_templates_update_authenticated_members(via, mock_user_get_teams):
+def test_api_templates_update_authenticated_readers(via, mock_user_get_teams):
     """
-    Users who are members of a template but not administrators should
-    not be allowed to update it.
+    Users who are readers of a template should not be allowed to update it.
     """
     user = factories.UserFactory()
 
@@ -78,11 +77,11 @@ def test_api_templates_update_authenticated_members(via, mock_user_get_teams):
 
     template = factories.TemplateFactory()
     if via == USER:
-        factories.UserTemplateAccessFactory(template=template, user=user, role="member")
+        factories.UserTemplateAccessFactory(template=template, user=user, role="reader")
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
-            template=template, team="lasuite", role="member"
+            template=template, team="lasuite", role="reader"
         )
 
     old_template_values = serializers.TemplateSerializer(instance=template).data
@@ -106,9 +105,9 @@ def test_api_templates_update_authenticated_members(via, mock_user_get_teams):
     assert template_values == old_template_values
 
 
-@pytest.mark.parametrize("role", ["administrator", "owner"])
+@pytest.mark.parametrize("role", ["editor", "administrator", "owner"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_templates_update_authenticated_administrator_or_owner(
+def test_api_templates_update_authenticated_editor_or_administrator_or_owner(
     via, role, mock_user_get_teams
 ):
     """Administrator or owner of a template should be allowed to update it."""

@@ -134,9 +134,26 @@ def test_models_templates_get_abilities_administrator():
     }
 
 
-def test_models_templates_get_abilities_member_user(django_assert_num_queries):
-    """Check abilities returned for the member of a template."""
-    access = factories.UserTemplateAccessFactory(role="member")
+def test_models_templates_get_abilities_editor_user(django_assert_num_queries):
+    """Check abilities returned for the editor of a template."""
+    access = factories.UserTemplateAccessFactory(role="editor")
+
+    with django_assert_num_queries(1):
+        abilities = access.template.get_abilities(access.user)
+
+    assert abilities == {
+        "destroy": False,
+        "retrieve": True,
+        "update": True,
+        "manage_accesses": False,
+        "partial_update": True,
+        "generate_document": True,
+    }
+
+
+def test_models_templates_get_abilities_reader_user(django_assert_num_queries):
+    """Check abilities returned for the reader of a template."""
+    access = factories.UserTemplateAccessFactory(role="reader")
 
     with django_assert_num_queries(1):
         abilities = access.template.get_abilities(access.user)
@@ -153,8 +170,8 @@ def test_models_templates_get_abilities_member_user(django_assert_num_queries):
 
 def test_models_templates_get_abilities_preset_role(django_assert_num_queries):
     """No query is done if the role is preset e.g. with query annotation."""
-    access = factories.UserTemplateAccessFactory(role="member")
-    access.template.user_roles = ["member"]
+    access = factories.UserTemplateAccessFactory(role="reader")
+    access.template.user_roles = ["reader"]
 
     with django_assert_num_queries(0):
         abilities = access.template.get_abilities(access.user)

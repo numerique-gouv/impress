@@ -170,7 +170,7 @@ def test_models_invitation__new_user__user_creation_constant_num_queries(
 
 def test_models_document_invitations_email():
     """Check email invitation during invitation creation."""
-    member_access = factories.UserDocumentAccessFactory(role="member")
+    member_access = factories.UserDocumentAccessFactory(role="reader")
     document = member_access.document
 
     # pylint: disable-next=no-member
@@ -201,7 +201,7 @@ def test_models_document_invitations_email():
 def test_models_document_invitations_email_failed(mock_logger, _mock_send_mail):
     """Check invitation behavior when an SMTP error occurs during invitation creation."""
 
-    member_access = factories.UserDocumentAccessFactory(role="member")
+    member_access = factories.UserDocumentAccessFactory(role="reader")
     document = member_access.document
 
     # pylint: disable-next=no-member
@@ -288,17 +288,42 @@ def test_models_document_invitations_get_abilities_privileged_member(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_models_document_invitations_get_abilities_member(via, mock_user_get_teams):
-    """Check abilities for a document member with 'member' role."""
+def test_models_document_invitations_get_abilities_reader(via, mock_user_get_teams):
+    """Check abilities for a document reader with 'reader' role."""
 
     user = factories.UserFactory()
     document = factories.DocumentFactory()
     if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role="member")
+        factories.UserDocumentAccessFactory(document=document, user=user, role="reader")
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role="member"
+            document=document, team="lasuite", role="reader"
+        )
+
+    invitation = factories.InvitationFactory(document=document)
+    abilities = invitation.get_abilities(user)
+
+    assert abilities == {
+        "destroy": False,
+        "retrieve": True,
+        "partial_update": False,
+        "update": False,
+    }
+
+
+@pytest.mark.parametrize("via", VIA)
+def test_models_document_invitations_get_abilities_editor(via, mock_user_get_teams):
+    """Check abilities for a document editor with 'editor' role."""
+
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    if via == USER:
+        factories.UserDocumentAccessFactory(document=document, user=user, role="editor")
+    elif via == TEAM:
+        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=document, team="lasuite", role="editor"
         )
 
     invitation = factories.InvitationFactory(document=document)

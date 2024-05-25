@@ -254,9 +254,12 @@ def test_api_template_accesses_create_authenticated_unrelated():
     assert not models.TemplateAccess.objects.filter(user=other_user).exists()
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_create_authenticated_member(via, mock_user_get_teams):
-    """Members of a template should not be allowed to create template accesses."""
+def test_api_template_accesses_create_authenticated_editor_or_reader(
+    via, role, mock_user_get_teams
+):
+    """Editors or readers of a template should not be allowed to create template accesses."""
     user = factories.UserFactory()
 
     client = APIClient()
@@ -264,21 +267,21 @@ def test_api_template_accesses_create_authenticated_member(via, mock_user_get_te
 
     template = factories.TemplateFactory()
     if via == USER:
-        factories.UserTemplateAccessFactory(template=template, user=user, role="member")
+        factories.UserTemplateAccessFactory(template=template, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
-            template=template, team="lasuite", role="member"
+            template=template, team="lasuite", role=role
         )
 
     other_user = factories.UserFactory()
 
-    for role in [role[0] for role in models.RoleChoices.choices]:
+    for new_role in [role[0] for role in models.RoleChoices.choices]:
         response = client.post(
             f"/api/v1.0/templates/{template.id!s}/accesses/",
             {
                 "user": str(other_user.id),
-                "role": role,
+                "role": new_role,
             },
             format="json",
         )
@@ -456,9 +459,12 @@ def test_api_template_accesses_update_authenticated_unrelated():
     assert updated_values == old_values
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_update_authenticated_member(via, mock_user_get_teams):
-    """Members of a template should not be allowed to update its accesses."""
+def test_api_template_accesses_update_authenticated_editor_or_reader(
+    via, role, mock_user_get_teams
+):
+    """Editors or readers of a template should not be allowed to update its accesses."""
     user = factories.UserFactory()
 
     client = APIClient()
@@ -466,11 +472,11 @@ def test_api_template_accesses_update_authenticated_member(via, mock_user_get_te
 
     template = factories.TemplateFactory()
     if via == USER:
-        factories.UserTemplateAccessFactory(template=template, user=user, role="member")
+        factories.UserTemplateAccessFactory(template=template, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
-            template=template, team="lasuite", role="member"
+            template=template, team="lasuite", role=role
         )
 
     access = factories.UserTemplateAccessFactory(template=template)
@@ -521,14 +527,14 @@ def test_api_template_accesses_update_administrator_except_owner(
 
     access = factories.UserTemplateAccessFactory(
         template=template,
-        role=random.choice(["administrator", "member"]),
+        role=random.choice(["administrator", "editor", "reader"]),
     )
     old_values = serializers.TemplateAccessSerializer(instance=access).data
 
     new_values = {
         "id": uuid4(),
         "user_id": factories.UserFactory().id,
-        "role": random.choice(["administrator", "member"]),
+        "role": random.choice(["administrator", "editor", "reader"]),
     }
 
     for field, value in new_values.items():
@@ -629,7 +635,7 @@ def test_api_template_accesses_update_administrator_to_owner(via, mock_user_get_
     access = factories.UserTemplateAccessFactory(
         template=template,
         user=other_user,
-        role=random.choice(["administrator", "member"]),
+        role=random.choice(["administrator", "editor", "reader"]),
     )
     old_values = serializers.TemplateAccessSerializer(instance=access).data
 
@@ -736,7 +742,7 @@ def test_api_template_accesses_update_owner_self(via, mock_user_get_teams):
         )
 
     old_values = serializers.TemplateAccessSerializer(instance=access).data
-    new_role = random.choice(["administrator", "member"])
+    new_role = random.choice(["administrator", "editor", "reader"])
 
     response = client.put(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
@@ -797,11 +803,12 @@ def test_api_template_accesses_delete_authenticated():
     assert models.TemplateAccess.objects.count() == 1
 
 
+@pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_delete_member(via, mock_user_get_teams):
+def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_get_teams):
     """
     Authenticated users should not be allowed to delete a template access for a
-    template in which they are a simple member.
+    template in which they are a simple editor or reader.
     """
     user = factories.UserFactory()
 
@@ -810,11 +817,11 @@ def test_api_template_accesses_delete_member(via, mock_user_get_teams):
 
     template = factories.TemplateFactory()
     if via == USER:
-        factories.UserTemplateAccessFactory(template=template, user=user, role="member")
+        factories.UserTemplateAccessFactory(template=template, user=user, role=role)
     elif via == TEAM:
         mock_user_get_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
-            template=template, team="lasuite", role="member"
+            template=template, team="lasuite", role=role
         )
 
     access = factories.UserTemplateAccessFactory(template=template)
@@ -855,7 +862,7 @@ def test_api_template_accesses_delete_administrators_except_owners(
         )
 
     access = factories.UserTemplateAccessFactory(
-        template=template, role=random.choice(["member", "administrator"])
+        template=template, role=random.choice(["reader", "editor", "administrator"])
     )
 
     assert models.TemplateAccess.objects.count() == 2
