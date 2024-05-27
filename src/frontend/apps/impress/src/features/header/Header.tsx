@@ -10,7 +10,7 @@ import { LanguagePicker } from '../language/';
 
 import { AccountDropdown } from './AccountDropdown';
 import { LaGaufre } from './LaGaufre';
-import { default as IconImpress } from './assets/icon-impress.svg?url';
+import { default as IconDocs } from './assets/icon-docs.svg?url';
 
 export const HEADER_HEIGHT = '100px';
 
@@ -51,9 +51,9 @@ export const Header = () => {
           />
           <StyledLink href="/">
             <Box $align="center" $gap="1rem" $direction="row">
-              <Image priority src={IconImpress} alt={t('Impress Logo')} />
+              <Image priority src={IconDocs} alt={t('Docs Logo')} />
               <Text $margin="none" as="h2" $theme="primary">
-                {t('Impress')}
+                {t('Docs')}
               </Text>
             </Box>
           </StyledLink>
