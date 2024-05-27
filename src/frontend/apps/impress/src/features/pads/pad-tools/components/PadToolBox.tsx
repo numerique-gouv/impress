@@ -57,16 +57,30 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
         isOpen={isDropOpen}
       >
         <Box>
-          <Button
-            onClick={() => {
-              setIsModalUpdateOpen(true);
-              setIsDropOpen(false);
-            }}
-            color="primary-text"
-            icon={<span className="material-icons">edit</span>}
-          >
-            <Text $theme="primary">{t('Update document')}</Text>
-          </Button>
+          {pad.abilities.partial_update && (
+            <Button
+              onClick={() => {
+                setIsModalUpdateOpen(true);
+                setIsDropOpen(false);
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">edit</span>}
+            >
+              <Text $theme="primary">{t('Update document')}</Text>
+            </Button>
+          )}
+          {pad.abilities.destroy && (
+            <Button
+              onClick={() => {
+                setIsModalUpdateOpen(true);
+                setIsDropOpen(false);
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">edit</span>}
+            >
+              <Text $theme="primary">{t('Update document')}</Text>
+            </Button>
+          )}
           <Button
             onClick={() => {
               setIsModalRemoveOpen(true);

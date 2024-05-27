@@ -135,4 +135,36 @@ test.describe('Pad Tools', () => {
     const panel = page.getByLabel('Pads panel').first();
     await expect(panel.locator('li').getByText(randomPad)).toBeHidden();
   });
+
+  test('it cannot update if not the owner', async ({ page, browserName }) => {
+    const [padName] = await createPad(
+      page,
+      'pad-tools-right-management',
+      browserName,
+      1,
+      true,
+    );
+
+    await page.getByText('My account').click();
+    await page.getByText('Logout').first().click();
+
+    await page.getByLabel('Restart login').click();
+
+    const browserNames = ['chromium', 'webkit'];
+    const newBrowserName = browserNames.find((name) => name !== browserName)!;
+
+    await keyCloakSignIn(page, newBrowserName);
+
+    const panel = page.getByLabel('Pads panel').first();
+    await panel.getByText(padName).click();
+
+    await page.getByLabel('Open the document options').click();
+
+    await expect(
+      page.getByRole('button', { name: 'Generate PDF' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Update document' }),
+    ).toBeHidden();
+  });
 });
