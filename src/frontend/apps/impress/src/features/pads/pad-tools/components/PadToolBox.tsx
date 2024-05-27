@@ -72,25 +72,15 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
           {pad.abilities.destroy && (
             <Button
               onClick={() => {
-                setIsModalUpdateOpen(true);
+                setIsModalRemoveOpen(true);
                 setIsDropOpen(false);
               }}
               color="primary-text"
-              icon={<span className="material-icons">edit</span>}
+              icon={<span className="material-icons">delete</span>}
             >
-              <Text $theme="primary">{t('Update document')}</Text>
+              <Text $theme="primary">{t('Delete document')}</Text>
             </Button>
           )}
-          <Button
-            onClick={() => {
-              setIsModalRemoveOpen(true);
-              setIsDropOpen(false);
-            }}
-            color="primary-text"
-            icon={<span className="material-icons">delete</span>}
-          >
-            <Text $theme="primary">{t('Delete document')}</Text>
-          </Button>
           <Button
             onClick={() => {
               setIsModalPDFOpen(true);

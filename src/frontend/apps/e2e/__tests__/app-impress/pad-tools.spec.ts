@@ -136,7 +136,10 @@ test.describe('Pad Tools', () => {
     await expect(panel.locator('li').getByText(randomPad)).toBeHidden();
   });
 
-  test('it cannot update if not the owner', async ({ page, browserName }) => {
+  test('it cannot update or delete if not the owner', async ({
+    page,
+    browserName,
+  }) => {
     const [padName] = await createPad(
       page,
       'pad-tools-right-management',
@@ -165,6 +168,9 @@ test.describe('Pad Tools', () => {
     ).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Update document' }),
+    ).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Delete document' }),
     ).toBeHidden();
   });
 });
