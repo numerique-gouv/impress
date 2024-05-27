@@ -19,7 +19,7 @@ const RedStripe = styled.div`
   position: absolute;
   height: 5px;
   width: 100%;
-  background: var(--c--theme--colors--danger-500);
+  background: var(--c--theme--colors--primary-500);
   top: 0;
 `;
 
@@ -55,7 +55,7 @@ export const Header = () => {
             <Box $align="center" $gap="1rem" $direction="row">
               <Image priority src={IconImpress} alt={t('Impress Logo')} />
               <Text $margin="none" as="h2" $theme="primary">
-                {t('Impress')}
+                {t('Docs Demo')}
               </Text>
             </Box>
           </StyledLink>
