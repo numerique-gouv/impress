@@ -10,6 +10,7 @@ and this project adheres to
 
 ## Added
 
+- Manage the document's right (#75) 
 - Update document (#68)
 - Remove document (#68)
 
