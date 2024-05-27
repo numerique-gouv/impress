@@ -3,9 +3,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { default as IconGouv } from '@/assets/icons/icon-gouv.svg?url';
-import { default as IconMarianne } from '@/assets/icons/icon-marianne.svg?url';
 import { Box, StyledLink, Text } from '@/components/';
+import LogoGouv from '@/components/LogoGouv';
 
 import { LanguagePicker } from '../language/';
 
@@ -36,20 +35,19 @@ export const Header = () => {
       $css="box-shadow: 0 1px 4px #00000040;"
     >
       <RedStripe />
-      <Box $margin={{ horizontal: 'xbig' }}>
-        <Image priority src={IconMarianne} alt={t('Marianne Logo')} />
-      </Box>
       <Box
         $margin={{ horizontal: 'xbig' }}
         $align="center"
         $justify="space-between"
         $direction="row"
       >
-        <Box $align="center" $gap="6rem" $direction="row">
-          <Image
-            priority
-            src={IconGouv}
-            alt={t('Freedom Equality Fraternity Logo')}
+        <Box $gap="6rem" $direction="row">
+          <LogoGouv
+            textProps={{
+              $size: 't',
+              $css: 'line-height:10px',
+              $margin: { vertical: '3px' },
+            }}
           />
           <StyledLink href="/">
             <Box $align="center" $gap="1rem" $direction="row">
