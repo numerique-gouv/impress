@@ -1,11 +1,9 @@
-import Image from 'next/image';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { default as IconGouv } from '@/assets/icons/icon-gouv.svg?url';
-import { default as IconMarianne } from '@/assets/icons/icon-marianne.svg?url';
 import { Box, StyledLink, Text } from '@/components/';
+import LogoGouv from '@/components/LogoGouv';
 
 import IconLink from './assets/external-link.svg';
 
@@ -24,14 +22,6 @@ export const Footer = () => {
     <Box $position="relative" as="footer">
       <BlueStripe />
       <Box $padding={{ top: 'large', horizontal: 'big', bottom: 'small' }}>
-        <Box>
-          <Image
-            priority
-            src={IconMarianne}
-            alt={t('Marianne Logo')}
-            width={70}
-          />
-        </Box>
         <Box
           $direction="row"
           $gap="1.5rem"
@@ -41,11 +31,11 @@ export const Footer = () => {
         >
           <Box>
             <Box $align="center" $gap="6rem" $direction="row">
-              <Image
-                width={100}
-                priority
-                src={IconGouv}
-                alt={t('Freedom Equality Fraternity Logo')}
+              <LogoGouv
+                textProps={{
+                  $size: '1.3rem',
+                }}
+                imagesWidth={70}
               />
             </Box>
           </Box>
