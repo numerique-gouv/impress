@@ -34,7 +34,7 @@ describe('PanelPads', () => {
 
     expect(
       await screen.findByText(
-        'Create your first pad by clicking on the "Create a new pad" button.',
+        'Create your first document by clicking on the "Create a new document" button.',
       ),
     ).toBeInTheDocument();
   });
@@ -126,7 +126,7 @@ describe('PanelPads', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders with pad panel open', async () => {
+  it('renders with doc panel open', async () => {
     fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
@@ -135,13 +135,13 @@ describe('PanelPads', () => {
     render(<Panel />, { wrapper: AppWrapper });
 
     expect(
-      screen.getByRole('button', { name: 'Close the pads panel' }),
+      screen.getByRole('button', { name: 'Close the documents panel' }),
     ).toBeVisible();
 
     expect(await screen.findByText('Documents')).toBeVisible();
   });
 
-  it('closes and opens the pad panel', async () => {
+  it('closes and opens the doc panel', async () => {
     fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
@@ -153,7 +153,7 @@ describe('PanelPads', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Close the pads panel',
+        name: 'Close the documents panel',
       }),
     );
 
@@ -161,7 +161,7 @@ describe('PanelPads', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Open the pads panel',
+        name: 'Open the documents panel',
       }),
     );
 

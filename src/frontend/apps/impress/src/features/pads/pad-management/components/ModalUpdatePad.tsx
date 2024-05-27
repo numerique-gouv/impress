@@ -99,7 +99,7 @@ export const ModalUpdatePad = ({ onClose, pad }: ModalUpdatePadProps) => {
 
         <Box $gap="1rem">
           <InputPadName
-            label={t('Pad name')}
+            label={t('Document name')}
             defaultValue={title}
             {...{ error, isError, isPending, setPadName: setTitle }}
           />

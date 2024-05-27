@@ -63,7 +63,7 @@ export const PadItem = ({ pad }: PadItemProps) => {
         ${isActive ? activeStyle : hoverStyle}
       `}
     >
-      <StyledLink className="p-s pt-t pb-t" href={`/pads/${pad.id}`}>
+      <StyledLink className="p-s pt-t pb-t" href={`/docs/${pad.id}`}>
         <Box $align="center" $direction="row" $gap="0.5rem">
           {hasMembers ? (
             <IconGroup

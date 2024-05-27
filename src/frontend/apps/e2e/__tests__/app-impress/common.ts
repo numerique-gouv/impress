@@ -30,14 +30,16 @@ export const createPad = async (
   length: number,
   isPublic: boolean = false,
 ) => {
-  const panel = page.getByLabel('Pads panel').first();
-  const buttonCreate = page.getByRole('button', { name: 'Create the pad' });
+  const panel = page.getByLabel('Documents panel').first();
+  const buttonCreate = page.getByRole('button', {
+    name: 'Create the document',
+  });
 
   const randomPads = randomName(padName, browserName, length);
 
   for (let i = 0; i < randomPads.length; i++) {
-    await panel.getByRole('button', { name: 'Add a pad' }).click();
-    await page.getByText('Pad name').fill(randomPads[i]);
+    await panel.getByRole('button', { name: 'Add a document' }).click();
+    await page.getByText('Document name').fill(randomPads[i]);
 
     if (isPublic) {
       await page.getByText('Is it public ?').click();

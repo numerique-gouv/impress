@@ -16,8 +16,8 @@ const Page: NextPageWithLayout = () => {
 
   return (
     <Box $align="center" $justify="center" $height="inherit">
-      <StyledLink href="/pads/create">
-        <StyledButton>{t('Create a new pad')}</StyledButton>
+      <StyledLink href="/docs/create">
+        <StyledButton>{t('Create a new document')}</StyledButton>
       </StyledLink>
     </Box>
   );

@@ -86,7 +86,7 @@ test.describe('Pad Editor', () => {
       2,
     );
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
 
     // Check the first pad
     await panel.getByText(firstPad).click();
@@ -116,7 +116,7 @@ test.describe('Pad Editor', () => {
   }) => {
     const [pad] = await createPad(page, 'pad-save-page', browserName, 1);
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
 
     // Check the first pad
     await panel.getByText(pad).click();
@@ -129,14 +129,14 @@ test.describe('Pad Editor', () => {
 
     await panel
       .getByRole('button', {
-        name: 'Add a pad',
+        name: 'Add a document',
       })
       .click();
 
-    const card = page.getByLabel('Create new pad card').first();
+    const card = page.getByLabel('Create new document card').first();
     await expect(
       card.getByRole('heading', {
-        name: 'Name the pad',
+        name: 'Name the document',
         level: 3,
       }),
     ).toBeVisible();
@@ -151,7 +151,7 @@ test.describe('Pad Editor', () => {
   test('it saves the doc when we quit pages', async ({ page, browserName }) => {
     const [pad] = await createPad(page, 'pad-save-quit', browserName, 1);
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
 
     // Check the first pad
     await panel.getByText(pad).click();
@@ -188,7 +188,7 @@ test.describe('Pad Editor', () => {
 
     await keyCloakSignIn(page, newBrowserName);
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
     await panel.getByText(padName).click();
 
     await expect(
