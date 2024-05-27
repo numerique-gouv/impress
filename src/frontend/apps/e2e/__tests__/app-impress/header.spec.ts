@@ -17,12 +17,12 @@ test.describe('Header', () => {
       header.getByAltText('Freedom Equality Fraternity Logo'),
     ).toBeVisible();
 
-    await expect(header.getByAltText('Impress Logo')).toBeVisible();
-    await expect(header.locator('h2').getByText('Impress')).toHaveCSS(
+    await expect(header.getByAltText('Docs Logo')).toBeVisible();
+    await expect(header.locator('h2').getByText('Docs')).toHaveCSS(
       'color',
       'rgb(0, 0, 145)',
     );
-    await expect(header.locator('h2').getByText('Impress')).toHaveCSS(
+    await expect(header.locator('h2').getByText('Docs')).toHaveCSS(
       'font-family',
       /Marianne/i,
     );
