@@ -50,7 +50,7 @@ const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
         </Text>
         <Text as="p" $theme="greyscale" $variation="500">
           {t(
-            'Create your first pad by clicking on the "Create a new pad" button.',
+            'Create your first document by clicking on the "Create a new document" button.',
           )}
         </Text>
       </Box>

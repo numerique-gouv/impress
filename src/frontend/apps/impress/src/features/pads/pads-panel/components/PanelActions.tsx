@@ -33,22 +33,26 @@ export const PanelActions = () => {
       <BoxButton
         aria-label={
           isSortAsc
-            ? t('Sort the pads by creation date descendent')
-            : t('Sort the pads by creation date ascendent')
+            ? t('Sort the documents by creation date descendent')
+            : t('Sort the documents by creation date ascendent')
         }
         onClick={changeOrdering}
         $radius="100%"
         $background={isSortAsc ? colorsTokens()['primary-200'] : 'transparent'}
         $color={colorsTokens()['primary-600']}
       >
-        <IconSort width={30} height={30} aria-label={t('Sort pads icon')} />
+        <IconSort
+          width={30}
+          height={30}
+          aria-label={t('Sort documents icon')}
+        />
       </BoxButton>
-      <StyledLink href="/pads/create">
+      <StyledLink href="/docs/create">
         <BoxButton
-          aria-label={t('Add a pad')}
+          aria-label={t('Add a document')}
           $color={colorsTokens()['primary-600']}
         >
-          <IconAdd width={30} height={30} aria-label={t('Add pad icon')} />
+          <IconAdd width={30} height={30} aria-label={t('Add document icon')} />
         </BoxButton>
       </StyledLink>
     </Box>

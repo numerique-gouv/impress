@@ -9,21 +9,21 @@ test.beforeEach(async ({ page, browserName }) => {
   await keyCloakSignIn(page, browserName);
 });
 
-test.describe('Pads Panel', () => {
+test.describe('Documents Panel', () => {
   test('checks all the elements are visible', async ({ page }) => {
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
 
     await expect(panel.getByText('Documents')).toBeVisible();
 
     await expect(
       panel.getByRole('button', {
-        name: 'Sort the pads',
+        name: 'Sort the documents',
       }),
     ).toBeVisible();
 
     await expect(
       panel.getByRole('button', {
-        name: 'Add a pad',
+        name: 'Add a document',
       }),
     ).toBeVisible();
   });
@@ -41,11 +41,11 @@ test.describe('Pads Panel', () => {
         response.status() === 200,
     );
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
 
     await panel
       .getByRole('button', {
-        name: 'Sort the pads by creation date ascendent',
+        name: 'Sort the documents by creation date ascendent',
       })
       .click();
 
@@ -54,7 +54,7 @@ test.describe('Pads Panel', () => {
 
     await panel
       .getByRole('button', {
-        name: 'Sort the pads by creation date descendent',
+        name: 'Sort the documents by creation date descendent',
       })
       .click();
 
@@ -64,7 +64,7 @@ test.describe('Pads Panel', () => {
 
   test('checks the infinite scroll', async ({ page, browserName }) => {
     test.setTimeout(90000);
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
 
     const randomPads = await createPad(page, 'pad-infinite', browserName, 40);
 
@@ -76,7 +76,7 @@ test.describe('Pads Panel', () => {
   });
 
   test('checks the hover and selected state', async ({ page, browserName }) => {
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
     await createPad(page, 'pad-hover', browserName, 2);
 
     const selectedPad = panel.locator('li').nth(0);

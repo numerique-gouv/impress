@@ -21,7 +21,7 @@ export const CardCreatePad = () => {
     error,
   } = useCreatePad({
     onSuccess: (pad) => {
-      router.push(`/pads/${pad.id}`);
+      router.push(`/docs/${pad.id}`);
     },
   });
   const [padName, setPadName] = useState('');
@@ -36,7 +36,7 @@ export const CardCreatePad = () => {
       $width="100%"
       $maxWidth="24rem"
       $minWidth="22rem"
-      aria-label={t('Create new pad card')}
+      aria-label={t('Create new document card')}
     >
       <Box $gap="1rem">
         <Box $align="center">
@@ -46,11 +46,11 @@ export const CardCreatePad = () => {
             aria-label={t('icon group')}
           />
           <Text as="h3" $textAlign="center">
-            {t('Name the pad')}
+            {t('Name the document')}
           </Text>
         </Box>
         <InputPadName
-          label={t('Pad name')}
+          label={t('Document name')}
           {...{ error, isError, isPending, setPadName }}
         />
         <Switch
@@ -67,7 +67,7 @@ export const CardCreatePad = () => {
           onClick={() => createPad({ title: padName, is_public: padPublic })}
           disabled={!padName}
         >
-          {t('Create the pad')}
+          {t('Create the document')}
         </Button>
       </Box>
     </Card>

@@ -16,6 +16,8 @@ and this project adheres to
 
 ## Changed
 
+- Change most of the occurences from pad to document (#76)
+- Change site from Impress to Docs (#76)
 - Generate PDF from a modal (#68)
 - Remove trigger workflow on push tags on CI (#68)
 

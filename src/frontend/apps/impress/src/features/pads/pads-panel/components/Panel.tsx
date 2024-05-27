@@ -32,13 +32,15 @@ export const Panel = () => {
         transition: ${transition};
       `}
       $height="inherit"
-      aria-label="Pads panel"
+      aria-label="Documents panel"
       {...closedOverridingStyles}
     >
       <BoxButton
         className="material-icons"
         aria-label={
-          isOpen ? t('Close the pads panel') : t('Open the pads panel')
+          isOpen
+            ? t('Close the documents panel')
+            : t('Open the documents panel')
         }
         $background="white"
         $color={colorsTokens()['primary-600']}

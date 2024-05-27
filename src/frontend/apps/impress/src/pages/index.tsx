@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { PadLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
-import Pads from './pads/';
+import Pads from './docs';
 
 const Page: NextPageWithLayout = () => {
   return <Pads />;

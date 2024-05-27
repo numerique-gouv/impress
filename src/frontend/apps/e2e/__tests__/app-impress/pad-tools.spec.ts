@@ -73,7 +73,7 @@ test.describe('Pad Tools', () => {
       page.getByRole('checkbox', { name: 'Is it public ?' }),
     ).toBeChecked();
 
-    await page.getByText('Pad name').fill(`${randomPad}-updated`);
+    await page.getByText('Document name').fill(`${randomPad}-updated`);
     await page.getByText('Is it public ?').click();
 
     await page
@@ -86,7 +86,7 @@ test.describe('Pad Tools', () => {
       page.getByText('The document has been updated.'),
     ).toBeVisible();
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
     await expect(
       panel.locator('li').getByText(`${randomPad}-updated`),
     ).toBeVisible();
@@ -129,10 +129,10 @@ test.describe('Pad Tools', () => {
     ).toBeVisible();
 
     await expect(
-      page.getByRole('button', { name: 'Create a new pad' }),
+      page.getByRole('button', { name: 'Create a new document' }),
     ).toBeVisible();
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
     await expect(panel.locator('li').getByText(randomPad)).toBeHidden();
   });
 
@@ -158,7 +158,7 @@ test.describe('Pad Tools', () => {
 
     await keyCloakSignIn(page, newBrowserName);
 
-    const panel = page.getByLabel('Pads panel').first();
+    const panel = page.getByLabel('Documents panel').first();
     await panel.getByText(padName).click();
 
     await page.getByLabel('Open the document options').click();
