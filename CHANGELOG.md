@@ -21,6 +21,10 @@ and this project adheres to
 - Change most of the occurences from pad to document (#76)
 - Change site from Impress to Docs (#76)
 - Generate PDF from a modal (#68)
+- 🔧 (helm) sticky session by request_uri for signaling server (#78)
+
+## Delete
+
 - Remove trigger workflow on push tags on CI (#68)
 
 ## [0.1.0] - 2024-05-24

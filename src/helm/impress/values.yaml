@@ -50,6 +50,7 @@ ingress:
 
   annotations: 
     nginx.ingress.kubernetes.io/enable-websocket: "true" 
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
 
 ## @param ingressAdmin.enabled whether to enable the Ingress or not
 ## @param ingressAdmin.className IngressClass to use for the Ingress
