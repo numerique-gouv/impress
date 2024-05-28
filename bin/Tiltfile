@@ -24,7 +24,7 @@ docker_build(
     only=['./src/frontend/', './docker/', './dockerignore'],
     target = 'y-webrtc-signaling',
     live_update=[
-        sync('../src/frontend', '/home/frontend'),
+        sync('../src/frontend/apps/y-webrtc-signaling/src', '/home/frontend/apps/y-webrtc-signaling/src'),
     ]
 )
 
