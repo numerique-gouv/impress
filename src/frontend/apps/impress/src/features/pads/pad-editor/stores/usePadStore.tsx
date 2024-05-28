@@ -31,7 +31,8 @@ export const usePadStore = create<PadStore>((set) => ({
     }
 
     const provider = new WebrtcProvider(padId, doc, {
-      signaling: [signalingUrl()],
+      signaling: [signalingUrl(padId)],
+      maxConns: 5,
     });
 
     set(({ padsStore }) => {

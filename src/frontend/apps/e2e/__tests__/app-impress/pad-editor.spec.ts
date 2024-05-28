@@ -33,7 +33,7 @@ test.describe('Pad Editor', () => {
     await expect(page.locator('h2').getByText(randomPad[0])).toBeVisible();
 
     const webSocket = await webSocketPromise;
-    expect(webSocket.url()).toBe('ws://localhost:4444/');
+    expect(webSocket.url()).toContain('ws://localhost:4444/');
 
     const framesentPromise = webSocket.waitForEvent('framesent');
 
