@@ -15,13 +15,15 @@ def test_api_users_list_anonymous():
     factories.UserFactory()
     client = APIClient()
     response = client.get("/api/v1.0/users/")
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Authentication credentials were not provided."
+    }
 
 
 def test_api_users_list_authenticated():
     """
-    Authenticated users should not be able to list users.
+    Authenticated users should be able to list users.
     """
     user = factories.UserFactory()
 
@@ -32,8 +34,62 @@ def test_api_users_list_authenticated():
     response = client.get(
         "/api/v1.0/users/",
     )
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 200
+    content = response.json()
+    assert len(content["results"]) == 3
+
+
+def test_api_users_list_query_email():
+    """
+    Authenticated users should be able to list users
+    and filter by email.
+    """
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    dave = factories.UserFactory(email="david.bowman@work.com")
+    nicole = factories.UserFactory(email="nicole_foole@work.com")
+    frank = factories.UserFactory(email="frank_poole@work.com")
+    factories.UserFactory(email="heywood_floyd@work.com")
+
+    response = client.get(
+        "/api/v1.0/users/?q=david.bowman@work.com",
+    )
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(dave.id)]
+
+    response = client.get("/api/v1.0/users/?q=oole")
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(nicole.id), str(frank.id)]
+
+
+def test_api_users_list_query_email_exclude_doc_user():
+    """
+    Authenticated users should be able to list users
+    and filter by email and exclude users who have access to a document.
+    """
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    nicole = factories.UserFactory(email="nicole_foole@work.com")
+    frank = factories.UserFactory(email="frank_poole@work.com")
+    factories.UserFactory(email="heywood_floyd@work.com")
+
+    factories.UserDocumentAccessFactory(document=document, user=frank)
+
+    response = client.get("/api/v1.0/users/?q=oole&document_id=" + str(document.id))
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(nicole.id)]
 
 
 def test_api_users_retrieve_me_anonymous():
@@ -126,8 +182,10 @@ def test_api_users_create_anonymous():
             "password": "mypassword",
         },
     )
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Authentication credentials were not provided."
+    }
     assert models.User.objects.exists() is False
 
 
@@ -146,8 +204,8 @@ def test_api_users_create_authenticated():
         },
         format="json",
     )
-    assert response.status_code == 404
-    assert "Not Found" in response.content.decode("utf-8")
+    assert response.status_code == 405
+    assert response.json() == {"detail": 'Method "POST" not allowed.'}
     assert models.User.objects.exclude(id=user.id).exists() is False
 
 
@@ -322,7 +380,7 @@ def test_api_users_delete_list_anonymous():
     client = APIClient()
     response = client.delete("/api/v1.0/users/")
 
-    assert response.status_code == 404
+    assert response.status_code == 401
     assert models.User.objects.count() == 2
 
 
@@ -338,7 +396,7 @@ def test_api_users_delete_list_authenticated():
         "/api/v1.0/users/",
     )
 
-    assert response.status_code == 404
+    assert response.status_code == 405
     assert models.User.objects.count() == 3
 
 

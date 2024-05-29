@@ -14,6 +14,7 @@ and this project adheres to
 - Update document (#68)
 - Remove document (#68)
 - (docker) dockerize dev frontend (#63)
+- (backend) list users with email filtering (#79)
 
 ## Changed
 

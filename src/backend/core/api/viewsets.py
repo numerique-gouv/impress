@@ -111,14 +111,33 @@ class Pagination(pagination.PageNumberPagination):
 
 
 class UserViewSet(
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
+    mixins.UpdateModelMixin, viewsets.GenericViewSet, mixins.ListModelMixin
 ):
     """User ViewSet"""
 
     permission_classes = [permissions.IsSelf]
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
+
+    def get_queryset(self):
+        """
+        Limit listed users by querying the email field with a trigram similarity
+        search if a query is provided.
+        Limit listed users by excluding users already in the document if a document_id
+        is provided.
+        """
+        queryset = self.queryset
+
+        if self.action == "list":
+            # Exclude all users already in the given document
+            if document_id := self.request.GET.get("document_id", ""):
+                queryset = queryset.exclude(documentaccess__document_id=document_id)
+
+            # Filter users by email similarity
+            if query := self.request.GET.get("q", ""):
+                queryset = queryset.filter(email__trigram_word_similar=query)
+
+        return queryset
 
     @decorators.action(
         detail=False,
