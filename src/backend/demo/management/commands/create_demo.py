@@ -1,7 +1,6 @@
 # ruff: noqa: S311, S106
 """create_demo management command"""
 
-import json
 import logging
 import random
 import time
@@ -110,10 +109,14 @@ def create_demo(stdout):
     queue = BulkQueue(stdout)
 
     with Timeit(stdout, "Creating Template"):
-        with open("demo/data/template/code.txt", "r") as text_file:
+        with open(
+            file="demo/data/template/code.txt", mode="r", encoding="utf-8"
+        ) as text_file:
             code_data = text_file.read()
 
-        with open("demo/data/template/css.txt", "r") as text_file:
+        with open(
+            file="demo/data/template/css.txt", mode="r", encoding="utf-8"
+        ) as text_file:
             css_data = text_file.read()
 
         queue.push(
