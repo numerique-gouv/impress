@@ -93,11 +93,11 @@ jobs:
       - name: Install development dependencies
         run: pip install --user .[dev]
       - name: Check code formatting with ruff
-        run: ~/.local/bin/ruff format impress --diff
+        run: ~/.local/bin/ruff format . --diff
       - name: Lint code with ruff
-        run: ~/.local/bin/ruff check impress
+        run: ~/.local/bin/ruff check .
       - name: Lint code with pylint
-        run: ~/.local/bin/pylint impress
+        run: ~/.local/bin/pylint .
 
 
   test-back:
