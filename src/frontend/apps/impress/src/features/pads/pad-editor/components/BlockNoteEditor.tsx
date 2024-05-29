@@ -51,12 +51,12 @@ export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
         provider,
         fragment: provider.doc.getXmlFragment('document-store'),
         user: {
-          name: userData?.name || userData?.email || 'Anonymous',
+          name: userData?.email || 'Anonymous',
           color: randomColor(),
         },
       },
     });
-  }, [provider, storedEditor, userData?.email, userData?.name]);
+  }, [provider, storedEditor, userData?.email]);
 
   useEffect(() => {
     setEditor(pad.id, editor);

@@ -3,7 +3,6 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import exceptions, serializers
-from timezone_field.rest_framework import TimeZoneSerializerField
 
 from core import models
 
@@ -11,18 +10,10 @@ from core import models
 class UserSerializer(serializers.ModelSerializer):
     """Serialize users."""
 
-    timezone = TimeZoneSerializerField(use_pytz=False, required=True)
-
     class Meta:
         model = models.User
-        fields = [
-            "id",
-            "language",
-            "timezone",
-            "is_device",
-            "is_staff",
-        ]
-        read_only_fields = ["id", "is_device", "is_staff"]
+        fields = ["id", "email"]
+        read_only_fields = ["id", "email"]
 
 
 class BaseAccessSerializer(serializers.ModelSerializer):
