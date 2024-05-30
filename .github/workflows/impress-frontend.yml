@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   install-front:
@@ -19,13 +19,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: "18.x"
 
       - name: Restore the frontend cache
         uses: actions/cache@v4
         id: front-node_modules
         with:
-          path: 'src/frontend/**/node_modules'
+          path: "src/frontend/**/node_modules"
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
 
       - name: Install dependencies
@@ -36,7 +36,7 @@ jobs:
         if: steps.front-node_modules.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
-          path: 'src/frontend/**/node_modules'
+          path: "src/frontend/**/node_modules"
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
 
   build-front:
@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v4
         id: front-node_modules
         with:
-          path: 'src/frontend/**/node_modules'
+          path: "src/frontend/**/node_modules"
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
 
       - name: Build CI App
@@ -73,7 +73,7 @@ jobs:
         uses: actions/cache@v4
         id: front-node_modules
         with:
-          path: 'src/frontend/**/node_modules'
+          path: "src/frontend/**/node_modules"
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
 
       - name: Test App
@@ -90,9 +90,9 @@ jobs:
         uses: actions/cache@v4
         id: front-node_modules
         with:
-          path: 'src/frontend/**/node_modules'
+          path: "src/frontend/**/node_modules"
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
-        
+
       - name: Check linting
         run: cd src/frontend/ && yarn lint
 
@@ -103,18 +103,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-            
+
       - name: Set services env variables
         run: |
           make data/media
           make create-env-files
           cat env.d/development/common.e2e.dist >> env.d/development/common
 
+      - name: Restore the mail templates
+        uses: actions/cache@v4
+        id: mail-templates
+        with:
+          path: "src/backend/core/templates/mail"
+          key: mail-templates-${{ hashFiles('src/mail/mjml') }}
+
       - name: Restore the frontend cache
         uses: actions/cache@v4
         id: front-node_modules
         with:
-          path: 'src/frontend/**/node_modules'
+          path: "src/frontend/**/node_modules"
           key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
 
       - name: Restore the build cache
@@ -123,7 +130,7 @@ jobs:
         with:
           path: src/frontend/apps/impress/out/
           key: build-front-${{ github.run_id }}
-    
+
       - name: Build and Start Docker Servers
         env:
           DOCKER_BUILDKIT: 1
@@ -131,7 +138,7 @@ jobs:
         run: |
           docker-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
           make run
-        
+
       - name: Apply DRF migrations
         run: |
           make migrate
@@ -152,4 +159,3 @@ jobs:
           name: playwright-report
           path: src/frontend/apps/e2e/report/
           retention-days: 7
-

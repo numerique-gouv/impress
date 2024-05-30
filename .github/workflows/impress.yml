@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   lint-git:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-            fetch-depth: 0
+          fetch-depth: 0
       - name: show
         run: git log
       - name: Enforce absence of print statements in code
@@ -63,22 +63,38 @@ jobs:
         working-directory: src/mail
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      - name: Install yarn
-        run: npm install -g yarn
-      - name: Install node dependencies
-        run: yarn install --frozen-lockfile
-      - name: Build mails
-        run: yarn build
-      - name: Persist mails' templates
-        uses: actions/upload-artifact@v4
+          node-version: "18"
+
+      - name: Restore the mail templates
+        uses: actions/cache@v4
+        id: mail-templates
         with:
-            name: mails-templates
-            path: src/backend/core/templates/mail
+          path: "src/backend/core/templates/mail"
+          key: mail-templates-${{ hashFiles('src/mail/mjml') }}
+
+      - name: Install yarn
+        if: steps.mail-templates.outputs.cache-hit != 'true'
+        run: npm install -g yarn
+
+      - name: Install node dependencies
+        if: steps.mail-templates.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Build mails
+        if: steps.mail-templates.outputs.cache-hit != 'true'
+        run: yarn build
+
+      - name: Cache mail templates
+        if: steps.mail-templates.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: "src/backend/core/templates/mail"
+          key: mail-templates-${{ hashFiles('src/mail/mjml') }}
 
   lint-back:
     runs-on: ubuntu-latest
@@ -91,7 +107,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Install development dependencies
         run: pip install --user .[dev]
       - name: Check code formatting with ruff
@@ -100,7 +116,6 @@ jobs:
         run: ~/.local/bin/ruff check .
       - name: Lint code with pylint
         run: ~/.local/bin/pylint .
-
 
   test-back:
     runs-on: ubuntu-latest
@@ -146,11 +161,12 @@ jobs:
           sudo mkdir -p /data/media && \
           sudo mkdir -p /data/static
 
-      - name: Download mails' templates
-        uses: actions/download-artifact@v4
+      - name: Restore the mail templates
+        uses: actions/cache@v4
+        id: mail-templates
         with:
-          name: mails-templates
-          path: src/backend/core/templates/mail
+          path: "src/backend/core/templates/mail"
+          key: mail-templates-${{ hashFiles('src/mail/mjml') }}
 
       - name: Start Minio
         run: |
@@ -174,7 +190,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install development dependencies
         run: pip install --user .[dev]
@@ -204,7 +220,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install development dependencies
         working-directory: src/backend
@@ -222,8 +238,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
-          cache: 'yarn'
+          node-version: "18.x"
+          cache: "yarn"
           cache-dependency-path: src/frontend/yarn.lock
 
       - name: Install dependencies
@@ -242,4 +258,3 @@ jobs:
           -v "${{ github.workspace }}:/app" \
           crowdin/cli:3.16.0 \
           crowdin upload sources -c /app/crowdin/config.yml
-
