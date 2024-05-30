@@ -48,6 +48,29 @@ ingress:
   ## @param ingress.customBackends Add custom backends to ingress
   customBackends: []
 
+## @param ingressWS.enabled whether to enable the Ingress or not
+## @param ingressWS.className IngressClass to use for the Ingress
+## @param ingressWS.host Host for the Ingress
+## @param ingressWS.path Path to use for the Ingress
+ingressWS:
+  enabled: false
+  className: null
+  host: impress.example.com
+  path: /ws
+  ## @param ingress.hosts Additional host to configure for the Ingress
+  hosts: []
+  #  - chart-example.local
+  ## @param ingressWS.tls.enabled Weather to enable TLS for the Ingress
+  ## @skip ingressWS.tls.additional
+  ## @extra ingressWS.tls.additional[].secretName Secret name for additional TLS config
+  ## @extra ingressWS.tls.additional[].hosts[] Hosts for additional TLS config
+  tls:
+    enabled: true
+    additional: []
+
+  ## @param ingressWS.customBackends Add custom backends to ingress
+  customBackends: []
+
   annotations: 
     nginx.ingress.kubernetes.io/enable-websocket: "true" 
     nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
