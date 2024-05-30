@@ -65,6 +65,7 @@ services:
         - mailcatcher
         - redis
         - createbuckets
+        - nginx
   
   celery-dev:
     user: ${DOCKER_USER:-1000}
@@ -118,7 +119,6 @@ services:
     volumes:
       - ./docker/files/etc/nginx/conf.d:/etc/nginx/conf.d:ro
     depends_on:
-      - app
       - keycloak
 
   dockerize:
@@ -155,6 +155,20 @@ services:
       - /home/frontend/apps/y-webrtc-signaling/node_modules/
       - /home/frontend/apps/y-webrtc-signaling/dist/
 
+  frontend-dev:
+    user: "${DOCKER_USER:-1000}"
+    build: 
+      context: .
+      dockerfile: ./src/frontend/Dockerfile
+      target: impress-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/frontend/apps/impress:/home/frontend/apps/impress
+      - /home/frontend/node_modules/
+    depends_on:
+      - y-webrtc-signaling
+      - celery-dev
 
   kc_postgresql:
     image: postgres:14.3

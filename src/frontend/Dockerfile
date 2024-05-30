@@ -39,12 +39,21 @@ COPY ./src/frontend/packages/eslint-config-impress/package.json ./packages/eslin
 
 RUN yarn install --frozen-lockfile
 
+COPY .dockerignore ./.dockerignore
 COPY ./src/frontend/ .
 
 ### ---- Front-end builder image ----
 FROM frontend-deps as impress
 
 WORKDIR /home/frontend/apps/impress
+
+FROM frontend-deps as impress-dev
+
+WORKDIR /home/frontend/apps/impress
+
+EXPOSE 3000
+
+CMD [ "yarn", "dev"]
 
 # Tilt will rebuild impress target so, we dissociate impress and impress-builder 
 # to avoid rebuilding the app at every changes.

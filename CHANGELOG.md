@@ -13,6 +13,7 @@ and this project adheres to
 - Manage the document's right (#75) 
 - Update document (#68)
 - Remove document (#68)
+- (docker) dockerize dev frontend (#63)
 
 ## Changed
 

@@ -31,10 +31,7 @@ The easiest way to start working on the project is to use GNU Make:
 $ make bootstrap FLUSH_ARGS='--no-input'
 ```
 
-Then you can run the following command to start the project in development mode:
-```bash
-$ make run-front-impress
-```
+Then you can access to the project in development mode by going to http://localhost:3000.
 You will be prompted to log in, the default credentials are:
 ```bash
 username: impress
@@ -52,7 +49,7 @@ Your Docker services should now be up and running 🎉
 Note that if you need to run them afterwards, you can use the eponym Make rule:
 
 ```bash
-$ make run
+$ make run-frontend-dev
 ```
 
 ### Adding content

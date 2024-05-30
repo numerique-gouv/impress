@@ -82,13 +82,12 @@ bootstrap: \
 	data/static \
 	create-env-files \
 	build \
-	run \
+	run-frontend-dev \
 	migrate \
 	demo \
 	back-i18n-compile \
 	mails-install \
-	mails-build \
-	install-front-impress
+	mails-build
 .PHONY: bootstrap
 
 # -- Docker/compose
@@ -105,10 +104,7 @@ logs: ## display app-dev logs (follow mode)
 .PHONY: logs
 
 run: ## start the wsgi (production) and development server
-	@$(COMPOSE) up --force-recreate -d nginx
-	@$(COMPOSE) up --force-recreate -d app-dev
 	@$(COMPOSE) up --force-recreate -d celery-dev
-	@$(COMPOSE) up --force-recreate -d keycloak
 	@$(COMPOSE) up --force-recreate -d y-webrtc-signaling
 	@echo "Wait for postgresql to be up..."
 	@$(WAIT_DB)
@@ -301,13 +297,9 @@ help:
 .PHONY: help
 
 # Front 
-install-front-impress: ## Install the frontend dependencies of app Impress  
-	cd $(PATH_FRONT_IMPRESS) && yarn
-.PHONY: install-front-impress
-
-run-front-impress: ## Start app Impress  
-	cd $(PATH_FRONT_IMPRESS) && yarn dev
-.PHONY: run-front-impress
+run-frontend-dev: ## Install and run the frontend dev  
+	@$(COMPOSE) up --force-recreate -d frontend-dev
+.PHONY: run-frontend-dev
 
 frontend-i18n-extract: ## Extract the frontend translation inside a json to be used for crowdin
 	cd $(PATH_FRONT) && yarn i18n:extract
