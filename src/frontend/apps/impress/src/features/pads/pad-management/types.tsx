@@ -30,9 +30,12 @@ export interface Pad {
   updated_at: string;
   abilities: {
     destroy: boolean;
-    retrieve: boolean;
     manage_accesses: boolean;
-    update: boolean;
     partial_update: boolean;
+    retrieve: boolean;
+    update: boolean;
+    versions_destroy: boolean;
+    versions_list: boolean;
+    versions_retrieve: boolean;
   };
 }
