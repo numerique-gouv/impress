@@ -136,33 +136,153 @@ test.describe('Pad Tools', () => {
     await expect(panel.locator('li').getByText(randomPad)).toBeHidden();
   });
 
-  test('it cannot update or delete if not the owner', async ({
+  test('it checks the options available if administrator', async ({
     page,
     browserName,
   }) => {
-    const [padName] = await createPad(
-      page,
-      'pad-tools-right-management',
-      browserName,
-      1,
-      true,
-    );
+    await page.route('**/documents/**/', async (route) => {
+      const request = route.request();
+      if (
+        request.method().includes('GET') &&
+        !request.url().includes('page=')
+      ) {
+        await route.fulfill({
+          json: {
+            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
+            content: '',
+            title: 'Mocked document',
+            accesses: [],
+            abilities: {
+              destroy: false, // Means not owner
+              versions_destroy: true,
+              versions_list: true,
+              versions_retrieve: true,
+              manage_accesses: true, // Means admin
+              update: true,
+              partial_update: true,
+              retrieve: true,
+            },
+            is_public: false,
+          },
+        });
+      } else {
+        await route.continue();
+      }
+    });
 
-    await page.getByText('My account').click();
-    await page.getByText('Logout').first().click();
+    await createPad(page, 'pad-tools-right-admin', browserName, 1);
 
-    await page.getByLabel('Restart login').click();
-
-    const browserNames = ['chromium', 'webkit'];
-    const newBrowserName = browserNames.find((name) => name !== browserName)!;
-
-    await keyCloakSignIn(page, newBrowserName);
-
-    const panel = page.getByLabel('Documents panel').first();
-    await panel.getByText(padName).click();
+    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
 
     await page.getByLabel('Open the document options').click();
 
+    await expect(
+      page.getByRole('button', { name: 'Add a user' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Generate PDF' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Update document' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Delete document' }),
+    ).toBeHidden();
+  });
+
+  test('it checks the options available if editor', async ({
+    page,
+    browserName,
+  }) => {
+    await page.route('**/documents/**/', async (route) => {
+      const request = route.request();
+      if (
+        request.method().includes('GET') &&
+        !request.url().includes('page=')
+      ) {
+        await route.fulfill({
+          json: {
+            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
+            content: '',
+            title: 'Mocked document',
+            accesses: [],
+            abilities: {
+              destroy: false, // Means not owner
+              versions_destroy: true,
+              versions_list: true,
+              versions_retrieve: true,
+              manage_accesses: false, // Means not admin
+              update: true,
+              partial_update: true, // Means editor
+              retrieve: true,
+            },
+            is_public: false,
+          },
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await createPad(page, 'pad-tools-right-editor', browserName, 1);
+
+    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+
+    await page.getByLabel('Open the document options').click();
+
+    await expect(page.getByRole('button', { name: 'Add a user' })).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Generate PDF' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Update document' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Delete document' }),
+    ).toBeHidden();
+  });
+
+  test('it checks the options available if reader', async ({
+    page,
+    browserName,
+  }) => {
+    await page.route('**/documents/**/', async (route) => {
+      const request = route.request();
+      if (
+        request.method().includes('GET') &&
+        !request.url().includes('page=')
+      ) {
+        await route.fulfill({
+          json: {
+            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
+            content: '',
+            title: 'Mocked document',
+            accesses: [],
+            abilities: {
+              destroy: false, // Means not owner
+              versions_destroy: false,
+              versions_list: true,
+              versions_retrieve: true,
+              manage_accesses: false, // Means not admin
+              update: false,
+              partial_update: false, // Means not editor
+              retrieve: true,
+            },
+            is_public: false,
+          },
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await createPad(page, 'pad-tools-right-reader', browserName, 1);
+
+    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+
+    await page.getByLabel('Open the document options').click();
+
+    await expect(page.getByRole('button', { name: 'Add a user' })).toBeHidden();
     await expect(
       page.getByRole('button', { name: 'Generate PDF' }),
     ).toBeVisible();
