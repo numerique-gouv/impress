@@ -130,6 +130,13 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
+ingressWS:
+  enabled: true
+  host: impress-staging.beta.numerique.gouv.fr
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
 ingressAdmin:
   enabled: true
   host: impress-staging.beta.numerique.gouv.fr

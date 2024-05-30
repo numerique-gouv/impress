@@ -130,6 +130,13 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
 
+ingressWS:
+  enabled: true
+  host: docs.numerique.gouv.fr
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+
 ingressAdmin:
   enabled: true
   host: docs.numerique.gouv.fr
