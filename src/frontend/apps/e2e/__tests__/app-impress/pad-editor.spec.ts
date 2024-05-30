@@ -169,27 +169,38 @@ test.describe('Pad Editor', () => {
     await expect(page.getByText('Hello World Pad persisted 2')).toBeVisible();
   });
 
-  test('it cannot edit if not the owner', async ({ page, browserName }) => {
-    const [padName] = await createPad(
-      page,
-      'pad-right-edit',
-      browserName,
-      1,
-      true,
-    );
+  test('it cannot edit if viewer', async ({ page, browserName }) => {
+    await page.route('**/documents/**/', async (route) => {
+      const request = route.request();
+      if (
+        request.method().includes('GET') &&
+        !request.url().includes('page=')
+      ) {
+        await route.fulfill({
+          json: {
+            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
+            content: '',
+            title: 'Mocked document',
+            accesses: [],
+            abilities: {
+              destroy: false, // Means not owner
+              versions_destroy: false,
+              versions_list: true,
+              versions_retrieve: true,
+              manage_accesses: false, // Means not admin
+              update: false,
+              partial_update: false, // Means not editor
+              retrieve: true,
+            },
+            is_public: false,
+          },
+        });
+      } else {
+        await route.continue();
+      }
+    });
 
-    await page.getByText('My account').click();
-    await page.getByText('Logout').first().click();
-
-    await page.getByLabel('Restart login').click();
-
-    const browserNames = ['chromium', 'webkit'];
-    const newBrowserName = browserNames.find((name) => name !== browserName)!;
-
-    await keyCloakSignIn(page, newBrowserName);
-
-    const panel = page.getByLabel('Documents panel').first();
-    await panel.getByText(padName).click();
+    await createPad(page, 'pad-right-edit', browserName, 1);
 
     await expect(
       page.getByText(
