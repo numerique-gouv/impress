@@ -14,6 +14,8 @@ from faker import Faker
 
 from core import models
 
+from demo import defaults
+
 fake = Faker()
 
 logger = logging.getLogger("impress.commands.demo.create_demo")
@@ -108,6 +110,21 @@ def create_demo(stdout):
 
     queue = BulkQueue(stdout)
 
+    with Timeit(stdout, "Creating users"):
+        for i in range(defaults.NB_OBJECTS["users"]):
+            queue.push(
+                models.User(
+                    admin_email=f"user{i:d}@example.com",
+                    email=f"user{i:d}@example.com",
+                    password="!",
+                    is_superuser=False,
+                    is_active=True,
+                    is_staff=False,
+                    language=random.choice(settings.LANGUAGES)[0],
+                )
+            )
+        queue.flush()
+
     with Timeit(stdout, "Creating Template"):
         with open(
             file="demo/data/template/code.txt", mode="r", encoding="utf-8"
@@ -121,6 +138,7 @@ def create_demo(stdout):
 
         queue.push(
             models.Template(
+                id="baca9e2a-59fb-42ef-b5c6-6f6b05637111",
                 title="Demo Template",
                 description="This is the demo template",
                 code=code_data,
