@@ -37,9 +37,11 @@ jobs:
       github.event_name == 'pull_request'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 50
       - name: Check that the CHANGELOG has been modified in the current branch
-        run: git whatchanged --name-only --pretty="" origin..HEAD | grep CHANGELOG
+        run: git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.after }} | grep 'CHANGELOG.md'
 
   lint-changelog:
     runs-on: ubuntu-latest
