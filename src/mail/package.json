@@ -9,9 +9,9 @@
   },
   "private": true,
   "scripts": {
-    "build-mjml-to-html": "./bin/mjml-to-html",
-    "build-html-to-plain-text": "./bin/html-to-plain-text",
-    "build": "yarn build-mjml-to-html; yarn build-html-to-plain-text;"
+    "build-mjml-to-html": "bash ./bin/mjml-to-html",
+    "build-html-to-plain-text": "bash ./bin/html-to-plain-text",
+    "build": "yarn build-mjml-to-html && yarn build-html-to-plain-text"
   },
   "volta": {
     "node": "16.15.1"
