@@ -1,22 +1,4 @@
-export enum Role {
-  READER = 'reader',
-  EDITOR = 'editor',
-  ADMIN = 'administrator',
-  OWNER = 'owner',
-}
-
-export interface Access {
-  id: string;
-  abilities: {
-    destroy: boolean;
-    retrieve: boolean;
-    set_role_to: Role[];
-    update: boolean;
-  };
-  role: Role;
-  team: string;
-  user: string;
-}
+import { Access } from '../pad-management';
 
 export interface Template {
   id: string;

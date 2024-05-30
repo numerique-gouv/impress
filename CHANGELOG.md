@@ -15,6 +15,8 @@ and this project adheres to
 - Remove document (#68)
 - (docker) dockerize dev frontend (#63)
 - (backend) list users with email filtering (#79)
+- (frontend) add user to a document (#52)
+- (frontend) invite user to a document (#52)
 
 ## Changed
 

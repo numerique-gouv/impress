@@ -7,8 +7,10 @@ import {
   ModalRemovePad,
   ModalUpdatePad,
   Pad,
+  currentDocRole,
 } from '@/features/pads/pad-management';
 
+import { ModalAddUsers } from '../../addUsers';
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 
 import { ModalPDF } from './ModalPDF';
@@ -22,6 +24,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
   const { data: templates } = useTemplates({
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });
+  const [isModalAddUserOpen, setIsModalAddUserOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
@@ -57,6 +60,18 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
         isOpen={isDropOpen}
       >
         <Box>
+          {pad.abilities.manage_accesses && (
+            <Button
+              onClick={() => {
+                setIsModalAddUserOpen(true);
+                setIsDropOpen(false);
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">person_add</span>}
+            >
+              <Text $theme="primary">{t('Add a user')}</Text>
+            </Button>
+          )}
           {pad.abilities.partial_update && (
             <Button
               onClick={() => {
@@ -93,6 +108,13 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
           </Button>
         </Box>
       </DropButton>
+      {isModalAddUserOpen && (
+        <ModalAddUsers
+          onClose={() => setIsModalAddUserOpen(false)}
+          doc={pad}
+          currentRole={currentDocRole(pad)}
+        />
+      )}
       {isModalPDFOpen && (
         <ModalPDF
           onClose={() => setIsModalPDFOpen(false)}
