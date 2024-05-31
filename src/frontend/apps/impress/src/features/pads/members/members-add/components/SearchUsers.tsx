@@ -55,7 +55,7 @@ export const SearchUsers = ({
     let users: OptionsSelect = optionsFiltered.map((user) => ({
       value: user,
       label: user.email,
-      type: OptionType.NEW_USER,
+      type: OptionType.NEW_MEMBER,
     }));
 
     if (userQuery && isValidEmail(userQuery)) {
@@ -103,17 +103,17 @@ export const SearchUsers = ({
   return (
     <AsyncSelect
       isDisabled={disabled}
-      aria-label={t('Find a user to add to the document')}
+      aria-label={t('Find a member to add to the document')}
       isMulti
       loadOptions={loadOptions}
       defaultOptions={[]}
       onInputChange={onInputChangeHandle}
       inputValue={input}
-      placeholder={t('Search new users by email')}
+      placeholder={t('Search new members by email')}
       noOptionsMessage={() =>
         input
-          ? t("We didn't find something matching, try to be more accurate")
-          : t('Invite new users to {{title}}', { title: doc.title })
+          ? t("We didn't find a mail matching, try to be more accurate")
+          : t('Invite new members to {{title}}', { title: doc.title })
       }
       onChange={(value) => {
         setInput('');

@@ -177,7 +177,7 @@ test.describe('Pad Tools', () => {
     await page.getByLabel('Open the document options').click();
 
     await expect(
-      page.getByRole('button', { name: 'Add a user' }),
+      page.getByRole('button', { name: 'Add members' }),
     ).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Generate PDF' }),
@@ -230,7 +230,9 @@ test.describe('Pad Tools', () => {
 
     await page.getByLabel('Open the document options').click();
 
-    await expect(page.getByRole('button', { name: 'Add a user' })).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Add members' }),
+    ).toBeHidden();
     await expect(
       page.getByRole('button', { name: 'Generate PDF' }),
     ).toBeVisible();
@@ -282,7 +284,9 @@ test.describe('Pad Tools', () => {
 
     await page.getByLabel('Open the document options').click();
 
-    await expect(page.getByRole('button', { name: 'Add a user' })).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Add members' }),
+    ).toBeHidden();
     await expect(
       page.getByRole('button', { name: 'Generate PDF' }),
     ).toBeVisible();
