@@ -225,6 +225,7 @@ def test_api_templates_retrieve_authenticated_related_team_readers_or_editors(
         "retrieve": True,
         "set_role_to": [],
         "update": False,
+        "partial_update": False,
     }
     assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
         [
@@ -331,6 +332,7 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": ["administrator", "editor"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -343,6 +345,7 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": ["administrator", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -355,6 +358,7 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": ["editor", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -367,6 +371,7 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": [],
                     "update": False,
+                    "partial_update": False,
                 },
             },
             {
@@ -445,6 +450,7 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
                     "retrieve": True,
                     "set_role_to": ["owner", "administrator", "editor"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -457,6 +463,7 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
                     "retrieve": True,
                     "set_role_to": ["owner", "administrator", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -469,6 +476,7 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
                     "retrieve": True,
                     "set_role_to": ["owner", "editor", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -484,6 +492,7 @@ def test_api_templates_retrieve_authenticated_related_team_owners(
                     if other_access.role == "owner"
                     else [],
                     "update": other_access.role == "owner",
+                    "partial_update": other_access.role == "owner",
                 },
             },
             {

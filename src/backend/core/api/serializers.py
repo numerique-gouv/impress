@@ -91,10 +91,19 @@ class BaseAccessSerializer(serializers.ModelSerializer):
 class DocumentAccessSerializer(BaseAccessSerializer):
     """Serialize document accesses."""
 
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.User.objects.all(),
+        write_only=True,
+        source="user",
+        required=False,
+        allow_null=True,
+    )
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = models.DocumentAccess
         resource_field_name = "document"
-        fields = ["id", "user", "team", "role", "abilities"]
+        fields = ["id", "user", "user_id", "team", "role", "abilities"]
         read_only_fields = ["id", "abilities"]
 
 
@@ -126,6 +135,7 @@ class DocumentSerializer(BaseResourceSerializer):
     """Serialize documents."""
 
     content = serializers.CharField(required=False)
+    accesses = DocumentAccessSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Document

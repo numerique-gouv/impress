@@ -289,6 +289,7 @@ class BaseAccess(BaseModel):
         return {
             "destroy": can_delete,
             "update": bool(set_role_to),
+            "partial_update": bool(set_role_to),
             "retrieve": bool(roles),
             "set_role_to": set_role_to,
         }

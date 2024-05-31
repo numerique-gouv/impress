@@ -5,6 +5,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from core import factories
+from core.api import serializers
 
 pytestmark = pytest.mark.django_db
 
@@ -112,30 +113,32 @@ def test_api_documents_retrieve_authenticated_related_direct():
     document = factories.DocumentFactory()
     access1 = factories.UserDocumentAccessFactory(document=document, user=user)
     access2 = factories.UserDocumentAccessFactory(document=document)
+    access1_user = serializers.UserSerializer(instance=user).data
+    access2_user = serializers.UserSerializer(instance=access2.user).data
 
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/",
     )
     assert response.status_code == 200
     content = response.json()
-    assert sorted(content.pop("accesses"), key=lambda x: x["user"]) == sorted(
+    assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
         [
             {
                 "id": str(access1.id),
-                "user": str(user.id),
+                "user": access1_user,
                 "team": "",
                 "role": access1.role,
                 "abilities": access1.get_abilities(user),
             },
             {
                 "id": str(access2.id),
-                "user": str(access2.user.id),
+                "user": access2_user,
                 "team": "",
                 "role": access2.role,
                 "abilities": access2.get_abilities(user),
             },
         ],
-        key=lambda x: x["user"],
+        key=lambda x: x["id"],
     )
     assert response.json() == {
         "id": str(document.id),
@@ -226,6 +229,7 @@ def test_api_documents_retrieve_authenticated_related_team_members(
         "retrieve": True,
         "set_role_to": [],
         "update": False,
+        "partial_update": False,
     }
     assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
         [
@@ -332,6 +336,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": ["administrator", "editor"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -344,6 +349,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": ["administrator", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -356,6 +362,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": ["editor", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -368,6 +375,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
                     "retrieve": True,
                     "set_role_to": [],
                     "update": False,
+                    "partial_update": False,
                 },
             },
             {
@@ -446,6 +454,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
                     "retrieve": True,
                     "set_role_to": ["owner", "administrator", "editor"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -458,6 +467,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
                     "retrieve": True,
                     "set_role_to": ["owner", "administrator", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -470,6 +480,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
                     "retrieve": True,
                     "set_role_to": ["owner", "editor", "reader"],
                     "update": True,
+                    "partial_update": True,
                 },
             },
             {
@@ -485,6 +496,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
                     if other_access.role == "owner"
                     else [],
                     "update": other_access.role == "owner",
+                    "partial_update": other_access.role == "owner",
                 },
             },
             {
