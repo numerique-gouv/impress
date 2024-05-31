@@ -92,6 +92,9 @@ def test_api_document_accesses_list_authenticated_related(via, mock_user_get_tea
         f"/api/v1.0/documents/{document.id!s}/accesses/",
     )
 
+    access2_user = serializers.UserSerializer(instance=access2.user).data
+    base_user = serializers.UserSerializer(instance=user).data
+
     assert response.status_code == 200
     content = response.json()
     assert len(content["results"]) == 3
@@ -99,7 +102,7 @@ def test_api_document_accesses_list_authenticated_related(via, mock_user_get_tea
         [
             {
                 "id": str(user_access.id),
-                "user": str(user.id) if via == "user" else None,
+                "user": base_user if via == "user" else None,
                 "team": "lasuite" if via == "team" else "",
                 "role": user_access.role,
                 "abilities": user_access.get_abilities(user),
@@ -113,7 +116,7 @@ def test_api_document_accesses_list_authenticated_related(via, mock_user_get_tea
             },
             {
                 "id": str(access2.id),
-                "user": str(access2.user.id),
+                "user": access2_user,
                 "team": "",
                 "role": access2.role,
                 "abilities": access2.get_abilities(user),
@@ -197,10 +200,12 @@ def test_api_document_accesses_retrieve_authenticated_related(via, mock_user_get
         f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
     )
 
+    access_user = serializers.UserSerializer(instance=access.user).data
+
     assert response.status_code == 200
     assert response.json() == {
         "id": str(access.id),
-        "user": str(access.user.id),
+        "user": access_user,
         "team": "",
         "role": access.role,
         "abilities": access.get_abilities(user),
@@ -340,7 +345,7 @@ def test_api_document_accesses_create_authenticated_administrator(
     response = client.post(
         f"/api/v1.0/documents/{document.id!s}/accesses/",
         {
-            "user": str(other_user.id),
+            "user_id": str(other_user.id),
             "role": role,
         },
         format="json",
@@ -349,12 +354,13 @@ def test_api_document_accesses_create_authenticated_administrator(
     assert response.status_code == 201
     assert models.DocumentAccess.objects.filter(user=other_user).count() == 1
     new_document_access = models.DocumentAccess.objects.filter(user=other_user).get()
+    other_user = serializers.UserSerializer(instance=other_user).data
     assert response.json() == {
         "abilities": new_document_access.get_abilities(user),
         "id": str(new_document_access.id),
         "team": "",
         "role": role,
-        "user": str(other_user.id),
+        "user": other_user,
     }
 
 
@@ -384,7 +390,7 @@ def test_api_document_accesses_create_authenticated_owner(via, mock_user_get_tea
     response = client.post(
         f"/api/v1.0/documents/{document.id!s}/accesses/",
         {
-            "user": str(other_user.id),
+            "user_id": str(other_user.id),
             "role": role,
         },
         format="json",
@@ -393,9 +399,10 @@ def test_api_document_accesses_create_authenticated_owner(via, mock_user_get_tea
     assert response.status_code == 201
     assert models.DocumentAccess.objects.filter(user=other_user).count() == 1
     new_document_access = models.DocumentAccess.objects.filter(user=other_user).get()
+    other_user = serializers.UserSerializer(instance=other_user).data
     assert response.json() == {
         "id": str(new_document_access.id),
-        "user": str(other_user.id),
+        "user": other_user,
         "team": "",
         "role": role,
         "abilities": new_document_access.get_abilities(user),
@@ -759,7 +766,13 @@ def test_api_document_accesses_update_owner_self(via, mock_user_get_teams):
 
     response = client.put(
         f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
-        data={**old_values, "role": new_role},
+        data={
+            **old_values,
+            "role": new_role,
+            "user_id": old_values.get("user", {}).get("id")
+            if old_values.get("user") is not None
+            else None,
+        },
         format="json",
     )
 

@@ -87,6 +87,7 @@ def test_models_document_access_get_abilities_anonymous():
         "destroy": False,
         "retrieve": False,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -100,6 +101,7 @@ def test_models_document_access_get_abilities_authenticated():
         "destroy": False,
         "retrieve": False,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -119,6 +121,7 @@ def test_models_document_access_get_abilities_for_owner_of_self_allowed():
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["administrator", "editor", "reader"],
     }
 
@@ -133,6 +136,7 @@ def test_models_document_access_get_abilities_for_owner_of_self_last():
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -149,6 +153,7 @@ def test_models_document_access_get_abilities_for_owner_of_owner():
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["administrator", "editor", "reader"],
     }
 
@@ -165,6 +170,7 @@ def test_models_document_access_get_abilities_for_owner_of_administrator():
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["owner", "editor", "reader"],
     }
 
@@ -181,6 +187,7 @@ def test_models_document_access_get_abilities_for_owner_of_editor():
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["owner", "administrator", "reader"],
     }
 
@@ -197,6 +204,7 @@ def test_models_document_access_get_abilities_for_owner_of_reader():
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["owner", "administrator", "editor"],
     }
 
@@ -216,6 +224,7 @@ def test_models_document_access_get_abilities_for_administrator_of_owner():
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -232,6 +241,7 @@ def test_models_document_access_get_abilities_for_administrator_of_administrator
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["editor", "reader"],
     }
 
@@ -248,6 +258,7 @@ def test_models_document_access_get_abilities_for_administrator_of_editor():
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["administrator", "reader"],
     }
 
@@ -264,6 +275,7 @@ def test_models_document_access_get_abilities_for_administrator_of_reader():
         "destroy": True,
         "retrieve": True,
         "update": True,
+        "partial_update": True,
         "set_role_to": ["administrator", "editor"],
     }
 
@@ -283,6 +295,7 @@ def test_models_document_access_get_abilities_for_editor_of_owner():
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -299,6 +312,7 @@ def test_models_document_access_get_abilities_for_editor_of_administrator():
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -320,6 +334,7 @@ def test_models_document_access_get_abilities_for_editor_of_editor_user(
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -339,6 +354,7 @@ def test_models_document_access_get_abilities_for_reader_of_owner():
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -355,6 +371,7 @@ def test_models_document_access_get_abilities_for_reader_of_administrator():
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -376,6 +393,7 @@ def test_models_document_access_get_abilities_for_reader_of_reader_user(
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
 
@@ -395,5 +413,6 @@ def test_models_document_access_get_abilities_preset_role(django_assert_num_quer
         "destroy": False,
         "retrieve": True,
         "update": False,
+        "partial_update": False,
         "set_role_to": [],
     }
