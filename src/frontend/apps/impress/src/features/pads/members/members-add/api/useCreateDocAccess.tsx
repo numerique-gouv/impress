@@ -2,8 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
+import {
+  Access,
+  KEY_LIST_PAD,
+  Pad,
+  Role,
+} from '@/features/pads/pad-management';
 
-import { Access, KEY_LIST_PAD, Pad, Role } from '../../pad-management';
 import { OptionType } from '../types';
 
 import { KEY_LIST_USER } from './useUsers';
@@ -11,27 +16,27 @@ import { KEY_LIST_USER } from './useUsers';
 interface CreateDocAccessParams {
   role: Role;
   docId: Pad['id'];
-  userId: User['id'];
+  memberId: User['id'];
 }
 
 export const createDocAccess = async ({
-  userId,
+  memberId,
   role,
   docId,
 }: CreateDocAccessParams): Promise<Access> => {
   const response = await fetchAPI(`documents/${docId}/accesses/`, {
     method: 'POST',
     body: JSON.stringify({
-      user: userId,
+      user: memberId,
       role,
     }),
   });
 
   if (!response.ok) {
     throw new APIError(
-      `Failed to add the user in the doc.`,
+      `Failed to add the member in the doc.`,
       await errorCauses(response, {
-        type: OptionType.NEW_USER,
+        type: OptionType.NEW_MEMBER,
       }),
     );
   }

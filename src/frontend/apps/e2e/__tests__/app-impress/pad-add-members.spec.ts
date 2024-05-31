@@ -16,9 +16,9 @@ test.describe('Document add users', () => {
     await createPad(page, 'select-multi-users', browserName, 1);
 
     await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add a user' }).click();
+    await page.getByRole('button', { name: 'Add members' }).click();
 
-    const inputSearch = page.getByLabel(/Find a user to add to the document/);
+    const inputSearch = page.getByLabel(/Find a member to add to the document/);
     await expect(inputSearch).toBeVisible();
 
     // Select user 1
@@ -77,9 +77,9 @@ test.describe('Document add users', () => {
     await createPad(page, 'user-invitation', browserName, 1);
 
     await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add a user' }).click();
+    await page.getByRole('button', { name: 'Add members' }).click();
 
-    const inputSearch = page.getByLabel(/Find a user to add to the document/);
+    const inputSearch = page.getByLabel(/Find a member to add to the document/);
 
     const email = randomName('test@test.fr', browserName, 1)[0];
     await inputSearch.fill(email);
@@ -127,9 +127,9 @@ test.describe('Document add users', () => {
     await createPad(page, 'user-twice', browserName, 1);
 
     await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add a user' }).click();
+    await page.getByRole('button', { name: 'Add members' }).click();
 
-    const inputSearch = page.getByLabel(/Find a user to add to the document/);
+    const inputSearch = page.getByLabel(/Find a member to add to the document/);
     await inputSearch.fill('user');
     const responseSearchUser = await responsePromiseSearchUser;
     const users = (await responseSearchUser.json()).results as {
@@ -152,7 +152,7 @@ test.describe('Document add users', () => {
     expect(responseAddMember.ok()).toBeTruthy();
 
     await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add a user' }).click();
+    await page.getByRole('button', { name: 'Add members' }).click();
 
     await inputSearch.fill('user');
     await expect(
@@ -167,9 +167,9 @@ test.describe('Document add users', () => {
     await createPad(page, 'invitation-twice', browserName, 1);
 
     await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add a user' }).click();
+    await page.getByRole('button', { name: 'Add members' }).click();
 
-    const inputSearch = page.getByLabel(/Find a user to add to the document/);
+    const inputSearch = page.getByLabel(/Find a member to add to the document/);
 
     const email = randomName('test@test.fr', browserName, 1)[0];
     await inputSearch.fill(email);
@@ -191,7 +191,7 @@ test.describe('Document add users', () => {
     expect(responseCreateInvitation.ok()).toBeTruthy();
 
     await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add a user' }).click();
+    await page.getByRole('button', { name: 'Add members' }).click();
 
     await inputSearch.fill(email);
     await expect(page.getByRole('option', { name: email })).toBeHidden();

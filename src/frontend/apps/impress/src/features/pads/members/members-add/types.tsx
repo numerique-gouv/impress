@@ -1,13 +1,14 @@
 import { User } from '@/core/auth';
-
-import { Pad, Role } from '../pad-management';
+import { Pad, Role } from '@/features/pads/pad-management';
 
 export enum OptionType {
   INVITATION = 'invitation',
-  NEW_USER = 'new_user',
+  NEW_MEMBER = 'new_member',
 }
 
-export const isOptionNewUser = (data: OptionSelect): data is OptionNewUser => {
+export const isOptionNewMember = (
+  data: OptionSelect,
+): data is OptionNewMember => {
   return 'id' in data.value;
 };
 
@@ -17,13 +18,13 @@ export interface OptionInvitation {
   type: OptionType.INVITATION;
 }
 
-export interface OptionNewUser {
+export interface OptionNewMember {
   value: User;
   label: string;
-  type: OptionType.NEW_USER;
+  type: OptionType.NEW_MEMBER;
 }
 
-export type OptionSelect = OptionNewUser | OptionInvitation;
+export type OptionSelect = OptionNewMember | OptionInvitation;
 
 export interface DocInvitation {
   id: string;

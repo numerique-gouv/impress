@@ -18,10 +18,10 @@ import { useCreateDocAccess, useCreateInvitation } from '../api';
 import IconAddUser from '../assets/add-user.svg';
 import {
   OptionInvitation,
-  OptionNewUser,
+  OptionNewMember,
   OptionSelect,
   OptionType,
-  isOptionNewUser,
+  isOptionNewMember,
 } from '../types';
 
 import { ChooseRole } from './ChooseRole';
@@ -38,17 +38,17 @@ type APIErrorUser = APIError<{
   type: OptionType;
 }>;
 
-interface ModalAddUsersProps {
+interface ModalAddMembersProps {
   currentRole: Role;
   onClose: () => void;
   doc: Pad;
 }
 
-export const ModalAddUsers = ({
+export const ModalAddMembers = ({
   currentRole,
   onClose,
   doc,
-}: ModalAddUsersProps) => {
+}: ModalAddMembersProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const [selectedUsers, setSelectedUsers] = useState<OptionsSelect>([]);
@@ -70,11 +70,11 @@ export const ModalAddUsers = ({
           });
           break;
 
-        case OptionType.NEW_USER:
+        case OptionType.NEW_MEMBER:
           await createDocAccess({
             role: selectedRole,
             docId: doc.id,
-            userId: selectedUser.value.id,
+            memberId: selectedUser.value.id,
           });
           break;
       }
@@ -92,13 +92,13 @@ export const ModalAddUsers = ({
         ? t(`Failed to create the invitation for {{email}}.`, {
             email: dataError?.value,
           })
-        : t(`Failed to add the user in the document.`);
+        : t(`Failed to add the member in the document.`);
 
     toast(messageError, VariantType.ERROR, toastOptions);
   };
 
   const onSuccess = (option: OptionSelect) => {
-    const message = !isOptionNewUser(option)
+    const message = !isOptionNewMember(option)
       ? t('Invitation sent to {{email}}.', {
           email: option.value.email,
         })
@@ -111,7 +111,7 @@ export const ModalAddUsers = ({
     setIsPending(true);
 
     const settledPromises = await Promise.allSettled<
-      OptionInvitation | OptionNewUser
+      OptionInvitation | OptionNewMember
     >(switchActions(selectedUsers));
 
     onClose();
@@ -161,7 +161,7 @@ export const ModalAddUsers = ({
         <Box $align="center" $gap="1rem">
           <IconAddUser width={48} color={colorsTokens()['primary-text']} />
           <Text $size="h3" $margin="none">
-            {t('Add users to the document')}
+            {t('Add members to the document')}
           </Text>
         </Box>
       }

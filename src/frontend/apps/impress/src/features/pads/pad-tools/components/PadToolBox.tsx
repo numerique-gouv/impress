@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
+import { ModalAddMembers } from '@/features/pads/members/members-add';
 import {
   ModalRemovePad,
   ModalUpdatePad,
@@ -10,7 +11,6 @@ import {
   currentDocRole,
 } from '@/features/pads/pad-management';
 
-import { ModalAddUsers } from '../../addUsers';
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 
 import { ModalPDF } from './ModalPDF';
@@ -24,7 +24,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
   const { data: templates } = useTemplates({
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });
-  const [isModalAddUserOpen, setIsModalAddUserOpen] = useState(false);
+  const [isModalAddMembersOpen, setIsModalAddMembersOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
@@ -63,13 +63,13 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
           {pad.abilities.manage_accesses && (
             <Button
               onClick={() => {
-                setIsModalAddUserOpen(true);
+                setIsModalAddMembersOpen(true);
                 setIsDropOpen(false);
               }}
               color="primary-text"
               icon={<span className="material-icons">person_add</span>}
             >
-              <Text $theme="primary">{t('Add a user')}</Text>
+              <Text $theme="primary">{t('Add members')}</Text>
             </Button>
           )}
           {pad.abilities.partial_update && (
@@ -108,9 +108,9 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
           </Button>
         </Box>
       </DropButton>
-      {isModalAddUserOpen && (
-        <ModalAddUsers
-          onClose={() => setIsModalAddUserOpen(false)}
+      {isModalAddMembersOpen && (
+        <ModalAddMembers
+          onClose={() => setIsModalAddMembersOpen(false)}
           doc={pad}
           currentRole={currentDocRole(pad)}
         />
