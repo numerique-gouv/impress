@@ -65,7 +65,7 @@ export const MemberAction = ({
             color="primary-text"
             icon={<span className="material-icons">delete</span>}
           >
-            <Text $theme="primary">{t('Remove from group')}</Text>
+            {t('Remove from group')}
           </Button>
         </Box>
       </DropButton>

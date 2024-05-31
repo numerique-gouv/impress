@@ -86,15 +86,18 @@ export const addNewMember = async (
   page: Page,
   index: number,
   role: 'Admin' | 'Owner' | 'Member',
-  fillText: string = 'test',
+  fillText: string = 'user',
 ) => {
   const responsePromiseSearchUser = page.waitForResponse(
     (response) =>
       response.url().includes(`/users/?q=${fillText}`) &&
       response.status() === 200,
   );
-  await page.getByLabel('Add members to the team').click();
-  const inputSearch = page.getByLabel(/Find a member to add to the team/);
+
+  await page.getByLabel('Open the document options').click();
+  await page.getByRole('button', { name: 'Add members' }).click();
+
+  const inputSearch = page.getByLabel(/Find a member to add to the document/);
 
   // Select a new user
   await inputSearch.fill(fillText);
@@ -102,23 +105,18 @@ export const addNewMember = async (
   // Intercept response
   const responseSearchUser = await responsePromiseSearchUser;
   const users = (await responseSearchUser.json()).results as {
-    name: string;
+    email: string;
   }[];
 
   // Choose user
-  await page.getByRole('option', { name: users[index].name }).click();
+  await page.getByRole('option', { name: users[index].email }).click();
 
   // Choose a role
   await page.getByRole('radio', { name: role }).click();
 
   await page.getByRole('button', { name: 'Validate' }).click();
 
-  const table = page.getByLabel('List members card').getByRole('table');
+  await expect(page.getByText(`User added to the document.`)).toBeVisible();
 
-  await expect(table.getByText(users[index].name)).toBeVisible();
-  await expect(
-    page.getByText(`Member ${users[index].name} added to the team`),
-  ).toBeVisible();
-
-  return users[index].name;
+  return users[index].email;
 };
