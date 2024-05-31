@@ -15,7 +15,6 @@ function getCSRFToken() {
 
 export const fetchAPI = async (input: string, init?: RequestInit) => {
   const apiUrl = `${baseApiUrl()}${input}`;
-  const { logout } = useAuthStore.getState();
 
   const csrfToken = getCSRFToken();
 
@@ -30,6 +29,7 @@ export const fetchAPI = async (input: string, init?: RequestInit) => {
   });
 
   if (response.status === 401) {
+    const { logout } = useAuthStore.getState();
     logout();
   }
 
