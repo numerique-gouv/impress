@@ -27,7 +27,7 @@ export const createDocAccess = async ({
   const response = await fetchAPI(`documents/${docId}/accesses/`, {
     method: 'POST',
     body: JSON.stringify({
-      user: memberId,
+      user_id: memberId,
       role,
     }),
   });

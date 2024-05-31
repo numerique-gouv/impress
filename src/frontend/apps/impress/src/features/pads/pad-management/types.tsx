@@ -1,8 +1,10 @@
+import { User } from '@/core';
+
 export interface Access {
   id: string;
   role: Role;
   team: string;
-  user: string;
+  user: User;
   abilities: {
     destroy: boolean;
     retrieve: boolean;
