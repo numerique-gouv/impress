@@ -233,7 +233,7 @@ input:-webkit-autofill:focus {
 }
 
 .c__datagrid > .c__pagination {
-  padding-right: 1rem;
+  padding-inline: 1rem;
   justify-content: flex-end;
 }
 
@@ -463,4 +463,15 @@ input:-webkit-autofill:focus {
 .c__modal__close .c__button--tertiary-text:hover,
 .c__modal__close .c__button--tertiary-text:focus-visible {
   box-shadow: none;
+}
+
+.c__modal__close button {
+  padding: 1.5rem 1rem;
+}
+
+/**
+ * Toast
+*/
+.c__toast__container {
+  z-index: 10000;
 }

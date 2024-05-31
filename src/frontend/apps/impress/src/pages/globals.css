@@ -9,21 +9,25 @@ body {
   box-sizing: border-box;
 }
 
-main ::-webkit-scrollbar {
+main ::-webkit-scrollbar,
+.ReactModalPortal ::-webkit-scrollbar {
   width: 20px;
 }
 
-main ::-webkit-scrollbar-track {
+main ::-webkit-scrollbar-track,
+.ReactModalPortal ::-webkit-scrollbar-track {
   background-color: transparent;
 }
 
-main ::-webkit-scrollbar-thumb {
+main ::-webkit-scrollbar-thumb,
+.ReactModalPortal ::-webkit-scrollbar-thumb {
   background-color: #d6dee1;
   border-radius: 20px;
   border: 6px solid transparent;
   background-clip: content-box;
 }
 
-main ::-webkit-scrollbar-thumb:hover {
+main ::-webkit-scrollbar-thumb:hover,
+.ReactModalPortal ::-webkit-scrollbar-thumb:hover {
   background-color: #a8bbbf;
 }

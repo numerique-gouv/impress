@@ -9,7 +9,7 @@ export type PadParams = {
 };
 
 export const getPad = async ({ id }: PadParams): Promise<Pad> => {
-  const response = await fetchAPI(`documents/${id}`);
+  const response = await fetchAPI(`documents/${id}/`);
 
   if (!response.ok) {
     throw new APIError('Failed to get the pad', await errorCauses(response));
