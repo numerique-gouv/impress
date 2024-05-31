@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
+import { KEY_LIST_DOC_ACCESSES } from '@/features/pads/members/members-grid/';
 import {
   Access,
   KEY_LIST_PAD,
@@ -54,6 +55,9 @@ export function useCreateDocAccess() {
       });
       void queryClient.resetQueries({
         queryKey: [KEY_LIST_USER],
+      });
+      void queryClient.resetQueries({
+        queryKey: [KEY_LIST_DOC_ACCESSES],
       });
     },
   });

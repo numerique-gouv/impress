@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
 import { ModalAddMembers } from '@/features/pads/members/members-add';
+import { ModalGridMembers } from '@/features/pads/members/members-grid/';
 import {
   ModalRemovePad,
   ModalUpdatePad,
@@ -25,6 +26,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });
   const [isModalAddMembersOpen, setIsModalAddMembersOpen] = useState(false);
+  const [isModalGridMembersOpen, setIsModalGridMembersOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
@@ -61,16 +63,30 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
       >
         <Box>
           {pad.abilities.manage_accesses && (
-            <Button
-              onClick={() => {
-                setIsModalAddMembersOpen(true);
-                setIsDropOpen(false);
-              }}
-              color="primary-text"
-              icon={<span className="material-icons">person_add</span>}
-            >
-              <Text $theme="primary">{t('Add members')}</Text>
-            </Button>
+            <>
+              <Button
+                onClick={() => {
+                  setIsModalAddMembersOpen(true);
+                  setIsDropOpen(false);
+                }}
+                color="primary-text"
+                icon={<span className="material-icons">person_add</span>}
+                size="small"
+              >
+                <Text $theme="primary">{t('Add members')}</Text>
+              </Button>
+              <Button
+                onClick={() => {
+                  setIsModalGridMembersOpen(true);
+                  setIsDropOpen(false);
+                }}
+                color="primary-text"
+                icon={<span className="material-icons">group</span>}
+                size="small"
+              >
+                <Text $theme="primary">{t('Manage members')}</Text>
+              </Button>
+            </>
           )}
           {pad.abilities.partial_update && (
             <Button
@@ -80,6 +96,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
               }}
               color="primary-text"
               icon={<span className="material-icons">edit</span>}
+              size="small"
             >
               <Text $theme="primary">{t('Update document')}</Text>
             </Button>
@@ -92,6 +109,7 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
               }}
               color="primary-text"
               icon={<span className="material-icons">delete</span>}
+              size="small"
             >
               <Text $theme="primary">{t('Delete document')}</Text>
             </Button>
@@ -103,11 +121,18 @@ export const PadToolBox = ({ pad }: PadToolBoxProps) => {
             }}
             color="primary-text"
             icon={<span className="material-icons">picture_as_pdf</span>}
+            size="small"
           >
             <Text $theme="primary">{t('Generate PDF')}</Text>
           </Button>
         </Box>
       </DropButton>
+      {isModalGridMembersOpen && (
+        <ModalGridMembers
+          onClose={() => setIsModalGridMembersOpen(false)}
+          doc={pad}
+        />
+      )}
       {isModalAddMembersOpen && (
         <ModalAddMembers
           onClose={() => setIsModalAddMembersOpen(false)}
