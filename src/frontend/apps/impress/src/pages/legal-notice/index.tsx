@@ -22,30 +22,33 @@ const Page: NextPageWithLayout = () => {
       </Box>
       <Box $padding={{ horizontal: 'large', vertical: 'big' }}>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          Éditeur
+          {t('Éditeur')}
         </Text>
         <Text as="p">
-          Équipe La Suite Numérique de la Direction interministérielle du
-          numérique DINUM, 20 avenue de Ségur 75007 Paris.
+          {t(
+            'Équipe La Suite Numérique de la Direction interministérielle du numérique DINUM, 20 avenue de Ségur 75007 Paris.',
+          )}
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          Directeur de la publication
+          {t('Directeur de la publication')}
         </Text>
-        <Text as="p">Directeur interministériel du numérique.</Text>
+        <Text as="p">{t('Directeur interministériel du numérique.')}</Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          Copyright
+          {t('Copyright')}
         </Text>
         <Text as="p" $display="inline">
-          Illustration :{' '}
+          {t('Illustration:')}{' '}
           <Text $weight="bold" $display="inline">
             DINUM
           </Text>
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          Plus d&apos;infos ?
+          {t("Plus d'infos ?")}
         </Text>
         <Text as="p" $display="inline">
-          L&apos;équipe de La Suite Numérique peut être contactée directement à{' '}
+          {t(
+            "L'équipe de La Suite Numérique peut être contactée directement à",
+          )}{' '}
           <TextStyled
             as="a"
             href="lasuite@modernisation.gouv.fr"
