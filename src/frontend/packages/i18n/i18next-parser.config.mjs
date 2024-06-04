@@ -5,6 +5,8 @@ const config = {
   },
   keepRemoved: false,
   keySeparator: false,
+  nsSeparator: false,
+  namespaceSeparator: false,
 };
 
 export default config;
