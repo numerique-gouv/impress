@@ -1,0 +1,8 @@
+[submodule ".github/workflows/secrets"]
+	path = .github/workflows/secrets
+	url = https://github.com/numerique-gouv/secrets.git
+	branch = main
+[submodule "src/helm/secrets"]
+	path = src/helm/secrets
+	url = https://github.com/numerique-gouv/secrets.git
+	branch = main
