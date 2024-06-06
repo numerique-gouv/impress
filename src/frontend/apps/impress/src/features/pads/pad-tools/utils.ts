@@ -9,3 +9,7 @@ export function downloadFile(blob: Blob, filename: string) {
   document.body.removeChild(a);
   window.URL.revokeObjectURL(url);
 }
+
+export const adaptBlockNoteHTML = (html: string) => {
+  return html.replaceAll('<p class="bn-inline-content"></p>', '<br/>');
+};

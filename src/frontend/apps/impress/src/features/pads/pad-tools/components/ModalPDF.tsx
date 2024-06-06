@@ -15,7 +15,7 @@ import { usePadStore } from '@/features/pads/pad-editor/';
 import { Pad } from '@/features/pads/pad-management';
 
 import { useCreatePdf } from '../api/useCreatePdf';
-import { downloadFile } from '../utils';
+import { adaptBlockNoteHTML, downloadFile } from '../utils';
 
 interface ModalPDFProps {
   onClose: () => void;
@@ -84,7 +84,8 @@ export const ModalPDF = ({ onClose, templateOptions, pad }: ModalPDFProps) => {
       return;
     }
 
-    const body = await editor.blocksToHTMLLossy(editor.document);
+    let body = await editor.blocksToHTMLLossy(editor.document);
+    body = adaptBlockNoteHTML(body);
 
     createPdf({
       templateId: templateIdSelected,
