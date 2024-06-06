@@ -57,7 +57,14 @@ export const ModalPDF = ({ onClose, templateOptions, pad }: ModalPDFProps) => {
       return;
     }
 
-    downloadFile(pdf, 'impress-document.pdf');
+    // normalize title
+    const title = pad.title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s/g, '-');
+
+    downloadFile(pdf, `${title}.pdf`);
 
     toast(t('Your pdf was downloaded succesfully'), VariantType.SUCCESS);
 
