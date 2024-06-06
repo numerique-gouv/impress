@@ -1,21 +1,10 @@
 <page size="A4">
   <div class="header">
-    <image src="https://upload.wikimedia.org/wikipedia/fr/7/72/Logo_du_Gouvernement_de_la_R%C3%A9publique_fran%C3%A7aise_%282020%29.svg"/>
-    <h2 class="header-title">Direction<br/>Interministérielle<br/>du numérique</h2>
-  </div>
-  <div class="second-row">
-    <div class="who-ref">
-      <div class="who">La directrice</div>
-      <p class="ref">Réf: 1200001</p>
-    </div>
-    <div class="date">Paris, le 28/09/2023</div>
-  </div>
-  <div class="third-row">
-    <h4 class="title">Note</h4>
-    <h5 class="subtitle">à Monsieur le Premier Ministre</h5>
+    <img
+      src="https://upload.wikimedia.org/wikipedia/fr/7/72/Logo_du_Gouvernement_de_la_R%C3%A9publique_fran%C3%A7aise_%282020%29.svg"
+    />
   </div>
   <div class="content">
-    <div class="object">Objet: Generated PDF</div>
     <div class="body">{{ body }}</div>
   </div>
 </page>
