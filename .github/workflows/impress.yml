@@ -209,8 +209,26 @@ jobs:
   i18n-crowdin:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      -
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: "infrastructure,secrets"
+      -
+        name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ steps.app-token.outputs.token }}
+      -
+        name: Load sops secrets
+        uses: rouja/actions-sops@main
+        with:
+          secret-file: .github/workflows/secrets/numerique-gouv/impress/secrets.enc.env
+          age-key: ${{ secrets.SOPS_PRIVATE }}
 
       - name: Install gettext (required to make messages)
         run: |
@@ -228,12 +246,6 @@ jobs:
 
       - name: Generate the translation base file
         run: ~/.local/bin/django-admin makemessages --keep-pot --all
-
-      - name: Load sops secrets
-        uses: rouja/actions-sops@main
-        with:
-          secret-file: .github/workflows/secrets.enc.env
-          age-key: ${{ secrets.SOPS_PRIVATE }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

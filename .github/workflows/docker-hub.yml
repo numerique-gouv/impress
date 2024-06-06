@@ -19,20 +19,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: "impress,secrets"
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ steps.app-token.outputs.token }}
+      -
+        name: Load sops secrets
+        uses: rouja/actions-sops@main
+        with:
+          secret-file: .github/workflows/secrets/numerique-gouv/impress/secrets.enc.env
+          age-key: ${{ secrets.SOPS_PRIVATE }}
       -
         name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: lasuite/impress-backend
-      -
-        name: Load sops secrets
-        uses: rouja/actions-sops@main
-        with:
-          secret-file: .github/workflows/secrets.enc.env
-          age-key: ${{ secrets.SOPS_PRIVATE }}
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
@@ -52,20 +63,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: "impress,secrets"
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ steps.app-token.outputs.token }}
+      -
+        name: Load sops secrets
+        uses: rouja/actions-sops@main
+        with:
+          secret-file: .github/workflows/secrets/numerique-gouv/impress/secrets.enc.env
+          age-key: ${{ secrets.SOPS_PRIVATE }}
       -
         name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: lasuite/impress-frontend
-      -
-        name: Load sops secrets
-        uses: rouja/actions-sops@main
-        with:
-          secret-file: .github/workflows/secrets.enc.env
-          age-key: ${{ secrets.SOPS_PRIVATE }}
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
@@ -86,20 +108,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: "impress,secrets"
+      -
+        name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ steps.app-token.outputs.token }}
+      -
+        name: Load sops secrets
+        uses: rouja/actions-sops@main
+        with:
+          secret-file: .github/workflows/secrets/numerique-gouv/impress/secrets.enc.env
+          age-key: ${{ secrets.SOPS_PRIVATE }}
       -
         name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: lasuite/impress-y-webrtc-signaling
-      -
-        name: Load sops secrets
-        uses: rouja/actions-sops@main
-        with:
-          secret-file: .github/workflows/secrets.enc.env
-          age-key: ${{ secrets.SOPS_PRIVATE }}
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'

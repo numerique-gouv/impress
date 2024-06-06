@@ -48,7 +48,7 @@ releases:
     namespace: {{ .Namespace }}
     chart: ./extra
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - secrets/numerique-gouv/impress/env/{{ .Environment.Name }}/secrets.enc.yaml
 
   - name: impress
     version: {{ .Values.version }}
@@ -57,7 +57,7 @@ releases:
     values:
       - env.d/{{ .Environment.Name }}/values.impress.yaml.gotmpl
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - {{ ne .Environment.Name "dev" | ternary "secrets/numerique-gouv/impress/env" "env.d" }}/{{ .Environment.Name }}/secrets.enc.yaml
 
 environments:
   dev:
@@ -69,15 +69,14 @@ environments:
     values:
       - version: 0.0.1
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - secrets/numerique-gouv/impress/env/{{ .Environment.Name }}/secrets.enc.yaml
   preprod:
     values:
       - version: 0.0.1
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - secrets/numerique-gouv/impress/env/{{ .Environment.Name }}/secrets.enc.yaml
   production:
     values:
       - version: 0.0.1
     secrets:
-      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
-
+      - secrets/numerique-gouv/impress/env/{{ .Environment.Name }}/secrets.enc.yaml
