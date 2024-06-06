@@ -47,6 +47,45 @@ test.describe('Pad Tools', () => {
     expect(pdfText).toContain('Hello World'); // This is the pad text
   });
 
+  test('it converts the blocknote json in correct html for the pdf', async ({
+    page,
+    browserName,
+  }) => {
+    const [randomPad] = await createPad(page, 'pad-editor', browserName, 1);
+    let body = '';
+
+    await page.route('**/templates/*/generate-document/', async (route) => {
+      const request = route.request();
+      body = request.postDataJSON().body;
+
+      await route.continue();
+    });
+
+    await expect(page.locator('h2').getByText(randomPad)).toBeVisible();
+
+    await page.locator('.bn-block-outer').last().fill('Hello World');
+    await page.locator('.bn-block-outer').last().click();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    await page.locator('.bn-block-outer').last().fill('Break');
+
+    await page.getByLabel('Open the document options').click();
+    await page
+      .getByRole('button', {
+        name: 'Generate PDF',
+      })
+      .click();
+
+    await page
+      .getByRole('button', {
+        name: 'Download',
+      })
+      .click();
+
+    // Empty paragraph should be replaced by a <br/>
+    expect(body).toContain('<br/><br/>');
+  });
+
   test('it updates the pad', async ({ page, browserName }) => {
     const [randomPad] = await createPad(
       page,
