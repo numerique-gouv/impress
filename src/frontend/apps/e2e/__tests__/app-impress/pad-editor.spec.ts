@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-import { createPad, keyCloakSignIn } from './common';
+import { createPad } from './common';
 
-test.beforeEach(async ({ page, browserName }) => {
+test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
 });
 
 test.describe('Pad Editor', () => {

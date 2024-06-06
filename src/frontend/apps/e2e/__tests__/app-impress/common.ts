@@ -5,14 +5,17 @@ export const keyCloakSignIn = async (page: Page, browserName: string) => {
     timeout: 5000,
   });
 
-  if (title?.includes('Sign in to your account')) {
-    await page
-      .getByRole('textbox', { name: 'username' })
-      .fill(`user-e2e-${browserName}`);
+  const login = `user-e2e-${browserName}`;
+  const password = `password-e2e-${browserName}`;
 
-    await page
-      .getByRole('textbox', { name: 'password' })
-      .fill(`password-e2e-${browserName}`);
+  if (await page.getByLabel('Restart login').isVisible()) {
+    await page.getByRole('textbox', { name: 'password' }).fill(password);
+
+    await page.click('input[type="submit"]', { force: true });
+  } else if (title?.includes('Sign in to your account')) {
+    await page.getByRole('textbox', { name: 'username' }).fill(login);
+
+    await page.getByRole('textbox', { name: 'password' }).fill(password);
 
     await page.click('input[type="submit"]', { force: true });
   }

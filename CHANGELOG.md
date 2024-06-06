@@ -27,6 +27,7 @@ and this project adheres to
 - 🔧 (helm) sticky session by request_uri for signaling server (#78)
 - (frontend) change logo (#84)
 - (frontend) pdf has title doc (#84)
+- ⚡️(e2e) unique login between tests (#80)
 
 ## Fixed
 
