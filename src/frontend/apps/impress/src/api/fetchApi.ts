@@ -13,9 +13,12 @@ function getCSRFToken() {
     .pop();
 }
 
-export const fetchAPI = async (input: string, init?: RequestInit) => {
-  const apiUrl = `${baseApiUrl()}${input}`;
-
+export const fetchAPI = async (
+  input: string,
+  init?: RequestInit,
+  apiVersion = '1.0',
+) => {
+  const apiUrl = `${baseApiUrl(apiVersion)}${input}`;
   const csrfToken = getCSRFToken();
 
   const response = await fetch(apiUrl, {
