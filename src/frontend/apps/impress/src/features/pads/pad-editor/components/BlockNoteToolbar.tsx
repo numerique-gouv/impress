@@ -6,9 +6,7 @@ import {
   CreateLinkButton,
   FormattingToolbar,
   FormattingToolbarController,
-  ImageCaptionButton,
   NestBlockButton,
-  ReplaceImageButton,
   TextAlignButton,
   UnnestBlockButton,
   useBlockNoteEditor,
@@ -26,9 +24,6 @@ export const BlockNoteToolbar = () => {
 
           {/* Extra button to convert from markdown to json */}
           <MarkdownButton key="customButton" />
-
-          <ImageCaptionButton key="imageCaptionButton" />
-          <ReplaceImageButton key="replaceImageButton" />
 
           <BasicTextStyleButton basicTextStyle="bold" key="boldStyleButton" />
           <BasicTextStyleButton
