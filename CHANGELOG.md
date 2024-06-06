@@ -17,6 +17,7 @@ and this project adheres to
 - (backend) list users with email filtering (#79)
 - (frontend) add user to a document (#52)
 - (frontend) invite user to a document (#52)
+- (frontend) manage members (update role / list / remove) (#81)
 
 ## Changed
 
@@ -24,6 +25,12 @@ and this project adheres to
 - Change site from Impress to Docs (#76)
 - Generate PDF from a modal (#68)
 - 🔧 (helm) sticky session by request_uri for signaling server (#78)
+- (frontend) change logo (#84)
+- (frontend) pdf has title doc (#84)
+
+## Fixed
+
+- Fix the break line when generate PDF (#84)
 
 ## Delete
 
