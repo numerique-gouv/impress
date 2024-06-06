@@ -23,7 +23,7 @@ describe('PanelPads', () => {
   });
 
   it('renders with no pad to display', async () => {
-    fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/documents/?page=1&ordering=-created_at`, {
       count: 0,
       results: [],
     });
@@ -40,7 +40,7 @@ describe('PanelPads', () => {
   });
 
   it('renders an empty pad', async () => {
-    fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -59,7 +59,7 @@ describe('PanelPads', () => {
   });
 
   it('renders a pad with only 1 member', async () => {
-    fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -83,7 +83,7 @@ describe('PanelPads', () => {
   });
 
   it('renders a non-empty pad', async () => {
-    fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [
         {
@@ -111,7 +111,7 @@ describe('PanelPads', () => {
   });
 
   it('renders the error', async () => {
-    fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/documents/?page=1&ordering=-created_at`, {
       status: 500,
     });
 
@@ -127,7 +127,7 @@ describe('PanelPads', () => {
   });
 
   it('renders with doc panel open', async () => {
-    fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
     });
@@ -142,7 +142,7 @@ describe('PanelPads', () => {
   });
 
   it('closes and opens the doc panel', async () => {
-    fetchMock.mock(`end:/api/documents/?page=1&ordering=-created_at`, {
+    fetchMock.mock(`end:/documents/?page=1&ordering=-created_at`, {
       count: 1,
       results: [],
     });
