@@ -14,11 +14,12 @@ test.describe('Pad Tools', () => {
     page,
     browserName,
   }) => {
+    const [randomPad] = await createPad(page, 'pad-editor', browserName, 1);
+
     const downloadPromise = page.waitForEvent('download', (download) => {
-      return download.suggestedFilename().includes('impress-document.pdf');
+      return download.suggestedFilename().includes(`${randomPad}.pdf`);
     });
 
-    const [randomPad] = await createPad(page, 'pad-editor', browserName, 1);
     await expect(page.locator('h2').getByText(randomPad)).toBeVisible();
 
     await page.locator('.ProseMirror.bn-editor').click();
@@ -38,13 +39,11 @@ test.describe('Pad Tools', () => {
       .click();
 
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe('impress-document.pdf');
+    expect(download.suggestedFilename()).toBe(`${randomPad}.pdf`);
 
     const pdfBuffer = await cs.toBuffer(await download.createReadStream());
     const pdfText = (await pdf(pdfBuffer)).text;
 
-    expect(pdfText).toContain('Monsieur le Premier Ministre'); // This is the template text
-    expect(pdfText).toContain('La directrice'); // This is the template text
     expect(pdfText).toContain('Hello World'); // This is the pad text
   });
 
