@@ -2,54 +2,14 @@ body {
   background: white; 
   font-family: arial
 }
-img {
-  width: 5cm;
-  margin-left: -0.4cm;
-}
 .header {
   display: flex;
   justify-content: space-between;
 }
-.header-title {
-  text-align: right;
-  margin-top: 3rem;
-  font-size: 1.2rem;
-}
-.second-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.2cm;
-}
-.ref {
-  margin-top: 0;
-}
-.who {
-  font-weight: medium;
-}
-.date, .ref {
-  font-size: 12px;
-}
-.title, .subtitle {
-  margin: 0;
-}
-.subtitle {
-  font-weight: normal;
-}
-.object {
-  font-weight: bold;
-  margin-bottom: 1.2cm;
-  margin-top: 3rem
+.header img {
+  width: 5cm;
+  margin-left: -0.4cm;
 }
 .body{
   margin-top: 1.5rem
-}
-h1 {
-  font-size: 18px;
-}
-h2 {
-  font-size: 14px;
-}
-p {
-  text-align: justify;
-  ligne-height: 0.8;
 }
