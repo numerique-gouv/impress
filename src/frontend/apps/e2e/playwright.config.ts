@@ -25,7 +25,7 @@ export default defineConfig({
   reporter: [['html', { outputFolder: './report' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: baseURL,
+    baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -42,13 +42,24 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], locale: 'en-US' },
+      use: {
+        ...devices['Desktop Chrome'],
+        locale: 'en-US',
+        storageState: 'playwright/.auth/user-chromium.json',
+      },
+      dependencies: ['setup'],
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'], locale: 'en-US' },
+      use: {
+        ...devices['Desktop Safari'],
+        locale: 'en-US',
+        storageState: 'playwright/.auth/user-webkit.json',
+      },
+      dependencies: ['setup'],
     },
   ],
 });

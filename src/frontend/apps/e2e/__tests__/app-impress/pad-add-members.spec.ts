@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-import { createPad, keyCloakSignIn, randomName } from './common';
+import { createPad, randomName } from './common';
 
-test.beforeEach(async ({ page, browserName }) => {
+test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
 });
 
 test.describe('Document add users', () => {

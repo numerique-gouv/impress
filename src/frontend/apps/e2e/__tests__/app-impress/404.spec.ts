@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-import { keyCloakSignIn } from './common';
-
-test.beforeEach(async ({ page, browserName }) => {
+test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
+  await expect(
+    page.locator('header').first().locator('h2').getByText('Docs'),
+  ).toBeVisible();
   await page.goto('unknown-page404');
 });
 

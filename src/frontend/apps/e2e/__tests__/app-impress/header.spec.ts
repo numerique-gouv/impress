@@ -2,9 +2,8 @@ import { expect, test } from '@playwright/test';
 
 import { keyCloakSignIn } from './common';
 
-test.beforeEach(async ({ page, browserName }) => {
+test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await keyCloakSignIn(page, browserName);
 });
 
 test.describe('Header', () => {
@@ -64,8 +63,15 @@ test.describe('Header', () => {
 
     await expect(page.getByRole('link', { name: 'Grist' })).toBeVisible();
   });
+});
 
-  test('checks logout button', async ({ page }) => {
+test.describe('Header: Log out', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('checks logout button', async ({ page, browserName }) => {
+    await page.goto('/');
+    await keyCloakSignIn(page, browserName);
+
     await page
       .getByRole('button', {
         name: 'My account',
