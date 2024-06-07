@@ -131,12 +131,22 @@ jobs:
           path: src/frontend/apps/impress/out/
           key: build-front-${{ github.run_id }}
 
-      - name: Build and Start Docker Servers
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the Docker images
+        uses: docker/bake-action@v4
+        with:
+          targets: |
+            app-dev
+            y-webrtc-signaling
+          load: true
+          set: |
+            *.cache-from=type=gha,scope=cached-stage
+            *.cache-to=type=gha,scope=cached-stage,mode=max
+
+      - name: Start Docker services
         run: |
-          docker-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1
           make run
 
       - name: Apply DRF migrations

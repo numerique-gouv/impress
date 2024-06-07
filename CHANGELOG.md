@@ -28,6 +28,7 @@ and this project adheres to
 - (frontend) change logo (#84)
 - (frontend) pdf has title doc (#84)
 - ⚡️(e2e) unique login between tests (#80)
+- ⚡️(CI) improve e2e job (#86)
 
 ## Fixed
 
