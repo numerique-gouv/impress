@@ -69,6 +69,9 @@ export const BlockNoteContent = ({ pad, provider }: BlockNoteContentProps) => {
         &, & > .bn-container, & .ProseMirror {
           height:100%
         };
+        & .collaboration-cursor__caret.ProseMirror-widget{
+          word-wrap: initial;
+        }
       `}
     >
       <BlockNoteView
