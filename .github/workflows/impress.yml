@@ -227,7 +227,7 @@ jobs:
         name: Load sops secrets
         uses: rouja/actions-sops@main
         with:
-          secret-file: .github/workflows/secrets/numerique-gouv/impress/secrets.enc.env
+          secret-file: secrets/numerique-gouv/impress/secrets.enc.env
           age-key: ${{ secrets.SOPS_PRIVATE }}
 
       - name: Install gettext (required to make messages)
