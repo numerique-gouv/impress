@@ -10,5 +10,5 @@ module.exports = {
       rootDir: __dirname,
     },
   },
-  ignorePatterns: ['node_modules', '.eslintrc.js'],
+  ignorePatterns: ['node_modules', '.eslintrc.js', 'service-worker.js'],
 };

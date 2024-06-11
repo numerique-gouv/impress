@@ -18,6 +18,7 @@ and this project adheres to
 - (frontend) add user to a document (#52)
 - (frontend) invite user to a document (#52)
 - (frontend) manage members (update role / list / remove) (#81)
+- ✨(frontend) offline mode (#88)
 
 ## Changed
 
