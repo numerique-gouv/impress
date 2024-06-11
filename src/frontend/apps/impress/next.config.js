@@ -1,3 +1,5 @@
+const { InjectManifest } = require('workbox-webpack-plugin');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
@@ -9,7 +11,7 @@ const nextConfig = {
     // Enables the styled-components SWC transform
     styledComponents: true,
   },
-  webpack(config) {
+  webpack(config, { isServer, dev }) {
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.('.svg'),
@@ -30,6 +32,23 @@ const nextConfig = {
         use: ['@svgr/webpack'],
       },
     );
+
+    if (!isServer && !dev) {
+      config.plugins.push(
+        new InjectManifest({
+          swSrc: './src/core/service-worker.ts',
+          swDest: '../public/service-worker.js',
+          include: [
+            ({ asset }) => {
+              if (asset.name.match(/.*(static).*/)) {
+                return true;
+              }
+              return false;
+            },
+          ],
+        }),
+      );
+    }
 
     // Modify the file loader rule to ignore *.svg, since we have it handled now.
     fileLoaderRule.exclude = /\.svg$/i;
