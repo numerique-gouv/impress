@@ -24,7 +24,9 @@ const initialState = {
 export const usePadStore = create<PadStore>((set) => ({
   padsStore: initialState.padsStore,
   createProvider: (padId: string, initialDoc: Base64) => {
-    const doc = new Y.Doc();
+    const doc = new Y.Doc({
+      guid: padId,
+    });
 
     if (initialDoc) {
       Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
