@@ -28,6 +28,7 @@
     "@types/react-dom": "18.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "yjs": "13.6.16"
   }
 }

@@ -11748,10 +11748,10 @@ yargs@17.7.2, yargs@^17.3.1:
     y18n "^5.0.5"
     yargs-parser "^21.1.1"
 
-yjs@13.6.15, yjs@^13.6.15:
-  version "13.6.15"
-  resolved "https://registry.yarnpkg.com/yjs/-/yjs-13.6.15.tgz#5a2402632aabf83e5baf56342b4c82fe40859306"
-  integrity sha512-moFv4uNYhp8BFxIk3AkpoAnnjts7gwdpiG8RtyFiKbMtxKCS0zVZ5wPaaGpwC3V2N/K8TK8MwtSI3+WO9CHWjQ==
+yjs@*, yjs@13.6.16, yjs@^13.6.15:
+  version "13.6.16"
+  resolved "https://registry.yarnpkg.com/yjs/-/yjs-13.6.16.tgz#4ac8a1393495af390dcfa0631e3d24cfc50fc9a3"
+  integrity sha512-uEq+n/dFIecBElEdeQea8nDnltScBfuhCSyAxDw4CosveP9Ag0eW6iZi2mdpW7EgxSFT7VXK2MJl3tKaLTmhAQ==
   dependencies:
     lib0 "^0.2.86"
 

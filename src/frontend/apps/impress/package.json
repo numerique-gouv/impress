@@ -33,7 +33,7 @@
     "react-select": "5.8.0",
     "styled-components": "6.1.11",
     "y-webrtc": "10.3.0",
-    "yjs": "13.6.15",
+    "yjs": "*",
     "zustand": "4.5.2"
   },
   "devDependencies": {
