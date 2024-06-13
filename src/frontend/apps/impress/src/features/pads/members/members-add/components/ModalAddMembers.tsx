@@ -102,7 +102,9 @@ export const ModalAddMembers = ({
       ? t('Invitation sent to {{email}}.', {
           email: option.value.email,
         })
-      : t('User added to the document.');
+      : t('User {{email}} added to the document.', {
+          email: option.value.email,
+        });
 
     toast(message, VariantType.SUCCESS, toastOptions);
   };
