@@ -87,10 +87,10 @@ test.describe('Document add users', () => {
     // Select a new user
     await inputSearch.fill('user');
     const responseSearchUser = await responsePromiseSearchUser;
-    const users = (await responseSearchUser.json()).results as {
+    const [user] = (await responseSearchUser.json()).results as {
       email: string;
     }[];
-    await page.getByRole('option', { name: users[0].email }).click();
+    await page.getByRole('option', { name: user.email }).click();
 
     // Choose a role
     await page.getByRole('radio', { name: 'Administrator' }).click();
@@ -112,7 +112,9 @@ test.describe('Document add users', () => {
     expect(responseCreateInvitation.ok()).toBeTruthy();
 
     // Check user added
-    await expect(page.getByText(`User added to the document.`)).toBeVisible();
+    await expect(
+      page.getByText(`User ${user.email} added to the document.`),
+    ).toBeVisible();
     const responseAddUser = await responsePromiseAddUser;
     expect(responseAddUser.ok()).toBeTruthy();
   });
@@ -131,10 +133,10 @@ test.describe('Document add users', () => {
     const inputSearch = page.getByLabel(/Find a member to add to the document/);
     await inputSearch.fill('user');
     const responseSearchUser = await responsePromiseSearchUser;
-    const users = (await responseSearchUser.json()).results as {
+    const [user] = (await responseSearchUser.json()).results as {
       email: string;
     }[];
-    await page.getByRole('option', { name: users[0].email }).click();
+    await page.getByRole('option', { name: user.email }).click();
 
     // Choose a role
     await page.getByRole('radio', { name: 'Owner' }).click();
@@ -146,7 +148,9 @@ test.describe('Document add users', () => {
 
     await page.getByRole('button', { name: 'Validate' }).click();
 
-    await expect(page.getByText(`User added to the document.`)).toBeVisible();
+    await expect(
+      page.getByText(`User ${user.email} added to the document.`),
+    ).toBeVisible();
     const responseAddMember = await responsePromiseAddMember;
     expect(responseAddMember.ok()).toBeTruthy();
 
@@ -154,9 +158,7 @@ test.describe('Document add users', () => {
     await page.getByRole('button', { name: 'Add members' }).click();
 
     await inputSearch.fill('user');
-    await expect(
-      page.getByRole('option', { name: users[0].email }),
-    ).toBeHidden();
+    await expect(page.getByRole('option', { name: user.email })).toBeHidden();
   });
 
   test('it try to add twice the same invitation', async ({

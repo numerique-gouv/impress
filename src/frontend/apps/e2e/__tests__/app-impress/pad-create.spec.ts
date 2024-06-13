@@ -95,6 +95,9 @@ test.describe('Pad Create', () => {
   });
 
   test('checks 404 on docs/[id] page', async ({ page }) => {
+    // eslint-disable-next-line playwright/no-wait-for-timeout
+    await page.waitForTimeout(300);
+
     await page.goto('/docs/some-unknown-pad');
     await expect(
       page.getByText(

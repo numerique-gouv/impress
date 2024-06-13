@@ -153,12 +153,6 @@ test.describe('Members Delete', () => {
 
     const username = await addNewMember(page, 1, 'Admin');
 
-    await expect(
-      page.getByText(`User added to the document.`).last(),
-    ).toBeHidden({
-      timeout: 5000,
-    });
-
     await page.getByLabel('Open the document options').click();
     await page.getByRole('button', { name: 'Manage members' }).click();
 

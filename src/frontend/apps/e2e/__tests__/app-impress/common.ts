@@ -119,7 +119,9 @@ export const addNewMember = async (
 
   await page.getByRole('button', { name: 'Validate' }).click();
 
-  await expect(page.getByText(`User added to the document.`)).toBeVisible();
+  await expect(
+    page.getByText(`User ${users[index].email} added to the document.`),
+  ).toBeVisible();
 
   return users[index].email;
 };
