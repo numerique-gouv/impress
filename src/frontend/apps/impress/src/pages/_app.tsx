@@ -17,7 +17,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NEXT_PUBLIC_CI !== 'true') {
+    if (
+      'serviceWorker' in navigator &&
+      process.env.NEXT_PUBLIC_SW_DEACTIVATED !== 'true'
+    ) {
       navigator.serviceWorker.register('/service-worker.js').catch((err) => {
         console.error('Service worker registration failed:', err);
       });

@@ -11,7 +11,7 @@ const nextConfig = {
     // Enables the styled-components SWC transform
     styledComponents: true,
   },
-  webpack(config, { isServer, dev }) {
+  webpack(config, { isServer }) {
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.('.svg'),
@@ -33,7 +33,7 @@ const nextConfig = {
       },
     );
 
-    if (!isServer && !dev) {
+    if (!isServer && process.env.NEXT_PUBLIC_SW_DEACTIVATED !== 'true') {
       config.plugins.push(
         new InjectManifest({
           swSrc: './src/core/service-worker.ts',
