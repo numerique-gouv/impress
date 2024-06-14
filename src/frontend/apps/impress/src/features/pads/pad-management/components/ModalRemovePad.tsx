@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Modal,
   ModalSize,
@@ -83,15 +84,17 @@ export const ModalRemovePad = ({ onClose, pad }: ModalRemovePadProps) => {
         $margin={{ bottom: 'xl' }}
         aria-label={t('Content modal to delete document')}
       >
-        <Text as="p" $margin={{ bottom: 'big' }}>
-          {t('Are you sure you want to delete the document "{{title}}"?', {
-            title: pad.title,
-          })}
-        </Text>
-
-        {isError && (
-          <TextErrors $margin={{ bottom: 'small' }} causes={error.cause} />
+        {!isError && (
+          <Alert canClose={false} type={VariantType.WARNING}>
+            <Text>
+              {t('Are you sure you want to delete the document "{{title}}"?', {
+                title: pad.title,
+              })}
+            </Text>
+          </Alert>
         )}
+
+        {isError && <TextErrors causes={error.cause} />}
 
         <Text
           as="p"

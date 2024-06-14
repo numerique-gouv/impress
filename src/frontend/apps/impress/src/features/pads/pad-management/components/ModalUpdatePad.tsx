@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Modal,
   ModalSize,
@@ -6,8 +7,8 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { t } from 'i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
@@ -29,6 +30,7 @@ export const ModalUpdatePad = ({ onClose, pad }: ModalUpdatePadProps) => {
   const [title, setTitle] = useState(pad.title);
   const { toast } = useToastProvider();
   const [padPublic, setPadPublic] = useState(pad.is_public);
+  const { t } = useTranslation();
 
   const {
     mutate: updatePad,
@@ -92,10 +94,11 @@ export const ModalUpdatePad = ({ onClose, pad }: ModalUpdatePadProps) => {
       <Box
         $margin={{ bottom: 'xl' }}
         aria-label={t('Content modal to update the document')}
+        $gap="1rem"
       >
-        <Text as="p" $margin={{ bottom: 'big' }}>
-          {t('Enter the new name of the selected document.')}
-        </Text>
+        <Alert canClose={false} type={VariantType.INFO}>
+          <Text>{t('Enter the new name of the selected document.')}</Text>
+        </Alert>
 
         <Box $gap="1rem">
           <InputPadName

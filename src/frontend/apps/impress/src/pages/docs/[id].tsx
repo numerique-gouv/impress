@@ -3,8 +3,7 @@ import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 
-import { Box } from '@/components';
-import { TextErrors } from '@/components/TextErrors';
+import { Box, Text, TextErrors } from '@/components/';
 import { PadEditor } from '@/features/pads/pad-editor';
 import { usePad } from '@/features/pads/pad-management';
 import { PadLayout } from '@/layouts';
@@ -36,7 +35,20 @@ const Pad = ({ id }: PadProps) => {
       return null;
     }
 
-    return <TextErrors causes={error.cause} />;
+    return (
+      <Box $margin="large">
+        <TextErrors
+          causes={error.cause}
+          icon={
+            error.status === 502 ? (
+              <Text className="material-icons" $theme="danger">
+                wifi_off
+              </Text>
+            ) : undefined
+          }
+        />
+      </Box>
+    );
   }
 
   if (isLoading || !pad) {

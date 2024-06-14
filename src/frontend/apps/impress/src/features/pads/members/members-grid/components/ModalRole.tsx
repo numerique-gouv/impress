@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Modal,
   ModalSize,
@@ -84,38 +85,36 @@ export const ModalRole = ({
       title={t('Update the role')}
     >
       <Box aria-label={t('Radio buttons to update the roles')}>
-        {isErrorUpdate && (
-          <TextErrors
-            $margin={{ bottom: 'small' }}
-            causes={errorUpdate.cause}
-          />
-        )}
+        {isErrorUpdate && <TextErrors causes={errorUpdate.cause} />}
 
         {(isLastOwner || isOtherOwner) && (
-          <Text
-            $theme="warning"
+          <Box
             $direction="row"
             $align="center"
             $gap="0.5rem"
             $margin={{ bottom: 'tiny', top: 'none' }}
-            as="div"
           >
-            <span className="material-icons">warning</span>
-            {isLastOwner && (
-              <Box $align="flex-start">
-                <Text $theme="warning">
-                  {t('You are the sole owner of this group.')}
+            <Alert
+              canClose={false}
+              type={VariantType.WARNING}
+              icon={
+                <Text className="material-icons" $theme="warning">
+                  warning
                 </Text>
-                <Text $theme="warning">
-                  {t(
-                    'Make another member the group owner, before you can change your own role.',
-                  )}
-                </Text>
-              </Box>
-            )}
-
-            {isOtherOwner && t('You cannot update the role of other owner.')}
-          </Text>
+              }
+            >
+              {isLastOwner && (
+                <Box $direction="column" $gap="0.2rem">
+                  <Text $theme="warning">
+                    {t(
+                      'You are the sole owner of this group, make another member the group owner, before you can change your own role.',
+                    )}
+                  </Text>
+                </Box>
+              )}
+              {isOtherOwner && t('You cannot update the role of other owner.')}
+            </Alert>
+          </Box>
         )}
 
         <ChooseRole

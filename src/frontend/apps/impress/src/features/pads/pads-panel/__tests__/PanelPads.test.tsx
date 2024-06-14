@@ -120,9 +120,7 @@ describe('PanelPads', () => {
     expect(screen.getByRole('status')).toBeInTheDocument();
 
     expect(
-      await screen.findByText(
-        'Something bad happens, please refresh the page.',
-      ),
+      await screen.findByText('Something bad happens, please retry.'),
     ).toBeInTheDocument();
   });
 

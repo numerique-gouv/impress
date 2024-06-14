@@ -53,6 +53,7 @@ export const MemberAction = ({
             }}
             color="primary-text"
             icon={<span className="material-icons">edit</span>}
+            size="small"
           >
             <Text $theme="primary">{t('Update role')}</Text>
           </Button>
@@ -64,6 +65,7 @@ export const MemberAction = ({
             }}
             color="primary-text"
             icon={<span className="material-icons">delete</span>}
+            size="small"
           >
             {t('Remove from group')}
           </Button>
