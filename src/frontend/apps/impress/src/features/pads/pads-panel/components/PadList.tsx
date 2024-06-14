@@ -2,7 +2,8 @@ import { Loader } from '@openfun/cunningham-react';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Text } from '@/components';
+import { APIError } from '@/api';
+import { Box, Text, TextErrors } from '@/components';
 import { InfiniteScroll } from '@/components/InfiniteScroll';
 import { Pad, usePads } from '@/features/pads/pad-management';
 
@@ -12,22 +13,12 @@ import { PadItem } from './PadItem';
 
 interface PanelTeamsStateProps {
   isLoading: boolean;
-  isError: boolean;
+  error: APIError<unknown> | null;
   pads?: Pad[];
 }
 
-const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
+const PadListState = ({ isLoading, error, pads }: PanelTeamsStateProps) => {
   const { t } = useTranslation();
-
-  if (isError) {
-    return (
-      <Box $justify="center" $margin={{ bottom: 'big' }}>
-        <Text $theme="danger" $align="center" $textAlign="center">
-          {t('Something bad happens, please refresh the page.')}
-        </Text>
-      </Box>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -37,7 +28,7 @@ const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
     );
   }
 
-  if (!pads?.length) {
+  if (!pads?.length && !error) {
     return (
       <Box $justify="center" $margin="small">
         <Text
@@ -57,14 +48,35 @@ const PadListState = ({ isLoading, isError, pads }: PanelTeamsStateProps) => {
     );
   }
 
-  return pads.map((pad) => <PadItem pad={pad} key={pad.id} />);
+  return (
+    <>
+      {pads?.map((pad) => <PadItem pad={pad} key={pad.id} />)}
+      {error && (
+        <Box
+          $justify="center"
+          $margin={{ vertical: 'big', horizontal: 'auto' }}
+        >
+          <TextErrors
+            causes={error.cause}
+            icon={
+              error.status === 502 ? (
+                <Text className="material-icons" $theme="danger">
+                  wifi_off
+                </Text>
+              ) : undefined
+            }
+          />
+        </Box>
+      )}
+    </>
+  );
 };
 
 export const PadList = () => {
   const ordering = usePadPanelStore((state) => state.ordering);
   const {
     data,
-    isError,
+    error,
     isLoading,
     fetchNextPage,
     hasNextPage,
@@ -93,7 +105,7 @@ export const PadList = () => {
         $margin={{ top: 'none' }}
         role="listbox"
       >
-        <PadListState isLoading={isLoading} isError={isError} pads={pads} />
+        <PadListState isLoading={isLoading} error={error} pads={pads} />
       </InfiniteScroll>
     </Box>
   );

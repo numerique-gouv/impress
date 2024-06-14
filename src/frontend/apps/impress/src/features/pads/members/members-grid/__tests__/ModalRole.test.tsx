@@ -173,12 +173,8 @@ describe('ModalRole', () => {
     );
 
     expect(
-      screen.getByText('You are the sole owner of this group.'),
-    ).toBeInTheDocument();
-
-    expect(
       screen.getByText(
-        'Make another member the group owner, before you can change your own role.',
+        'You are the sole owner of this group, make another member the group owner, before you can change your own role.',
       ),
     ).toBeInTheDocument();
 

@@ -1,12 +1,13 @@
 import {
+  Alert,
   Button,
   Modal,
   ModalSize,
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { t } from 'i18next';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 import IconUser from '@/assets/icons/icon-user.svg';
 import { Box, Text, TextErrors } from '@/components';
@@ -28,6 +29,7 @@ export const ModalDelete = ({ access, onClose, doc }: ModalDeleteProps) => {
   const { toast } = useToastProvider();
   const { colorsTokens } = useCunninghamTheme();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const { isMyself, isLastOwner, isOtherOwner } = useWhoAmI(access);
   const isNotAllowed = isOtherOwner || isLastOwner;
@@ -89,33 +91,28 @@ export const ModalDelete = ({ access, onClose, doc }: ModalDeleteProps) => {
       }
     >
       <Box aria-label={t('Radio buttons to update the roles')}>
-        <Text>
-          {t('Are you sure you want to remove this member from the document?')}
-        </Text>
-
-        {isErrorUpdate && (
-          <TextErrors
-            $margin={{ bottom: 'small' }}
-            causes={errorUpdate.cause}
-          />
+        {!isLastOwner && !isOtherOwner && !isErrorUpdate && (
+          <Alert canClose={false} type={VariantType.INFO}>
+            <Text>
+              {t(
+                'Are you sure you want to remove this member from the document?',
+              )}
+            </Text>
+          </Alert>
         )}
 
-        {(isLastOwner || isOtherOwner) && (
-          <Text
-            $theme="warning"
-            $direction="row"
-            $align="center"
-            $gap="0.5rem"
-            $margin="tiny"
-            $justify="center"
-          >
-            <span className="material-icons">warning</span>
-            {isLastOwner &&
-              t(
-                'You are the last owner, you cannot be removed from your document.',
-              )}
-            {isOtherOwner && t('You cannot remove other owner.')}
-          </Text>
+        {isErrorUpdate && <TextErrors causes={errorUpdate.cause} />}
+
+        {(isLastOwner || isOtherOwner) && !isErrorUpdate && (
+          <Alert canClose={false} type={VariantType.WARNING}>
+            <Text>
+              {isLastOwner &&
+                t(
+                  'You are the last owner, you cannot be removed from your document.',
+                )}
+              {isOtherOwner && t('You cannot remove other owner.')}
+            </Text>
+          </Alert>
         )}
 
         <Text

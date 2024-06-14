@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Loader,
   Modal,
@@ -136,12 +137,15 @@ export const ModalPDF = ({ onClose, templateOptions, pad }: ModalPDFProps) => {
       <Box
         $margin={{ bottom: 'xl' }}
         aria-label={t('Content modal to generate a PDF')}
+        $gap="1.5rem"
       >
-        <Text as="p" $margin={{ bottom: 'big' }}>
-          {t(
-            'Generate a PDF from your document, it will be inserted in the selected template.',
-          )}
-        </Text>
+        <Alert canClose={false} type={VariantType.INFO}>
+          <Text>
+            {t(
+              'Generate a PDF from your document, it will be inserted in the selected template.',
+            )}
+          </Text>
+        </Alert>
 
         <Select
           clearable={false}
