@@ -20,6 +20,7 @@ and this project adheres to
 - (frontend) manage members (update role / list / remove) (#81)
 - ✨(frontend) offline mode (#88)
 - (frontend) translate cgu (#83)
+- ✨(service-worker) offline doc management (#94)
 
 ## Changed
 

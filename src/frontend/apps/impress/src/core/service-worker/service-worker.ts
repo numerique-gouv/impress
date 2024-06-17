@@ -17,13 +17,18 @@ import {
   StrategyOptions,
 } from 'workbox-strategies';
 
+// eslint-disable-next-line import/order
+import { ApiPlugin } from './ApiPlugin';
+import { isApiUrl } from './service-worker-api';
+
+// eslint-disable-next-line import/order
+import pkg from '@/../package.json';
+
 declare const self: ServiceWorkerGlobalScope & {
   __WB_DISABLE_DEV_LOGS: boolean;
 };
 
 self.__WB_DISABLE_DEV_LOGS = true;
-
-import pkg from '@/../package.json';
 
 setCacheNameDetails({
   prefix: pkg.name,
@@ -114,21 +119,9 @@ warmStrategyCache({ urls: precacheResources, strategy: precacheStrategy });
  * Handle requests that fail
  */
 setCatchHandler(async ({ request, url, event }) => {
-  const devDomain = 'http://localhost:8071';
-
   switch (true) {
-    case url.href.includes(`${self.location.origin}/api/`) ||
-      url.href.includes(`${devDomain}/api/`):
-      return new Response(
-        JSON.stringify({ error: 'Network is unavailable.' }),
-        {
-          status: 502,
-          statusText: 'Network is unavailable.',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+    case isApiUrl(url.href):
+      return ApiPlugin.getApiCatchHandler();
 
     case request.destination === 'document':
       if (url.pathname.match(/^\/docs\/.*\//)) {
@@ -144,23 +137,6 @@ setCatchHandler(async ({ request, url, event }) => {
       return Response.error();
   }
 });
-
-/**
- * Cache API requests
- */
-registerRoute(
-  ({ url }) => {
-    const devDomain = 'http://localhost:8071';
-    return (
-      url.href.includes(`${self.location.origin}/api/`) ||
-      url.href.includes(`${devDomain}/api/`)
-    );
-  },
-  new NetworkFirst({
-    cacheName: getCacheNameVersion('api'),
-    plugins: [new CacheableResponsePlugin({ statuses: [200] })],
-  }),
-);
 
 const DAYS_EXP = 5;
 
