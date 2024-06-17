@@ -20,7 +20,7 @@ type DocsAPIParams = DocsParams & {
   page: number;
 };
 
-type DocsResponse = APIList<Doc>;
+export type DocsResponse = APIList<Doc>;
 
 export const getDocs = async ({
   ordering,
