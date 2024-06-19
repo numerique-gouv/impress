@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "lib0": "0.2.94",
-    "ws": "8.17.0"
+    "ws": "8.17.1"
   },
   "devDependencies": {
     "@types/node": "*",
