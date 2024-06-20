@@ -311,6 +311,19 @@ class DocumentViewSet(
     resource_field_name = "document"
     queryset = models.Document.objects.all()
 
+    def perform_create(self, serializer):
+        """
+        Override perform_create to use the provided ID in the payload if it exists
+        """
+        document_id = self.request.data.get("id")
+        document = serializer.save(id=document_id) if document_id else serializer.save()
+
+        self.access_model_class.objects.create(
+            user=self.request.user,
+            role=models.RoleChoices.OWNER,
+            **{self.resource_field_name: document},
+        )
+
     @decorators.action(detail=True, methods=["get"], url_path="versions")
     def versions_list(self, request, *args, **kwargs):
         """
