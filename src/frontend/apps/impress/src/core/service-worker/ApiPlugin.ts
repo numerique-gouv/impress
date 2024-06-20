@@ -1,31 +1,10 @@
-import { DBSchema, openDB } from 'idb';
 import { WorkboxPlugin } from 'workbox-core';
 
 import { Doc, DocsResponse } from '@/features/docs';
 
-import { RequestData, RequestSerializer } from './RequestSerializer';
+import { DBRequest, DocsDB } from './DocsDB';
+import { RequestSerializer } from './RequestSerializer';
 import { SyncManager } from './SyncManager';
-import { getApiCatchHandler } from './utils';
-
-type DBRequest = {
-  requestData: RequestData;
-  key: string;
-};
-
-interface DocsDB extends DBSchema {
-  'doc-list': {
-    key: string;
-    value: DocsResponse;
-  };
-  'doc-item': {
-    key: string;
-    value: Doc;
-  };
-  'doc-mutation': {
-    key: string;
-    value: DBRequest;
-  };
-}
 
 interface OptionsReadonly {
   tableName: 'doc-list' | 'doc-item';
@@ -33,33 +12,28 @@ interface OptionsReadonly {
 }
 
 interface OptionsMutate {
-  tableName: 'doc-mutation';
   type: 'update' | 'delete' | 'create';
 }
 
 type Options = (OptionsReadonly | OptionsMutate) & { syncManager: SyncManager };
 
 export class ApiPlugin implements WorkboxPlugin {
-  private static readonly DBNAME = 'api-docs-db';
   private readonly options: Options;
   private isFetchDidFailed = false;
   private initialRequest?: Request;
 
+  static getApiCatchHandler = () => {
+    return new Response(JSON.stringify({ error: 'Network is unavailable.' }), {
+      status: 502,
+      statusText: 'Network is unavailable.',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
   constructor(options: Options) {
     this.options = options;
-  }
-
-  /**
-   * Save the response in the IndexedDB.
-   */
-  private async cacheResponse(
-    key: string,
-    body: DocsResponse | Doc | DBRequest,
-    tableName: Options['tableName'],
-  ): Promise<void> {
-    const db = await ApiPlugin.DB();
-
-    await db.put(tableName, body, key);
   }
 
   /**
@@ -75,17 +49,9 @@ export class ApiPlugin implements WorkboxPlugin {
         return response;
       }
 
-      try {
-        const tableName = this.options.tableName;
-        const body = (await response.clone().json()) as DocsResponse | Doc;
-        await this.cacheResponse(request.url, body, tableName);
-      } catch (error) {
-        console.error(
-          'SW-DEV: Failed to save response in IndexedDB',
-          error,
-          this.options,
-        );
-      }
+      const tableName = this.options.tableName;
+      const body = (await response.clone().json()) as DocsResponse | Doc;
+      await DocsDB.cacheResponse(request.url, body, tableName);
     }
 
     return response;
@@ -119,28 +85,22 @@ export class ApiPlugin implements WorkboxPlugin {
    */
   handlerDidError: WorkboxPlugin['handlerDidError'] = async ({ request }) => {
     if (!this.isFetchDidFailed) {
-      return Promise.resolve(getApiCatchHandler());
+      return Promise.resolve(ApiPlugin.getApiCatchHandler());
     }
 
-    /**
-     * Update the cache item to sync it later.
-     */
-    if (this.options.type === 'update') {
-      return this.handlerDidErrorUpdate(request);
+    switch (this.options.type) {
+      case 'update':
+        return this.handlerDidErrorUpdate(request);
+      case 'list':
+      case 'item':
+        return this.handlerDidErrorRead(this.options.tableName, request.url);
     }
 
-    /**
-     * Get data from the cache.
-     */
-    if (this.options.type === 'list' || this.options.type === 'item') {
-      return this.handlerDidErrorRead(this.options.tableName, request.url);
-    }
-
-    return Promise.resolve(getApiCatchHandler());
+    return Promise.resolve(ApiPlugin.getApiCatchHandler());
   };
 
   private handlerDidErrorUpdate = async (request: Request) => {
-    const db = await openDB<DocsDB>(ApiPlugin.DBNAME, 1);
+    const db = await DocsDB.open();
     const storedResponse = await db.get('doc-item', request.url);
 
     if (!storedResponse || !this.initialRequest) {
@@ -159,7 +119,7 @@ export class ApiPlugin implements WorkboxPlugin {
       key: `${Date.now()}`,
     };
 
-    await this.cacheResponse(
+    await DocsDB.cacheResponse(
       serializeRequest.key,
       serializeRequest,
       'doc-mutation',
@@ -177,7 +137,7 @@ export class ApiPlugin implements WorkboxPlugin {
       ...bodyMutate,
     };
 
-    await db.put('doc-item', newResponse, request.url);
+    await DocsDB.cacheResponse(request.url, newResponse, 'doc-item');
 
     /**
      * Update the cache list with the new data.
@@ -205,8 +165,10 @@ export class ApiPlugin implements WorkboxPlugin {
         return result;
       });
 
-      await db.put('doc-list', list, key);
+      await DocsDB.cacheResponse(key, list, 'doc-list');
     }
+
+    db.close();
 
     /**
      * All is good for our client, we return the new response.
@@ -224,11 +186,11 @@ export class ApiPlugin implements WorkboxPlugin {
     tableName: OptionsReadonly['tableName'],
     url: string,
   ) => {
-    const db = await openDB<DocsDB>(ApiPlugin.DBNAME, 1);
+    const db = await DocsDB.open();
     const storedResponse = await db.get(tableName, url);
 
     if (!storedResponse) {
-      return Promise.resolve(getApiCatchHandler());
+      return Promise.resolve(ApiPlugin.getApiCatchHandler());
     }
 
     return new Response(JSON.stringify(storedResponse), {
@@ -236,51 +198,6 @@ export class ApiPlugin implements WorkboxPlugin {
       statusText: 'OK',
       headers: {
         'Content-Type': 'application/json',
-      },
-    });
-  };
-
-  public static hasSyncToDo = async () => {
-    const db = await ApiPlugin.DB();
-    const requests = await db.getAll('doc-mutation');
-
-    return requests.length > 0;
-  };
-
-  /**
-   * Sync the queue with the server.
-   */
-  public static sync = async () => {
-    const db = await ApiPlugin.DB();
-    const requests = await db.getAll('doc-mutation');
-
-    for (const request of requests) {
-      try {
-        await fetch(new RequestSerializer(request.requestData).toRequest());
-        await db.delete('doc-mutation', request.key);
-      } catch (error) {
-        console.error('SW-DEV: Replay failed for request', request, error);
-        break;
-      }
-    }
-  };
-
-  /**
-   * IndexedDB instance.
-   * @returns Promise<IDBPDatabase<DocsDB>>
-   */
-  private static DB = async () => {
-    return await openDB<DocsDB>(ApiPlugin.DBNAME, 1, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains('doc-list')) {
-          db.createObjectStore('doc-list');
-        }
-        if (!db.objectStoreNames.contains('doc-item')) {
-          db.createObjectStore('doc-item');
-        }
-        if (!db.objectStoreNames.contains('doc-mutation')) {
-          db.createObjectStore('doc-mutation');
-        }
       },
     });
   };
