@@ -78,3 +78,16 @@ registerRoute(
   }),
   'POST',
 );
+
+registerRoute(
+  ({ url }) => isApiUrl(url.href) && url.href.match(/.*\/documents\/.*\//),
+  new NetworkOnly({
+    plugins: [
+      new ApiPlugin({
+        type: 'delete',
+        syncManager,
+      }),
+    ],
+  }),
+  'DELETE',
+);

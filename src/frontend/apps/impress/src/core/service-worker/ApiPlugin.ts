@@ -71,7 +71,11 @@ export class ApiPlugin implements WorkboxPlugin {
    * A body sent get "used", and can't be read anymore.
    */
   requestWillFetch: WorkboxPlugin['requestWillFetch'] = async ({ request }) => {
-    if (this.options.type === 'update' || this.options.type === 'create') {
+    if (
+      this.options.type === 'update' ||
+      this.options.type === 'create' ||
+      this.options.type === 'delete'
+    ) {
       this.initialRequest = request.clone();
     }
 
@@ -91,6 +95,8 @@ export class ApiPlugin implements WorkboxPlugin {
     switch (this.options.type) {
       case 'create':
         return this.handlerDidErrorCreate(request);
+      case 'delete':
+        return this.handlerDidErrorDelete(request);
       case 'update':
         return this.handlerDidErrorUpdate(request);
       case 'list':
@@ -196,6 +202,69 @@ export class ApiPlugin implements WorkboxPlugin {
      */
     return new Response(JSON.stringify(newResponse), {
       status: 201,
+      statusText: 'OK',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
+  private handlerDidErrorDelete = async (request: Request) => {
+    if (!this.initialRequest) {
+      return new Response('Request not found', { status: 404 });
+    }
+
+    /**
+     * Queue the request in the cache 'doc-mutation' to sync it later.
+     */
+    const requestData = (
+      await RequestSerializer.fromRequest(this.initialRequest)
+    ).toObject();
+
+    const serializeRequest: DBRequest = {
+      requestData,
+      key: `${Date.now()}`,
+    };
+
+    await DocsDB.cacheResponse(
+      serializeRequest.key,
+      serializeRequest,
+      'doc-mutation',
+    );
+
+    /**
+     * Delete item in the cache
+     */
+    const db = await DocsDB.open();
+    await db.delete('doc-item', request.url);
+
+    /**
+     * Delete entry from the cache list.
+     */
+    // Get id from url
+    const url = new URL(request.url);
+    const docId = url.pathname.slice(0, -1).split('/').pop();
+
+    const listKeys = await db.getAllKeys('doc-list');
+    for (const key of listKeys) {
+      const list = await db.get('doc-list', key);
+
+      if (!list) {
+        continue;
+      }
+
+      list.results = list.results.filter((result) => result.id !== docId);
+
+      await DocsDB.cacheResponse(key, list, 'doc-list');
+    }
+
+    db.close();
+
+    /**
+     * All is good for our client, we return the new response.
+     */
+    return new Response(null, {
+      status: 204,
       statusText: 'OK',
       headers: {
         'Content-Type': 'application/json',
