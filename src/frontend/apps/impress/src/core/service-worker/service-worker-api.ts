@@ -2,11 +2,16 @@ import { registerRoute } from 'workbox-routing';
 import { NetworkOnly } from 'workbox-strategies';
 
 import { ApiPlugin } from './ApiPlugin';
+import { DocsDB } from './DocsDB';
 import { SyncManager } from './SyncManager';
 
 declare const self: ServiceWorkerGlobalScope;
 
-const syncManager = new SyncManager(ApiPlugin.sync, ApiPlugin.hasSyncToDo);
+const syncManager = new SyncManager(DocsDB.sync, DocsDB.hasSyncToDo);
+
+self.addEventListener('activate', function (event) {
+  event.waitUntil(DocsDB.cleanupOutdatedVersion());
+});
 
 export const isApiUrl = (href: string) => {
   const devDomain = 'http://localhost:8071';
@@ -53,7 +58,6 @@ registerRoute(
   new NetworkOnly({
     plugins: [
       new ApiPlugin({
-        tableName: 'doc-mutation',
         type: 'update',
         syncManager,
       }),
