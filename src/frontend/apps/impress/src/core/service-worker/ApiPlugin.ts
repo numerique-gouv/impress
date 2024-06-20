@@ -71,7 +71,7 @@ export class ApiPlugin implements WorkboxPlugin {
    * A body sent get "used", and can't be read anymore.
    */
   requestWillFetch: WorkboxPlugin['requestWillFetch'] = async ({ request }) => {
-    if (this.options.type === 'update') {
+    if (this.options.type === 'update' || this.options.type === 'create') {
       this.initialRequest = request.clone();
     }
 
@@ -89,6 +89,8 @@ export class ApiPlugin implements WorkboxPlugin {
     }
 
     switch (this.options.type) {
+      case 'create':
+        return this.handlerDidErrorCreate(request);
       case 'update':
         return this.handlerDidErrorUpdate(request);
       case 'list':
@@ -97,6 +99,108 @@ export class ApiPlugin implements WorkboxPlugin {
     }
 
     return Promise.resolve(ApiPlugin.getApiCatchHandler());
+  };
+
+  private handlerDidErrorCreate = async (request: Request) => {
+    if (!this.initialRequest) {
+      return new Response('Request not found', { status: 404 });
+    }
+
+    /**
+     * Queue the request in the cache 'doc-mutation' to sync it later.
+     */
+    const requestData = (
+      await RequestSerializer.fromRequest(this.initialRequest)
+    ).toObject();
+
+    if (!requestData.body) {
+      return new Response('Body found', { status: 404 });
+    }
+
+    const jsonObject = RequestSerializer.arrayBufferToJson<Partial<Doc>>(
+      requestData.body,
+    );
+
+    // Add a new doc id to the create request
+    const uuid = self.crypto.randomUUID();
+    const newRequestData = {
+      ...requestData,
+      body: RequestSerializer.objectToArrayBuffer({
+        ...jsonObject,
+        id: uuid,
+      }),
+    };
+
+    const serializeRequest: DBRequest = {
+      requestData: newRequestData,
+      key: `${Date.now()}`,
+    };
+
+    await DocsDB.cacheResponse(
+      serializeRequest.key,
+      serializeRequest,
+      'doc-mutation',
+    );
+
+    /**
+     * Create new item in the cache
+     */
+    const bodyMutate = (await this.initialRequest
+      .clone()
+      .json()) as Partial<Doc>;
+
+    const newResponse = {
+      ...bodyMutate,
+      id: uuid,
+      content: '',
+      abilities: {
+        destroy: true,
+        versions_destroy: true,
+        versions_list: true,
+        versions_retrieve: true,
+        manage_accesses: true,
+        update: true,
+        partial_update: true,
+        retrieve: true,
+      },
+      accesses: [
+        {
+          id: 'dummy-id',
+        },
+      ],
+    } as Doc;
+
+    await DocsDB.cacheResponse(
+      `${request.url}${uuid}/`,
+      newResponse,
+      'doc-item',
+    );
+
+    /**
+     * Add the new entry to the cache list.
+     */
+    const db = await DocsDB.open();
+    const [firstKey] = await db.getAllKeys('doc-list');
+    if (firstKey) {
+      const list = await db.get('doc-list', firstKey);
+      if (!list) {
+        return;
+      }
+      list.results.unshift(newResponse);
+      await DocsDB.cacheResponse(firstKey, list, 'doc-list');
+    }
+    db.close();
+
+    /**
+     * All is good for our client, we return the new response.
+     */
+    return new Response(JSON.stringify(newResponse), {
+      status: 201,
+      statusText: 'OK',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   };
 
   private handlerDidErrorUpdate = async (request: Request) => {

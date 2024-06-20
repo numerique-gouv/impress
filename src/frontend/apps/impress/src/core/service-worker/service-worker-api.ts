@@ -65,3 +65,16 @@ registerRoute(
   }),
   'PATCH',
 );
+
+registerRoute(
+  ({ url }) => isApiUrl(url.href) && url.href.match(/.*\/documents\//),
+  new NetworkOnly({
+    plugins: [
+      new ApiPlugin({
+        type: 'create',
+        syncManager,
+      }),
+    ],
+  }),
+  'POST',
+);

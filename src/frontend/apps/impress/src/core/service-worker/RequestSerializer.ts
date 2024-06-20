@@ -48,6 +48,25 @@ export class RequestSerializer {
     return new RequestSerializer(requestData);
   }
 
+  public static arrayBufferToString(buffer: ArrayBuffer) {
+    const decoder = new TextDecoder();
+    return decoder.decode(buffer);
+  }
+
+  public static arrayBufferToJson<T>(buffer: ArrayBuffer) {
+    const jsonString = RequestSerializer.arrayBufferToString(buffer);
+    return JSON.parse(jsonString) as T;
+  }
+
+  public static stringToArrayBuffer(str: string) {
+    const encoder = new TextEncoder();
+    return encoder.encode(str).buffer;
+  }
+
+  public static objectToArrayBuffer(ob: Record<string, unknown>) {
+    return RequestSerializer.stringToArrayBuffer(JSON.stringify(ob));
+  }
+
   constructor(requestData: RequestData) {
     if (requestData.mode === 'navigate') {
       requestData.mode = 'same-origin';
