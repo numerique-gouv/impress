@@ -22,6 +22,7 @@ jest.mock('@/core/', () => ({
 
 describe('App', () => {
   it('checks service-worker is register', () => {
+    process.env.NEXT_PUBLIC_BUILD_ID = '123456';
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const registerSpy = jest.fn();
@@ -42,11 +43,12 @@ describe('App', () => {
       wrapper: AppWrapper,
     });
 
-    expect(registerSpy).toHaveBeenCalledWith('/service-worker.js');
+    expect(registerSpy).toHaveBeenCalledWith('/service-worker.js?v=123456');
   });
 
   it('checks service-worker is not register', () => {
     process.env.NEXT_PUBLIC_SW_DEACTIVATED = 'true';
+    process.env.NEXT_PUBLIC_BUILD_ID = '123456';
 
     const registerSpy = jest.fn();
     registerSpy.mockImplementation(
@@ -66,6 +68,6 @@ describe('App', () => {
       wrapper: AppWrapper,
     });
 
-    expect(registerSpy).not.toHaveBeenCalledWith('/service-worker.js');
+    expect(registerSpy).not.toHaveBeenCalledWith('/service-worker.js?v=123456');
   });
 });

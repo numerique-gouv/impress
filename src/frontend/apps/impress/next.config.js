@@ -1,4 +1,8 @@
+const crypto = require('crypto');
+
 const { InjectManifest } = require('workbox-webpack-plugin');
+
+const buildId = crypto.randomBytes(256).toString('hex').slice(0, 8);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,6 +14,10 @@ const nextConfig = {
   compiler: {
     // Enables the styled-components SWC transform
     styledComponents: true,
+  },
+  generateBuildId: () => buildId,
+  env: {
+    NEXT_PUBLIC_BUILD_ID: buildId,
   },
   webpack(config, { isServer }) {
     // Grab the existing rule that handles SVG imports

@@ -30,13 +30,15 @@ declare const self: ServiceWorkerGlobalScope & {
 
 self.__WB_DISABLE_DEV_LOGS = true;
 
+const version = `v-${process.env.NEXT_PUBLIC_BUILD_ID}`;
+
 setCacheNameDetails({
   prefix: pkg.name,
-  suffix: `v${pkg.version}`,
+  suffix: version,
 });
 
 const getCacheNameVersion = (cacheName: string) =>
-  `${pkg.name}-${cacheName}-v${pkg.version}`;
+  `${pkg.name}-${cacheName}-${version}`;
 
 /**
  * In development, use NetworkFirst strategy, in production use CacheFirst strategy
@@ -69,7 +71,7 @@ self.addEventListener('install', function (event) {
 });
 
 self.addEventListener('activate', function (event) {
-  const cacheAllow = `v${pkg.version}`;
+  const cacheAllow = `${version}`;
 
   event.waitUntil(
     // Delete old caches
