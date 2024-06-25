@@ -22,17 +22,19 @@ const Page: NextPageWithLayout = () => {
       </Box>
       <Box $padding={{ horizontal: 'large', vertical: 'big' }}>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t('Éditeur')}
+          {t('Publisher')}
         </Text>
         <Text as="p">
           {t(
-            'Équipe La Suite Numérique de la Direction interministérielle du numérique DINUM, 20 avenue de Ségur 75007 Paris.',
+            'French Interministerial Directorate for Digital Affairs (DINUM), 20 avenue de Ségur 75007 Paris.',
           )}
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t('Directeur de la publication')}
+          {t('Publication Director')}
         </Text>
-        <Text as="p">{t('Directeur interministériel du numérique.')}</Text>
+        <Text as="p">
+          {t('Stéphanie Schaer: Interministerial Digital Director (DINUM).')}
+        </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
           {t('Copyright')}
         </Text>
@@ -43,15 +45,15 @@ const Page: NextPageWithLayout = () => {
           </Text>
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t("Plus d'infos ?")}
+          {t('More info?')}
         </Text>
         <Text as="p" $display="inline">
           {t(
-            "L'équipe de La Suite Numérique peut être contactée directement à",
+            'The team in charge of the digital workspace "La Suite numérique" can be contacted directly at',
           )}{' '}
           <TextStyled
             as="a"
-            href="lasuite@modernisation.gouv.fr"
+            href="mailto:lasuite@modernisation.gouv.fr"
             $display="inline"
           >
             lasuite@modernisation.gouv.fr

@@ -19,6 +19,7 @@ and this project adheres to
 - (frontend) invite user to a document (#52)
 - (frontend) manage members (update role / list / remove) (#81)
 - ✨(frontend) offline mode (#88)
+- (frontend) translate cgu (#83)
 
 ## Changed
 

@@ -23,34 +23,34 @@ const Page: NextPageWithLayout = () => {
       <Box $padding={{ horizontal: 'large', vertical: 'big' }}>
         <Text as="p" $display="inline">
           <Trans t={t} i18nKey="accessibility-dinum-services">
-            <strong>La DINUM</strong> s&apos;engage à rendre ses services
-            numériques accessibles, conformément à l&apos;article 47 de la loi
-            n° 2005-102 du 11 février 2005.
+            <strong>DINUM</strong> is committed to making its digital services
+            accessible, in accordance with article 47 of French law n° 2005-102
+            dated February 11, 2005.
           </Trans>
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t("Déclaration d'accessibilité")}
+          {t('Accessibility statement')}
         </Text>
-        <Text as="p">{t('Établie le 20 décembre 2023.')}</Text>
+        <Text as="p">{t('Established on December 20, 2023.')}</Text>
         <Text as="p" $display="inline">
-          {t("Cette déclaration d'accessibilité s'applique au site")}{' '}
-          <strong>docs.numerique.gouv.fr</strong>.
+          {t('This accessibility statement applies to the site hosted on')}{' '}
+          <strong>https://docs.numerique.gouv.fr</strong>.
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t('État de conformité')}
+          {t('Compliance status')}
         </Text>
         <Text as="p" $display="inline">
           <Trans t={t} i18nKey="accessibility-not-audit">
-            <strong>docs.numerique.gouv.fr</strong> est non conforme avec le
-            RGAA 4.1. Le site n&apos;a <strong>pas encore été audité.</strong>
+            <strong>https://docs.numerique.gouv.fr</strong> is not compliant
+            with RGAA 4.1. The site has <strong>not yet been audited.</strong>
           </Trans>
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t('Amélioration et contact')}
+          {t('Improvement and contact')}
         </Text>
         <Text as="p" $display="inline">
           {t(
-            `Si vous n'arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de lasuite.numerique.gouv.fr pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.`,
+            'If you are unable to access a content or a service, you can contact the person responsible for https://lasuite.numerique.gouv.fr to be directed to an accessible alternative or to obtain the content in another form.',
           )}
         </Text>
         <Text as="p" $display="inline">
@@ -65,57 +65,59 @@ const Page: NextPageWithLayout = () => {
             </TextStyled>
           </li>
           <li>
-            {t('Adresse:')} <strong>DINUM</strong>, 20 avenue de Ségur 75007
+            {t('Address:')} <strong>DINUM</strong>, 20 avenue de Ségur 75007
             Paris
           </li>
         </Text>
         <Text as="p" $display="inline">
-          {t('Nous essayons de répondre dans les 2 jours ouvrés.')}
+          {t('We try to respond within 2 working days.')}
         </Text>
 
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t('Voie de recours')}
+          {t('Remedies')}
         </Text>
         <Text as="p" $display="inline">
-          {t(`Cette procédure est à utiliser dans le cas suivant:`)}{' '}
+          {t('This procedure should be used in the following case:')}{' '}
           {t(
-            `vous avez signalé au responsable du site internet un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des services du portail et vous n'avez pas obtenu de réponse satisfaisante.`,
+            'you have reported to the website manager a lack of accessibility that prevents you from accessing content or one of the services of the portal and you have not received a satisfactory response.',
           )}
         </Text>
         <Text as="p" $display="inline" $margin={{ bottom: 'tiny' }}>
-          {t('Vous pouvez:')}
+          {t('You can:')}
         </Text>
         <Text as="p" $display="inline" $margin={{ top: 'tiny' }}>
           <li>
             <Trans t={t} i18nKey="accessibility-form-defenseurdesdroits">
-              Écrire un message au{' '}
+              Write a message to the
               <TextStyled
                 as="a"
                 href="https://formulaire.defenseurdesdroits.fr/formulaire_saisine/"
                 $display="inline"
+                $margin={{ left: '4px' }}
               >
-                Défenseur des droits
+                Defender of Rights
               </TextStyled>
             </Trans>
           </li>
           <li>
             <Trans t={t} i18nKey="accessibility-contact-defenseurdesdroits">
-              Contacter le délégué du
+              Contact the delegate of the
               <TextStyled
                 as="a"
                 href="https://www.defenseurdesdroits.fr/carte-des-delegues"
                 $display="inline"
+                $margin={{ left: '4px' }}
               >
-                {t('Défenseur des droits dans votre région')}
+                Defender of Rights in your region
               </TextStyled>
             </Trans>
           </li>
           <li>
-            {t(
-              `Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre):`,
-            )}{' '}
+            {t('Send a letter by post (free of charge, no stamp needed):')}{' '}
             <strong>
-              Défenseur des droits Libre réponse 71120 75342 Paris CEDEX 07
+              {t(
+                'Defender of Rights - Free response - 71120 75342 Paris CEDEX 07',
+              )}
             </strong>
           </li>
         </Text>
