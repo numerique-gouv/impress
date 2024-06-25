@@ -1,3 +1,3 @@
 export * from './MainLayout';
-export * from './PadLayout';
+export * from './DocLayout';
 export * from './PageLayout';

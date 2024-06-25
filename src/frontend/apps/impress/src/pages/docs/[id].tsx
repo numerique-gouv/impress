@@ -4,9 +4,9 @@ import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 
 import { Box, Text, TextErrors } from '@/components/';
-import { PadEditor } from '@/features/pads/pad-editor';
-import { usePad } from '@/features/pads/pad-management';
-import { PadLayout } from '@/layouts';
+import { DocEditor } from '@/features/docs/doc-editor';
+import { useDoc } from '@/features/docs/doc-management';
+import { DocLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
@@ -18,15 +18,15 @@ const Page: NextPageWithLayout = () => {
     return null;
   }
 
-  return <Pad id={id} />;
+  return <Doc id={id} />;
 };
 
-interface PadProps {
+interface DocProps {
   id: string;
 }
 
-const Pad = ({ id }: PadProps) => {
-  const { data: pad, isLoading, isError, error } = usePad({ id });
+const Doc = ({ id }: DocProps) => {
+  const { data: doc, isLoading, isError, error } = useDoc({ id });
   const navigate = useNavigate();
 
   if (isError && error) {
@@ -51,7 +51,7 @@ const Pad = ({ id }: PadProps) => {
     );
   }
 
-  if (isLoading || !pad) {
+  if (isLoading || !doc) {
     return (
       <Box $align="center" $justify="center" $height="100%">
         <Loader />
@@ -59,11 +59,11 @@ const Pad = ({ id }: PadProps) => {
     );
   }
 
-  return <PadEditor pad={pad} />;
+  return <DocEditor doc={doc} />;
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <PadLayout>{page}</PadLayout>;
+  return <DocLayout>{page}</DocLayout>;
 };
 
 export default Page;

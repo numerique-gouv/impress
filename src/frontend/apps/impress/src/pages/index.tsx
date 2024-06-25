@@ -1,16 +1,16 @@
 import type { ReactElement } from 'react';
 
-import { PadLayout } from '@/layouts';
+import { DocLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
-import Pads from './docs';
+import Docs from './docs';
 
 const Page: NextPageWithLayout = () => {
-  return <Pads />;
+  return <Docs />;
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <PadLayout>{page}</PadLayout>;
+  return <DocLayout>{page}</DocLayout>;
 };
 
 export default Page;
