@@ -20,7 +20,7 @@
     "e2e:test": "yarn APP_E2E run test",
     "lint": "yarn APP_IMPRESS run lint && yarn APP_E2E run lint && yarn workspace eslint-config-impress run lint && yarn I18N run lint",
     "i18n:extract": "yarn I18N run extract-translation",
-    "i18n:deploy": "yarn I18N run format-deploy",
+    "i18n:deploy": "yarn I18N run format-deploy && yarn APP_IMPRESS prettier",
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
