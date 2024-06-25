@@ -50,8 +50,8 @@ export const Header = () => {
             }}
           />
           <StyledLink href="/">
-            <Box $align="center" $gap="1rem" $direction="row">
-              <Image priority src={IconDocs} alt={t('Docs Logo')} width={48} />
+            <Box $align="center" $gap="0.8rem" $direction="row">
+              <Image priority src={IconDocs} alt={t('Docs Logo')} width={38} />
               <Text $margin="none" as="h2" $theme="primary">
                 {t('Docs')}
               </Text>
