@@ -132,6 +132,10 @@ test.describe('Doc Editor', () => {
       })
       .click();
 
+    await expect(
+      page.getByText(`Your document "${doc}" has been saved.`),
+    ).toBeVisible();
+
     const card = page.getByLabel('Create new document card').first();
     await expect(
       card.getByRole('heading', {
