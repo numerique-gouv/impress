@@ -1,20 +1,20 @@
 import { ReactElement } from 'react';
 
 import { Box } from '@/components';
-import { CardCreatePad } from '@/features/pads/pad-management';
-import { PadLayout } from '@/layouts';
+import { CardCreateDoc } from '@/features/docs/doc-management';
+import { DocLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
   return (
     <Box $padding="large" $justify="center" $align="start" $height="inherit">
-      <CardCreatePad />
+      <CardCreateDoc />
     </Box>
   );
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <PadLayout>{page}</PadLayout>;
+  return <DocLayout>{page}</DocLayout>;
 };
 
 export default Page;

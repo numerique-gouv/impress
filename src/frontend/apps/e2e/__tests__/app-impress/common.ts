@@ -26,9 +26,9 @@ export const randomName = (name: string, browserName: string, length: number) =>
     return `${browserName}-${Math.floor(Math.random() * 10000)}-${index}-${name}`;
   });
 
-export const createPad = async (
+export const createDoc = async (
   page: Page,
-  padName: string,
+  docName: string,
   browserName: string,
   length: number,
   isPublic: boolean = false,
@@ -38,11 +38,11 @@ export const createPad = async (
     name: 'Create the document',
   });
 
-  const randomPads = randomName(padName, browserName, length);
+  const randomDocs = randomName(docName, browserName, length);
 
-  for (let i = 0; i < randomPads.length; i++) {
+  for (let i = 0; i < randomDocs.length; i++) {
     await panel.getByRole('button', { name: 'Add a document' }).click();
-    await page.getByText('Document name').fill(randomPads[i]);
+    await page.getByText('Document name').fill(randomDocs[i]);
 
     if (isPublic) {
       await page.getByText('Is it public ?').click();
@@ -50,10 +50,10 @@ export const createPad = async (
 
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();
-    await expect(panel.locator('li').getByText(randomPads[i])).toBeVisible();
+    await expect(panel.locator('li').getByText(randomDocs[i])).toBeVisible();
   }
 
-  return randomPads;
+  return randomDocs;
 };
 
 export const createTemplate = async (

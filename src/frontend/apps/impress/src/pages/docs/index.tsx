@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, StyledLink } from '@/components';
-import { PadLayout } from '@/layouts';
+import { DocLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const StyledButton = styled(Button)`
@@ -24,7 +24,7 @@ const Page: NextPageWithLayout = () => {
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <PadLayout>{page}</PadLayout>;
+  return <DocLayout>{page}</DocLayout>;
 };
 
 export default Page;
