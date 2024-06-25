@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Text, TextStyled } from '@/components';
+import { Box, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { PageLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
@@ -22,52 +22,38 @@ const Page: NextPageWithLayout = () => {
       </Box>
       <Box $padding={{ horizontal: 'large', vertical: 'big' }}>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t('Cookies déposés')}
+          {t('Cookies placed')}
         </Text>
         <Text as="p">
           {t(
-            'Ce site dépose un petit fichier texte (un « cookie ») sur votre ordinateur lorsque vous le consultez.',
+            'This site places a small text file (a "cookie") on your computer when you visit it.',
           )}
           {t(
-            'Cela nous permet de mesurer le nombre de visites et de comprendre quelles sont les pages les plus consultées.',
+            'This allows us to measure the number of visits and understand which pages are the most viewed.',
           )}
         </Text>
         <Text as="p">
+          {t('You can oppose the tracking of your browsing on this website.')}
           {t(
-            'Vous pouvez vous opposer au suivi de votre navigation sur ce site web.',
-          )}
-          {t(
-            "Cela protégera votre vie privée, mais empêchera également le propriétaire d'apprendre de vos actions et de créer une meilleure expérience pour vous et les autres utilisateurs.",
+            'This will protect your privacy, but will also prevent the owner from learning from your actions and creating a better experience for you and other users.',
           )}
         </Text>
         <Text as="h2" $margin={{ bottom: 'xtiny' }}>
+          {t('This site does not display a cookie consent banner, why?')}
+        </Text>
+        <Text as="p">
           {t(
-            "Ce site n'affiche pas de bannière de consentement aux cookies, pourquoi ?",
+            "It's true, you didn't have to click on a block that covers half the page to say you agree to the placement of cookies — even if you don't know what it means!",
           )}
         </Text>
         <Text as="p">
           {t(
-            "C'est vrai, vous n'avez pas eu à cliquer sur un bloc qui recouvre la moitié de la page pour dire que vous êtes d'accord avec le dépôt de cookies — même si vous ne savez pas ce que ça veut dire !",
+            'Nothing exceptional, no special privileges related to a .gouv.fr.',
+          )}
+          {t(
+            'We simply comply with the law, which states that certain audience measurement tools, properly configured to respect privacy, are exempt from prior authorization.',
           )}
         </Text>
-        <Text as="p">
-          {t("Rien d'exceptionnel, pas de passe-droit lié à un .gouv.fr .")}
-          {t(
-            "Nous respectons simplement la loi, qui dit que certains outils de suivi d'audience, correctement configurés pour respecter la vie privée, sont exemptés d'autorisation préalable.",
-          )}
-        </Text>
-        <Text as="h2" $margin={{ bottom: 'xtiny' }}>
-          {t('Je contribue à enrichir vos données, puis-je y accéder ?')}
-        </Text>
-        <p>
-          {t(
-            "Bien sûr ! Les statistiques d'usage de la majorité de nos produits, dont docs.numerique.gouv.fr, sont disponibles en accès libre sur",
-          )}{' '}
-          <TextStyled as="a" href="stats.data.gouv.fr" $display="inline">
-            stats.data.gouv.fr
-          </TextStyled>
-          .
-        </p>
       </Box>
     </Box>
   );
