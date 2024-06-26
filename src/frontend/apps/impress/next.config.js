@@ -44,7 +44,7 @@ const nextConfig = {
     if (!isServer && process.env.NEXT_PUBLIC_SW_DEACTIVATED !== 'true') {
       config.plugins.push(
         new InjectManifest({
-          swSrc: './src/core/service-worker/service-worker.ts',
+          swSrc: './src/features/service-worker/service-worker.ts',
           swDest: '../public/service-worker.js',
           include: [
             ({ asset }) => {
