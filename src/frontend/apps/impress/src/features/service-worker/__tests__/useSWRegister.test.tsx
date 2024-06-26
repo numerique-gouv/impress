@@ -1,26 +1,15 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
-import { Router } from 'next/router';
-import { PropsWithChildren, ReactElement } from 'react';
 
-import App from '@/pages/_app';
-import { AppWrapper } from '@/tests/utils';
-import { NextPageWithLayout } from '@/types/next';
+import { useSWRegister } from '../hooks/useSWRegister';
 
-const Page: NextPageWithLayout = () => {
+const TestComponent = () => {
+  useSWRegister();
+
   return <div>Test Page</div>;
 };
 
-Page.getLayout = function getLayout(page: ReactElement) {
-  return <div>{page}</div>;
-};
-
-jest.mock('@/core/', () => ({
-  ...jest.requireActual('@/core/'),
-  AppProvider: ({ children }: PropsWithChildren) => <div>{children}</div>,
-}));
-
-describe('App', () => {
+describe('useSWRegister', () => {
   it('checks service-worker is register', () => {
     process.env.NEXT_PUBLIC_BUILD_ID = '123456';
     jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -39,9 +28,7 @@ describe('App', () => {
       writable: true,
     });
 
-    render(<App Component={Page} router={{} as Router} pageProps={{}} />, {
-      wrapper: AppWrapper,
-    });
+    render(<TestComponent />);
 
     expect(registerSpy).toHaveBeenCalledWith('/service-worker.js?v=123456');
   });
@@ -64,9 +51,7 @@ describe('App', () => {
       writable: true,
     });
 
-    render(<App Component={Page} router={{} as Router} pageProps={{}} />, {
-      wrapper: AppWrapper,
-    });
+    render(<TestComponent />);
 
     expect(registerSpy).not.toHaveBeenCalledWith('/service-worker.js?v=123456');
   });

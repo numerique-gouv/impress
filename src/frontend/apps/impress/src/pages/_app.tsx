@@ -1,9 +1,9 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AppProvider } from '@/core/';
+import { useSWRegister } from '@/features/service-worker/';
 import { NextPageWithLayout } from '@/types/next';
 
 import './globals.css';
@@ -13,21 +13,9 @@ type AppPropsWithLayout = AppProps & {
 };
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  useSWRegister();
   const getLayout = Component.getLayout ?? ((page) => page);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (
-      'serviceWorker' in navigator &&
-      process.env.NEXT_PUBLIC_SW_DEACTIVATED !== 'true'
-    ) {
-      navigator.serviceWorker
-        .register(`/service-worker.js?v=${process.env.NEXT_PUBLIC_BUILD_ID}`)
-        .catch((err) => {
-          console.error('Service worker registration failed:', err);
-        });
-    }
-  }, []);
 
   return (
     <>
