@@ -19,6 +19,7 @@ import {
 
 // eslint-disable-next-line import/order
 import { ApiPlugin } from './ApiPlugin';
+import { SW_DEV_URL } from './conf';
 import { isApiUrl } from './service-worker-api';
 
 // eslint-disable-next-line import/order
@@ -50,13 +51,7 @@ const getCacheNameVersion = (cacheName: string) =>
 const getStrategy = (
   options?: NetworkFirstOptions | StrategyOptions,
 ): NetworkFirst | CacheFirst => {
-  const devDomains = [
-    'http://localhost:3000',
-    'https://impress.127.0.0.1.nip.io',
-    'https://impress-staging.beta.numerique.gouv.fr',
-  ];
-
-  return devDomains.some((devDomain) =>
+  return SW_DEV_URL.some((devDomain) =>
     self.location.origin.includes(devDomain),
   )
     ? new NetworkFirst(options)
