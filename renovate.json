@@ -18,9 +18,7 @@
         "node",
         "node-fetch",
         "i18next-parser",
-        "eslint",
-        "react",
-        "react-dom"
+        "eslint"
       ]
     }
   ]
