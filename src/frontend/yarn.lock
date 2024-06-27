@@ -3583,14 +3583,6 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/backbone@^1.4.15":
-  version "1.4.19"
-  resolved "https://registry.yarnpkg.com/@types/backbone/-/backbone-1.4.19.tgz#f6e8406fed40ca3fe224f6e59115142b62be76d6"
-  integrity sha512-byyn236JymGByOajKA7mi1k+/jKn162TIvArOB4SHgOGbVlFj8CSfJH4jekP0qo0vJwW5khrrsiiO1Jsos6ZvA==
-  dependencies:
-    "@types/jquery" "*"
-    "@types/underscore" "*"
-
 "@types/debug@^4.0.0":
   version "4.1.12"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.12.tgz#a155f21690871953410df4b6b6f53187f0500917"
@@ -3660,13 +3652,6 @@
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"
-
-"@types/jquery@*":
-  version "3.5.30"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.30.tgz#888d584cbf844d3df56834b69925085038fd80f7"
-  integrity sha512-nbWKkkyb919DOUxjmRVk8vwtDb0/k8FKncmUKFi+NY+QXqWltooxTrswvz4LspQwxvLdvzBN1TImr6cw3aQx2A==
-  dependencies:
-    "@types/sizzle" "*"
 
 "@types/jsdom@^20.0.0":
   version "20.0.1"
@@ -3780,11 +3765,6 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.5.8.tgz#8268a8c57a3e4abd25c165ecd36237db7948a55e"
   integrity sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==
 
-"@types/sizzle@*":
-  version "2.3.8"
-  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.8.tgz#518609aefb797da19bf222feb199e8f653ff7627"
-  integrity sha512-0vWLNK2D5MT9dg0iOo8GlKguPAU02QjmZitPEsXRuJXU/OGIOt9vT9Fc26wtYuavLxtO45v9PGleoL9Z0k1LHg==
-
 "@types/stack-utils@^2.0.0":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.3.tgz#6209321eb2c1712a7e7466422b8cb1fc0d9dd5d8"
@@ -3809,11 +3789,6 @@
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
   integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
-
-"@types/underscore@*":
-  version "1.11.15"
-  resolved "https://registry.yarnpkg.com/@types/underscore/-/underscore-1.11.15.tgz#29c776daecf6f1935da9adda17509686bf979947"
-  integrity sha512-HP38xE+GuWGlbSRq9WrZkousaQ7dragtZCruBVMi0oX1migFZavZ3OROKHSkNp/9ouq82zrWtZpg18jFnVN96g==
 
 "@types/unist@*", "@types/unist@^3.0.0":
   version "3.0.2"
@@ -4448,28 +4423,6 @@ babel-preset-jest@^29.6.3:
     babel-plugin-jest-hoist "^29.6.3"
     babel-preset-current-node-syntax "^1.0.0"
 
-backbone-undo@^0.2.5:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/backbone-undo/-/backbone-undo-0.2.6.tgz#00c4d78ab2425c18a76f2a96a1eee181560a5d8d"
-  integrity sha512-AsfpNiljLXlk7TcffDUu3EAUq7CxWbyTNwARWrql5XTzN4vh6WzEEBZYaKK4kTTz+iW1tSzqUooaGRIwO83kWA==
-  dependencies:
-    backbone ">=1.0.0"
-    underscore ">=1.4.4"
-
-backbone@1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.4.1.tgz#099a78184bc07b034048a8332229c2ccca1e3e62"
-  integrity sha512-ADy1ztN074YkWbHi8ojJVFe3vAanO/lrzMGZWUClIP7oDD/Pjy2vrASraUP+2EVCfIiTtCW4FChVow01XneivA==
-  dependencies:
-    underscore ">=1.8.3"
-
-backbone@>=1.0.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.6.0.tgz#5cdfa25257819b223109a77a74dde26d38995930"
-  integrity sha512-13PUjmsgw/49EowNcQvfG4gmczz1ximTMhUktj0Jfrjth0MVaTxehpU+qYYX4MxnuIuhmvBLC6/ayxuAGnOhbA==
-  dependencies:
-    underscore ">=1.8.3"
-
 bail@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/bail/-/bail-2.0.2.tgz#d26f5cd8fe5d6f832a31517b9f7c356040ba6d5d"
@@ -4811,16 +4764,6 @@ co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==
-
-codemirror-formatting@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/codemirror-formatting/-/codemirror-formatting-1.0.0.tgz#879cc1fdd9018343c1d5511769ce5360d705ebf2"
-  integrity sha512-br9yM6eJI3pJHekEnoyHaBEb1B7XxxDjju+vRyBe8QGLp5saTIXXkZ+eFCTqXSAtI8QEZDFVEX2/SOjH2sVWRQ==
-
-codemirror@^5.63.0:
-  version "5.65.16"
-  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.65.16.tgz#efc0661be6bf4988a6a1c2fe6893294638cdb334"
-  integrity sha512-br21LjYmSlVL0vFCPWPfhzUCT34FM/pAdK7rRIZwa0rrtrIdotvP4Oh4GUHsu2E3IrQMCfRkL/fN3ytMNxVQvg==
 
 collect-v8-coverage@^1.0.0:
   version "1.0.2"
@@ -6438,24 +6381,6 @@ graceful-fs@^4.0.0, graceful-fs@^4.1.11, graceful-fs@^4.1.6, graceful-fs@^4.2.0,
   version "4.2.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
-
-grapesjs-blocks-basic@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/grapesjs-blocks-basic/-/grapesjs-blocks-basic-1.0.2.tgz#d7e4cc44a2ad1f41d6622ca337668e3fd5945191"
-  integrity sha512-SsPKf/CvQkZ+kABOsN01auAPHXh/2J20g0AWYF7fHR3Gw3TZLtdIxT1mk90Qzi76u/7sUYi3CTI+i3ZaTtXHRA==
-
-grapesjs@0.21.11:
-  version "0.21.11"
-  resolved "https://registry.yarnpkg.com/grapesjs/-/grapesjs-0.21.11.tgz#3557c905a87bbe2ae451fcdd89a1a763af110dd3"
-  integrity sha512-pYJqBjN+pA6MUtg/nDiWXRoxwD26cujyyRMiS1FyOkZidU7MuwLPXzqogRoRqA+8IkDCjk27ArHlrxF9X0LDPQ==
-  dependencies:
-    "@types/backbone" "^1.4.15"
-    backbone "1.4.1"
-    backbone-undo "^0.2.5"
-    codemirror "^5.63.0"
-    codemirror-formatting "^1.0.0"
-    promise-polyfill "^8.1.3"
-    underscore "^1.13.1"
 
 graphemer@^1.4.0:
   version "1.4.0"
@@ -9138,11 +9063,6 @@ promise-map-series@^0.3.0:
   resolved "https://registry.yarnpkg.com/promise-map-series/-/promise-map-series-0.3.0.tgz#41873ca3652bb7a042b387d538552da9b576f8a1"
   integrity sha512-3npG2NGhTc8BWBolLLf8l/92OxMGaRLbqvIh9wjCHhDXNvk4zsxaTaCpiCunW09qWPrN2zeNSNwRLVBrQQtutA==
 
-promise-polyfill@^8.1.3:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-8.3.0.tgz#9284810268138d103807b11f4e23d5e945a4db63"
-  integrity sha512-H5oELycFml5yto/atYqmjyigJoAo3+OXwolYiH7OfQuYlAqhxNvTfiNMbV9hsC6Yp83yE5r2KTVmtrG6R9i6Pg==
-
 prompts@^2.0.1:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/prompts/-/prompts-2.4.2.tgz#7b57e73b3a48029ad10ebd44f74b01722a4cb069"
@@ -10966,11 +10886,6 @@ underscore.string@~3.3.4:
   dependencies:
     sprintf-js "^1.1.1"
     util-deprecate "^1.0.2"
-
-underscore@>=1.4.4, underscore@>=1.8.3, underscore@^1.13.1:
-  version "1.13.6"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.6.tgz#04786a1f589dc6c09f761fc5f45b89e935136441"
-  integrity sha512-+A5Sja4HP1M08MaXya7p5LvjuM7K6q/2EaC0+iovj/wOcMsTzMvDFbasi/oSapiwOlt252IqsKqPjCl7huKS0A==
 
 undici-types@~5.26.4:
   version "5.26.5"
