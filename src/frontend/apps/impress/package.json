@@ -52,7 +52,7 @@
     "@types/react-dom": "*",
     "dotenv": "16.4.5",
     "eslint-config-impress": "*",
-    "fetch-mock": "10.0.7",
+    "fetch-mock": "9.11.0",
     "grapesjs": "0.21.11",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",

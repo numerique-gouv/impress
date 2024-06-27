@@ -14,6 +14,7 @@
       "groupName": "ignored js dependencies",
       "matchManagers": ["npm"],
       "matchPackageNames": [
+        "fetch-mock",
         "node",
         "node-fetch",
         "i18next-parser",
