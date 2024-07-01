@@ -47,6 +47,12 @@ def test_models_documents_title_max_length():
         factories.DocumentFactory(title="a" * 256)
 
 
+def test_models_documents_file_key():
+    """The file key should be built from the instance uuid."""
+    document = factories.DocumentFactory(id="9531a5f1-42b1-496c-b3f4-1c09ed139b3c")
+    assert document.file_key == "9531a5f1-42b1-496c-b3f4-1c09ed139b3c/file"
+
+
 # get_abilities
 
 
