@@ -317,11 +317,18 @@ class Document(BaseModel):
         return self.title
 
     @property
+    def key_base(self):
+        """Key base of the location where the document is stored in object storage."""
+        if not self.pk:
+            raise RuntimeError(
+                "The document instance must be saved before requesting a storage key."
+            )
+        return str(self.pk)
+
+    @property
     def file_key(self):
         """Key of the object storage file to which the document content is stored"""
-        if not self.pk:
-            return None
-        return str(self.pk)
+        return f"{self.key_base}/file"
 
     @property
     def content(self):
