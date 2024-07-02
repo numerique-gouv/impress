@@ -1,7 +1,6 @@
 import { Radio, RadioGroup } from '@openfun/cunningham-react';
-import { useTranslation } from 'react-i18next';
 
-import { Role } from '@/features/docs/doc-management';
+import { Role, useTransRole } from '@/features/docs/doc-management';
 
 interface ChooseRoleProps {
   currentRole: Role;
@@ -16,21 +15,14 @@ export const ChooseRole = ({
   currentRole,
   setRole,
 }: ChooseRoleProps) => {
-  const { t } = useTranslation();
-
-  const translatedRoles = {
-    [Role.ADMIN]: t('Administrator'),
-    [Role.READER]: t('Reader'),
-    [Role.OWNER]: t('Owner'),
-    [Role.EDITOR]: t('Editor'),
-  };
+  const transRole = useTransRole();
 
   return (
     <RadioGroup>
       {Object.values(Role).map((role) => (
         <Radio
           key={role}
-          label={translatedRoles[role]}
+          label={transRole(role)}
           value={role}
           name="role"
           onChange={(evt) => setRole(evt.target.value as Role)}
