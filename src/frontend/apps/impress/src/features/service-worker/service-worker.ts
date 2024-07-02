@@ -14,6 +14,7 @@ import {
   CacheFirst,
   NetworkFirst,
   NetworkFirstOptions,
+  NetworkOnly,
   StrategyOptions,
 } from 'workbox-strategies';
 
@@ -145,6 +146,15 @@ registerRoute(
     ],
   }),
   'GET',
+);
+
+/**
+ * Admin cache strategy
+ */
+registerRoute(
+  ({ url }) =>
+    url.href.includes(self.location.origin) && url.href.includes('/admin/'),
+  new NetworkOnly(),
 );
 
 /**
