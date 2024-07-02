@@ -3,3 +3,5 @@ export const SW_DEV_URL = [
   'https://impress.127.0.0.1.nip.io',
   'https://impress-staging.beta.numerique.gouv.fr',
 ];
+
+export const SW_DEV_API = 'http://localhost:8071';

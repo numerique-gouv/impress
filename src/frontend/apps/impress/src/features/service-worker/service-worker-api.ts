@@ -4,6 +4,7 @@ import { NetworkOnly } from 'workbox-strategies';
 import { ApiPlugin } from './ApiPlugin';
 import { DocsDB } from './DocsDB';
 import { SyncManager } from './SyncManager';
+import { SW_DEV_API } from './conf';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -14,10 +15,9 @@ self.addEventListener('activate', function (event) {
 });
 
 export const isApiUrl = (href: string) => {
-  const devDomain = 'http://localhost:8071';
   return (
     href.includes(`${self.location.origin}/api/`) ||
-    href.includes(`${devDomain}/api/`)
+    href.includes(`${SW_DEV_API}/api/`)
   );
 };
 

@@ -53,7 +53,7 @@ const getStrategy = (
 ): NetworkFirst | CacheFirst => {
   return SW_DEV_URL.some((devDomain) =>
     self.location.origin.includes(devDomain),
-  )
+  ) || isApiUrl(self.location.href)
     ? new NetworkFirst(options)
     : new CacheFirst(options);
 };
