@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Card, TextErrors } from '@/components';
-import { Doc, Role, currentDocRole } from '@/features/docs/doc-management';
+import {
+  Doc,
+  currentDocRole,
+  useTransRole,
+} from '@/features/docs/doc-management/';
 
 import { useDocAccesses } from '../api';
 import { PAGE_SIZE } from '../conf';
@@ -43,6 +47,7 @@ function formatSortModel(
 
 export const MemberGrid = ({ doc }: MemberGridProps) => {
   const { t } = useTranslation();
+  const transRole = useTransRole();
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
@@ -57,13 +62,6 @@ export const MemberGrid = ({ doc }: MemberGridProps) => {
     ordering,
   });
 
-  const translatedRoles = {
-    [Role.ADMIN]: t('Administrator'),
-    [Role.READER]: t('Reader'),
-    [Role.OWNER]: t('Owner'),
-    [Role.EDITOR]: t('Editor'),
-  };
-
   /*
    * Bug occurs from the Cunningham Datagrid component, when applying sorting
    * on null values. Sanitize empty values to ensure consistent sorting functionality.
@@ -71,7 +69,7 @@ export const MemberGrid = ({ doc }: MemberGridProps) => {
   const accesses =
     data?.results?.map((access) => ({
       ...access,
-      localizedRole: translatedRoles[access.role],
+      localizedRole: transRole(access.role),
       email: access.user.email,
     })) || [];
 
