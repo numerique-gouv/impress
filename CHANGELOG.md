@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.0.0] - 2024-07-02
+
 ## Added
 
 - Manage the document's right (#75) 
@@ -52,5 +54,6 @@ and this project adheres to
 - Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v0.1.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.0.0...main
+[1.0.0]: https://github.com/numerique-gouv/impress/releases/v1.0.0
 [0.1.0]: https://github.com/numerique-gouv/impress/releases/v0.1.0
