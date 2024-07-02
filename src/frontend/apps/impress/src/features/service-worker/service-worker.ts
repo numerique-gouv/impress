@@ -131,6 +131,23 @@ setCatchHandler(async ({ request, url, event }) => {
 });
 
 /**
+ * External urls cache strategy
+ */
+registerRoute(
+  ({ url }) => !url.href.includes(self.location.origin),
+  new NetworkFirst({
+    cacheName: getCacheNameVersion('default-external'),
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+      new ExpirationPlugin({
+        maxAgeSeconds: 24 * 60 * 60 * DAYS_EXP,
+      }),
+    ],
+  }),
+  'GET',
+);
+
+/**
  * Cache stategy static files images (images / svg)
  */
 registerRoute(
