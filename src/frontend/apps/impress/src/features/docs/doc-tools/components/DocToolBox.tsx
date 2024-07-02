@@ -1,5 +1,5 @@
 import { Button } from '@openfun/cunningham-react';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
@@ -12,8 +12,6 @@ import {
 import { ModalAddMembers } from '@/features/docs/members/members-add';
 import { ModalGridMembers } from '@/features/docs/members/members-grid/';
 
-import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
-
 import { ModalPDF } from './ModalPDF';
 
 interface DocToolBoxProps {
@@ -22,32 +20,12 @@ interface DocToolBoxProps {
 
 export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const { t } = useTranslation();
-  const { data: templates } = useTemplates({
-    ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
-  });
   const [isModalAddMembersOpen, setIsModalAddMembersOpen] = useState(false);
   const [isModalGridMembersOpen, setIsModalGridMembersOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
-
-  const templateOptions = useMemo(() => {
-    if (!templates?.pages) {
-      return [];
-    }
-
-    const templateOptions = templates.pages
-      .map((page) =>
-        page.results.map((template) => ({
-          label: template.title,
-          value: template.id,
-        })),
-      )
-      .flat();
-
-    return templateOptions;
-  }, [templates?.pages]);
 
   return (
     <Box $margin="big" $position="absolute" $css="right:1rem;">
@@ -141,11 +119,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
         />
       )}
       {isModalPDFOpen && (
-        <ModalPDF
-          onClose={() => setIsModalPDFOpen(false)}
-          templateOptions={templateOptions}
-          doc={doc}
-        />
+        <ModalPDF onClose={() => setIsModalPDFOpen(false)} doc={doc} />
       )}
       {isModalUpdateOpen && (
         <ModalUpdateDoc onClose={() => setIsModalUpdateOpen(false)} doc={doc} />

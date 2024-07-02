@@ -9,25 +9,25 @@ import {
   useToastProvider,
 } from '@openfun/cunningham-react';
 import { t } from 'i18next';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Box, Text } from '@/components';
 import { useDocStore } from '@/features/docs/doc-editor/';
 import { Doc } from '@/features/docs/doc-management';
 
 import { useCreatePdf } from '../api/useCreatePdf';
+import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 import { adaptBlockNoteHTML, downloadFile } from '../utils';
 
 interface ModalPDFProps {
   onClose: () => void;
-  templateOptions: {
-    label: string;
-    value: string;
-  }[];
   doc: Doc;
 }
 
-export const ModalPDF = ({ onClose, templateOptions, doc }: ModalPDFProps) => {
+export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
+  const { data: templates } = useTemplates({
+    ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
+  });
   const { toast } = useToastProvider();
   const { docsStore } = useDocStore();
   const {
@@ -38,9 +38,28 @@ export const ModalPDF = ({ onClose, templateOptions, doc }: ModalPDFProps) => {
     isPending,
     error,
   } = useCreatePdf();
-  const [templateIdSelected, setTemplateIdSelected] = useState<string>(
-    templateOptions?.[0].value,
-  );
+  const [templateIdSelected, setTemplateIdSelected] = useState<string>();
+
+  const templateOptions = useMemo(() => {
+    if (!templates?.pages) {
+      return [];
+    }
+
+    const templateOptions = templates.pages
+      .map((page) =>
+        page.results.map((template) => ({
+          label: template.title,
+          value: template.id,
+        })),
+      )
+      .flat();
+
+    if (templateOptions.length) {
+      setTemplateIdSelected(templateOptions[0].value);
+    }
+
+    return templateOptions;
+  }, [templates?.pages]);
 
   useEffect(() => {
     if (!error) {
