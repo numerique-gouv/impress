@@ -129,6 +129,9 @@ ingress:
   className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: htaccess
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
 
 ingressWS:
   enabled: true
@@ -136,6 +139,9 @@ ingressWS:
   className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: htaccess
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
 
 ingressAdmin:
   enabled: true
