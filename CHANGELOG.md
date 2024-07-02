@@ -21,10 +21,10 @@ and this project adheres to
 - ✨(frontend) offline mode (#88)
 - (frontend) translate cgu (#83)
 - ✨(service-worker) offline doc management (#94)
+- (frontend) Add beta tag on logo (#121)
 
 ## Changed
 
-- Change most of the occurences from pad to document (#76)
 - Change site from Impress to Docs (#76)
 - Generate PDF from a modal (#68)
 - 🔧 (helm) sticky session by request_uri for signaling server (#78)
@@ -32,7 +32,6 @@ and this project adheres to
 - (frontend) pdf has title doc (#84)
 - ⚡️(e2e) unique login between tests (#80)
 - ⚡️(CI) improve e2e job (#86)
-- ♻️(frontend) improve the error and message info ui (#93)
 - ♻️(frontend) improve the error and message info ui (#93)
 - ✏️(frontend) change all occurences of pad to doc (#99)
 
@@ -43,6 +42,7 @@ and this project adheres to
 ## Delete
 
 - Remove trigger workflow on push tags on CI (#68)
+- (frontend) Remove coming soon page (#121)
 
 ## [0.1.0] - 2024-05-24
 
