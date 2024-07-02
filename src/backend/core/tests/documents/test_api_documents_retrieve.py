@@ -33,6 +33,8 @@ def test_api_documents_retrieve_anonymous_public():
         "title": document.title,
         "is_public": True,
         "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
@@ -78,6 +80,8 @@ def test_api_documents_retrieve_authenticated_unrelated_public():
         "title": document.title,
         "is_public": True,
         "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
@@ -146,6 +150,8 @@ def test_api_documents_retrieve_authenticated_related_direct():
         "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": document.is_public,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
@@ -277,6 +283,8 @@ def test_api_documents_retrieve_authenticated_related_team_members(
         "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": False,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
@@ -394,6 +402,8 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
         "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": False,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
@@ -515,4 +525,6 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
         "content": document.content,
         "abilities": document.get_abilities(user),
         "is_public": False,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
