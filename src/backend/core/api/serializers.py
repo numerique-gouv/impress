@@ -139,8 +139,17 @@ class DocumentSerializer(BaseResourceSerializer):
 
     class Meta:
         model = models.Document
-        fields = ["id", "content", "title", "accesses", "abilities", "is_public"]
-        read_only_fields = ["id", "accesses", "abilities"]
+        fields = [
+            "id",
+            "content",
+            "title",
+            "accesses",
+            "abilities",
+            "is_public",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "accesses", "abilities", "created_at", "updated_at"]
 
 
 class TemplateSerializer(BaseResourceSerializer):
