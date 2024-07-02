@@ -1,9 +1,12 @@
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+import { ExpirationPlugin } from 'workbox-expiration';
 import { registerRoute } from 'workbox-routing';
-import { NetworkOnly } from 'workbox-strategies';
+import { NetworkFirst, NetworkOnly } from 'workbox-strategies';
 
 import { ApiPlugin } from './ApiPlugin';
 import { DocsDB } from './DocsDB';
 import { SyncManager } from './SyncManager';
+import { DAYS_EXP, SW_DEV_API, getCacheNameVersion } from './conf';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -14,10 +17,9 @@ self.addEventListener('activate', function (event) {
 });
 
 export const isApiUrl = (href: string) => {
-  const devDomain = 'http://localhost:8071';
   return (
     href.includes(`${self.location.origin}/api/`) ||
-    href.includes(`${devDomain}/api/`)
+    href.includes(`${SW_DEV_API}/api/`)
   );
 };
 
@@ -90,4 +92,18 @@ registerRoute(
     ],
   }),
   'DELETE',
+);
+
+registerRoute(
+  ({ url }) => isApiUrl(url.href),
+  new NetworkFirst({
+    cacheName: getCacheNameVersion('api'),
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+      new ExpirationPlugin({
+        maxAgeSeconds: 24 * 60 * 60 * DAYS_EXP,
+      }),
+    ],
+  }),
+  'GET',
 );

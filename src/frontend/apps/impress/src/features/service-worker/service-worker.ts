@@ -19,7 +19,7 @@ import {
 
 // eslint-disable-next-line import/order
 import { ApiPlugin } from './ApiPlugin';
-import { SW_DEV_URL } from './conf';
+import { DAYS_EXP, SW_DEV_URL, SW_VERSION, getCacheNameVersion } from './conf';
 import { isApiUrl } from './service-worker-api';
 
 // eslint-disable-next-line import/order
@@ -31,15 +31,10 @@ declare const self: ServiceWorkerGlobalScope & {
 
 self.__WB_DISABLE_DEV_LOGS = true;
 
-const version = `v-${process.env.NEXT_PUBLIC_BUILD_ID}`;
-
 setCacheNameDetails({
   prefix: pkg.name,
-  suffix: version,
+  suffix: SW_VERSION,
 });
-
-const getCacheNameVersion = (cacheName: string) =>
-  `${pkg.name}-${cacheName}-${version}`;
 
 /**
  * In development, use NetworkFirst strategy, in production use CacheFirst strategy
@@ -53,7 +48,7 @@ const getStrategy = (
 ): NetworkFirst | CacheFirst => {
   return SW_DEV_URL.some((devDomain) =>
     self.location.origin.includes(devDomain),
-  )
+  ) || isApiUrl(self.location.href)
     ? new NetworkFirst(options)
     : new CacheFirst(options);
 };
@@ -66,7 +61,7 @@ self.addEventListener('install', function (event) {
 });
 
 self.addEventListener('activate', function (event) {
-  const cacheAllow = `${version}`;
+  const cacheAllow = SW_VERSION;
 
   event.waitUntil(
     // Delete old caches
@@ -134,8 +129,6 @@ setCatchHandler(async ({ request, url, event }) => {
       return Response.error();
   }
 });
-
-const DAYS_EXP = 5;
 
 /**
  * Cache stategy static files images (images / svg)
