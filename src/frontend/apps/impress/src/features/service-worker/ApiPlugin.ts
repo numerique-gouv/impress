@@ -44,14 +44,34 @@ export class ApiPlugin implements WorkboxPlugin {
     request,
     response,
   }) => {
-    if (this.options.type === 'list' || this.options.type === 'item') {
-      if (response.status !== 200) {
-        return response;
-      }
+    if (response.status !== 200) {
+      return response;
+    }
 
+    if (this.options.type === 'list' || this.options.type === 'item') {
       const tableName = this.options.tableName;
       const body = (await response.clone().json()) as DocsResponse | Doc;
       await DocsDB.cacheResponse(request.url, body, tableName);
+    }
+
+    if (this.options.type === 'update') {
+      const db = await DocsDB.open();
+      const storedResponse = await db.get('doc-item', request.url);
+
+      if (!storedResponse || !this.initialRequest) {
+        return response;
+      }
+
+      const bodyMutate = (await this.initialRequest
+        .clone()
+        .json()) as Partial<Doc>;
+
+      const newResponse = {
+        ...storedResponse,
+        ...bodyMutate,
+      };
+
+      await DocsDB.cacheResponse(request.url, newResponse, 'doc-item');
     }
 
     return response;

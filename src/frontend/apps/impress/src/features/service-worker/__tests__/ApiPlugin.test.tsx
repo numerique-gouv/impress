@@ -30,16 +30,33 @@ jest.mock('idb', () => ({
 describe('ApiPlugin', () => {
   afterEach(() => jest.clearAllMocks());
 
-  ['doc-item', 'doc-list'].forEach((type) => {
+  [
+    { type: 'item', table: 'doc-item' },
+    { type: 'list', table: 'doc-list' },
+    { type: 'update', table: 'doc-item' },
+  ].forEach(({ type, table }) => {
     it(`calls fetchDidSucceed with type ${type} and status 200`, async () => {
+      const mockedSync = jest.fn().mockResolvedValue({});
       const apiPlugin = new ApiPlugin({
-        tableName: type as any,
-        type: 'list',
-        syncManager: jest.fn() as any,
+        tableName: table as any,
+        type: type as any,
+        syncManager: {
+          sync: () => mockedSync(),
+        } as any,
       });
 
       const body = { lastName: 'Doe' };
       const bodyBuffer = RequestSerializer.objectToArrayBuffer(body);
+
+      const requestInit = {
+        request: {
+          url: 'test-url',
+          clone: () => mockedClone(),
+          json: () => body,
+        } as unknown as Request,
+      } as any;
+      const mockedClone = jest.fn().mockReturnValue(requestInit.request);
+      await apiPlugin.requestWillFetch?.(requestInit);
 
       const response = await apiPlugin.fetchDidSucceed?.({
         request: {
@@ -55,15 +72,15 @@ describe('ApiPlugin', () => {
         }),
       } as any);
 
-      expect(mockedPut).toHaveBeenCalledWith(type, body, 'test-url');
+      expect(mockedPut).toHaveBeenCalledWith(table, body, 'test-url');
       expect(mockedClose).toHaveBeenCalled();
       expect(response?.status).toBe(200);
     });
 
     it(`calls fetchDidSucceed with type ${type} and status other that 200`, async () => {
       const apiPlugin = new ApiPlugin({
-        tableName: type as any,
-        type: 'list',
+        tableName: table as any,
+        type: type as any,
         syncManager: jest.fn() as any,
       });
 
