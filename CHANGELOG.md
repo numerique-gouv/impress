@@ -8,28 +8,30 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.0.0] - 2024-07-02
+
 ## Added
 
-- Manage the document's right (#75) 
-- Update document (#68)
-- Remove document (#68)
-- (docker) dockerize dev frontend (#63)
-- (backend) list users with email filtering (#79)
-- (frontend) add user to a document (#52)
-- (frontend) invite user to a document (#52)
-- (frontend) manage members (update role / list / remove) (#81)
+- 🛂(frontend) Manage the document's right (#75) 
+- ✨(frontend) Update document (#68)
+- ✨(frontend) Remove document (#68)
+- 🐳(docker) dockerize dev frontend (#63)
+- 👔(backend) list users with email filtering (#79)
+- ✨(frontend) add user to a document (#52)
+- ✨(frontend) invite user to a document (#52)
+- 🛂(frontend) manage members (update role / list / remove) (#81)
 - ✨(frontend) offline mode (#88)
-- (frontend) translate cgu (#83)
+- 🌐(frontend) translate cgu (#83)
 - ✨(service-worker) offline doc management (#94)
-- (frontend) Add beta tag on logo (#121)
+- ⚗️(frontend) Add beta tag on logo (#121)
 
 ## Changed
 
-- Change site from Impress to Docs (#76)
-- Generate PDF from a modal (#68)
-- 🔧 (helm) sticky session by request_uri for signaling server (#78)
-- (frontend) change logo (#84)
-- (frontend) pdf has title doc (#84)
+- ♻️(frontend) Change site from Impress to Docs (#76)
+- ✨(frontend) Generate PDF from a modal (#68)
+- 🔧(helm) sticky session by request_uri for signaling server (#78)
+- ♻️(frontend) change logo (#84)
+- ♻️(frontend) pdf has title doc (#84)
 - ⚡️(e2e) unique login between tests (#80)
 - ⚡️(CI) improve e2e job (#86)
 - ♻️(frontend) improve the error and message info ui (#93)
@@ -37,20 +39,21 @@ and this project adheres to
 
 ## Fixed
 
-- Fix the break line when generate PDF (#84)
+- 🐛(frontend) Fix the break line when generate PDF (#84)
 
 ## Delete
 
-- Remove trigger workflow on push tags on CI (#68)
-- (frontend) Remove coming soon page (#121)
+- 💚(CI) Remove trigger workflow on push tags on CI (#68)
+- 🔥(frontend) Remove coming soon page (#121)
 
 ## [0.1.0] - 2024-05-24
 
 ## Added
 
-- Coming Soon page (#67)
-- Impress, project to manage your documents easily and collaboratively.
+- ✨(frontend) Coming Soon page (#67)
+- 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v0.1.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.0.0...main
+[1.0.0]: https://github.com/numerique-gouv/impress/releases/v1.0.0
 [0.1.0]: https://github.com/numerique-gouv/impress/releases/v0.1.0
