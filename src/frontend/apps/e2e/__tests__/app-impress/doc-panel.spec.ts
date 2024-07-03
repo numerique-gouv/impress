@@ -132,8 +132,6 @@ test.describe('Documents Panel', () => {
       }
     });
 
-    await page.goto('/');
-
     const panel = page.getByLabel('Documents panel').first();
     await expect(panel.locator('li')).toHaveCount(20);
     await panel.getByText(`My document-1-16`).click();
