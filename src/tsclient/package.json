@@ -1,6 +1,6 @@
 {
   "name": "impress-openapi-client-ts",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Tool to generate Typescript API client for the impress application.",
   "scripts": {
