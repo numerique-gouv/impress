@@ -125,6 +125,33 @@ def create_demo(stdout):
             )
         queue.flush()
 
+    with Timeit(stdout, "Creating documents"):
+        for _ in range(defaults.NB_OBJECTS["docs"]):
+            queue.push(
+                models.Document(
+                    title=fake.sentence(nb_words=4),
+                    is_public=random_true_with_probability(0.5),
+                )
+            )
+
+        queue.flush()
+
+    with Timeit(stdout, "Creating docs accesses"):
+        docs_ids = list(models.Document.objects.values_list("id", flat=True))
+        users_ids = list(models.User.objects.values_list("id", flat=True))
+        for doc_id in docs_ids:
+            for user_id in random.sample(
+                users_ids,
+                random.randint(1, defaults.NB_OBJECTS["max_users_per_document"]),
+            ):
+                role = random.choice(models.RoleChoices.choices)
+                queue.push(
+                    models.DocumentAccess(
+                        document_id=doc_id, user_id=user_id, role=role[0]
+                    )
+                )
+        queue.flush()
+
     with Timeit(stdout, "Creating Template"):
         with open(
             file="demo/data/template/code.txt", mode="r", encoding="utf-8"

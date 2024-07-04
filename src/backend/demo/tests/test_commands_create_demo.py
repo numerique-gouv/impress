@@ -16,3 +16,6 @@ def test_commands_create_demo():
     call_command("create_demo")
 
     assert models.Template.objects.count() == 1
+    assert models.User.objects.count() >= 50
+    assert models.Document.objects.count() >= 50
+    assert models.DocumentAccess.objects.count() > 50
