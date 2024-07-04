@@ -19,3 +19,13 @@ def test_commands_create_demo():
     assert models.User.objects.count() >= 50
     assert models.Document.objects.count() >= 50
     assert models.DocumentAccess.objects.count() > 50
+
+    # assert dev users have doc accesses
+    user = models.User.objects.get(email="impress@impress.world")
+    assert models.DocumentAccess.objects.filter(user=user).exists()
+    user = models.User.objects.get(email="user@webkit.e2e")
+    assert models.DocumentAccess.objects.filter(user=user).exists()
+    user = models.User.objects.get(email="user@firefox.e2e")
+    assert models.DocumentAccess.objects.filter(user=user).exists()
+    user = models.User.objects.get(email="user@chromium.e2e")
+    assert models.DocumentAccess.objects.filter(user=user).exists()

@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- 🤡(demo) generate dummy documents on dev users #120 
+
 ## [1.0.0] - 2024-07-02
 
 ## Added

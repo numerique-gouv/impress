@@ -1340,6 +1340,21 @@
           }
         },
         {
+          "id": "qb109597-e31e-46d7-7844-62e5fcf32ac8",
+          "name": "email sub",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "sub",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "61c135e5-2447-494b-bc70-9612f383be27",
           "name": "email verified",
           "protocol": "openid-connect",
