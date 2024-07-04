@@ -152,6 +152,38 @@ def create_demo(stdout):
                 )
         queue.flush()
 
+    with Timeit(stdout, "Creating development users"):
+        for dev_user in defaults.DEV_USERS:
+            queue.push(
+                models.User(
+                    admin_email=dev_user["email"],
+                    email=dev_user["email"],
+                    sub=dev_user["email"],
+                    password="!",
+                    is_superuser=False,
+                    is_active=True,
+                    is_staff=False,
+                    language=random.choice(settings.LANGUAGES)[0],
+                )
+            )
+
+        queue.flush()
+
+    with Timeit(stdout, "Creating docs accesses on development users"):
+        for dev_user in defaults.DEV_USERS:
+            docs_ids = list(models.Document.objects.values_list("id", flat=True))
+            user_id = models.User.objects.get(email=dev_user["email"]).id
+
+            for doc_id in docs_ids:
+                role = random.choice(models.RoleChoices.choices)
+                queue.push(
+                    models.DocumentAccess(
+                        document_id=doc_id, user_id=user_id, role=role[0]
+                    )
+                )
+
+        queue.flush()
+
     with Timeit(stdout, "Creating Template"):
         with open(
             file="demo/data/template/code.txt", mode="r", encoding="utf-8"
