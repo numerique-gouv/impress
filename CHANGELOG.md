@@ -12,6 +12,10 @@ and this project adheres to
 
 - 🤡(demo) generate dummy documents on dev users #120 
 
+## Changed
+
+- ♻️(frontend) replace docs panel with docs grid #120
+
 ## [1.0.0] - 2024-07-02
 
 ## Added
