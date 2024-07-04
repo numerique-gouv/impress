@@ -4,12 +4,14 @@ Tests for Documents API endpoint in impress's core app: list
 from unittest import mock
 
 import pytest
+from faker import Faker
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.status import HTTP_200_OK
 from rest_framework.test import APIClient
 
 from core import factories
 
+fake = Faker()
 pytestmark = pytest.mark.django_db
 
 
@@ -166,7 +168,7 @@ def test_api_documents_list_authenticated_distinct():
     assert content["results"][0]["id"] == str(document.id)
 
 
-def test_api_documents_order():
+def test_api_documents_order_created_at_desc():
     """
     Test that the endpoint GET documents is sorted in 'created_at' descending order by default.
     """
@@ -174,10 +176,12 @@ def test_api_documents_order():
     client = APIClient()
     client.force_login(user)
 
-    document_ids = [
-        str(document.id)
+    documents_created = [
+        document.created_at.isoformat().replace("+00:00", "Z")
         for document in factories.DocumentFactory.create_batch(5, is_public=True)
     ]
+
+    documents_created.sort(reverse=True)
 
     response = client.get(
         "/api/v1.0/documents/",
@@ -186,15 +190,16 @@ def test_api_documents_order():
     assert response.status_code == 200
 
     response_data = response.json()
-    response_document_ids = [document["id"] for document in response_data["results"]]
+    response_document_created = [
+        document["created_at"] for document in response_data["results"]
+    ]
 
-    document_ids.reverse()
     assert (
-        response_document_ids == document_ids
+        response_document_created == documents_created
     ), "created_at values are not sorted from newest to oldest"
 
 
-def test_api_documents_order_param():
+def test_api_documents_order_created_at_asc():
     """
     Test that the 'created_at' field is sorted in ascending order
     when the 'ordering' query parameter is set.
@@ -203,20 +208,152 @@ def test_api_documents_order_param():
     client = APIClient()
     client.force_login(user)
 
-    documents_ids = [
-        str(document.id)
+    documents_created = [
+        document.created_at.isoformat().replace("+00:00", "Z")
         for document in factories.DocumentFactory.create_batch(5, is_public=True)
     ]
 
-    response = APIClient().get(
+    documents_created.sort()
+
+    response = client.get(
         "/api/v1.0/documents/?ordering=created_at",
+    )
+
+    assert response.status_code == 200
+
+    response_data = response.json()
+    response_document_created = [
+        document["created_at"] for document in response_data["results"]
+    ]
+
+    assert (
+        response_document_created == documents_created
+    ), "created_at values are not sorted from oldest to newest"
+
+
+def test_api_documents_order_updated_at_desc():
+    """
+    Test that the 'updated_at' field is sorted in descending order
+    when the 'ordering' query parameter is set.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    documents_updated = [
+        document.updated_at.isoformat().replace("+00:00", "Z")
+        for document in factories.DocumentFactory.create_batch(5, is_public=True)
+    ]
+
+    documents_updated.sort(reverse=True)
+
+    response = APIClient().get(
+        "/api/v1.0/documents/?ordering=-updated_at",
     )
     assert response.status_code == 200
 
     response_data = response.json()
 
-    response_document_ids = [document["id"] for document in response_data["results"]]
+    response_document_updated = [
+        document["updated_at"] for document in response_data["results"]
+    ]
 
     assert (
-        response_document_ids == documents_ids
-    ), "created_at values are not sorted from oldest to newest"
+        response_document_updated == documents_updated
+    ), "updated_at values are not sorted from newest to oldest"
+
+
+def test_api_documents_order_updated_at_asc():
+    """
+    Test that the 'updated_at' field is sorted in ascending order
+    when the 'ordering' query parameter is set.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    documents_updated = [
+        document.updated_at.isoformat().replace("+00:00", "Z")
+        for document in factories.DocumentFactory.create_batch(5, is_public=True)
+    ]
+
+    documents_updated.sort()
+
+    response = APIClient().get(
+        "/api/v1.0/documents/?ordering=updated_at",
+    )
+    assert response.status_code == 200
+
+    response_data = response.json()
+
+    response_document_updated = [
+        document["updated_at"] for document in response_data["results"]
+    ]
+
+    assert (
+        response_document_updated == documents_updated
+    ), "updated_at values are not sorted from oldest to newest"
+
+
+def test_api_documents_order_title_desc():
+    """
+    Test that the 'title' field is sorted in descending order
+    when the 'ordering' query parameter is set.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    documents_title = [
+        factories.DocumentFactory(is_public=True, title=fake.sentence(nb_words=4)).title
+        for _ in range(5)
+    ]
+
+    documents_title.sort(reverse=True)
+
+    response = APIClient().get(
+        "/api/v1.0/documents/?ordering=-title",
+    )
+    assert response.status_code == 200
+
+    response_data = response.json()
+
+    response_documents_title = [
+        document["title"] for document in response_data["results"]
+    ]
+
+    assert (
+        response_documents_title == documents_title
+    ), "title values are not sorted descending"
+
+
+def test_api_documents_order_title_asc():
+    """
+    Test that the 'title' field is sorted in ascending order
+    when the 'ordering' query parameter is set.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    documents_title = [
+        factories.DocumentFactory(is_public=True, title=fake.sentence(nb_words=4)).title
+        for _ in range(5)
+    ]
+
+    documents_title.sort()
+
+    response = APIClient().get(
+        "/api/v1.0/documents/?ordering=title",
+    )
+    assert response.status_code == 200
+
+    response_data = response.json()
+
+    response_documents_title = [
+        document["title"] for document in response_data["results"]
+    ]
+
+    assert (
+        response_documents_title == documents_title
+    ), "title values are not sorted ascending"

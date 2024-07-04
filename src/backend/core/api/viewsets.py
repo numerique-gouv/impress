@@ -160,7 +160,7 @@ class ResourceViewsetMixin:
     """Mixin with methods common to all resource viewsets that are managed with accesses."""
 
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = ["created_at"]
+    ordering_fields = ["created_at", "updated_at", "title"]
     ordering = ["-created_at"]
 
     def get_queryset(self):
