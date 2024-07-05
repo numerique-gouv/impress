@@ -50,7 +50,7 @@ export function useCreateDocAccess() {
   return useMutation<Access, APIError, CreateDocAccessParams>({
     mutationFn: createDocAccess,
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      void queryClient.resetQueries({
         queryKey: [KEY_LIST_DOC],
       });
       void queryClient.resetQueries({

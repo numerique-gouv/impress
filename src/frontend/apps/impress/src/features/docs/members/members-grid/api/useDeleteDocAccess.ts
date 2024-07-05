@@ -48,7 +48,7 @@ export const useDeleteDocAccess = (options?: UseDeleteDocAccessOptions) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_DOC],
       });
-      void queryClient.invalidateQueries({
+      void queryClient.resetQueries({
         queryKey: [KEY_LIST_DOC],
       });
       if (options?.onSuccess) {

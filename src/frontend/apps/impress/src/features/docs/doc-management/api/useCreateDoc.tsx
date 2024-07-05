@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { Doc, KEY_LIST_DOC } from '@/features/docs';
+
+import { Doc } from '../types';
+
+import { KEY_LIST_DOC } from './useDocs';
 
 type CreateDocParam = Pick<Doc, 'title' | 'is_public'>;
 
@@ -33,7 +36,7 @@ export function useCreateDoc({ onSuccess }: CreateDocProps) {
   return useMutation<Doc, APIError, CreateDocParam>({
     mutationFn: createDoc,
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({
+      void queryClient.resetQueries({
         queryKey: [KEY_LIST_DOC],
       });
       onSuccess(data);
