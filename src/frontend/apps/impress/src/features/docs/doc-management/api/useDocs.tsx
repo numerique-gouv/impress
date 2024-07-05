@@ -1,7 +1,8 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
-import { Doc } from '@/features/docs/doc-management';
+
+import { Doc } from '../types';
 
 export const isDocsOrdering = (data: string): data is DocsOrdering => {
   return !!docsOrdering.find((validKey) => validKey === data);
