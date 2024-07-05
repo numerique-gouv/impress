@@ -1,8 +1,11 @@
 import { Box } from '@/components';
+import { useCunninghamTheme } from '@/cunningham';
 import { Footer } from '@/features/footer/Footer';
 import { HEADER_HEIGHT, Header } from '@/features/header';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
+  const { colorsTokens } = useCunninghamTheme();
+
   return (
     <Box>
       <Box $height="100vh">
@@ -12,6 +15,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             as="main"
             $height={`calc(100vh - ${HEADER_HEIGHT})`}
             $width="100%"
+            $background={colorsTokens()['primary-bg']}
           >
             {children}
           </Box>
