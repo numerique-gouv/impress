@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createDoc } from './common';
+import { createDoc, goToGridDoc } from './common';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -27,10 +27,7 @@ test.describe('Document grid members', () => {
     );
   });
 
-  test('it display the grid with many members', async ({
-    page,
-    browserName,
-  }) => {
+  test('it display the grid with many members', async ({ page }) => {
     await page.route('**/documents/*/', async (route) => {
       const request = route.request();
       if (
@@ -91,7 +88,7 @@ test.describe('Document grid members', () => {
       },
     );
 
-    await createDoc(page, 'grid-no-member', browserName, 1);
+    await goToGridDoc(page);
 
     await page.getByLabel('Open the document options').click();
     await page.getByRole('button', { name: 'Manage members' }).click();
