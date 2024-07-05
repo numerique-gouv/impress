@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 
 import { Box } from '@/components';
 import { CardCreateDoc } from '@/features/docs/doc-management';
-import { DocLayout } from '@/layouts';
+import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
@@ -14,7 +14,7 @@ const Page: NextPageWithLayout = () => {
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <DocLayout>{page}</DocLayout>;
+  return <MainLayout>{page}</MainLayout>;
 };
 
 export default Page;

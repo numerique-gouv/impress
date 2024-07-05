@@ -6,7 +6,7 @@ import { ReactElement } from 'react';
 import { Box, Text, TextErrors } from '@/components/';
 import { DocEditor } from '@/features/docs/doc-editor';
 import { useDoc } from '@/features/docs/doc-management';
-import { DocLayout } from '@/layouts';
+import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
@@ -63,7 +63,7 @@ const Doc = ({ id }: DocProps) => {
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <DocLayout>{page}</DocLayout>;
+  return <MainLayout>{page}</MainLayout>;
 };
 
 export default Page;
