@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createDoc } from './common';
+import { createDoc, goToGridDoc } from './common';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -76,26 +76,18 @@ test.describe('Doc Editor', () => {
 
   test('it renders correctly when we switch from one doc to another', async ({
     page,
-    browserName,
   }) => {
-    const [firstDoc, secondDoc] = await createDoc(
-      page,
-      'doc-multiple',
-      browserName,
-      2,
-    );
-
-    const panel = page.getByLabel('Documents panel').first();
-
     // Check the first doc
-    await panel.getByText(firstDoc).click();
+    const firstDoc = await goToGridDoc(page);
     await expect(page.locator('h2').getByText(firstDoc)).toBeVisible();
     await page.locator('.ProseMirror.bn-editor').click();
     await page.locator('.ProseMirror.bn-editor').fill('Hello World Doc 1');
     await expect(page.getByText('Hello World Doc 1')).toBeVisible();
 
     // Check the second doc
-    await panel.getByText(secondDoc).click();
+    const secondDoc = await goToGridDoc(page, {
+      nthRow: 2,
+    });
     await expect(page.locator('h2').getByText(secondDoc)).toBeVisible();
     await expect(page.getByText('Hello World Doc 1')).toBeHidden();
     await page.locator('.ProseMirror.bn-editor').click();
@@ -103,22 +95,17 @@ test.describe('Doc Editor', () => {
     await expect(page.getByText('Hello World Doc 2')).toBeVisible();
 
     // Check the first doc again
-    await panel.getByText(firstDoc).click();
+    await goToGridDoc(page, {
+      title: firstDoc,
+    });
     await expect(page.locator('h2').getByText(firstDoc)).toBeVisible();
     await expect(page.getByText('Hello World Doc 2')).toBeHidden();
     await expect(page.getByText('Hello World Doc 1')).toBeVisible();
   });
 
-  test('it saves the doc when we change pages', async ({
-    page,
-    browserName,
-  }) => {
-    const [doc] = await createDoc(page, 'doc-save-page', browserName, 1);
-
-    const panel = page.getByLabel('Documents panel').first();
-
+  test('it saves the doc when we change pages', async ({ page }) => {
     // Check the first doc
-    await panel.getByText(doc).click();
+    const doc = await goToGridDoc(page);
     await expect(page.locator('h2').getByText(doc)).toBeVisible();
     await page.locator('.ProseMirror.bn-editor').click();
     await page
@@ -126,27 +113,19 @@ test.describe('Doc Editor', () => {
       .fill('Hello World Doc persisted 1');
     await expect(page.getByText('Hello World Doc persisted 1')).toBeVisible();
 
-    await panel
-      .getByRole('button', {
-        name: 'Add a document',
-      })
-      .click();
+    const secondDoc = await goToGridDoc(page, {
+      nthRow: 2,
+    });
 
     await expect(
       page.getByText(`Your document "${doc}" has been saved.`),
     ).toBeVisible();
 
-    const card = page.getByLabel('Create new document card').first();
-    await expect(
-      card.getByRole('heading', {
-        name: 'Name the document',
-        level: 3,
-      }),
-    ).toBeVisible();
+    await expect(page.locator('h2').getByText(secondDoc)).toBeVisible();
 
-    await page.goto('/');
-
-    await panel.getByText(doc).click();
+    await goToGridDoc(page, {
+      title: doc,
+    });
 
     await expect(page.getByText('Hello World Doc persisted 1')).toBeVisible();
   });
@@ -155,12 +134,8 @@ test.describe('Doc Editor', () => {
     // eslint-disable-next-line playwright/no-skipped-test
     test.skip(browserName === 'webkit', 'This test is very flaky with webkit');
 
-    const [doc] = await createDoc(page, 'doc-save-quit', browserName, 1);
-
-    const panel = page.getByLabel('Documents panel').first();
-
     // Check the first doc
-    await panel.getByText(doc).click();
+    const doc = await goToGridDoc(page);
     await expect(page.locator('h2').getByText(doc)).toBeVisible();
     await page.locator('.ProseMirror.bn-editor').click();
     await page
@@ -170,12 +145,14 @@ test.describe('Doc Editor', () => {
 
     await page.goto('/');
 
-    await panel.getByText(doc).click();
+    await goToGridDoc(page, {
+      title: doc,
+    });
 
     await expect(page.getByText('Hello World Doc persisted 2')).toBeVisible();
   });
 
-  test('it cannot edit if viewer', async ({ page, browserName }) => {
+  test('it cannot edit if viewer', async ({ page }) => {
     await page.route('**/documents/**/', async (route) => {
       const request = route.request();
       if (
@@ -206,7 +183,7 @@ test.describe('Doc Editor', () => {
       }
     });
 
-    await createDoc(page, 'doc-right-edit', browserName, 1);
+    await goToGridDoc(page);
 
     await expect(
       page.getByText(

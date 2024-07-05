@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import cs from 'convert-stream';
 import pdf from 'pdf-parse';
 
-import { createDoc } from './common';
+import { createDoc, goToGridDoc } from './common';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -123,10 +123,9 @@ test.describe('Doc Tools', () => {
       page.getByText('The document has been updated.'),
     ).toBeVisible();
 
-    const panel = page.getByLabel('Documents panel').first();
-    await expect(
-      panel.locator('li').getByText(`${randomDoc}-updated`),
-    ).toBeVisible();
+    await goToGridDoc(page, {
+      title: `${randomDoc}-updated`,
+    });
 
     await page.getByLabel('Open the document options').click();
     await page
@@ -169,14 +168,18 @@ test.describe('Doc Tools', () => {
       page.getByRole('button', { name: 'Create a new document' }),
     ).toBeVisible();
 
-    const panel = page.getByLabel('Documents panel').first();
-    await expect(panel.locator('li').getByText(randomDoc)).toBeHidden();
+    const row = page
+      .getByLabel('Datagrid of the documents page 1')
+      .getByRole('table')
+      .getByRole('row')
+      .filter({
+        hasText: randomDoc,
+      });
+
+    expect(await row.count()).toBe(0);
   });
 
-  test('it checks the options available if administrator', async ({
-    page,
-    browserName,
-  }) => {
+  test('it checks the options available if administrator', async ({ page }) => {
     await page.route('**/documents/**/', async (route) => {
       const request = route.request();
       if (
@@ -207,7 +210,7 @@ test.describe('Doc Tools', () => {
       }
     });
 
-    await createDoc(page, 'doc-tools-right-admin', browserName, 1);
+    await goToGridDoc(page);
 
     await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
 
@@ -227,10 +230,7 @@ test.describe('Doc Tools', () => {
     ).toBeHidden();
   });
 
-  test('it checks the options available if editor', async ({
-    page,
-    browserName,
-  }) => {
+  test('it checks the options available if editor', async ({ page }) => {
     await page.route('**/documents/**/', async (route) => {
       const request = route.request();
       if (
@@ -261,7 +261,7 @@ test.describe('Doc Tools', () => {
       }
     });
 
-    await createDoc(page, 'doc-tools-right-editor', browserName, 1);
+    await goToGridDoc(page);
 
     await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
 
@@ -281,10 +281,7 @@ test.describe('Doc Tools', () => {
     ).toBeHidden();
   });
 
-  test('it checks the options available if reader', async ({
-    page,
-    browserName,
-  }) => {
+  test('it checks the options available if reader', async ({ page }) => {
     await page.route('**/documents/**/', async (route) => {
       const request = route.request();
       if (
@@ -315,7 +312,7 @@ test.describe('Doc Tools', () => {
       }
     });
 
-    await createDoc(page, 'doc-tools-right-reader', browserName, 1);
+    await goToGridDoc(page);
 
     await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
 

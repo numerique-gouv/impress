@@ -33,7 +33,6 @@ export const createDoc = async (
   length: number,
   isPublic: boolean = false,
 ) => {
-  const panel = page.getByLabel('Documents panel').first();
   const buttonCreate = page.getByRole('button', {
     name: 'Create the document',
   });
@@ -41,8 +40,20 @@ export const createDoc = async (
   const randomDocs = randomName(docName, browserName, length);
 
   for (let i = 0; i < randomDocs.length; i++) {
-    await panel.getByRole('button', { name: 'Add a document' }).click();
-    await page.getByText('Document name').fill(randomDocs[i]);
+    const header = page.locator('header').first();
+    await header.locator('h2').getByText('Docs').click();
+
+    const buttonCreateHomepage = page.getByRole('button', {
+      name: 'Create a new document',
+    });
+    await buttonCreateHomepage.click();
+
+    // Fill input
+    await page
+      .getByRole('textbox', {
+        name: 'Document name',
+      })
+      .fill(randomDocs[i]);
 
     if (isPublic) {
       await page.getByText('Is it public ?').click();
@@ -50,39 +61,11 @@ export const createDoc = async (
 
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();
-    await expect(panel.locator('li').getByText(randomDocs[i])).toBeVisible();
+
+    await expect(page.locator('h2').getByText(randomDocs[i])).toBeVisible();
   }
 
   return randomDocs;
-};
-
-export const createTemplate = async (
-  page: Page,
-  templateName: string,
-  browserName: string,
-  length: number,
-) => {
-  const menu = page.locator('menu').first();
-  await menu.getByLabel(`Template button`).click();
-
-  const panel = page.getByLabel('Templates panel').first();
-  const buttonCreate = page.getByRole('button', {
-    name: 'Create the template',
-  });
-
-  const randomTemplates = randomName(templateName, browserName, length);
-
-  for (let i = 0; i < randomTemplates.length; i++) {
-    await panel.getByRole('button', { name: 'Add a template' }).click();
-    await page.getByText('Template name').fill(randomTemplates[i]);
-    await expect(buttonCreate).toBeEnabled();
-    await buttonCreate.click();
-    await expect(
-      panel.locator('li').getByText(randomTemplates[i]),
-    ).toBeVisible();
-  }
-
-  return randomTemplates;
 };
 
 export const addNewMember = async (
@@ -124,4 +107,37 @@ export const addNewMember = async (
   ).toBeVisible();
 
   return users[index].email;
+};
+
+interface GoToGridDocOptions {
+  nthRow?: number;
+  title?: string;
+}
+export const goToGridDoc = async (
+  page: Page,
+  { nthRow = 1, title }: GoToGridDocOptions = {},
+) => {
+  const header = page.locator('header').first();
+  await header.locator('h2').getByText('Docs').click();
+
+  const rows = page
+    .getByLabel('Datagrid of the documents page 1')
+    .getByRole('table')
+    .getByRole('row');
+
+  const row = title
+    ? rows.filter({
+        hasText: title,
+      })
+    : rows.nth(nthRow);
+
+  const docTitleCell = row.getByRole('cell').nth(1);
+
+  const docTitle = await docTitleCell.textContent();
+
+  expect(docTitle).toBeDefined();
+
+  await docTitleCell.click();
+
+  return docTitle as string;
 };
