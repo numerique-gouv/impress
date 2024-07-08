@@ -11,6 +11,7 @@ and this project adheres to
 ## Added
 
 - 🤡(demo) generate dummy documents on dev users #120 
+- ✨(frontend) create side modal component #134
 
 ## Changed
 
