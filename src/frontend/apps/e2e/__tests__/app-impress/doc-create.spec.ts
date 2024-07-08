@@ -14,18 +14,12 @@ test.describe('Doc Create', () => {
     await buttonCreateHomepage.click();
     await expect(buttonCreateHomepage).toBeHidden();
 
-    const card = page.getByLabel('Create new document card').first();
-
-    await expect(card.getByLabel('Document name')).toBeVisible();
-
-    await expect(card.getByLabel('icon group')).toBeVisible();
+    const card = page.getByRole('dialog').first();
 
     await expect(
-      card.getByRole('heading', {
-        name: 'Name the document',
-        level: 3,
-      }),
+      card.locator('h2').getByText('Create a new document'),
     ).toBeVisible();
+    await expect(card.getByLabel('Document name')).toBeVisible();
 
     await expect(card.getByText('Is it public ?')).toBeVisible();
 
@@ -35,13 +29,7 @@ test.describe('Doc Create', () => {
       }),
     ).toBeVisible();
 
-    await expect(
-      card.getByRole('button', {
-        name: 'Cancel',
-      }),
-    ).toBeVisible();
-
-    await expect(page).toHaveURL('/docs/create/');
+    await expect(card.getByLabel('Close the modal')).toBeVisible();
   });
 
   test('checks the cancel button interaction', async ({ page }) => {
@@ -51,13 +39,9 @@ test.describe('Doc Create', () => {
     await buttonCreateHomepage.click();
     await expect(buttonCreateHomepage).toBeHidden();
 
-    const card = page.getByLabel('Create new document card').first();
+    const card = page.getByRole('dialog').first();
 
-    await card
-      .getByRole('button', {
-        name: 'Cancel',
-      })
-      .click();
+    await card.getByLabel('Close the modal').click();
 
     await expect(buttonCreateHomepage).toBeVisible();
   });

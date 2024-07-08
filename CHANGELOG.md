@@ -15,6 +15,7 @@ and this project adheres to
 ## Changed
 
 - ♻️(frontend) replace docs panel with docs grid #120
+- ♻️(frontend) create a doc from a modal #132
 
 ## [1.0.0] - 2024-07-02
 
