@@ -179,6 +179,8 @@ export class ApiPlugin implements WorkboxPlugin {
       ...bodyMutate,
       id: uuid,
       content: '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       abilities: {
         destroy: true,
         versions_destroy: true,
