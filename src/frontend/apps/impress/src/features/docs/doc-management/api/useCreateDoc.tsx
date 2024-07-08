@@ -6,7 +6,7 @@ import { Doc } from '../types';
 
 import { KEY_LIST_DOC } from './useDocs';
 
-type CreateDocParam = Pick<Doc, 'title' | 'is_public'>;
+export type CreateDocParam = Pick<Doc, 'title' | 'is_public'>;
 
 export const createDoc = async ({
   title,
