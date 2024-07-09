@@ -17,6 +17,8 @@ import {
 
 import { PAGE_SIZE } from '../conf';
 
+import { DocsGridActions } from './DocsGridActions';
+
 const DocsGridStyle = createGlobalStyle`
   & .c__datagrid{
     max-height: 91%;
@@ -189,6 +191,12 @@ export const DocsGrid = () => {
                   <Text $weight="bold">{row.accesses.length}</Text>
                 </StyledLink>
               );
+            },
+          },
+          {
+            id: 'column-actions',
+            renderCell: ({ row }) => {
+              return <DocsGridActions doc={row} />;
             },
           },
         ]}
