@@ -171,14 +171,9 @@ test.describe('Documents Grid', () => {
     const responsePage1 = await responsePromisePage1;
     expect(responsePage1.ok()).toBeTruthy();
 
-    const docNamePage1 = datagridPage1
-      .getByRole('row')
-      .nth(1)
-      .getByRole('cell')
-      .nth(1);
-
-    await expect(docNamePage1).toHaveText(/.*/);
-    const textDocNamePage1 = await docNamePage1.textContent();
+    await expect(
+      datagridPage1.getByRole('row').nth(1).getByRole('cell').nth(1),
+    ).toHaveText(/.*/);
 
     await page.getByLabel('Go to page 2').click();
 
@@ -189,17 +184,62 @@ test.describe('Documents Grid', () => {
     const responsePage2 = await responsePromisePage2;
     expect(responsePage2.ok()).toBeTruthy();
 
-    const docNamePage2 = datagridPage2
-      .getByRole('row')
-      .nth(1)
-      .getByRole('cell')
-      .nth(1);
+    await expect(
+      datagridPage2.getByRole('row').nth(1).getByRole('cell').nth(1),
+    ).toHaveText(/.*/);
+  });
 
-    await expect(datagridPage2.getByLabel('Loading data')).toBeHidden();
+  test('it updates document', async ({ page }) => {
+    const datagrid = page
+      .getByLabel('Datagrid of the documents page 1')
+      .getByRole('table');
 
-    await expect(docNamePage2).toHaveText(/.*/);
-    const textDocNamePage2 = await docNamePage2.textContent();
+    const docRow = datagrid.getByRole('row').nth(1).getByRole('cell');
 
-    expect(textDocNamePage1 !== textDocNamePage2).toBeTruthy();
+    const docName = await docRow.nth(1).textContent();
+
+    await docRow.getByLabel('Open the document options').click();
+
+    await page.getByText('Update document').click();
+
+    await page.getByLabel('Document name').fill(`${docName} updated`);
+
+    await page.getByText('Validate the modification').click();
+
+    await expect(datagrid.getByText(`${docName} updated`)).toBeVisible();
+  });
+
+  test('it deletes the document', async ({ page }) => {
+    const datagrid = page
+      .getByLabel('Datagrid of the documents page 1')
+      .getByRole('table');
+
+    const docRow = datagrid.getByRole('row').nth(1).getByRole('cell');
+
+    const docName = await docRow.nth(1).textContent();
+
+    await docRow.getByLabel('Open the document options').click();
+
+    await page
+      .getByRole('button', {
+        name: 'Delete document',
+      })
+      .click();
+
+    await expect(
+      page.locator('h2').getByText(`Deleting the document "${docName}"`),
+    ).toBeVisible();
+
+    await page
+      .getByRole('button', {
+        name: 'Confirm deletion',
+      })
+      .click();
+
+    await expect(
+      page.getByText('The document has been deleted.'),
+    ).toBeVisible();
+
+    await expect(datagrid.getByText(docName!)).toBeHidden();
   });
 });

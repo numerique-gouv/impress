@@ -12,6 +12,7 @@ and this project adheres to
 
 - 🤡(demo) generate dummy documents on dev users #120 
 - ✨(frontend) create side modal component #134
+- ✨(frontend) Doc grid actions (update / delete) #136
 
 ## Changed
 
