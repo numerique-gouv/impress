@@ -14,6 +14,7 @@ i18n
       escapeValue: false,
     },
     preload: LANGUAGES_ALLOWED,
+    nsSeparator: '||',
   })
   .catch(() => {
     throw new Error('i18n initialization failed');
