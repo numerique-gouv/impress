@@ -1,4 +1,4 @@
-name: impress Workflow
+name: Main Workflow
 
 on:
   push:
