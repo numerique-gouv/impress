@@ -19,6 +19,10 @@ export const DocsGridActions = ({ doc }: DocsGridActionsProps) => {
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
 
+  if (!doc.abilities.partial_update && !doc.abilities.destroy) {
+    return null;
+  }
+
   return (
     <>
       <DropButton
