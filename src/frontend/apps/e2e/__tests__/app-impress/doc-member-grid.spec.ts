@@ -90,6 +90,8 @@ test.describe('Document grid members', () => {
 
     await goToGridDoc(page);
 
+    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+
     await page.getByLabel('Open the document options').click();
     await page.getByRole('button', { name: 'Manage members' }).click();
 

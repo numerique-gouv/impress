@@ -125,8 +125,10 @@ test.describe('Documents Grid', () => {
       expect(
         textDocNameRow1Asc &&
           textDocNameRow2Asc &&
-          textDocNameRow1Asc.toLocaleLowerCase() <=
-            textDocNameRow2Asc.toLocaleLowerCase(),
+          textDocNameRow1Asc.localeCompare(textDocNameRow2Asc, 'en', {
+            caseFirst: 'false',
+            ignorePunctuation: true,
+          }) <= 0,
       ).toBeTruthy();
 
       // Ordering Desc
@@ -145,8 +147,10 @@ test.describe('Documents Grid', () => {
       expect(
         textDocNameRow1Desc &&
           textDocNameRow2Desc &&
-          textDocNameRow1Desc.toLocaleLowerCase() >=
-            textDocNameRow2Desc.toLocaleLowerCase(),
+          textDocNameRow1Desc.localeCompare(textDocNameRow2Desc, 'en', {
+            caseFirst: 'false',
+            ignorePunctuation: true,
+          }) >= 0,
       ).toBeTruthy();
     });
   });
