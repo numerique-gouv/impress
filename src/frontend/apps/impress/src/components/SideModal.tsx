@@ -22,15 +22,12 @@ const SideModalStyle = createGlobalStyle<SideModalStyleProps>`
 
 type SideModalType = Omit<ComponentPropsWithRef<typeof Modal>, 'size'>;
 
-interface SideModalProps extends SideModalType {
-  side: 'left' | 'right';
-  width: string;
-}
+type SideModalProps = SideModalType & Partial<SideModalStyleProps>;
 
 export const SideModal = ({
   children,
-  side,
-  width,
+  side = 'right',
+  width = '35vw',
   ...modalProps
 }: PropsWithChildren<SideModalProps>) => {
   return (
