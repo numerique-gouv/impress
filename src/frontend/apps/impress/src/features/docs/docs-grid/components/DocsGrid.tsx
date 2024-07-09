@@ -1,5 +1,4 @@
 import { DataGrid, SortModel, usePagination } from '@openfun/cunningham-react';
-import { DateTime, DateTimeFormatOptions } from 'luxon';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
@@ -14,6 +13,7 @@ import {
   useDocs,
   useTransRole,
 } from '@/features/docs/doc-management';
+import { useDate } from '@/hook/';
 
 import { PAGE_SIZE } from '../conf';
 
@@ -47,18 +47,11 @@ function formatSortModel(sortModel: SortModelItem): DocsOrdering | undefined {
   }
 }
 
-const format: DateTimeFormatOptions = {
-  month: '2-digit',
-  day: '2-digit',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-};
-
 export const DocsGrid = () => {
   const { colorsTokens } = useCunninghamTheme();
   const transRole = useTransRole();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { formatDate } = useDate();
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
@@ -121,7 +114,7 @@ export const DocsGrid = () => {
                       $padding="xtiny"
                       $radius="3px"
                     >
-                      {row.is_public ? 'Public' : ''}
+                      {row.is_public ? t('Public') : ''}
                     </Text>
                   )}
                 </StyledLink>
@@ -145,13 +138,9 @@ export const DocsGrid = () => {
             headerName: t('Created at'),
             field: 'created_at',
             renderCell: ({ row }) => {
-              const created_at = DateTime.fromISO(row.created_at)
-                .setLocale(i18n.language)
-                .toLocaleString(format);
-
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold">{created_at}</Text>
+                  <Text $weight="bold">{formatDate(row.created_at)}</Text>
                 </StyledLink>
               );
             },
@@ -160,13 +149,9 @@ export const DocsGrid = () => {
             headerName: t('Updated at'),
             field: 'updated_at',
             renderCell: ({ row }) => {
-              const updated_at = DateTime.fromISO(row.updated_at)
-                .setLocale(i18n.language)
-                .toLocaleString(format);
-
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold">{updated_at}</Text>
+                  <Text $weight="bold">{formatDate(row.updated_at)}</Text>
                 </StyledLink>
               );
             },
