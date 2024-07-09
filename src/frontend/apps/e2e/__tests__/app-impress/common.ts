@@ -120,11 +120,13 @@ export const goToGridDoc = async (
   const header = page.locator('header').first();
   await header.locator('h2').getByText('Docs').click();
 
-  const rows = page
+  const datagrid = page
     .getByLabel('Datagrid of the documents page 1')
-    .getByRole('table')
-    .getByRole('row');
+    .getByRole('table');
 
+  await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+
+  const rows = datagrid.getByRole('row');
   const row = title
     ? rows.filter({
         hasText: title,

@@ -123,9 +123,11 @@ test.describe('Doc Tools', () => {
       page.getByText('The document has been updated.'),
     ).toBeVisible();
 
-    await goToGridDoc(page, {
+    const docTitle = await goToGridDoc(page, {
       title: `${randomDoc}-updated`,
     });
+
+    await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
 
     await page.getByLabel('Open the document options').click();
     await page
