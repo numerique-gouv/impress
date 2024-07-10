@@ -162,7 +162,9 @@ export const DocsGrid = () => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold">{transRole(currentDocRole(row))}</Text>
+                  <Text $weight="bold">
+                    {transRole(currentDocRole(row.abilities))}
+                  </Text>
                 </StyledLink>
               );
             },

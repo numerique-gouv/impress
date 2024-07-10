@@ -115,7 +115,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
         <ModalAddMembers
           onClose={() => setIsModalAddMembersOpen(false)}
           doc={doc}
-          currentRole={currentDocRole(doc)}
+          currentRole={currentDocRole(doc.abilities)}
         />
       )}
       {isModalPDFOpen && (
