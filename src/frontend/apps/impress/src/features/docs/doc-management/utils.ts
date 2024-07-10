@@ -1,11 +1,11 @@
 import { Doc, Role } from './types';
 
-export const currentDocRole = (doc: Doc): Role => {
-  return doc.abilities.destroy
+export const currentDocRole = (abilities: Doc['abilities']): Role => {
+  return abilities.destroy
     ? Role.OWNER
-    : doc.abilities.manage_accesses
+    : abilities.manage_accesses
       ? Role.ADMIN
-      : doc.abilities.partial_update
+      : abilities.partial_update
         ? Role.EDITOR
         : Role.READER;
 };

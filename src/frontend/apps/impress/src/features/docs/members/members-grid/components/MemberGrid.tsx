@@ -110,7 +110,7 @@ export const MemberGrid = ({ doc }: MemberGridProps) => {
                 <MemberAction
                   doc={doc}
                   access={row}
-                  currentRole={currentDocRole(doc)}
+                  currentRole={currentDocRole(doc.abilities)}
                 />
               );
             },
