@@ -48,6 +48,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         locale: 'en-US',
+        timezoneId: 'Europe/Paris',
         storageState: 'playwright/.auth/user-chromium.json',
       },
       dependencies: ['setup'],
@@ -57,6 +58,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         locale: 'en-US',
+        timezoneId: 'Europe/Paris',
         storageState: 'playwright/.auth/user-webkit.json',
       },
       dependencies: ['setup'],
