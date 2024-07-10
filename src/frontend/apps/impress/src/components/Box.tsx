@@ -35,6 +35,7 @@ export interface BoxProps {
   $radius?: CSSProperties['borderRadius'];
   $transition?: CSSProperties['transition'];
   $width?: CSSProperties['width'];
+  $wrap?: CSSProperties['flexWrap'];
   $zIndex?: CSSProperties['zIndex'];
 }
 
@@ -65,6 +66,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $radius }) => $radius && `border-radius: ${$radius};`}
   ${({ $transition }) => $transition && `transition: ${$transition};`}
   ${({ $width }) => $width && `width: ${$width};`}
+  ${({ $wrap }) => $wrap && `flex-wrap: ${$wrap};`}
   ${({ $css }) => $css && `${$css};`}
   ${({ $zIndex }) => $zIndex && `z-index: ${$zIndex};`}
   ${({ $effect }) => {

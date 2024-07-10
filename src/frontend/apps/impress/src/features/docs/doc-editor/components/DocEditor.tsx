@@ -1,9 +1,9 @@
 import { Alert, VariantType } from '@openfun/cunningham-react';
 import React from 'react';
 
-import { Box, Card, Text } from '@/components';
+import { Box, Card } from '@/components';
+import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
-import { DocToolBox } from '@/features/docs/doc-tools';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
 
@@ -14,19 +14,9 @@ interface DocEditorProps {
 export const DocEditor = ({ doc }: DocEditorProps) => {
   return (
     <>
-      <Box
-        $direction="row"
-        $margin={{ all: 'big', right: 'none' }}
-        $align="center"
-        $position="relative"
-      >
-        <Text as="h2" $align="center" $margin="auto">
-          {doc.title}
-        </Text>
-        <DocToolBox doc={doc} />
-      </Box>
+      <DocHeader doc={doc} />
       {!doc.abilities.partial_update && (
-        <Box className="m-b" $css="margin-top:0;">
+        <Box $margin={{ all: 'small', top: 'none' }}>
           <Alert
             type={VariantType.WARNING}
           >{`Read only, you don't have the right to update this document.`}</Alert>

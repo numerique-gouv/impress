@@ -28,7 +28,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const [isDropOpen, setIsDropOpen] = useState(false);
 
   return (
-    <Box $margin="big" $position="absolute" $css="right:1rem;">
+    <Box $margin={{ left: 'auto' }}>
       <DropButton
         button={
           <IconOptions
