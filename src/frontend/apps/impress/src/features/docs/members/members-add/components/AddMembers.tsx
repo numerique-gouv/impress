@@ -7,8 +7,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { APIError } from '@/api';
-import { Box, Card, Text } from '@/components';
-import { useCunninghamTheme } from '@/cunningham';
+import { Box, Card, IconBG } from '@/components';
 import { Doc, Role } from '@/features/docs/doc-management';
 
 import { useCreateDocAccess, useCreateInvitation } from '../api';
@@ -35,7 +34,6 @@ interface ModalAddMembersProps {
 
 export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
   const { t } = useTranslation();
-  const { colorsTokens } = useCunninghamTheme();
   const [selectedUsers, setSelectedUsers] = useState<OptionsSelect>([]);
   const [selectedRole, setSelectedRole] = useState<Role>();
   const { toast } = useToastProvider();
@@ -126,23 +124,12 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
     <Card
       $gap="1rem"
       $padding="1rem"
-      $margin="1rem 0.7rem"
+      $margin="tiny"
       $direction="row"
       $align="center"
       $wrap="wrap"
     >
-      <Text
-        $isMaterialIcon
-        $size="44px"
-        $theme="primary"
-        $background={colorsTokens()['primary-bg']}
-        $css={`border: 1px solid ${colorsTokens()['primary-200']}`}
-        $radius="12px"
-        $padding="4px"
-        $margin="auto"
-      >
-        group_add
-      </Text>
+      <IconBG iconName="group_add" />
       <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 70%;">
         <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
           <Box $css="flex: auto;">
