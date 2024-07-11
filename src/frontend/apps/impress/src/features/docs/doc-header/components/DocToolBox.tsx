@@ -6,10 +6,9 @@ import { Box, DropButton, IconOptions, Text } from '@/components';
 import {
   Doc,
   ModalRemoveDoc,
+  ModalShare,
   ModalUpdateDoc,
-  currentDocRole,
 } from '@/features/docs/doc-management';
-import { ModalAddMembers } from '@/features/docs/members/members-add';
 import { ModalGridMembers } from '@/features/docs/members/members-grid/';
 
 import { ModalPDF } from './ModalPDF';
@@ -20,15 +19,29 @@ interface DocToolBoxProps {
 
 export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const { t } = useTranslation();
-  const [isModalAddMembersOpen, setIsModalAddMembersOpen] = useState(false);
   const [isModalGridMembersOpen, setIsModalGridMembersOpen] = useState(false);
+  const [isModalShareOpen, setIsModalShareOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
 
   return (
-    <Box $margin={{ left: 'auto' }}>
+    <Box
+      $margin={{ left: 'auto' }}
+      $direction="row"
+      $align="center"
+      $gap="1rem"
+    >
+      {doc.abilities.manage_accesses && (
+        <Button
+          onClick={() => {
+            setIsModalShareOpen(true);
+          }}
+        >
+          {t('Share')}
+        </Button>
+      )}
       <DropButton
         button={
           <IconOptions
@@ -42,17 +55,6 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
         <Box>
           {doc.abilities.manage_accesses && (
             <>
-              <Button
-                onClick={() => {
-                  setIsModalAddMembersOpen(true);
-                  setIsDropOpen(false);
-                }}
-                color="primary-text"
-                icon={<span className="material-icons">person_add</span>}
-                size="small"
-              >
-                <Text $theme="primary">{t('Add members')}</Text>
-              </Button>
               <Button
                 onClick={() => {
                   setIsModalGridMembersOpen(true);
@@ -105,17 +107,13 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
           </Button>
         </Box>
       </DropButton>
+      {isModalShareOpen && (
+        <ModalShare onClose={() => setIsModalShareOpen(false)} doc={doc} />
+      )}
       {isModalGridMembersOpen && (
         <ModalGridMembers
           onClose={() => setIsModalGridMembersOpen(false)}
           doc={doc}
-        />
-      )}
-      {isModalAddMembersOpen && (
-        <ModalAddMembers
-          onClose={() => setIsModalAddMembersOpen(false)}
-          doc={doc}
-          currentRole={currentDocRole(doc.abilities)}
         />
       )}
       {isModalPDFOpen && (

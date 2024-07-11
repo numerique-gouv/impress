@@ -14,6 +14,7 @@ export interface TextProps extends BoxProps {
     'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   >;
   $elipsis?: boolean;
+  $isMaterialIcon?: boolean;
   $weight?: CSSProperties['fontWeight'];
   $textAlign?: CSSProperties['textAlign'];
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -56,9 +57,17 @@ export const TextStyled = styled(Box)<TextProps>`
 `;
 
 export const Text = ({
+  className,
+  $isMaterialIcon,
   ...props
 }: ComponentPropsWithRef<typeof TextStyled>) => {
   return (
-    <TextStyled as="span" $theme="greyscale" $variation="text" {...props} />
+    <TextStyled
+      as="span"
+      $theme="greyscale"
+      $variation="text"
+      className={`${className || ''}${$isMaterialIcon ? ' material-icons' : ''}`}
+      {...props}
+    />
   );
 };

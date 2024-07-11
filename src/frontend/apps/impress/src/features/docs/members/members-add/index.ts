@@ -1,1 +1,1 @@
-export * from './components/ModalAddMembers';
+export * from './components';

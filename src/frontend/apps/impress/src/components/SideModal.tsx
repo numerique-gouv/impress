@@ -5,10 +5,23 @@ import { createGlobalStyle } from 'styled-components';
 interface SideModalStyleProps {
   side: 'left' | 'right';
   width: string;
+  $css?: string;
 }
 
 const SideModalStyle = createGlobalStyle<SideModalStyleProps>`
+  @keyframes slidein {
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(0%);
+    }
+  }
+
   & .c__modal{
+    animation: slidein 0.7s;
+
     width: ${({ width }) => width};
     ${({ side }) => side === 'right' && 'left: auto;'};
     
@@ -17,6 +30,8 @@ const SideModalStyle = createGlobalStyle<SideModalStyleProps>`
       display: flex;
       flex-direction: column;
     }
+
+    ${({ $css }) => $css}
   }
 `;
 
@@ -28,11 +43,12 @@ export const SideModal = ({
   children,
   side = 'right',
   width = '35vw',
+  $css,
   ...modalProps
 }: PropsWithChildren<SideModalProps>) => {
   return (
     <>
-      <SideModalStyle width={width} side={side} />
+      <SideModalStyle width={width} side={side} $css={$css} />
       <Modal {...modalProps} size={ModalSize.FULL}>
         {children}
       </Modal>

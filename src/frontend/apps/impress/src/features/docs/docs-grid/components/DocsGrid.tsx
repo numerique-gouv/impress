@@ -27,6 +27,7 @@ const DocsGridStyle = createGlobalStyle`
     position: sticky;
     top: 0;
     background: #fff;
+    z-index: 1;
   }
   & .c__pagination__goto{
     display:none; 

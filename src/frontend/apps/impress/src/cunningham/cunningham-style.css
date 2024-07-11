@@ -477,6 +477,10 @@ input:-webkit-autofill:focus {
   padding: 1.5rem 1rem;
 }
 
+.c__modal--full .c__modal__content {
+  overflow-y: auto;
+}
+
 /**
  * Toast
 */

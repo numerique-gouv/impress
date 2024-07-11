@@ -80,8 +80,7 @@ export const addNewMember = async (
       response.status() === 200,
   );
 
-  await page.getByLabel('Open the document options').click();
-  await page.getByRole('button', { name: 'Add members' }).click();
+  await page.getByRole('button', { name: 'Share' }).click();
 
   const inputSearch = page.getByLabel(/Find a member to add to the document/);
 
@@ -98,8 +97,8 @@ export const addNewMember = async (
   await page.getByRole('option', { name: users[index].email }).click();
 
   // Choose a role
-  await page.getByRole('radio', { name: role }).click();
-
+  await page.getByRole('combobox', { name: /Choose a role/ }).click();
+  await page.getByRole('option', { name: role }).click();
   await page.getByRole('button', { name: 'Validate' }).click();
 
   await expect(

@@ -216,11 +216,10 @@ test.describe('Doc Tools', () => {
 
     await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
 
+    await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
+
     await page.getByLabel('Open the document options').click();
 
-    await expect(
-      page.getByRole('button', { name: 'Add members' }),
-    ).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Generate PDF' }),
     ).toBeVisible();
@@ -267,11 +266,10 @@ test.describe('Doc Tools', () => {
 
     await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
 
+    await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
+
     await page.getByLabel('Open the document options').click();
 
-    await expect(
-      page.getByRole('button', { name: 'Add members' }),
-    ).toBeHidden();
     await expect(
       page.getByRole('button', { name: 'Generate PDF' }),
     ).toBeVisible();
@@ -318,11 +316,11 @@ test.describe('Doc Tools', () => {
 
     await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
 
+    await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
+
     await page.getByLabel('Open the document options').click();
 
-    await expect(
-      page.getByRole('button', { name: 'Add members' }),
-    ).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
     await expect(
       page.getByRole('button', { name: 'Generate PDF' }),
     ).toBeVisible();
