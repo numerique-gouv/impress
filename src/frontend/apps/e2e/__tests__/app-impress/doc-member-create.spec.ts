@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 
-test.describe('Document add users', () => {
+test.describe('Document create member', () => {
   test('it selects 2 users and 1 invitation', async ({ page, browserName }) => {
     const responsePromise = page.waitForResponse(
       (response) =>
@@ -14,8 +14,7 @@ test.describe('Document add users', () => {
     );
     await createDoc(page, 'select-multi-users', browserName, 1);
 
-    await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add members' }).click();
+    await page.getByRole('button', { name: 'Share' }).click();
 
     const inputSearch = page.getByLabel(/Find a member to add to the document/);
     await expect(inputSearch).toBeVisible();
@@ -56,12 +55,14 @@ test.describe('Document add users', () => {
     await expect(page.getByLabel(`Remove ${email}`)).toBeVisible();
 
     // Check roles are displayed
-    await expect(page.getByText(/Choose a role/)).toBeVisible();
-    await expect(page.getByRole('radio', { name: 'Reader' })).toBeChecked();
-    await expect(page.getByRole('radio', { name: 'Owner' })).toBeVisible();
+    await page.getByRole('combobox', { name: /Choose a role/ }).click();
+
+    await expect(page.getByRole('option', { name: 'Reader' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Editor' })).toBeVisible();
     await expect(
-      page.getByRole('radio', { name: 'Administrator' }),
+      page.getByRole('option', { name: 'Administrator' }),
     ).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Owner' })).toBeVisible();
   });
 
   test('it sends a new invitation and adds a new user', async ({
@@ -75,8 +76,7 @@ test.describe('Document add users', () => {
 
     await createDoc(page, 'user-invitation', browserName, 1);
 
-    await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add members' }).click();
+    await page.getByRole('button', { name: 'Share' }).click();
 
     const inputSearch = page.getByLabel(/Find a member to add to the document/);
 
@@ -93,7 +93,8 @@ test.describe('Document add users', () => {
     await page.getByRole('option', { name: user.email }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Administrator' }).click();
+    await page.getByRole('combobox', { name: /Choose a role/ }).click();
+    await page.getByRole('option', { name: 'Administrator' }).click();
 
     const responsePromiseCreateInvitation = page.waitForResponse(
       (response) =>
@@ -127,8 +128,7 @@ test.describe('Document add users', () => {
 
     await createDoc(page, 'user-twice', browserName, 1);
 
-    await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add members' }).click();
+    await page.getByRole('button', { name: 'Share' }).click();
 
     const inputSearch = page.getByLabel(/Find a member to add to the document/);
     await inputSearch.fill('user');
@@ -139,7 +139,8 @@ test.describe('Document add users', () => {
     await page.getByRole('option', { name: user.email }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Owner' }).click();
+    await page.getByRole('combobox', { name: /Choose a role/ }).click();
+    await page.getByRole('option', { name: 'Owner' }).click();
 
     const responsePromiseAddMember = page.waitForResponse(
       (response) =>
@@ -154,10 +155,8 @@ test.describe('Document add users', () => {
     const responseAddMember = await responsePromiseAddMember;
     expect(responseAddMember.ok()).toBeTruthy();
 
-    await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add members' }).click();
-
     await inputSearch.fill('user');
+    await expect(page.getByText('Loading...')).toBeHidden();
     await expect(page.getByRole('option', { name: user.email })).toBeHidden();
   });
 
@@ -167,8 +166,7 @@ test.describe('Document add users', () => {
   }) => {
     await createDoc(page, 'invitation-twice', browserName, 1);
 
-    await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add members' }).click();
+    await page.getByRole('button', { name: 'Share' }).click();
 
     const inputSearch = page.getByLabel(/Find a member to add to the document/);
 
@@ -177,7 +175,8 @@ test.describe('Document add users', () => {
     await page.getByRole('option', { name: email }).click();
 
     // Choose a role
-    await page.getByRole('radio', { name: 'Owner' }).click();
+    await page.getByRole('combobox', { name: /Choose a role/ }).click();
+    await page.getByRole('option', { name: 'Owner' }).click();
 
     const responsePromiseCreateInvitation = page.waitForResponse(
       (response) =>
@@ -191,10 +190,8 @@ test.describe('Document add users', () => {
     const responseCreateInvitation = await responsePromiseCreateInvitation;
     expect(responseCreateInvitation.ok()).toBeTruthy();
 
-    await page.getByLabel('Open the document options').click();
-    await page.getByRole('button', { name: 'Add members' }).click();
-
     await inputSearch.fill(email);
+    await expect(page.getByText('Loading...')).toBeHidden();
     await expect(page.getByRole('option', { name: email })).toBeHidden();
   });
 });

@@ -1,21 +1,17 @@
 import {
   Button,
-  Modal,
-  ModalSize,
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createGlobalStyle } from 'styled-components';
 
 import { APIError } from '@/api';
-import { Box, Text } from '@/components';
+import { Box, Card, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { Doc, Role } from '@/features/docs/doc-management';
 
 import { useCreateDocAccess, useCreateInvitation } from '../api';
-import IconAddUser from '../assets/add-user.svg';
 import {
   OptionInvitation,
   OptionNewMember,
@@ -27,12 +23,6 @@ import {
 import { ChooseRole } from './ChooseRole';
 import { OptionsSelect, SearchUsers } from './SearchUsers';
 
-const GlobalStyle = createGlobalStyle`
-  .c__modal {
-    overflow: visible;
-  }
-`;
-
 type APIErrorUser = APIError<{
   value: string;
   type: OptionType;
@@ -40,26 +30,22 @@ type APIErrorUser = APIError<{
 
 interface ModalAddMembersProps {
   currentRole: Role;
-  onClose: () => void;
   doc: Doc;
 }
 
-export const ModalAddMembers = ({
-  currentRole,
-  onClose,
-  doc,
-}: ModalAddMembersProps) => {
-  const { colorsTokens } = useCunninghamTheme();
+export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
   const { t } = useTranslation();
+  const { colorsTokens } = useCunninghamTheme();
   const [selectedUsers, setSelectedUsers] = useState<OptionsSelect>([]);
-  const [selectedRole, setSelectedRole] = useState<Role>(Role.READER);
+  const [selectedRole, setSelectedRole] = useState<Role>();
   const { toast } = useToastProvider();
   const { mutateAsync: createInvitation } = useCreateInvitation();
   const { mutateAsync: createDocAccess } = useCreateDocAccess();
+  const [resetKey, setResetKey] = useState(1);
 
   const [isPending, setIsPending] = useState<boolean>(false);
 
-  const switchActions = (selectedUsers: OptionsSelect) =>
+  const switchActions = (selectedUsers: OptionsSelect, selectedRole: Role) =>
     selectedUsers.map(async (selectedUser) => {
       switch (selectedUser.type) {
         case OptionType.INVITATION:
@@ -112,12 +98,16 @@ export const ModalAddMembers = ({
   const handleValidate = async () => {
     setIsPending(true);
 
+    if (!selectedRole) {
+      return;
+    }
+
     const settledPromises = await Promise.allSettled<
       OptionInvitation | OptionNewMember
-    >(switchActions(selectedUsers));
+    >(switchActions(selectedUsers, selectedRole));
 
-    onClose();
     setIsPending(false);
+    setResetKey(resetKey + 1);
 
     settledPromises.forEach((settledPromise) => {
       switch (settledPromise.status) {
@@ -133,63 +123,57 @@ export const ModalAddMembers = ({
   };
 
   return (
-    <Modal
-      isOpen
-      leftActions={
-        <Button
-          color="secondary"
-          fullWidth
-          onClick={onClose}
-          disabled={isPending}
-        >
-          {t('Cancel')}
-        </Button>
-      }
-      onClose={onClose}
-      closeOnClickOutside
-      hideCloseButton
-      rightActions={
-        <Button
-          color="primary"
-          fullWidth
-          disabled={!selectedUsers.length || isPending}
-          onClick={() => void handleValidate()}
-        >
-          {t('Validate')}
-        </Button>
-      }
-      size={ModalSize.MEDIUM}
-      title={
-        <Box $align="center" $gap="1rem">
-          <IconAddUser width={48} color={colorsTokens()['primary-text']} />
-          <Text $size="h3" $margin="none">
-            {t('Add members to the document')}
-          </Text>
-        </Box>
-      }
+    <Card
+      $gap="1rem"
+      $padding="1rem"
+      $margin="1rem 0.7rem"
+      $direction="row"
+      $align="center"
+      $wrap="wrap"
     >
-      <GlobalStyle />
-      <Box $margin={{ bottom: 'xl', top: 'large' }}>
-        <SearchUsers
-          doc={doc}
-          setSelectedUsers={setSelectedUsers}
-          selectedUsers={selectedUsers}
-          disabled={isPending}
-        />
-        {selectedUsers.length >= 0 && (
-          <Box $margin={{ top: 'small' }}>
-            <Text as="h4" $textAlign="left" $margin={{ bottom: 'tiny' }}>
-              {t('Choose a role')}
-            </Text>
+      <Text
+        $isMaterialIcon
+        $size="44px"
+        $theme="primary"
+        $background={colorsTokens()['primary-bg']}
+        $css={`border: 1px solid ${colorsTokens()['primary-200']}`}
+        $radius="12px"
+        $padding="4px"
+        $margin="auto"
+      >
+        group_add
+      </Text>
+      <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 70%;">
+        <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
+          <Box $css="flex: auto;">
+            <SearchUsers
+              key={resetKey + 1}
+              doc={doc}
+              setSelectedUsers={setSelectedUsers}
+              selectedUsers={selectedUsers}
+              disabled={isPending}
+            />
+          </Box>
+          <Box $css="flex: auto;">
             <ChooseRole
+              key={resetKey}
               currentRole={currentRole}
               disabled={isPending}
-              defaultRole={Role.READER}
               setRole={setSelectedRole}
             />
           </Box>
-        )}
+        </Box>
+        <Box $align="center" $justify="center" $css="flex: auto;">
+          <Button
+            color="primary"
+            disabled={!selectedUsers.length || isPending || !selectedRole}
+            onClick={() => void handleValidate()}
+            style={{ height: '100%', maxHeight: '55px' }}
+          >
+            {t('Validate')}
+          </Button>
+        </Box>
       </Box>
-    </Modal>
+    </Card>
   );
 };

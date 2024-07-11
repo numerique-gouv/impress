@@ -31,7 +31,7 @@ export const DocHeader = ({ doc }: DocHeaderProps) => {
       <Box $padding="small" $direction="row" $align="center">
         <StyledLink href="/">
           <Text
-            className="material-icons"
+            $isMaterialIcon
             $theme="primary"
             $size="2rem"
             $css={`&:hover {background-color: ${colorsTokens()['primary-100']}; };`}
@@ -82,7 +82,9 @@ export const DocHeader = ({ doc }: DocHeaderProps) => {
             {t('Owners:')}{' '}
             <strong>
               {doc.accesses
-                .filter((access) => access.role === Role.OWNER)
+                .filter(
+                  (access) => access.role === Role.OWNER && access.user.email,
+                )
                 .map((access, index, accesses) => (
                   <Fragment key={`access-${index}`}>
                     {access.user.email}{' '}

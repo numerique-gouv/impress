@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Options } from 'react-select';
 import AsyncSelect from 'react-select/async';
 
+import { useCunninghamTheme } from '@/cunningham';
 import { Doc } from '@/features/docs/doc-management';
 import { isValidEmail } from '@/utils';
 
@@ -24,6 +25,7 @@ export const SearchUsers = ({
   setSelectedUsers,
   disabled,
 }: SearchUsersProps) => {
+  const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [userQuery, setUserQuery] = useState('');
@@ -102,6 +104,23 @@ export const SearchUsers = ({
 
   return (
     <AsyncSelect
+      styles={{
+        placeholder: (base) => ({
+          ...base,
+          fontSize: '14px',
+          color: colorsTokens()['primary-600'],
+        }),
+        control: (base) => ({
+          ...base,
+          minHeight: '45px',
+          borderColor: colorsTokens()['primary-600'],
+        }),
+        input: (base) => ({
+          ...base,
+          minHeight: '45px',
+          fontSize: '14px',
+        }),
+      }}
       isDisabled={disabled}
       aria-label={t('Find a member to add to the document')}
       isMulti

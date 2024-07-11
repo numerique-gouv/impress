@@ -76,5 +76,6 @@ test.describe('Doc Header', () => {
       card.getByText('Owners: super@owner.com / super2@owner.com'),
     ).toBeVisible();
     await expect(card.getByText('Your role: Owner')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
   });
 });
