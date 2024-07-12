@@ -344,6 +344,7 @@ const config = {
           'border-color': 'var(--c--theme--colors--primary-text)',
           'box-shadow-color': 'var(--c--theme--colors--primary-text)',
           'value-color': 'var(--c--theme--colors--primary-text)',
+          'font-size': '14px',
         },
         'forms-labelledbox': {
           'label-color': {
@@ -351,6 +352,7 @@ const config = {
           },
         },
         'forms-select': {
+          'item-font-size': '14px',
           'border-radius': '4px',
           'border-radius-hover': '4px',
           'background-color': '#ffffff',

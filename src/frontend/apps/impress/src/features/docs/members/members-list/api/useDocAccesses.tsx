@@ -1,12 +1,22 @@
-import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import {
+  DefinedInitialDataInfiniteOptions,
+  InfiniteData,
+  QueryKey,
+  UseQueryOptions,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 import { Access } from '@/features/docs/doc-management';
 
-export type DocAccessesAPIParams = {
-  page: number;
+export type DocAccessesParam = {
   docId: string;
   ordering?: string;
+};
+
+export type DocAccessesAPIParams = DocAccessesParam & {
+  page: number;
 };
 
 type AccessesResponse = APIList<Access>;
@@ -43,6 +53,42 @@ export function useDocAccesses(
   return useQuery<AccessesResponse, APIError, AccessesResponse>({
     queryKey: [KEY_LIST_DOC_ACCESSES, params],
     queryFn: () => getDocAccesses(params),
+    ...queryConfig,
+  });
+}
+
+/**
+ * @param param Used for infinite scroll pagination
+ * @param queryConfig
+ * @returns
+ */
+export function useDocAccessesInfinite(
+  param: DocAccessesParam,
+  queryConfig?: DefinedInitialDataInfiniteOptions<
+    AccessesResponse,
+    APIError,
+    InfiniteData<AccessesResponse>,
+    QueryKey,
+    number
+  >,
+) {
+  return useInfiniteQuery<
+    AccessesResponse,
+    APIError,
+    InfiniteData<AccessesResponse>,
+    QueryKey,
+    number
+  >({
+    initialPageParam: 1,
+    queryKey: [KEY_LIST_DOC_ACCESSES, param],
+    queryFn: ({ pageParam }) =>
+      getDocAccesses({
+        ...param,
+        page: pageParam,
+      }),
+    getNextPageParam(lastPage, allPages) {
+      return lastPage.next ? allPages.length + 1 : undefined;
+    },
     ...queryConfig,
   });
 }

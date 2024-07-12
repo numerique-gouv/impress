@@ -8,6 +8,7 @@ interface ChooseRoleProps {
   disabled: boolean;
   defaultRole?: Role;
   setRole: (role: Role) => void;
+  label?: string;
 }
 
 export const ChooseRole = ({
@@ -15,13 +16,14 @@ export const ChooseRole = ({
   disabled,
   currentRole,
   setRole,
+  label,
 }: ChooseRoleProps) => {
   const { t } = useTranslation();
   const transRole = useTransRole();
 
   return (
     <Select
-      label={t('Choose a role')}
+      label={label || t('Choose a role')}
       options={Object.values(Role).map((role) => ({
         label: transRole(role),
         value: role,

@@ -19,6 +19,7 @@ and this project adheres to
 
 - ♻️(frontend) replace docs panel with docs grid #120
 - ♻️(frontend) create a doc from a modal #132
+- ♻️(frontend) manage members from the share modal #140
 
 ## [1.0.0] - 2024-07-02
 

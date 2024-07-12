@@ -469,9 +469,11 @@
   --c--components--forms-input--value-color: var(
     --c--theme--colors--primary-text
   );
+  --c--components--forms-input--font-size: 14px;
   --c--components--forms-labelledbox--label-color--big: var(
     --c--theme--colors--primary-text
   );
+  --c--components--forms-select--item-font-size: 14px;
   --c--components--forms-select--border-radius: 4px;
   --c--components--forms-select--border-radius-hover: 4px;
   --c--components--forms-select--background-color: #fff;

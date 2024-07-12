@@ -71,7 +71,7 @@ export const createDoc = async (
 export const addNewMember = async (
   page: Page,
   index: number,
-  role: 'Admin' | 'Owner' | 'Member',
+  role: 'Administrator' | 'Owner' | 'Member' | 'Editor' | 'Reader',
   fillText: string = 'user',
 ) => {
   const responsePromiseSearchUser = page.waitForResponse(
@@ -79,8 +79,6 @@ export const addNewMember = async (
       response.url().includes(`/users/?q=${fillText}`) &&
       response.status() === 200,
   );
-
-  await page.getByRole('button', { name: 'Share' }).click();
 
   const inputSearch = page.getByLabel(/Find a member to add to the document/);
 

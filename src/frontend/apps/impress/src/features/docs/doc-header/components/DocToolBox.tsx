@@ -9,7 +9,6 @@ import {
   ModalShare,
   ModalUpdateDoc,
 } from '@/features/docs/doc-management';
-import { ModalGridMembers } from '@/features/docs/members/members-grid/';
 
 import { ModalPDF } from './ModalPDF';
 
@@ -19,7 +18,6 @@ interface DocToolBoxProps {
 
 export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const { t } = useTranslation();
-  const [isModalGridMembersOpen, setIsModalGridMembersOpen] = useState(false);
   const [isModalShareOpen, setIsModalShareOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
@@ -53,21 +51,6 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
         isOpen={isDropOpen}
       >
         <Box>
-          {doc.abilities.manage_accesses && (
-            <>
-              <Button
-                onClick={() => {
-                  setIsModalGridMembersOpen(true);
-                  setIsDropOpen(false);
-                }}
-                color="primary-text"
-                icon={<span className="material-icons">group</span>}
-                size="small"
-              >
-                <Text $theme="primary">{t('Manage members')}</Text>
-              </Button>
-            </>
-          )}
           {doc.abilities.partial_update && (
             <Button
               onClick={() => {
@@ -109,12 +92,6 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
       </DropButton>
       {isModalShareOpen && (
         <ModalShare onClose={() => setIsModalShareOpen(false)} doc={doc} />
-      )}
-      {isModalGridMembersOpen && (
-        <ModalGridMembers
-          onClose={() => setIsModalGridMembersOpen(false)}
-          doc={doc}
-        />
       )}
       {isModalPDFOpen && (
         <ModalPDF onClose={() => setIsModalPDFOpen(false)} doc={doc} />
