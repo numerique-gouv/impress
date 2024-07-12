@@ -443,6 +443,13 @@ input:-webkit-autofill:focus {
   color: var(--c--components--button--tertiary-text--color-hover);
 }
 
+.c__button--tertiary-text:disabled {
+  background-color: var(
+    --c--components--button--tertiary-text--background--color-disabled
+  );
+  color: var(--c--components--button--tertiary-text--color-disabled);
+}
+
 .c__button--danger {
   background-color: var(--c--components--button--danger--background--color);
 }

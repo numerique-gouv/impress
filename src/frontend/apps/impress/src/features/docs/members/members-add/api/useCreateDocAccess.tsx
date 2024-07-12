@@ -8,7 +8,7 @@ import {
   KEY_LIST_DOC,
   Role,
 } from '@/features/docs/doc-management';
-import { KEY_LIST_DOC_ACCESSES } from '@/features/docs/members/members-grid/';
+import { KEY_LIST_DOC_ACCESSES } from '@/features/docs/members/members-list';
 
 import { OptionType } from '../types';
 

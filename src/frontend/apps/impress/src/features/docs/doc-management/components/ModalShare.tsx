@@ -6,6 +6,7 @@ import { Box, Card, Text } from '@/components';
 import { SideModal } from '@/components/SideModal';
 
 import { AddMembers } from '../../members/members-add';
+import { MemberList } from '../../members/members-list/components/MemberList';
 import { Doc } from '../types';
 import { currentDocRole } from '../utils';
 
@@ -13,6 +14,11 @@ const ModalShareStyle = createGlobalStyle`
   & .c__modal__scroller{
     background: #FAFAFA;
     padding: 1.5rem .5rem;
+
+    .c__modal__title{
+      padding: 0;
+      margin: 0;
+    }
   }
 `;
 
@@ -36,10 +42,16 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
         closeOnClickOutside
         hideCloseButton
         onClose={onClose}
-        width="45vw"
-        $css="min-width: 320px;"
+        width="70vw"
+        $css="min-width: 320px;max-width: 777px;"
         title={
-          <Card $direction="row" $align="center" $padding="0.7rem" $gap="1rem">
+          <Card
+            $direction="row"
+            $align="center"
+            $margin={{ horizontal: 'tiny', top: 'none', bottom: 'big' }}
+            $padding="tiny"
+            $gap="1rem"
+          >
             <Text $isMaterialIcon $size="48px" $theme="primary">
               share
             </Text>
@@ -55,6 +67,7 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
         }
       >
         <AddMembers doc={doc} currentRole={currentDocRole(doc.abilities)} />
+        <MemberList doc={doc} />
       </SideModal>
     </>
   );
