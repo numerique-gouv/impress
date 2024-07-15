@@ -78,6 +78,7 @@ export const BlockNoteContent = ({ doc, provider }: BlockNoteContentProps) => {
         editor={editor}
         formattingToolbar={false}
         editable={doc.abilities.partial_update}
+        theme="light"
       >
         <BlockNoteToolbar />
       </BlockNoteView>
