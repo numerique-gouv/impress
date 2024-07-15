@@ -76,6 +76,7 @@ export const MemberItem = ({
         $gap="1rem"
         $justify="space-between"
         $width="100%"
+        $wrap="wrap"
       >
         <Box $direction="row" $gap="1rem">
           <IconBG iconName="account_circle" $size="2rem" />
