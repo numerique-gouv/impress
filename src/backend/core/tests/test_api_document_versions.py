@@ -125,7 +125,8 @@ def test_api_document_versions_list_authenticated_related(via, mock_user_get_tea
 
     assert response.status_code == 200
     content = response.json()
-    assert len(content["versions"]) == 0
+    assert len(content["results"]) == 0
+    assert content["count"] == 0
 
     # Add a new version to the document
     document.content = "new content"
@@ -137,9 +138,8 @@ def test_api_document_versions_list_authenticated_related(via, mock_user_get_tea
 
     assert response.status_code == 200
     content = response.json()
-    assert len(content["versions"]) == 1
-    assert content["next_version_id_marker"] == ""
-    assert content["is_truncated"] is False
+    assert len(content["results"]) == 1
+    assert content["count"] == 1
 
 
 def test_api_document_versions_retrieve_anonymous_public():

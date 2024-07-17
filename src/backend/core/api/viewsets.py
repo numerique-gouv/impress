@@ -337,9 +337,17 @@ class DocumentViewSet(
                 Q(user=request.user) | Q(team__in=request.user.get_teams()),
             )
         )
-        return drf_response.Response(
-            document.get_versions_slice(from_datetime=from_datetime)
+
+        versions_data = document.get_versions_slice(from_datetime=from_datetime)[
+            "versions"
+        ]
+        paginator = pagination.PageNumberPagination()
+        paginated_versions = paginator.paginate_queryset(versions_data, request)
+        serialized_versions = serializers.DocumentVersionSerializer(
+            paginated_versions, many=True
         )
+
+        return paginator.get_paginated_response(serialized_versions.data)
 
     @decorators.action(
         detail=True,
@@ -377,6 +385,7 @@ class DocumentViewSet(
             {
                 "content": response["Body"].read().decode("utf-8"),
                 "last_modified": response["LastModified"],
+                "id": version_id,
             }
         )
 
