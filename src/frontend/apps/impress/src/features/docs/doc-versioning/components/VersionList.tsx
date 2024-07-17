@@ -1,4 +1,5 @@
 import { Loader } from '@openfun/cunningham-react';
+import { useRouter } from 'next/router';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +28,9 @@ const VersionListState = ({
 }: VersionListStateProps) => {
   const { t } = useTranslation();
   const { formatDate } = useDate();
+  const {
+    query: { versionId },
+  } = useRouter();
 
   if (isLoading) {
     return (
@@ -42,6 +46,8 @@ const VersionListState = ({
         text={t('Current version')}
         versionId={undefined}
         link={`/docs/${doc.id}/`}
+        docId={doc.id}
+        isActive={!versionId}
       />
       {versions?.map((version) => (
         <VersionItem
@@ -52,6 +58,8 @@ const VersionListState = ({
             timeStyle: 'short',
           })}
           link={`/docs/${doc.id}/versions/${version.version_id}`}
+          docId={doc.id}
+          isActive={version.version_id === versionId}
         />
       ))}
       {error && (

@@ -66,4 +66,41 @@ test.describe('Doc Version', () => {
 
     await expect(page.getByLabel('Document version panel')).toBeHidden();
   });
+
+  test('it restores the doc version', async ({ page, browserName }) => {
+    const [randomDoc] = await createDoc(page, 'doc-version', browserName, 1);
+
+    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
+
+    await page.locator('.bn-block-outer').last().click();
+    await page.locator('.bn-block-outer').last().fill('Hello');
+
+    await goToGridDoc(page, {
+      title: randomDoc,
+    });
+
+    await expect(page.getByText('Hello')).toBeVisible();
+    await page.locator('.bn-block-outer').last().click();
+    await page.keyboard.press('Enter');
+    await page.locator('.bn-block-outer').last().fill('World');
+
+    await goToGridDoc(page, {
+      title: randomDoc,
+    });
+
+    await expect(page.getByText('World')).toBeVisible();
+
+    const panel = page.getByLabel('Document version panel');
+    await panel.locator('li').nth(1).click();
+    await expect(page.getByText('World')).toBeHidden();
+
+    await panel.getByLabel('Open the version options').click();
+    await page.getByText('Restore the version').click();
+
+    await expect(panel.locator('li')).toHaveCount(3);
+
+    await panel.getByText('Current version').click();
+    await expect(page.getByText('Hello')).toBeVisible();
+    await expect(page.getByText('World')).toBeHidden();
+  });
 });

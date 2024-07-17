@@ -4,14 +4,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Y from 'yjs';
 
-import { KEY_DOC, useUpdateDoc } from '@/features/docs/doc-management/';
+import { useUpdateDoc } from '@/features/docs/doc-management/';
 import { KEY_LIST_DOC_VERSIONS } from '@/features/docs/doc-versioning';
 
+import { useDocStore } from '../stores';
 import { toBase64 } from '../utils';
 
 const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
   const { toast } = useToastProvider();
   const { t } = useTranslation();
+  const { forceSave, setForceSave } = useDocStore();
 
   const { mutate: updateDoc } = useUpdateDoc({
     onSuccess: (data) => {
@@ -20,9 +22,12 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
           docTitle: data.title,
         }),
         VariantType.SUCCESS,
+        {
+          duration: 1500,
+        },
       );
     },
-    listInvalideQueries: [KEY_LIST_DOC_VERSIONS, KEY_DOC],
+    listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
   });
   const [initialDoc, setInitialDoc] = useState<string>(
     toBase64(Y.encodeStateAsUpdate(doc)),
@@ -59,10 +64,14 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
   /**
    * Check if the doc has been updated and can be saved.
    */
-  const shouldSave = useCallback(() => {
+  const hasChanged = useCallback(() => {
     const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
-    return initialDoc !== newDoc && canSave;
-  }, [canSave, doc, initialDoc]);
+    return initialDoc !== newDoc;
+  }, [doc, initialDoc]);
+
+  const shouldSave = useCallback(() => {
+    return hasChanged() && canSave;
+  }, [canSave, hasChanged]);
 
   const saveDoc = useCallback(() => {
     const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
@@ -73,6 +82,18 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
       content: newDoc,
     });
   }, [doc, docId, updateDoc]);
+
+  useEffect(() => {
+    if (forceSave === 'false') {
+      return;
+    }
+
+    setForceSave('false');
+
+    if ((forceSave === 'current' && hasChanged()) || forceSave === 'version') {
+      saveDoc();
+    }
+  }, [forceSave, hasChanged, saveDoc, setForceSave]);
 
   const timeout = useRef<NodeJS.Timeout>();
   const router = useRouter();
