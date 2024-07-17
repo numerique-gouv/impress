@@ -6,22 +6,24 @@ import { create } from 'zustand';
 import { signalingUrl } from '@/core';
 import { Base64, Doc } from '@/features/docs/doc-management';
 
-export interface DocStore {
+interface DocStore {
+  provider: WebrtcProvider;
+  editor?: BlockNoteEditor;
+}
+
+export interface UseDocStore {
   docsStore: {
-    [docId: Doc['id']]: {
-      provider: WebrtcProvider;
-      editor?: BlockNoteEditor;
-    };
+    [docId: Doc['id']]: DocStore;
   };
   createProvider: (docId: Doc['id'], initialDoc: Base64) => WebrtcProvider;
-  setEditor: (docId: Doc['id'], editor: BlockNoteEditor) => void;
+  setStore: (docId: Doc['id'], props: Partial<DocStore>) => void;
 }
 
 const initialState = {
   docsStore: {},
 };
 
-export const useDocStore = create<DocStore>((set) => ({
+export const useDocStore = create<UseDocStore>((set, get) => ({
   docsStore: initialState.docsStore,
   createProvider: (docId: string, initialDoc: Base64) => {
     const doc = new Y.Doc({
@@ -37,27 +39,18 @@ export const useDocStore = create<DocStore>((set) => ({
       maxConns: 5,
     });
 
-    set(({ docsStore }) => {
-      return {
-        docsStore: {
-          ...docsStore,
-          [docId]: {
-            provider,
-          },
-        },
-      };
-    });
+    get().setStore(docId, { provider });
 
     return provider;
   },
-  setEditor: (docId, editor) => {
+  setStore: (docId, props) => {
     set(({ docsStore }) => {
       return {
         docsStore: {
           ...docsStore,
           [docId]: {
             ...docsStore[docId],
-            editor,
+            ...props,
           },
         },
       };

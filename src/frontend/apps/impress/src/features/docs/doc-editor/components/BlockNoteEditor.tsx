@@ -38,7 +38,7 @@ interface BlockNoteContentProps {
 
 export const BlockNoteContent = ({ doc, provider }: BlockNoteContentProps) => {
   const { userData } = useAuthStore();
-  const { setEditor, docsStore } = useDocStore();
+  const { setStore, docsStore } = useDocStore();
   useSaveDoc(doc.id, provider.doc, doc.abilities.partial_update);
 
   const storedEditor = docsStore?.[doc.id]?.editor;
@@ -60,8 +60,8 @@ export const BlockNoteContent = ({ doc, provider }: BlockNoteContentProps) => {
   }, [provider, storedEditor, userData?.email]);
 
   useEffect(() => {
-    setEditor(doc.id, editor);
-  }, [setEditor, doc.id, editor]);
+    setStore(doc.id, { editor });
+  }, [setStore, doc.id, editor]);
 
   return (
     <Box
