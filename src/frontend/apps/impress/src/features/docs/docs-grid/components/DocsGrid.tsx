@@ -193,6 +193,7 @@ export const DocsGrid = () => {
         pagination={pagination}
         onSortModelChange={setSortModel}
         sortModel={sortModel}
+        emptyPlaceholderLabel={t("You don't have any document yet.")}
       />
     </Card>
   );
