@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import cs from 'convert-stream';
 import pdf from 'pdf-parse';
 
-import { createDoc, goToGridDoc } from './common';
+import { createDoc, goToGridDoc, mockedDocument } from './common';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -200,34 +200,17 @@ test.describe('Doc Tools', () => {
   });
 
   test('it checks the options available if administrator', async ({ page }) => {
-    await page.route('**/documents/**/', async (route) => {
-      const request = route.request();
-      if (
-        request.method().includes('GET') &&
-        !request.url().includes('page=')
-      ) {
-        await route.fulfill({
-          json: {
-            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
-            content: '',
-            title: 'Mocked document',
-            accesses: [],
-            abilities: {
-              destroy: false, // Means not owner
-              versions_destroy: true,
-              versions_list: true,
-              versions_retrieve: true,
-              manage_accesses: true, // Means admin
-              update: true,
-              partial_update: true,
-              retrieve: true,
-            },
-            is_public: false,
-          },
-        });
-      } else {
-        await route.continue();
-      }
+    await mockedDocument(page, {
+      abilities: {
+        destroy: false, // Means not owner
+        versions_destroy: true,
+        versions_list: true,
+        versions_retrieve: true,
+        manage_accesses: true, // Means admin
+        update: true,
+        partial_update: true,
+        retrieve: true,
+      },
     });
 
     await goToGridDoc(page);
@@ -250,34 +233,17 @@ test.describe('Doc Tools', () => {
   });
 
   test('it checks the options available if editor', async ({ page }) => {
-    await page.route('**/documents/**/', async (route) => {
-      const request = route.request();
-      if (
-        request.method().includes('GET') &&
-        !request.url().includes('page=')
-      ) {
-        await route.fulfill({
-          json: {
-            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
-            content: '',
-            title: 'Mocked document',
-            accesses: [],
-            abilities: {
-              destroy: false, // Means not owner
-              versions_destroy: true,
-              versions_list: true,
-              versions_retrieve: true,
-              manage_accesses: false, // Means not admin
-              update: true,
-              partial_update: true, // Means editor
-              retrieve: true,
-            },
-            is_public: false,
-          },
-        });
-      } else {
-        await route.continue();
-      }
+    await mockedDocument(page, {
+      abilities: {
+        destroy: false, // Means not owner
+        versions_destroy: true,
+        versions_list: true,
+        versions_retrieve: true,
+        manage_accesses: false, // Means not admin
+        update: true,
+        partial_update: true, // Means editor
+        retrieve: true,
+      },
     });
 
     await goToGridDoc(page);
@@ -300,34 +266,17 @@ test.describe('Doc Tools', () => {
   });
 
   test('it checks the options available if reader', async ({ page }) => {
-    await page.route('**/documents/**/', async (route) => {
-      const request = route.request();
-      if (
-        request.method().includes('GET') &&
-        !request.url().includes('page=')
-      ) {
-        await route.fulfill({
-          json: {
-            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
-            content: '',
-            title: 'Mocked document',
-            accesses: [],
-            abilities: {
-              destroy: false, // Means not owner
-              versions_destroy: false,
-              versions_list: true,
-              versions_retrieve: true,
-              manage_accesses: false, // Means not admin
-              update: false,
-              partial_update: false, // Means not editor
-              retrieve: true,
-            },
-            is_public: false,
-          },
-        });
-      } else {
-        await route.continue();
-      }
+    await mockedDocument(page, {
+      abilities: {
+        destroy: false, // Means not owner
+        versions_destroy: false,
+        versions_list: true,
+        versions_retrieve: true,
+        manage_accesses: false, // Means not admin
+        update: false,
+        partial_update: false, // Means not editor
+        retrieve: true,
+      },
     });
 
     await goToGridDoc(page);

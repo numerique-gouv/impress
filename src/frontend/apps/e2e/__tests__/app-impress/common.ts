@@ -140,3 +140,34 @@ export const goToGridDoc = async (
 
   return docTitle as string;
 };
+
+export const mockedDocument = async (page: Page, json: object) => {
+  await page.route('**/documents/**/', async (route) => {
+    const request = route.request();
+    if (request.method().includes('GET') && !request.url().includes('page=')) {
+      await route.fulfill({
+        json: {
+          id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
+          content: '',
+          title: 'Mocked document',
+          accesses: [],
+          abilities: {
+            destroy: false, // Means not owner
+            versions_destroy: false,
+            versions_list: true,
+            versions_retrieve: true,
+            manage_accesses: false, // Means not admin
+            update: false,
+            partial_update: false, // Means not editor
+            retrieve: true,
+          },
+          is_public: false,
+          created_at: '2021-09-01T09:00:00Z',
+          ...json,
+        },
+      });
+    } else {
+      await route.continue();
+    }
+  });
+};

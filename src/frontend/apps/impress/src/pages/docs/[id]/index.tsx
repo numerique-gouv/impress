@@ -1,15 +1,15 @@
 import { Loader } from '@openfun/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
 
-import { Box, Text, TextErrors } from '@/components/';
-import { DocEditor } from '@/features/docs/doc-editor';
+import { Box, Text } from '@/components';
+import { TextErrors } from '@/components/TextErrors';
+import { DocEditor } from '@/features/docs';
 import { useDoc } from '@/features/docs/doc-management';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
-const Page: NextPageWithLayout = () => {
+export function DocLayout() {
   const {
     query: { id },
   } = useRouter();
@@ -18,14 +18,18 @@ const Page: NextPageWithLayout = () => {
     return null;
   }
 
-  return <Doc id={id} />;
-};
+  return (
+    <MainLayout>
+      <DocPage id={id} />
+    </MainLayout>
+  );
+}
 
 interface DocProps {
   id: string;
 }
 
-const Doc = ({ id }: DocProps) => {
+const DocPage = ({ id }: DocProps) => {
   const { data: doc, isLoading, isError, error } = useDoc({ id });
   const navigate = useNavigate();
 
@@ -41,7 +45,7 @@ const Doc = ({ id }: DocProps) => {
           causes={error.cause}
           icon={
             error.status === 502 ? (
-              <Text className="material-icons" $theme="danger">
+              <Text $isMaterialIcon $theme="danger">
                 wifi_off
               </Text>
             ) : undefined
@@ -62,8 +66,12 @@ const Doc = ({ id }: DocProps) => {
   return <DocEditor doc={doc} />;
 };
 
-Page.getLayout = function getLayout(page: ReactElement) {
-  return <MainLayout>{page}</MainLayout>;
+const Page: NextPageWithLayout = () => {
+  return null;
+};
+
+Page.getLayout = function getLayout() {
+  return <DocLayout />;
 };
 
 export default Page;

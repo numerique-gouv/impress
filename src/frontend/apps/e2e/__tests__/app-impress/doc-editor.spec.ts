@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createDoc, goToGridDoc } from './common';
+import { createDoc, goToGridDoc, mockedDocument } from './common';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -153,34 +153,17 @@ test.describe('Doc Editor', () => {
   });
 
   test('it cannot edit if viewer', async ({ page }) => {
-    await page.route('**/documents/**/', async (route) => {
-      const request = route.request();
-      if (
-        request.method().includes('GET') &&
-        !request.url().includes('page=')
-      ) {
-        await route.fulfill({
-          json: {
-            id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
-            content: '',
-            title: 'Mocked document',
-            accesses: [],
-            abilities: {
-              destroy: false, // Means not owner
-              versions_destroy: false,
-              versions_list: true,
-              versions_retrieve: true,
-              manage_accesses: false, // Means not admin
-              update: false,
-              partial_update: false, // Means not editor
-              retrieve: true,
-            },
-            is_public: false,
-          },
-        });
-      } else {
-        await route.continue();
-      }
+    await mockedDocument(page, {
+      abilities: {
+        destroy: false, // Means not owner
+        versions_destroy: false,
+        versions_list: true,
+        versions_retrieve: true,
+        manage_accesses: false, // Means not admin
+        update: false,
+        partial_update: false, // Means not editor
+        retrieve: true,
+      },
     });
 
     await goToGridDoc(page);
