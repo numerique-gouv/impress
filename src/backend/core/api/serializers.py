@@ -259,3 +259,12 @@ class InvitationSerializer(serializers.ModelSerializer):
         attrs["document_id"] = document_id
         attrs["issuer"] = user
         return attrs
+
+
+class DocumentVersionSerializer(serializers.Serializer):
+    """Serialize Versions."""
+
+    etag = serializers.CharField()
+    is_latest = serializers.BooleanField()
+    last_modified = serializers.DateTimeField()
+    version_id = serializers.CharField()
