@@ -1,24 +1,33 @@
-import { useRouter } from 'next/router';
-import React from 'react';
+import { Button } from '@openfun/cunningham-react';
+import { t } from 'i18next';
+import React, { PropsWithChildren, useState } from 'react';
 
-import { Box, StyledLink, Text } from '@/components';
+import { Box, DropButton, IconOptions, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { useDocStore } from '@/features/docs/doc-editor';
+import { Doc } from '@/features/docs/doc-management';
 
 import { Versions } from '../types';
+import { revertUpdate } from '../utils';
 
 interface VersionItemProps {
+  docId: Doc['id'];
   text: string;
   link: string;
   versionId?: Versions['version_id'];
+  isActive: boolean;
 }
 
-export const VersionItem = ({ versionId, text, link }: VersionItemProps) => {
+export const VersionItem = ({
+  docId,
+  versionId,
+  text,
+  link,
+  isActive,
+}: VersionItemProps) => {
+  const { setForceSave, docsStore, setStore } = useDocStore();
   const { colorsTokens } = useCunninghamTheme();
-  const {
-    query: { versionId: currentId },
-  } = useRouter();
-
-  const isActive = versionId === currentId;
+  const [isDropOpen, setIsDropOpen] = useState(false);
 
   return (
     <Box
@@ -35,14 +44,7 @@ export const VersionItem = ({ versionId, text, link }: VersionItemProps) => {
       $hasTransition
       $minWidth="13rem"
     >
-      <StyledLink
-        href={link}
-        onClick={(e) => {
-          if (isActive) {
-            e.preventDefault();
-          }
-        }}
-      >
+      <Link href={link} isActive={isActive}>
         <Box
           $padding={{ vertical: '0.7rem', horizontal: 'small' }}
           $align="center"
@@ -58,8 +60,64 @@ export const VersionItem = ({ versionId, text, link }: VersionItemProps) => {
               {text}
             </Text>
           </Box>
+          {isActive && versionId && (
+            <DropButton
+              button={
+                <IconOptions
+                  isOpen={isDropOpen}
+                  aria-label={t('Open the version options')}
+                />
+              }
+              onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
+              isOpen={isDropOpen}
+            >
+              <Box>
+                <Button
+                  onClick={() => {
+                    setIsDropOpen(false);
+                    setForceSave(versionId ? 'version' : 'current');
+
+                    if (
+                      !docsStore?.[docId]?.provider ||
+                      !docsStore?.[versionId]?.provider
+                    ) {
+                      return;
+                    }
+
+                    setStore(docId, {
+                      editor: undefined,
+                    });
+
+                    revertUpdate(
+                      docsStore[docId].provider.doc,
+                      docsStore[docId].provider.doc,
+                      docsStore[versionId].provider.doc,
+                    );
+                  }}
+                  color="primary-text"
+                  icon={<span className="material-icons">save</span>}
+                  size="small"
+                >
+                  <Text $theme="primary">{t('Restore the version')}</Text>
+                </Button>
+              </Box>
+            </DropButton>
+          )}
         </Box>
-      </StyledLink>
+      </Link>
     </Box>
+  );
+};
+
+interface LinkProps {
+  href: string;
+  isActive: boolean;
+}
+
+const Link = ({ href, children, isActive }: PropsWithChildren<LinkProps>) => {
+  return isActive ? (
+    <>{children}</>
+  ) : (
+    <StyledLink href={href}>{children}</StyledLink>
   );
 };
