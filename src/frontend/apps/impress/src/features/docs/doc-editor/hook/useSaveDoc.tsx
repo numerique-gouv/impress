@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Y from 'yjs';
 
-import { useUpdateDoc } from '@/features/docs/doc-management/';
+import { KEY_DOC, useUpdateDoc } from '@/features/docs/doc-management/';
+import { KEY_LIST_DOC_VERSIONS } from '@/features/docs/doc-versioning';
 
 import { toBase64 } from '../utils';
 
@@ -21,6 +22,7 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
         VariantType.SUCCESS,
       );
     },
+    listInvalideQueries: [KEY_LIST_DOC_VERSIONS, KEY_DOC],
   });
   const [initialDoc, setInitialDoc] = useState<string>(
     toBase64(Y.encodeStateAsUpdate(doc)),
