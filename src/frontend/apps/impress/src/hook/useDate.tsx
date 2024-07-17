@@ -1,7 +1,7 @@
 import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { useTranslation } from 'react-i18next';
 
-const format: DateTimeFormatOptions = {
+const formatDefault: DateTimeFormatOptions = {
   month: '2-digit',
   day: '2-digit',
   year: 'numeric',
@@ -12,7 +12,10 @@ const format: DateTimeFormatOptions = {
 export const useDate = () => {
   const { i18n } = useTranslation();
 
-  const formatDate = (date: string): string => {
+  const formatDate = (
+    date: string,
+    format: DateTimeFormatOptions = formatDefault,
+  ): string => {
     return DateTime.fromISO(date)
       .setLocale(i18n.language)
       .toLocaleString(format);

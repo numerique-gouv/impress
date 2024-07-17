@@ -25,7 +25,7 @@ export const DocHeader = ({ doc }: DocHeaderProps) => {
 
   return (
     <Card
-      $margin="big"
+      $margin="small"
       aria-label={t('It is the card information about the document.')}
     >
       <Box $padding="small" $direction="row" $align="center">

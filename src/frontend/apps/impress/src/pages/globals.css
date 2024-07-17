@@ -31,3 +31,13 @@ main ::-webkit-scrollbar-thumb:hover,
 .ReactModalPortal ::-webkit-scrollbar-thumb:hover {
   background-color: #a8bbbf;
 }
+
+.btn-unstyled {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}

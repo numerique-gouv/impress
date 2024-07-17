@@ -10,4 +10,5 @@ export interface Versions {
 export interface Version {
   content: Doc['content'];
   last_modified: string;
+  id: string;
 }

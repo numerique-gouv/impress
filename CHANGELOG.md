@@ -11,6 +11,11 @@ and this project adheres to
 ## Added
 
 - 🎨(frontend) better conversion editor to pdf #151
+- ✨(frontend) Versioning #147
+
+## Fixed
+
+- 🐛(y-webrtc) fix prob connection #147
 
 ## [1.1.0] - 2024-07-15
 

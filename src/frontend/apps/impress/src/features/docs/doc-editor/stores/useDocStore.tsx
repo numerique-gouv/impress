@@ -4,7 +4,7 @@ import * as Y from 'yjs';
 import { create } from 'zustand';
 
 import { signalingUrl } from '@/core';
-import { Base64, Doc } from '@/features/docs/doc-management';
+import { Base64 } from '@/features/docs/doc-management';
 
 interface DocStore {
   provider: WebrtcProvider;
@@ -13,43 +13,39 @@ interface DocStore {
 
 export interface UseDocStore {
   docsStore: {
-    [docId: Doc['id']]: DocStore;
+    [storeId: string]: DocStore;
   };
-  createProvider: (docId: Doc['id'], initialDoc: Base64) => WebrtcProvider;
-  setStore: (docId: Doc['id'], props: Partial<DocStore>) => void;
+  createProvider: (storeId: string, initialDoc: Base64) => WebrtcProvider;
+  setStore: (storeId: string, props: Partial<DocStore>) => void;
 }
 
-const initialState = {
-  docsStore: {},
-};
-
 export const useDocStore = create<UseDocStore>((set, get) => ({
-  docsStore: initialState.docsStore,
-  createProvider: (docId: string, initialDoc: Base64) => {
+  docsStore: {},
+  createProvider: (storeId: string, initialDoc: Base64) => {
     const doc = new Y.Doc({
-      guid: docId,
+      guid: storeId,
     });
 
     if (initialDoc) {
       Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
     }
 
-    const provider = new WebrtcProvider(docId, doc, {
-      signaling: [signalingUrl(docId)],
+    const provider = new WebrtcProvider(storeId, doc, {
+      signaling: [signalingUrl(storeId)],
       maxConns: 5,
     });
 
-    get().setStore(docId, { provider });
+    get().setStore(storeId, { provider });
 
     return provider;
   },
-  setStore: (docId, props) => {
+  setStore: (storeId, props) => {
     set(({ docsStore }) => {
       return {
         docsStore: {
           ...docsStore,
-          [docId]: {
-            ...docsStore[docId],
+          [storeId]: {
+            ...docsStore[storeId],
             ...props,
           },
         },
