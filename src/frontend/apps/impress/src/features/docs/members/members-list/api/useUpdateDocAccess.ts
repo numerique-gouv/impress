@@ -5,7 +5,12 @@ import {
 } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { Access, KEY_DOC, Role } from '@/features/docs/doc-management';
+import {
+  Access,
+  KEY_DOC,
+  KEY_LIST_DOC,
+  Role,
+} from '@/features/docs/doc-management';
 
 import { KEY_LIST_DOC_ACCESSES } from './useDocAccesses';
 
@@ -53,6 +58,9 @@ export const useUpdateDocAccess = (options?: UseUpdateDocAccessOptions) => {
       });
       void queryClient.invalidateQueries({
         queryKey: [KEY_DOC],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [KEY_LIST_DOC],
       });
       if (options?.onSuccess) {
         options.onSuccess(data, variables, context);
