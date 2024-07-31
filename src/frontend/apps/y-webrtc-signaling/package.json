@@ -15,15 +15,15 @@
     "node": ">=18"
   },
   "dependencies": {
-    "lib0": "0.2.94",
-    "ws": "8.17.1"
+    "lib0": "0.2.95",
+    "ws": "8.18.0"
   },
   "devDependencies": {
     "@types/node": "*",
-    "@types/ws": "8.5.10",
+    "@types/ws": "8.5.12",
     "eslint-config-impress": "*",
     "nodemon": "3.1.4",
-    "ts-jest": "29.1.5",
+    "ts-jest": "29.2.3",
     "ts-node": "10.9.2",
     "typescript": "*"
   }
