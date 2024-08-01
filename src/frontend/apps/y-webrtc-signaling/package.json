@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p .",
-    "dev": "nodemon --exec src/server.ts",
+    "dev": "nodemon --config nodemon.json",
     "start": "node ./dist/server.js",
     "lint": "eslint . --ext .ts"
   },
