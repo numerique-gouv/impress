@@ -68,7 +68,7 @@ const onconnection = (conn: WebSocket, url: string) => {
     subscribedTopics.forEach((topicName) => {
       const subs = topics.get(topicName) || new Set();
       subs.forEach((sub) => {
-        if (sub.conn === conn) {
+        if (sub.url === url && sub.conn === conn) {
           subs.delete(sub);
         }
       });
@@ -96,9 +96,18 @@ const onconnection = (conn: WebSocket, url: string) => {
                 topicName,
                 () => new Set(),
               );
-              topic.add({ url, conn });
-              // add topic to conn
-              subscribedTopics.add(topicName);
+
+              let isAlreadyAdded = false;
+              topic.forEach((sub) => {
+                if (sub.url === url && sub.conn === conn) {
+                  isAlreadyAdded = true;
+                }
+              });
+
+              if (!isAlreadyAdded) {
+                topic.add({ url, conn });
+                subscribedTopics.add(topicName);
+              }
             }
           });
           break;
