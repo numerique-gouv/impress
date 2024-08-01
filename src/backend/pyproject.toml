@@ -51,7 +51,7 @@ dependencies = [
     "PyJWT==2.8.0",
     "python-frontmatter==1.0.1",
     "requests==2.32.2",
-    "sentry-sdk==1.38.0",
+    "sentry-sdk==2.8.0",
     "url-normalize==1.4.3",
     "WeasyPrint>=60.2",
     "whitenoise==6.6.0",
