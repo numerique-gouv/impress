@@ -67,6 +67,21 @@ test.describe('Doc Tools', () => {
     await page.keyboard.press('Enter');
     await page.keyboard.press('Enter');
     await page.locator('.bn-block-outer').last().fill('Break');
+    await expect(page.getByText('Break')).toBeVisible();
+
+    // Center the text
+    await page.getByText('Break').dblclick();
+    await page.locator('button[data-test="alignTextCenter"]').click();
+
+    // Change the background color
+    await page.getByText('Break').dblclick();
+    await page.locator('button[data-test="colors"]').click();
+    await page.locator('button[data-test="background-color-brown"]').click();
+
+    // Change the text color
+    await page.getByText('Break').dblclick();
+    await page.locator('button[data-test="colors"]').click();
+    await page.locator('button[data-test="text-color-orange"]').click();
 
     await page.getByLabel('Open the document options').click();
     await page
@@ -82,7 +97,10 @@ test.describe('Doc Tools', () => {
       .click();
 
     // Empty paragraph should be replaced by a <br/>
-    expect(body).toContain('<br/><br/>');
+    expect(body.match(/<br\/>/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(body).toContain('style="color: orange;"');
+    expect(body).toContain('style="text-align: center;"');
+    expect(body).toContain('style="background-color: brown;"');
   });
 
   test('it updates the doc', async ({ page, browserName }) => {
