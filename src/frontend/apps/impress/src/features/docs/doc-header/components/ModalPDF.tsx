@@ -104,7 +104,7 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
       return;
     }
 
-    let body = await editor.blocksToHTMLLossy(editor.document);
+    let body = await editor.blocksToFullHTML(editor.document);
     body = adaptBlockNoteHTML(body);
 
     createPdf({

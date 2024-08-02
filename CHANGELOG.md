@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- 🎨(frontend) better conversion editor to pdf #151
+
 ## [1.1.0] - 2024-07-15
 
 ## Added
