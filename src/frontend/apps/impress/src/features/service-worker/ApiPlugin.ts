@@ -15,7 +15,13 @@ interface OptionsMutate {
   type: 'update' | 'delete' | 'create';
 }
 
-type Options = (OptionsReadonly | OptionsMutate) & { syncManager: SyncManager };
+interface OptionsSync {
+  type: 'synch';
+}
+
+type Options = (OptionsReadonly | OptionsMutate | OptionsSync) & {
+  syncManager: SyncManager;
+};
 
 export class ApiPlugin implements WorkboxPlugin {
   private readonly options: Options;

@@ -65,7 +65,7 @@ const VersionListState = ({
       {error && (
         <Box
           $justify="center"
-          $margin={{ vertical: 'big', horizontal: 'auto' }}
+          $margin={{ vertical: 'small', horizontal: 'small' }}
         >
           <TextErrors
             causes={error.cause}

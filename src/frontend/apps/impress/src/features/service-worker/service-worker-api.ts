@@ -28,7 +28,8 @@ export const isApiUrl = (href: string) => {
  */
 registerRoute(
   ({ url }) =>
-    isApiUrl(url.href) && url.href.match(/.*\/documents\/\?(page|ordering)=.*/),
+    isApiUrl(url.href) &&
+    url.href.match(/.*\/documents\/\?(page|ordering)=.*/g),
   new NetworkOnly({
     plugins: [
       new ApiPlugin({
@@ -42,7 +43,8 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => isApiUrl(url.href) && url.href.match(/.*\/documents\/.*\//),
+  ({ url }) =>
+    isApiUrl(url.href) && url.href.match(/.*\/documents\/([a-z0-9\-]+)\/$/g),
   new NetworkOnly({
     plugins: [
       new ApiPlugin({
@@ -56,7 +58,8 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => isApiUrl(url.href) && url.href.match(/.*\/documents\/.*\//),
+  ({ url }) =>
+    isApiUrl(url.href) && url.href.match(/.*\/documents\/([a-z0-9\-]+)\/$/g),
   new NetworkOnly({
     plugins: [
       new ApiPlugin({
@@ -69,7 +72,7 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => isApiUrl(url.href) && url.href.match(/.*\/documents\//),
+  ({ url }) => isApiUrl(url.href) && url.href.match(/.*\/documents\/$/g),
   new NetworkOnly({
     plugins: [
       new ApiPlugin({
@@ -82,7 +85,8 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => isApiUrl(url.href) && url.href.match(/.*\/documents\/.*\//),
+  ({ url }) =>
+    isApiUrl(url.href) && url.href.match(/.*\/documents\/([a-z0-9\-]+)\/$/g),
   new NetworkOnly({
     plugins: [
       new ApiPlugin({
@@ -102,6 +106,10 @@ registerRoute(
       new CacheableResponsePlugin({ statuses: [0, 200] }),
       new ExpirationPlugin({
         maxAgeSeconds: 24 * 60 * 60 * DAYS_EXP,
+      }),
+      new ApiPlugin({
+        type: 'synch',
+        syncManager,
       }),
     ],
   }),
