@@ -17,6 +17,10 @@ and this project adheres to
 
 - 🐛(y-webrtc) fix prob connection #147
 
+## Changed
+
+- 🎨(frontend) stop limit layout height to screen size #158
+
 ## [1.1.0] - 2024-07-15
 
 ## Added

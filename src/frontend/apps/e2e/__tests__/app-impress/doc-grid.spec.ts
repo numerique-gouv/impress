@@ -17,7 +17,7 @@ test.describe('Documents Grid', () => {
     await expect(thead.getByText(/Created at/i)).toBeVisible();
     await expect(thead.getByText(/Updated at/i)).toBeVisible();
     await expect(thead.getByText(/Your role/i)).toBeVisible();
-    await expect(thead.getByText(/Users number/i)).toBeVisible();
+    await expect(thead.getByText(/Members/i)).toBeVisible();
 
     const row1 = datagrid.getByRole('row').nth(1).getByRole('cell');
     const docName = await row1.nth(1).textContent();

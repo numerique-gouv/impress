@@ -20,9 +20,6 @@ import { PAGE_SIZE } from '../conf';
 import { DocsGridActions } from './DocsGridActions';
 
 const DocsGridStyle = createGlobalStyle`
-  & .c__datagrid{
-    max-height: 91%;
-  }
   & .c__datagrid thead{
     position: sticky;
     top: 0;
@@ -171,7 +168,7 @@ export const DocsGrid = () => {
             },
           },
           {
-            headerName: t('Users number'),
+            headerName: t('Members'),
             id: 'users_number',
             renderCell: ({ row }) => {
               return (

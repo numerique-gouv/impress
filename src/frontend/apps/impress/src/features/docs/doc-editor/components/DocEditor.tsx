@@ -54,7 +54,6 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
         $direction="row"
         $margin={{ all: 'small', top: 'none' }}
         $gap="1rem"
-        $overflow="auto"
       >
         <Card $padding="big" $css="flex:1;" $overflow="auto">
           {isVersion ? (
