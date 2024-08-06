@@ -87,6 +87,7 @@ self.addEventListener('activate', function (event) {
 const FALLBACK = {
   offline: '/offline/',
   docs: '/docs/[id]/',
+  versions: '/docs/[id]/versions/[versionId]/',
   images: '/assets/img-not-found.svg',
 };
 const precacheResources = [
@@ -99,6 +100,7 @@ const precacheResources = [
   FALLBACK.offline,
   FALLBACK.images,
   FALLBACK.docs,
+  FALLBACK.versions,
 ];
 
 const precacheStrategy = getStrategy({
@@ -117,8 +119,14 @@ setCatchHandler(async ({ request, url, event }) => {
       return ApiPlugin.getApiCatchHandler();
 
     case request.destination === 'document':
-      if (url.pathname.match(/^\/docs\/.*\//)) {
+      if (url.pathname.match(/^\/docs\/([a-z0-9\-]+)\/$/g)) {
         return precacheStrategy.handle({ event, request: FALLBACK.docs });
+      } else if (
+        url.pathname.match(
+          /^\/docs\/([a-z0-9\-]+)\/versions\/([a-z0-9\-]+)\/$/g,
+        )
+      ) {
+        return precacheStrategy.handle({ event, request: FALLBACK.versions });
       }
 
       return precacheStrategy.handle({ event, request: FALLBACK.offline });
