@@ -37,14 +37,14 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
       {!doc.abilities.partial_update && (
         <Box $margin={{ all: 'small', top: 'none' }}>
           <Alert type={VariantType.WARNING}>
-            {t(`Read only, you don't have the right to update this document.`)}
+            {t(`Read only, you cannot edit this document.`)}
           </Alert>
         </Box>
       )}
       {isVersion && (
         <Box $margin={{ all: 'small', top: 'none' }}>
           <Alert type={VariantType.WARNING}>
-            {t(`You cannot edit document version.`)}
+            {t(`Read only, you cannot edit document versions.`)}
           </Alert>
         </Box>
       )}

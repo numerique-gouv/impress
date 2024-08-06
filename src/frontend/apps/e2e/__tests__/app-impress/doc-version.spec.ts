@@ -42,6 +42,9 @@ test.describe('Doc Version', () => {
     expect(await panel.locator('li').count()).toBe(2);
 
     await panel.locator('li').nth(1).click();
+    await expect(
+      page.getByText('Read only, you cannot edit document versions.'),
+    ).toBeVisible();
     await expect(page.getByText('Hello World')).toBeVisible();
     await expect(page.getByText('It will create a version')).toBeHidden();
 
