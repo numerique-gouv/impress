@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.2.0] - 2024-08-06
+
 ## Added
 
 - 🎨(frontend) better conversion editor to pdf #151
@@ -47,6 +49,7 @@ and this project adheres to
 - ♻️(frontend) create a doc from a modal #132
 - ♻️(frontend) manage members from the share modal #140
 
+
 ## [1.0.0] - 2024-07-02
 
 ## Added
@@ -85,6 +88,7 @@ and this project adheres to
 - 💚(CI) Remove trigger workflow on push tags on CI (#68)
 - 🔥(frontend) Remove coming soon page (#121)
 
+
 ## [0.1.0] - 2024-05-24
 
 ## Added
@@ -93,7 +97,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.1.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.2.0...main
+[1.2.0]: https://github.com/numerique-gouv/impress/releases/v1.2.0
 [1.1.0]: https://github.com/numerique-gouv/impress/releases/v1.1.0
 [1.0.0]: https://github.com/numerique-gouv/impress/releases/v1.0.0
 [0.1.0]: https://github.com/numerique-gouv/impress/releases/v0.1.0
