@@ -169,9 +169,7 @@ test.describe('Doc Editor', () => {
     await goToGridDoc(page);
 
     await expect(
-      page.getByText(
-        "Read only, you don't have the right to update this document.",
-      ),
+      page.getByText('Read only, you cannot edit this document.'),
     ).toBeVisible();
   });
 });
