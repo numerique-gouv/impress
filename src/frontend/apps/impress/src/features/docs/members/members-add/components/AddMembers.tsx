@@ -70,13 +70,22 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
     duration: 4000,
   };
 
-  const onError = (dataError: APIErrorUser['data']) => {
-    const messageError =
-      dataError?.type === OptionType.INVITATION
+  const onError = (dataError: APIErrorUser) => {
+    let messageError =
+      dataError['data']?.type === OptionType.INVITATION
         ? t(`Failed to create the invitation for {{email}}.`, {
-            email: dataError?.value,
+            email: dataError['data']?.value,
           })
         : t(`Failed to add the member in the document.`);
+
+    if (
+      dataError.cause?.[0] ===
+      'Document invitation with this Email address and Document already exists.'
+    ) {
+      messageError = t('"{{email}}" is already invited to the document.', {
+        email: dataError['data']?.value,
+      });
+    }
 
     toast(messageError, VariantType.ERROR, toastOptions);
   };
@@ -106,11 +115,12 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
 
     setIsPending(false);
     setResetKey(resetKey + 1);
+    setSelectedUsers([]);
 
     settledPromises.forEach((settledPromise) => {
       switch (settledPromise.status) {
         case 'rejected':
-          onError((settledPromise.reason as APIErrorUser).data);
+          onError(settledPromise.reason as APIErrorUser);
           break;
 
         case 'fulfilled':
@@ -132,7 +142,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
       <IconBG iconName="group_add" />
       <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 70%;">
         <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
-          <Box $css="flex: auto;">
+          <Box $css="flex: auto;" $width="15rem">
             <SearchUsers
               key={resetKey + 1}
               doc={doc}

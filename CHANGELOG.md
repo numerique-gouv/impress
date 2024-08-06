@@ -16,6 +16,7 @@ and this project adheres to
 ## Fixed
 
 - 🐛(y-webrtc) fix prob connection #147
+- ⚡️(frontend) improve select share stability #159
 
 ## Changed
 
