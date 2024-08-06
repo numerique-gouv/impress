@@ -170,7 +170,7 @@ test.describe('Document create member', () => {
 
     const inputSearch = page.getByLabel(/Find a member to add to the document/);
 
-    const email = randomName('test@test.fr', browserName, 1)[0];
+    const [email] = randomName('test@test.fr', browserName, 1);
     await inputSearch.fill(email);
     await page.getByRole('option', { name: email }).click();
 
@@ -191,7 +191,22 @@ test.describe('Document create member', () => {
     expect(responseCreateInvitation.ok()).toBeTruthy();
 
     await inputSearch.fill(email);
-    await expect(page.getByText('Loading...')).toBeHidden();
-    await expect(page.getByRole('option', { name: email })).toBeHidden();
+    await page.getByRole('option', { name: email }).click();
+    // Choose a role
+    await page.getByRole('combobox', { name: /Choose a role/ }).click();
+    await page.getByRole('option', { name: 'Owner' }).click();
+
+    const responsePromiseCreateInvitationFail = page.waitForResponse(
+      (response) =>
+        response.url().includes('/invitations/') && response.status() === 400,
+    );
+
+    await page.getByRole('button', { name: 'Validate' }).click();
+    await expect(
+      page.getByText(`"${email}" is already invited to the document.`),
+    ).toBeVisible();
+    const responseCreateInvitationFail =
+      await responsePromiseCreateInvitationFail;
+    expect(responseCreateInvitationFail.ok()).toBeFalsy();
   });
 });

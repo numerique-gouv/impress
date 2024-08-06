@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Options } from 'react-select';
+import { InputActionMeta, Options } from 'react-select';
 import AsyncSelect from 'react-select/async';
 
 import { useCunninghamTheme } from '@/cunningham';
@@ -42,7 +42,7 @@ export const SearchUsers = ({
 
   const options = data?.results;
 
-  useEffect(() => {
+  const optionsSelect = useMemo(() => {
     if (!resolveOptionsRef.current || !options) {
       return;
     }
@@ -81,6 +81,8 @@ export const SearchUsers = ({
 
     resolveOptionsRef.current(users);
     resolveOptionsRef.current = null;
+
+    return users;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options, selectedUsers]);
 
@@ -91,16 +93,26 @@ export const SearchUsers = ({
   };
 
   const timeout = useRef<NodeJS.Timeout | null>(null);
-  const onInputChangeHandle = useCallback((newValue: string) => {
-    setInput(newValue);
-    if (timeout.current) {
-      clearTimeout(timeout.current);
-    }
+  const onInputChangeHandle = useCallback(
+    (newValue: string, actionMeta: InputActionMeta) => {
+      if (
+        actionMeta.action === 'input-blur' ||
+        actionMeta.action === 'menu-close'
+      ) {
+        return;
+      }
 
-    timeout.current = setTimeout(() => {
-      setUserQuery(newValue);
-    }, 1000);
-  }, []);
+      setInput(newValue);
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
+
+      timeout.current = setTimeout(() => {
+        setUserQuery(newValue);
+      }, 1000);
+    },
+    [],
+  );
 
   return (
     <AsyncSelect
@@ -125,10 +137,10 @@ export const SearchUsers = ({
       aria-label={t('Find a member to add to the document')}
       isMulti
       loadOptions={loadOptions}
-      defaultOptions={[]}
+      defaultOptions={optionsSelect}
       onInputChange={onInputChangeHandle}
       inputValue={input}
-      placeholder={t('Search new members by email')}
+      placeholder={t('Search by email')}
       noOptionsMessage={() =>
         input
           ? t("We didn't find a mail matching, try to be more accurate")
