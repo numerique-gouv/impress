@@ -29,8 +29,11 @@ export const Panel = ({ doc }: PanelProps) => {
     <Card
       $width="100%"
       $maxWidth="20rem"
-      $position="relative"
+      $position="sticky"
+      $maxHeight="96vh"
+      $height="100%"
       $css={`
+        top: 2vh;
         transition: ${transition};
         ${
           !isOpen &&
@@ -50,7 +53,7 @@ export const Panel = ({ doc }: PanelProps) => {
             ? t('Close the document version panel')
             : t('Open the document version panel')
         }
-        $background="white"
+        $background="transparent"
         $size="h2"
         $zIndex={1}
         $css={`

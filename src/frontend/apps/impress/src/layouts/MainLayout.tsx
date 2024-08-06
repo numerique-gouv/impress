@@ -8,12 +8,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <Box>
-      <Box $height="100vh">
+      <Box $minHeight="100vh">
         <Header />
         <Box $css="flex: 1;" $direction="row">
           <Box
             as="main"
-            $height={`calc(100vh - ${HEADER_HEIGHT})`}
+            $minHeight={`calc(100vh - ${HEADER_HEIGHT})`}
             $width="100%"
             $background={colorsTokens()['primary-bg']}
           >
