@@ -10,7 +10,7 @@ import {
   ModalUpdateDoc,
 } from '@/features/docs/doc-management';
 
-import { ModalPDF } from './ModalPDF';
+import { ModalPDF } from './ModalExport';
 
 interface DocToolBoxProps {
   doc: Doc;
@@ -83,10 +83,10 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
               setIsDropOpen(false);
             }}
             color="primary-text"
-            icon={<span className="material-icons">picture_as_pdf</span>}
+            icon={<span className="material-icons">file_download</span>}
             size="small"
           >
-            <Text $theme="primary">{t('Generate PDF')}</Text>
+            <Text $theme="primary">{t('Export')}</Text>
           </Button>
         </Box>
       </DropButton>
