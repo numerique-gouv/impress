@@ -180,6 +180,12 @@ class DocumentGenerationSerializer(serializers.Serializer):
         required=False,
         default="html",
     )
+    format = serializers.ChoiceField(
+        choices=["pdf", "docx"],
+        label=_("Format"),
+        required=False,
+        default="pdf",
+    )
 
 
 class InvitationSerializer(serializers.ModelSerializer):

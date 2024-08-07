@@ -1,13 +1,11 @@
 """API endpoints"""
-from io import BytesIO
-
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import (
     OuterRef,
     Q,
     Subquery,
 )
-from django.http import FileResponse, Http404
+from django.http import Http404
 
 from botocore.exceptions import ClientError
 from rest_framework import (
@@ -460,7 +458,16 @@ class TemplateViewSet(
     # pylint: disable=unused-argument
     def generate_document(self, request, pk=None):
         """
-        Generate and return pdf for this template with the content passed.
+        Generate and return a document for this template around the
+        body passed as argument.
+
+        2 types of body are accepted:
+        - HTML: body_type = "html"
+        - Markdown: body_type = "markdown"
+
+        2 types of documents can be generated:
+        - PDF: format = "pdf"
+        - Docx: format = "docx"
         """
         serializer = serializers.DocumentGenerationSerializer(data=request.data)
 
@@ -471,13 +478,10 @@ class TemplateViewSet(
 
         body = serializer.validated_data["body"]
         body_type = serializer.validated_data["body_type"]
+        export_format = serializer.validated_data["format"]
 
         template = self.get_object()
-        pdf_content = template.generate_document(body, body_type)
-
-        response = FileResponse(BytesIO(pdf_content), content_type="application/pdf")
-        response["Content-Disposition"] = f"attachment; filename={template.title}.pdf"
-        return response
+        return template.generate_document(body, body_type, export_format)
 
 
 class TemplateAccessViewSet(
