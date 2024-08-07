@@ -75,6 +75,7 @@ RUN apt-get update && \
       libgdk-pixbuf2.0-0 \
       libpango-1.0-0 \
       libpangocairo-1.0-0 \
+      pandoc \
       shared-mime-info && \
   rm -rf /var/lib/apt/lists/*
 

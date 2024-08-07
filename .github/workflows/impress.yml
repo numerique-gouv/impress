@@ -198,7 +198,7 @@ jobs:
       - name: Install gettext (required to compile messages)
         run: |
           sudo apt-get update
-          sudo apt-get install -y gettext
+          sudo apt-get install -y gettext pandoc
 
       - name: Generate a MO file from strings extracted from the project
         run: python manage.py compilemessages
