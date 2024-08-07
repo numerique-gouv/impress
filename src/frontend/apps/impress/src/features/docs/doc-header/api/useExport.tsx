@@ -2,17 +2,19 @@ import { useMutation } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-interface CreatePdfParams {
+interface CreateExportParams {
   templateId: string;
   body: string;
   body_type: 'html' | 'markdown';
+  format: 'pdf' | 'docx';
 }
 
-export const createPdf = async ({
+export const createExport = async ({
   templateId,
   body,
   body_type,
-}: CreatePdfParams): Promise<Blob> => {
+  format,
+}: CreateExportParams): Promise<Blob> => {
   const response = await fetchAPI(
     `templates/${templateId}/generate-document/`,
     {
@@ -20,19 +22,23 @@ export const createPdf = async ({
       body: JSON.stringify({
         body,
         body_type,
+        format,
       }),
     },
   );
 
   if (!response.ok) {
-    throw new APIError('Failed to create the pdf', await errorCauses(response));
+    throw new APIError(
+      'Failed to export the document',
+      await errorCauses(response),
+    );
   }
 
   return await response.blob();
 };
 
-export function useCreatePdf() {
-  return useMutation<Blob, APIError, CreatePdfParams>({
-    mutationFn: createPdf,
+export function useExport() {
+  return useMutation<Blob, APIError, CreateExportParams>({
+    mutationFn: createExport,
   });
 }
