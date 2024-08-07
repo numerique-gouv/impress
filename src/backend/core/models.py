@@ -2,7 +2,9 @@
 Declare and configure the models for the impress core application
 """
 import hashlib
+import os
 import smtplib
+import tempfile
 import textwrap
 import uuid
 from datetime import timedelta
@@ -28,10 +30,11 @@ from django.utils.translation import override
 
 import frontmatter
 import markdown
+import pypandoc
 import weasyprint
 from botocore.exceptions import ClientError
-from timezone_field import TimeZoneField
 from htmldocx import HtmlToDocx
+from timezone_field import TimeZoneField
 
 logger = getLogger(__name__)
 
@@ -591,19 +594,42 @@ class Template(BaseModel):
         """
         Generate and return a docx document wrapped around the current template
         """
-        html_string = DjangoTemplate(self.code).render(
+        template_string = DjangoTemplate(self.code).render(
             Context({"body": html.format_html(body_html), **metadata})
         )
 
-        new_parser = HtmlToDocx()
-        new_parser.add_styles_to_run(self.css)
-        docx = new_parser.parse_html_string(html_string)
+        html_string = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                {self.css}
+            </style>
+        </head>
+        <body>
+            {template_string}
+        </body>
+        </html>
+        """
 
-        file_stream = BytesIO()
-        docx.save(file_stream)
-        file_stream.seek(0)
+        print(html_string)
 
-        response = FileResponse(file_stream, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        # Convert the HTML to a temporary docx file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
+            output_path = tmp_file.name
+
+        pypandoc.convert_text(html_string, 'docx', format='html', outputfile=output_path)
+
+        # Create a BytesIO object to store the output of the temporary docx file
+        with open(output_path, 'rb') as f:
+            output = BytesIO(f.read())
+
+        # Remove the temporary docx file
+        os.remove(output_path)
+
+        output.seek(0)
+
+        response = FileResponse(output, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         response["Content-Disposition"] = f"attachment; filename={self.title}.docx"
         return response
 
