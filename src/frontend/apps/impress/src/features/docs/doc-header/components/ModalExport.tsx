@@ -4,6 +4,8 @@ import {
   Loader,
   Modal,
   ModalSize,
+  Radio,
+  RadioGroup,
   Select,
   VariantType,
   useToastProvider,
@@ -15,7 +17,7 @@ import { Box, Text } from '@/components';
 import { useDocStore } from '@/features/docs/doc-editor/';
 import { Doc } from '@/features/docs/doc-management';
 
-import { useCreatePdf } from '../api/useCreatePdf';
+import { useExport } from '../api/useExport';
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
 import { adaptBlockNoteHTML, downloadFile } from '../utils';
 
@@ -31,14 +33,14 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
   const { toast } = useToastProvider();
   const { docsStore } = useDocStore();
   const {
-    mutate: createPdf,
-    data: pdf,
+    mutate: createExport,
+    data: documentGenerated,
     isSuccess,
-
     isPending,
     error,
-  } = useCreatePdf();
+  } = useExport();
   const [templateIdSelected, setTemplateIdSelected] = useState<string>();
+  const [format, setFormat] = useState<'pdf' | 'docx'>('pdf');
 
   const templateOptions = useMemo(() => {
     if (!templates?.pages) {
@@ -73,7 +75,7 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
   }, [error, t]);
 
   useEffect(() => {
-    if (!pdf || !isSuccess) {
+    if (!documentGenerated || !isSuccess) {
       return;
     }
 
@@ -84,16 +86,21 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/\s/g, '-');
 
-    downloadFile(pdf, `${title}.pdf`);
+    downloadFile(documentGenerated, `${title}.${format}`);
 
-    toast(t('Your pdf was downloaded succesfully'), VariantType.SUCCESS);
+    toast(
+      t('Your {{format}} was downloaded succesfully', {
+        format,
+      }),
+      VariantType.SUCCESS,
+    );
 
     onClose();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pdf, isSuccess, t]);
+  }, [documentGenerated, isSuccess, t]);
 
   async function onSubmit() {
-    if (!templateIdSelected) {
+    if (!templateIdSelected || !format) {
       return;
     }
 
@@ -107,10 +114,11 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
     let body = await editor.blocksToFullHTML(editor.document);
     body = adaptBlockNoteHTML(body);
 
-    createPdf({
+    createExport({
       templateId: templateIdSelected,
       body,
       body_type: 'html',
+      format,
     });
   }
 
@@ -148,20 +156,20 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
             picture_as_pdf
           </Text>
           <Text as="h2" $size="h3" $margin="none" $theme="primary">
-            {t('Generate PDF')}
+            {t('Export')}
           </Text>
         </Box>
       }
     >
       <Box
         $margin={{ bottom: 'xl' }}
-        aria-label={t('Content modal to generate a PDF')}
+        aria-label={t('Content modal to export the document')}
         $gap="1.5rem"
       >
         <Alert canClose={false} type={VariantType.INFO}>
           <Text>
             {t(
-              'Generate a PDF from your document, it will be inserted in the selected template.',
+              'Export your document, it will be inserted in the selected template.',
             )}
           </Text>
         </Alert>
@@ -175,6 +183,22 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
             setTemplateIdSelected(options.target.value as string)
           }
         />
+
+        <RadioGroup>
+          <Radio
+            label={t('PDF')}
+            value="pdf"
+            name="format"
+            onChange={(evt) => setFormat(evt.target.value as 'pdf')}
+            defaultChecked={true}
+          />
+          <Radio
+            label={t('Docx')}
+            value="docx"
+            name="format"
+            onChange={(evt) => setFormat(evt.target.value as 'docx')}
+          />
+        </RadioGroup>
 
         {isPending && (
           <Box $align="center" $margin={{ top: 'big' }}>
