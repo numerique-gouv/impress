@@ -1,7 +1,7 @@
 <page size="A4">
   <div class="header">
-    <img
-      src="https://upload.wikimedia.org/wikipedia/fr/7/72/Logo_du_Gouvernement_de_la_R%C3%A9publique_fran%C3%A7aise_%282020%29.svg"
+    <img width="200"
+      src="https://impress-staging.beta.numerique.gouv.fr/assets/logo-gouv.png"
     />
   </div>
   <div class="content">

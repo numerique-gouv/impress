@@ -2,10 +2,13 @@
 Declare and configure the models for the impress core application
 """
 import hashlib
+import os
 import smtplib
+import tempfile
 import textwrap
 import uuid
 from datetime import timedelta
+from io import BytesIO
 from logging import getLogger
 
 from django.conf import settings
@@ -16,6 +19,7 @@ from django.core import exceptions, mail, validators
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db import models
+from django.http import FileResponse
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
 from django.template.loader import render_to_string
@@ -26,10 +30,11 @@ from django.utils.translation import override
 
 import frontmatter
 import markdown
+import pypandoc
+import weasyprint
 from botocore.exceptions import ClientError
+from htmldocx import HtmlToDocx
 from timezone_field import TimeZoneField
-from weasyprint import CSS, HTML
-from weasyprint.text.fonts import FontConfiguration
 
 logger = getLogger(__name__)
 
@@ -563,11 +568,83 @@ class Template(BaseModel):
             "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,
         }
-
-    def generate_document(self, body, body_type):
+    
+    def generate_pdf(self, body_html, metadata):
         """
-        Generate and return a PDF document for this template around the
-        body passed as argument.
+        Generate and return a pdf document wrapped around the current template
+        """
+        document_html = weasyprint.HTML(
+            string=DjangoTemplate(self.code).render(
+                Context({"body": html.format_html(body_html), **metadata})
+            )
+        )
+        css = weasyprint.CSS(
+            string=self.css,
+            font_config=weasyprint.text.fonts.FontConfiguration(),
+
+        )
+
+        pdf_content = document_html.write_pdf(stylesheets=[css], zoom=1)
+        response = FileResponse(BytesIO(pdf_content), content_type="application/pdf")
+        response["Content-Disposition"] = f"attachment; filename={self.title}.pdf"
+        
+        return response
+    
+    def generate_word(self, body_html, metadata):
+        """
+        Generate and return a docx document wrapped around the current template
+        """
+        template_string = DjangoTemplate(self.code).render(
+            Context({"body": html.format_html(body_html), **metadata})
+        )
+
+        html_string = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                {self.css}
+            </style>
+        </head>
+        <body>
+            {template_string}
+        </body>
+        </html>
+        """
+
+        print(html_string)
+
+        # Convert the HTML to a temporary docx file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
+            output_path = tmp_file.name
+
+        pypandoc.convert_text(html_string, 'docx', format='html', outputfile=output_path)
+
+        # Create a BytesIO object to store the output of the temporary docx file
+        with open(output_path, 'rb') as f:
+            output = BytesIO(f.read())
+
+        # Remove the temporary docx file
+        os.remove(output_path)
+
+        output.seek(0)
+
+        response = FileResponse(output, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        response["Content-Disposition"] = f"attachment; filename={self.title}.docx"
+        return response
+
+    def generate_document(self, body, body_type, format):
+        """
+        Generate and return a document for this template around the
+        body passed as argument. 
+
+        2 types of body are accepted:
+        - HTML: body_type = "html"
+        - Markdown: body_type = "markdown"
+
+        2 types of documents can be generated:
+        - PDF: format = "pdf"
+        - Docx: format = "docx"
         """
         document = frontmatter.loads(body)
         metadata = document.metadata
@@ -580,16 +657,10 @@ class Template(BaseModel):
                 markdown.markdown(textwrap.dedent(strip_body)) if strip_body else ""
             )
 
-        document_html = HTML(
-            string=DjangoTemplate(self.code).render(
-                Context({"body": html.format_html(body_html), **metadata})
-            )
-        )
-        css = CSS(
-            string=self.css,
-            font_config=FontConfiguration(),
-        )
-        return document_html.write_pdf(stylesheets=[css], zoom=1)
+        if format == "pdf":
+            return self.generate_pdf(body_html, metadata)
+        else:
+            return self.generate_word(body_html, metadata)
 
 
 class TemplateAccess(BaseAccess):
