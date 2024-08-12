@@ -33,7 +33,6 @@ MANIFEST
 *.pot
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -49,9 +48,6 @@ node_modules
 
 # Mails
 src/backend/core/templates/mail/
-
-# Typescript client
-src/frontend/tsclient
 
 # Swagger
 **/swagger.json

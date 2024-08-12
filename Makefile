@@ -49,7 +49,6 @@ WAIT_DB             = @$(COMPOSE_RUN) dockerize -wait tcp://$(DB_HOST):$(DB_PORT
 # -- Backend
 MANAGE              = $(COMPOSE_RUN_APP) python manage.py
 MAIL_YARN           = $(COMPOSE_RUN) -w /app/src/mail node yarn
-TSCLIENT_YARN       = $(COMPOSE_RUN) -w /app/src/tsclient node yarn
 
 # -- Frontend
 PATH_FRONT          = ./src/frontend
@@ -274,16 +273,6 @@ mails-build-mjml-to-html:	## Convert mjml files to html and text
 mails-install: ## install the mail generator
 	@$(MAIL_YARN) install
 .PHONY: mails-install
-
-# -- TS client generator
-
-tsclient-install: ## Install the Typescript API client generator
-	@$(TSCLIENT_YARN) install
-.PHONY: tsclient-install
-
-tsclient: tsclient-install ## Generate a Typescript API client
-	@$(TSCLIENT_YARN) generate:api:client:local ../frontend/tsclient
-.PHONY: tsclient-install
 
 # -- Misc
 clean: ## restore repository state as it was freshly cloned
