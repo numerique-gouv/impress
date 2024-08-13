@@ -18,6 +18,7 @@ and this project adheres to
 
 - 🐛(y-webrtc) fix prob connection #147
 - ⚡️(frontend) improve select share stability #159
+- 🐛(backend) enable SSL when sending email #165
 
 ## Changed
 

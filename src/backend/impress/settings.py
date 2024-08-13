@@ -278,6 +278,7 @@ class Base(Configuration):
     EMAIL_HOST_PASSWORD = values.Value(None)
     EMAIL_PORT = values.PositiveIntegerValue(None)
     EMAIL_USE_TLS = values.BooleanValue(False)
+    EMAIL_USE_SSL = values.BooleanValue(False)
     EMAIL_FROM = values.Value("from@example.com")
 
     AUTH_USER_MODEL = "core.User"
