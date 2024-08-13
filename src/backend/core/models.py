@@ -805,7 +805,7 @@ class Invitation(BaseModel):
         """Email invitation to the user."""
         try:
             with override(self.issuer.language):
-                title = _("Invitation to join Impress!")
+                title = _("Invitation to join Docs!")
                 template_vars = {"title": title, "site": Site.objects.get_current()}
                 msg_html = render_to_string("mail/html/invitation.html", template_vars)
                 msg_plain = render_to_string("mail/text/invitation.txt", template_vars)

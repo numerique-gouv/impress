@@ -186,10 +186,10 @@ def test_models_document_invitations_email():
     email = mail.outbox[0]
 
     assert email.to == [invitation.email]
-    assert email.subject == "Invitation to join Impress!"
+    assert email.subject == "Invitation to join Docs!"
 
     email_content = " ".join(email.body.split())
-    assert "Invitation to join Impress!" in email_content
+    assert "Invitation to join Docs!" in email_content
     assert "[//example.com]" in email_content
 
 
