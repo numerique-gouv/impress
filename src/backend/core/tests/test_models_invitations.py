@@ -177,7 +177,10 @@ def test_models_document_invitations_email():
     assert len(mail.outbox) == 0
 
     factories.UserDocumentAccessFactory(document=document)
-    invitation = factories.InvitationFactory(document=document, email="john@people.com")
+    issuer = factories.UserFactory(language="en-us")
+    invitation = factories.InvitationFactory(
+        document=document, email="john@people.com", issuer=issuer
+    )
 
     # pylint: disable-next=no-member
     assert len(mail.outbox) == 1
@@ -190,6 +193,33 @@ def test_models_document_invitations_email():
 
     email_content = " ".join(email.body.split())
     assert "Invitation to join Docs!" in email_content
+    assert "[//example.com]" in email_content
+
+
+def test_models_document_invitations_email_language_fr():
+    """Check email invitation during invitation creation."""
+    member_access = factories.UserDocumentAccessFactory(role="reader")
+    document = member_access.document
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    factories.UserDocumentAccessFactory(document=document)
+    issuer = factories.UserFactory(language="fr-fr")
+    invitation = factories.InvitationFactory(
+        document=document, email="john@people.com", issuer=issuer
+    )
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 1
+
+    # pylint: disable-next=no-member
+    email = mail.outbox[0]
+
+    assert email.to == [invitation.email]
+
+    email_content = " ".join(email.body.split())
+    assert "Invitation à rejoindre Docs !" in email_content
     assert "[//example.com]" in email_content
 
 
