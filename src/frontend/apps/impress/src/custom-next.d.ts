@@ -22,5 +22,6 @@ namespace NodeJS {
     NEXT_PUBLIC_API_ORIGIN?: string;
     NEXT_PUBLIC_SIGNALING_URL?: string;
     NEXT_PUBLIC_SW_DEACTIVATED?: string;
+    NEXT_PUBLIC_THEME?: string;
   }
 }
