@@ -27,7 +27,7 @@
             <ul>
               <li>{% trans "Create documents."%}</li>
               <li>{% trans "Work offline."%}</li>
-              <li>{% trans "Invite members of your document or community in just a few clicks."%}</li>
+              <li>{% trans "Invite members of your community to your document in just a few clicks."%}</li>
             </ul>
           </mj-text>
           <mj-button href="//{{site.domain}}" background-color="#000091" color="white" padding-bottom="30px">
@@ -35,7 +35,7 @@
           </mj-button>
           <mj-text>{% trans "We are confident that Docs will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
           <mj-text>{% trans "Feel free to explore all the features of the application and share your feedback and suggestions with us. Your feedback is valuable to us and will enable us to continually improve our service." %}</mj-text>
-          <mj-text>{% trans "Once again, welcome aboard! We are eager to accompany you on you collaboration adventure." %}</mj-text>
+          <mj-text>{% trans "Once again, welcome aboard! We are eager to accompany you on your collaboration adventure." %}</mj-text>
 
           <!-- Signature -->
           <mj-text>

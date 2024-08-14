@@ -185,7 +185,7 @@ back-i18n-compile: ## compile the gettext files
 .PHONY: back-i18n-compile
 
 back-i18n-generate: ## create the .pot files used for i18n
-	@$(MANAGE) makemessages -a --keep-pot
+	@$(MANAGE) makemessages -a --keep-pot --all
 .PHONY: back-i18n-generate
 
 shell: ## connect to database shell
