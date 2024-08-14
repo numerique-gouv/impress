@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, StyledLink, Text } from '@/components/';
-import LogoGouv from '@/components/LogoGouv';
+import { useCunninghamTheme } from '@/cunningham';
 
 import { LanguagePicker } from '../language/';
 
@@ -24,6 +24,8 @@ const RedStripe = styled.div`
 
 export const Header = () => {
   const { t } = useTranslation();
+  const { themeTokens } = useCunninghamTheme();
+  const logo = themeTokens().logo;
 
   return (
     <Box
@@ -42,19 +44,24 @@ export const Header = () => {
         $direction="row"
       >
         <Box $gap="6rem" $direction="row">
-          <LogoGouv
-            textProps={{
-              $size: 't',
-              $css: 'line-height:10px',
-              $margin: { vertical: '3px' },
-            }}
-          />
+          {logo && (
+            <Image
+              priority
+              src={logo.src}
+              alt={logo.alt}
+              width={0}
+              height={0}
+              style={{ width: logo.widthHeader, height: 'auto' }}
+            />
+          )}
           <StyledLink href="/">
             <Box
               $align="center"
               $gap="0.8rem"
               $direction="row"
               $position="relative"
+              $height="fit-content"
+              $margin={{ top: 'auto' }}
             >
               <Image priority src={IconDocs} alt={t('Docs Logo')} width={38} />
               <Text
@@ -65,7 +72,7 @@ export const Header = () => {
                 $position="absolute"
                 $radius="5px"
                 $css={`
-                  top: 9px;
+                  bottom: 21px;
                   right: -21px;
                 `}
               >

@@ -8,11 +8,7 @@ test.describe('Footer', () => {
   test('checks all the elements are visible', async ({ page }) => {
     const footer = page.locator('footer').first();
 
-    await expect(footer.getByAltText('Marianne Logo')).toBeVisible();
-
-    await expect(
-      footer.getByAltText('Freedom Equality Fraternity Logo'),
-    ).toBeVisible();
+    await expect(footer.getByAltText('Gouvernement Logo')).toBeVisible();
 
     await expect(
       footer.getByRole('link', { name: 'legifrance.gouv.fr' }),

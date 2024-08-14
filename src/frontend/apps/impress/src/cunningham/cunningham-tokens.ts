@@ -146,6 +146,7 @@ export const tokens = {
           xxl: '1400px',
           xxs: '320px',
         },
+        logo: { src: '', widthHeader: '', widthFooter: '', alt: '' },
       },
       components: {
         datagrid: {
@@ -407,6 +408,12 @@ export const tokens = {
           'danger-900': '#3a1c1c',
         },
         font: { families: { accent: 'Marianne', base: 'Marianne' } },
+        logo: {
+          src: '/assets/logo-gouv.svg',
+          widthHeader: '110px',
+          widthFooter: '220px',
+          alt: 'Gouvernement Logo',
+        },
       },
       components: {
         alert: { 'border-radius': '0' },

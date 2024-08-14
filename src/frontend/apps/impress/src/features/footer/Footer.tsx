@@ -1,9 +1,10 @@
+import Image from 'next/image';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, StyledLink, Text } from '@/components/';
-import LogoGouv from '@/components/LogoGouv';
+import { useCunninghamTheme } from '@/cunningham';
 
 import IconLink from './assets/external-link.svg';
 
@@ -17,6 +18,8 @@ const BlueStripe = styled.div`
 
 export const Footer = () => {
   const { t } = useTranslation();
+  const { themeTokens } = useCunninghamTheme();
+  const logo = themeTokens().logo;
 
   return (
     <Box $position="relative" as="footer">
@@ -31,12 +34,16 @@ export const Footer = () => {
         >
           <Box>
             <Box $align="center" $gap="6rem" $direction="row">
-              <LogoGouv
-                textProps={{
-                  $size: '1.3rem',
-                }}
-                imagesWidth={70}
-              />
+              {logo && (
+                <Image
+                  priority
+                  src={logo.src}
+                  alt={logo.alt}
+                  width={0}
+                  height={0}
+                  style={{ width: logo.widthFooter, height: 'auto' }}
+                />
+              )}
             </Box>
           </Box>
           <Box
