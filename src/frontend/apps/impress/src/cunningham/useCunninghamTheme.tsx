@@ -20,7 +20,7 @@ const useCunninghamTheme = create<AuthStore>((set, get) => {
     merge(tokens.themes['default'], tokens.themes[get().theme]) as Tokens;
 
   return {
-    theme: 'dsfr',
+    theme: (process.env.NEXT_PUBLIC_THEME as Theme) || 'dsfr',
     colorsTokens: () => currentTheme().theme.colors,
     componentTokens: () => currentTheme().components,
     setTheme: (theme: Theme) => {
