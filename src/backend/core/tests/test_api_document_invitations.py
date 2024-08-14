@@ -4,6 +4,8 @@ Unit tests for the Invitation model
 import random
 import time
 
+from django.core import mail
+
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -111,6 +113,81 @@ def test_api_document_invitations__create__privileged_members(
     else:
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert models.Invitation.objects.exists() is False
+
+
+def test_api_document_invitations__create__email_from_content_language():
+    """
+    The email generated is from the language set in the Content-Language header
+    """
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
+
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": "reader",
+    }
+
+    assert len(mail.outbox) == 0
+
+    client = APIClient()
+    client.force_login(user)
+    response = client.post(
+        f"/api/v1.0/documents/{document.id}/invitations/",
+        invitation_values,
+        format="json",
+        headers={"Content-Language": "fr-fr"},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["email"] == "guest@example.com"
+    assert models.Invitation.objects.count() == 1
+    assert len(mail.outbox) == 1
+
+    email = mail.outbox[0]
+
+    assert email.to == ["guest@example.com"]
+
+    email_content = " ".join(email.body.split())
+    assert "Invitation à rejoindre Docs !" in email_content
+
+
+def test_api_document_invitations__create__email_from_content_language_not_supported():
+    """
+    If the language from the Content-Language is not supported
+    it will display the default language, English.
+    """
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
+
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": "reader",
+    }
+
+    assert len(mail.outbox) == 0
+
+    client = APIClient()
+    client.force_login(user)
+    response = client.post(
+        f"/api/v1.0/documents/{document.id}/invitations/",
+        invitation_values,
+        format="json",
+        headers={"Content-Language": "not-supported"},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["email"] == "guest@example.com"
+    assert models.Invitation.objects.count() == 1
+    assert len(mail.outbox) == 1
+
+    email = mail.outbox[0]
+
+    assert email.to == ["guest@example.com"]
+
+    email_content = " ".join(email.body.split())
+    assert "Invitation to join Docs!" in email_content
 
 
 def test_api_document_invitations__create__issuer_and_document_override():

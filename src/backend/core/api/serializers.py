@@ -262,6 +262,7 @@ class InvitationSerializer(serializers.ModelSerializer):
                 "Only owners of a document can invite other users as owners."
             )
 
+        user.language = request.headers.get("Content-Language", "en")
         attrs["document_id"] = document_id
         attrs["issuer"] = user
         return attrs
