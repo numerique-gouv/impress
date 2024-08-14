@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { APIError } from '@/api';
 import { Box, Card, IconBG } from '@/components';
 import { Doc, Role } from '@/features/docs/doc-management';
+import { useLanguage } from '@/i18n/hooks/useLanguage';
 
 import { useCreateDocAccess, useCreateInvitation } from '../api';
 import {
@@ -33,6 +34,7 @@ interface ModalAddMembersProps {
 }
 
 export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
+  const { contentLanguage } = useLanguage();
   const { t } = useTranslation();
   const [selectedUsers, setSelectedUsers] = useState<OptionsSelect>([]);
   const [selectedRole, setSelectedRole] = useState<Role>();
@@ -51,6 +53,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
             email: selectedUser.value.email,
             role: selectedRole,
             docId: doc.id,
+            contentLanguage,
           });
           break;
 
