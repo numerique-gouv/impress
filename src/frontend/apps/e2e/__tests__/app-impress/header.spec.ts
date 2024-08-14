@@ -10,11 +10,7 @@ test.describe('Header', () => {
   test('checks all the elements are visible', async ({ page }) => {
     const header = page.locator('header').first();
 
-    await expect(header.getByAltText('Marianne Logo')).toBeVisible();
-
-    await expect(
-      header.getByAltText('Freedom Equality Fraternity Logo'),
-    ).toBeVisible();
+    await expect(header.getByAltText('Gouvernement Logo')).toBeVisible();
 
     await expect(header.getByAltText('Docs Logo')).toBeVisible();
     await expect(header.locator('h2').getByText('Docs')).toHaveCSS(

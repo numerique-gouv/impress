@@ -14,6 +14,7 @@ and this project adheres to
 - ✨(frontend) Versioning #147
 - ✨Export docx (word) #161
 - 🌐 Internationalize invitation email #167
+- ✨(frontend) White branding #164
 
 ## Fixed
 

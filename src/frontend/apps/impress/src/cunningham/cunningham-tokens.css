@@ -125,6 +125,10 @@
   --c--theme--breakpoints--xl: 1200px;
   --c--theme--breakpoints--xxl: 1400px;
   --c--theme--breakpoints--xxs: 320px;
+  --c--theme--logo--src: ;
+  --c--theme--logo--widthheader: ;
+  --c--theme--logo--widthfooter: ;
+  --c--theme--logo--alt: ;
   --c--components--datagrid--header--weight: var(
     --c--theme--font--weights--extrabold
   );
@@ -406,6 +410,10 @@
   --c--theme--colors--danger-900: #3a1c1c;
   --c--theme--font--families--accent: marianne;
   --c--theme--font--families--base: marianne;
+  --c--theme--logo--src: /assets/logo-gouv.svg;
+  --c--theme--logo--widthHeader: 110px;
+  --c--theme--logo--widthFooter: 220px;
+  --c--theme--logo--alt: gouvernement logo;
   --c--components--alert--border-radius: 0;
   --c--components--button--medium-height: 48px;
   --c--components--button--border-radius: 4px;

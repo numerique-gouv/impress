@@ -11,6 +11,7 @@ type Theme = 'default' | 'dsfr';
 interface AuthStore {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  themeTokens: () => Partial<Tokens['theme']>;
   colorsTokens: () => Partial<ColorsTokens>;
   componentTokens: () => ComponentTokens;
 }
@@ -21,6 +22,7 @@ const useCunninghamTheme = create<AuthStore>((set, get) => {
 
   return {
     theme: (process.env.NEXT_PUBLIC_THEME as Theme) || 'dsfr',
+    themeTokens: () => currentTheme().theme,
     colorsTokens: () => currentTheme().theme.colors,
     componentTokens: () => currentTheme().components,
     setTheme: (theme: Theme) => {

@@ -39,6 +39,12 @@ const config = {
           xxs: '320px',
           xs: '480px',
         },
+        logo: {
+          src: '',
+          widthHeader: '',
+          widthFooter: '',
+          alt: '',
+        },
       },
       components: {
         datagrid: {
@@ -267,6 +273,12 @@ const config = {
             accent: 'Marianne',
             base: 'Marianne',
           },
+        },
+        logo: {
+          src: '/assets/logo-gouv.svg',
+          widthHeader: '110px',
+          widthFooter: '220px',
+          alt: 'Gouvernement Logo',
         },
       },
       components: {

@@ -111,7 +111,6 @@ test.describe('Doc Export', () => {
     await page.locator('button[data-test="alignTextCenter"]').click();
 
     // Change the background color
-    await page.getByText('Break').dblclick();
     await page.locator('button[data-test="colors"]').click();
     await page.locator('button[data-test="background-color-brown"]').click();
 
