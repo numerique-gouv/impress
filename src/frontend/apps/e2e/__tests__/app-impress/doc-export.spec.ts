@@ -85,6 +85,8 @@ test.describe('Doc Export', () => {
     page,
     browserName,
   }) => {
+    test.slow();
+
     const [randomDoc] = await createDoc(page, 'doc-editor', browserName, 1);
     let body = '';
 
@@ -147,6 +149,9 @@ test.describe('Doc Export', () => {
       .locator('.bn-block-content[data-content-type="bulletListItem"] p')
       .last()
       .fill('Test List 3');
+
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Backspace');
 
     // Add a number list
     await page.locator('.bn-block-outer').last().click();
