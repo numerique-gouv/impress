@@ -61,6 +61,15 @@ FROM impress as impress-builder
 
 WORKDIR /home/frontend/apps/impress
 
+ARG FRONTEND_THEME
+ENV NEXT_PUBLIC_THEME=${FRONTEND_THEME}
+
+ARG SIGNALING_URL
+ENV NEXT_PUBLIC_SIGNALING_URL=${SIGNALING_URL}
+
+ARG API_ORIGIN
+ENV NEXT_PUBLIC_API_ORIGIN=${API_ORIGIN}
+
 RUN yarn build
 
 # ---- Front-end image ----
