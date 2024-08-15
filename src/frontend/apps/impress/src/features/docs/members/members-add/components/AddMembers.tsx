@@ -62,6 +62,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
             role: selectedRole,
             docId: doc.id,
             memberId: selectedUser.value.id,
+            contentLanguage,
           });
           break;
       }
