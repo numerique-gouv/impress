@@ -30,7 +30,7 @@
               <li>{% trans "Invite members of your community to your document in just a few clicks."%}</li>
             </ul>
           </mj-text>
-          <mj-button href="//{{site.domain}}" background-color="#000091" color="white" padding-bottom="30px">
+          <mj-button href="//{{site.domain}}/docs/{{document_id}}/" background-color="#000091" color="white" padding-bottom="30px">
             {% trans "Visit Docs"%}
           </mj-button>
           <mj-text>{% trans "We are confident that Docs will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
