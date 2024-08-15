@@ -100,6 +100,8 @@ def test_api_document_invitations__create__privileged_members(
         "role": invited,
     }
 
+    assert len(mail.outbox) == 0
+
     client = APIClient()
     client.force_login(user)
     response = client.post(
@@ -110,6 +112,12 @@ def test_api_document_invitations__create__privileged_members(
     if is_allowed:
         assert response.status_code == status.HTTP_201_CREATED
         assert models.Invitation.objects.count() == 1
+
+        assert len(mail.outbox) == 1
+        email = mail.outbox[0]
+        assert email.to == ["guest@example.com"]
+        email_content = " ".join(email.body.split())
+        assert "Invitation to join Docs!" in email_content
     else:
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert models.Invitation.objects.exists() is False

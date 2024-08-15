@@ -1,4 +1,5 @@
 """API endpoints"""
+from core.utils import email_invitation
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import (
     OuterRef,
@@ -598,3 +599,10 @@ class InvitationViewset(
                 .distinct()
             )
         return queryset
+    
+    def perform_create(self, serializer):
+        """Save invitation to a document then send an email to the invited user."""
+        invitation = serializer.save()
+
+        language = self.request.headers.get("Content-Language", "en-us")
+        email_invitation(language, invitation.email, invitation.document.id)

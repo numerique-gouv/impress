@@ -1,14 +1,10 @@
 """
 Unit tests for the Invitation model
 """
-
-import smtplib
 import time
-from logging import Logger
-from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
-from django.core import exceptions, mail
+from django.core import exceptions
 
 import pytest
 from faker import Faker
@@ -166,97 +162,6 @@ def test_models_invitation__new_user__user_creation_constant_num_queries(
     # otherwise, we should have 11 queries with any number of invitations
     with django_assert_num_queries(num_queries):
         models.User.objects.create(email=user_email, password="!")
-
-
-def test_models_document_invitations_email():
-    """Check email invitation during invitation creation."""
-    member_access = factories.UserDocumentAccessFactory(role="reader")
-    document = member_access.document
-
-    # pylint: disable-next=no-member
-    assert len(mail.outbox) == 0
-
-    factories.UserDocumentAccessFactory(document=document)
-    issuer = factories.UserFactory(language="en-us")
-    invitation = factories.InvitationFactory(
-        document=document, email="john@people.com", issuer=issuer
-    )
-
-    # pylint: disable-next=no-member
-    assert len(mail.outbox) == 1
-
-    # pylint: disable-next=no-member
-    email = mail.outbox[0]
-
-    assert email.to == [invitation.email]
-    assert email.subject == "Invitation to join Docs!"
-
-    email_content = " ".join(email.body.split())
-    assert "Invitation to join Docs!" in email_content
-    assert "[//example.com]" in email_content
-
-
-def test_models_document_invitations_email_language_fr():
-    """Check email invitation during invitation creation."""
-    member_access = factories.UserDocumentAccessFactory(role="reader")
-    document = member_access.document
-
-    # pylint: disable-next=no-member
-    assert len(mail.outbox) == 0
-
-    factories.UserDocumentAccessFactory(document=document)
-    issuer = factories.UserFactory(language="fr-fr")
-    invitation = factories.InvitationFactory(
-        document=document, email="john@people.com", issuer=issuer
-    )
-
-    # pylint: disable-next=no-member
-    assert len(mail.outbox) == 1
-
-    # pylint: disable-next=no-member
-    email = mail.outbox[0]
-
-    assert email.to == [invitation.email]
-
-    email_content = " ".join(email.body.split())
-    assert "Invitation à rejoindre Docs !" in email_content
-    assert "[//example.com]" in email_content
-
-
-@mock.patch(
-    "django.core.mail.send_mail",
-    side_effect=smtplib.SMTPException("Error SMTPException"),
-)
-@mock.patch.object(Logger, "error")
-def test_models_document_invitations_email_failed(mock_logger, _mock_send_mail):
-    """Check invitation behavior when an SMTP error occurs during invitation creation."""
-
-    member_access = factories.UserDocumentAccessFactory(role="reader")
-    document = member_access.document
-
-    # pylint: disable-next=no-member
-    assert len(mail.outbox) == 0
-
-    factories.UserDocumentAccessFactory(document=document)
-
-    # No error should be raised
-    invitation = factories.InvitationFactory(document=document, email="john@people.com")
-
-    # No email has been sent
-    # pylint: disable-next=no-member
-    assert len(mail.outbox) == 0
-
-    # Logger should be called
-    mock_logger.assert_called_once()
-
-    (
-        _,
-        email,
-        exception,
-    ) = mock_logger.call_args.args
-
-    assert email == invitation.email
-    assert isinstance(exception, smtplib.SMTPException)
 
 
 # get_abilities
