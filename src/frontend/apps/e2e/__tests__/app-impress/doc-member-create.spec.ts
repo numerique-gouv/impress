@@ -121,6 +121,9 @@ test.describe('Document create member', () => {
     ).toBeVisible();
     const responseAddUser = await responsePromiseAddUser;
     expect(responseAddUser.ok()).toBeTruthy();
+    expect(responseAddUser.request().headers()['content-language']).toBe(
+      'en-us',
+    );
   });
 
   test('it try to add twice the same user', async ({ page, browserName }) => {
