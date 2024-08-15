@@ -13,8 +13,9 @@ and this project adheres to
 - 🎨(frontend) better conversion editor to pdf #151
 - ✨(frontend) Versioning #147
 - ✨Export docx (word) #161
-- 🌐 Internationalize invitation email #167
+- 🌐Internationalize invitation email #167
 - ✨(frontend) White branding #164
+- ✨Email invitation when add user to doc #171
 
 ## Fixed
 

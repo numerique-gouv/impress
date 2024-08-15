@@ -1,5 +1,4 @@
 """API endpoints"""
-from core.utils import email_invitation
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import (
     OuterRef,
@@ -23,6 +22,7 @@ from rest_framework import (
 )
 
 from core import models
+from core.utils import email_invitation
 
 from . import permissions, serializers
 
@@ -429,6 +429,13 @@ class DocumentAccessViewSet(
     resource_field_name = "document"
     serializer_class = serializers.DocumentAccessSerializer
 
+    def perform_create(self, serializer):
+        """Add a new access to the document and send an email to the new added user."""
+        access = serializer.save()
+
+        language = self.request.headers.get("Content-Language", "en-us")
+        email_invitation(language, access.user.email, access.document.id)
+
 
 class TemplateViewSet(
     ResourceViewsetMixin,
@@ -599,7 +606,7 @@ class InvitationViewset(
                 .distinct()
             )
         return queryset
-    
+
     def perform_create(self, serializer):
         """Save invitation to a document then send an email to the invited user."""
         invitation = serializer.save()

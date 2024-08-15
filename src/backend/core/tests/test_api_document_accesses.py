@@ -4,6 +4,8 @@ Test document accesses API endpoints for users in impress's core app.
 import random
 from uuid import uuid4
 
+from django.core import mail
+
 import pytest
 from rest_framework.test import APIClient
 
@@ -303,6 +305,7 @@ def test_api_document_accesses_create_authenticated_administrator(
     """
     Administrators of a document should be able to create document accesses
     except for the "owner" role.
+    An email should be sent to the accesses to notify them of the adding.
     """
     user = factories.UserFactory()
 
@@ -342,6 +345,8 @@ def test_api_document_accesses_create_authenticated_administrator(
         [role[0] for role in models.RoleChoices.choices if role[0] != "owner"]
     )
 
+    assert len(mail.outbox) == 0
+
     response = client.post(
         f"/api/v1.0/documents/{document.id!s}/accesses/",
         {
@@ -362,12 +367,19 @@ def test_api_document_accesses_create_authenticated_administrator(
         "role": role,
         "user": other_user,
     }
+    assert len(mail.outbox) == 1
+    email = mail.outbox[0]
+    assert email.to == [other_user["email"]]
+    email_content = " ".join(email.body.split())
+    assert "Invitation to join Docs!" in email_content
+    assert "docs/" + str(document.id) + "/" in email_content
 
 
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_accesses_create_authenticated_owner(via, mock_user_get_teams):
     """
     Owners of a document should be able to create document accesses whatever the role.
+    An email should be sent to the accesses to notify them of the adding.
     """
     user = factories.UserFactory()
 
@@ -387,6 +399,8 @@ def test_api_document_accesses_create_authenticated_owner(via, mock_user_get_tea
 
     role = random.choice([role[0] for role in models.RoleChoices.choices])
 
+    assert len(mail.outbox) == 0
+
     response = client.post(
         f"/api/v1.0/documents/{document.id!s}/accesses/",
         {
@@ -407,6 +421,12 @@ def test_api_document_accesses_create_authenticated_owner(via, mock_user_get_tea
         "role": role,
         "abilities": new_document_access.get_abilities(user),
     }
+    assert len(mail.outbox) == 1
+    email = mail.outbox[0]
+    assert email.to == [other_user["email"]]
+    email_content = " ".join(email.body.split())
+    assert "Invitation to join Docs!" in email_content
+    assert "docs/" + str(document.id) + "/" in email_content
 
 
 def test_api_document_accesses_update_anonymous():
