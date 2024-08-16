@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
-  await page.goto('/');
-});
+import { keyCloakSignIn } from './common';
 
 test.describe('Doc Routing', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
   test('checks alias docs url with homepage', async ({ page }) => {
     await expect(page).toHaveURL('/');
 
@@ -14,9 +16,9 @@ test.describe('Doc Routing', () => {
 
     await expect(buttonCreateHomepage).toBeVisible();
 
-    await page.goto('/docs');
+    await page.goto('/docs/');
     await expect(buttonCreateHomepage).toBeVisible();
-    await expect(page).toHaveURL(/\/docs$/);
+    await expect(page).toHaveURL(/\/docs\/$/);
   });
 
   test('checks 404 on docs/[id] page', async ({ page }) => {
@@ -31,5 +33,18 @@ test.describe('Doc Routing', () => {
     ).toBeVisible({
       timeout: 15000,
     });
+  });
+});
+
+test.describe('Doc Routing: Not loggued', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('checks redirect to a doc after login', async ({
+    page,
+    browserName,
+  }) => {
+    await page.goto('/docs/mocked-document-id/');
+    await keyCloakSignIn(page, browserName);
+    await expect(page).toHaveURL(/\/docs\/mocked-document-id\/$/);
   });
 });

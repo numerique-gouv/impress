@@ -122,22 +122,14 @@ test.describe('Doc Export', () => {
     // Add a list
     await page.locator('.bn-block-outer').last().click();
     await page.keyboard.press('Enter');
-    await page.locator('.bn-block-outer').last().fill('Test List 1');
-    await page.getByText('Test List 1').dblclick();
+    await page.locator('.bn-block-outer').last().fill('/');
+    await page.getByText('Bullet List').click();
     await page
-      .getByRole('button', {
-        name: 'Paragraph',
-      })
-      .click();
-    await page
-      .getByRole('menuitem', {
-        name: 'Bullet List',
-      })
-      .click();
-    await page
-      .locator('.bn-block-content[data-content-type="bulletListItem"]')
+      .locator('.bn-block-content[data-content-type="bulletListItem"] p')
       .last()
-      .click();
+      .fill('Test List 1');
+    // eslint-disable-next-line playwright/no-wait-for-timeout
+    await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
     await page
       .locator('.bn-block-content[data-content-type="bulletListItem"] p')
@@ -155,22 +147,14 @@ test.describe('Doc Export', () => {
     // Add a number list
     await page.locator('.bn-block-outer').last().click();
     await page.keyboard.press('Enter');
-    await page.locator('.bn-block-outer').last().fill('Test Number 1');
-    await page.getByText('Test Number 1').dblclick();
+    await page.locator('.bn-block-outer').last().fill('/');
+    await page.getByText('Numbered List').click();
     await page
-      .getByRole('button', {
-        name: 'Paragraph',
-      })
-      .click();
-    await page
-      .getByRole('menuitem', {
-        name: 'Numbered List',
-      })
-      .click();
-    await page
-      .locator('.bn-block-content[data-content-type="numberedListItem"]')
+      .locator('.bn-block-content[data-content-type="numberedListItem"] p')
       .last()
-      .click();
+      .fill('Test Number 1');
+    // eslint-disable-next-line playwright/no-wait-for-timeout
+    await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
     await page
       .locator('.bn-block-content[data-content-type="numberedListItem"] p')

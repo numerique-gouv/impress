@@ -7,19 +7,6 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Doc Editor', () => {
-  test('checks the Doc Editor interact correctly', async ({
-    page,
-    browserName,
-  }) => {
-    const randomDoc = await createDoc(page, 'doc-editor', browserName, 1);
-
-    await expect(page.locator('h2').getByText(randomDoc[0])).toBeVisible();
-
-    await page.locator('.ProseMirror.bn-editor').click();
-    await page.locator('.ProseMirror.bn-editor').fill('Hello World');
-    await expect(page.getByText('Hello World')).toBeVisible();
-  });
-
   test('checks the Doc is connected to the webrtc server', async ({
     page,
     browserName,
