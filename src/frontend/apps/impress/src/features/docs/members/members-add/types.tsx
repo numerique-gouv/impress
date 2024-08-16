@@ -1,5 +1,4 @@
 import { User } from '@/core/auth';
-import { Doc, Role } from '@/features/docs/doc-management';
 
 export enum OptionType {
   INVITATION = 'invitation',
@@ -25,12 +24,3 @@ export interface OptionNewMember {
 }
 
 export type OptionSelect = OptionNewMember | OptionInvitation;
-
-export interface DocInvitation {
-  id: string;
-  created_at: string;
-  email: string;
-  team: Doc['id'];
-  role: Role;
-  issuer: User['id'];
-}
