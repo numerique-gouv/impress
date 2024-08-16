@@ -70,49 +70,49 @@ export const MemberItem = ({
 
   return (
     <Box $width="100%">
-      <Box
-        $align="center"
-        $direction="row"
-        $gap="1rem"
-        $justify="space-between"
-        $width="100%"
-        $wrap="wrap"
-      >
-        <Box $direction="row" $gap="1rem">
-          <IconBG iconName="account_circle" $size="2rem" />
+      <Box $direction="row" $gap="1rem">
+        <IconBG iconName="account_circle" $size="2rem" />
+        <Box
+          $align="center"
+          $direction="row"
+          $gap="1rem"
+          $justify="space-between"
+          $width="100%"
+          $wrap="wrap"
+        >
           <Text $justify="center">{access.user.email}</Text>
-        </Box>
-        <Box $direction="row" $gap="1rem" $align="center">
-          <Box $minWidth="13rem">
-            <ChooseRole
-              label={t('Role')}
-              defaultRole={localRole}
-              currentRole={currentRole}
+          <Box $direction="row" $gap="1rem" $align="center">
+            <Box $minWidth="13rem">
+              <ChooseRole
+                label={t('Role')}
+                defaultRole={localRole}
+                currentRole={currentRole}
+                disabled={isNotAllowed}
+                setRole={(role) => {
+                  setLocalRole(role);
+                  updateDocAccess({
+                    docId,
+                    accessId: access.id,
+                    role,
+                  });
+                }}
+              />
+            </Box>
+            <Button
+              color="tertiary-text"
+              icon={
+                <Text
+                  $isMaterialIcon
+                  $theme={isNotAllowed ? 'greyscale' : 'primary'}
+                  $variation={isNotAllowed ? '500' : 'text'}
+                >
+                  delete
+                </Text>
+              }
               disabled={isNotAllowed}
-              setRole={(role) => {
-                setLocalRole(role);
-                updateDocAccess({
-                  docId,
-                  accessId: access.id,
-                  role,
-                });
-              }}
+              onClick={() => removeDocAccess({ docId, accessId: access.id })}
             />
           </Box>
-          <Button
-            color="tertiary-text"
-            icon={
-              <Text
-                $isMaterialIcon
-                $theme={isNotAllowed ? 'greyscale' : 'primary'}
-                $variation={isNotAllowed ? '500' : 'text'}
-              >
-                delete
-              </Text>
-            }
-            disabled={isNotAllowed}
-            onClick={() => removeDocAccess({ docId, accessId: access.id })}
-          />
         </Box>
       </Box>
       {(errorUpdate || errorDelete) && (

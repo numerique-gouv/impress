@@ -3,10 +3,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
 import { Doc, Role } from '@/features/docs/doc-management';
+import { OptionType } from '@/features/docs/members/members-add/types';
 import { ContentLanguage } from '@/i18n/types';
 
-import { KEY_LIST_DOC_INVITATIONS } from '../../invitation-list';
-import { DocInvitation, OptionType } from '../types';
+import { Invitation } from '../types';
+
+import { KEY_LIST_DOC_INVITATIONS } from './useDocInvitations';
 
 interface CreateDocInvitationParams {
   email: User['email'];
@@ -20,7 +22,7 @@ export const createDocInvitation = async ({
   role,
   docId,
   contentLanguage,
-}: CreateDocInvitationParams): Promise<DocInvitation> => {
+}: CreateDocInvitationParams): Promise<Invitation> => {
   const response = await fetchAPI(`documents/${docId}/invitations/`, {
     method: 'POST',
     headers: {
@@ -42,12 +44,12 @@ export const createDocInvitation = async ({
     );
   }
 
-  return response.json() as Promise<DocInvitation>;
+  return response.json() as Promise<Invitation>;
 };
 
-export function useCreateInvitation() {
+export function useCreateDocInvitation() {
   const queryClient = useQueryClient();
-  return useMutation<DocInvitation, APIError, CreateDocInvitationParams>({
+  return useMutation<Invitation, APIError, CreateDocInvitationParams>({
     mutationFn: createDocInvitation,
     onSuccess: () => {
       void queryClient.invalidateQueries({

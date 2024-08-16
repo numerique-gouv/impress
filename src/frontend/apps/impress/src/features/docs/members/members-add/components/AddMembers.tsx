@@ -9,9 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { APIError } from '@/api';
 import { Box, Card, IconBG } from '@/components';
 import { Doc, Role } from '@/features/docs/doc-management';
+import { useCreateDocInvitation } from '@/features/docs/members/invitation-list/';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
 
-import { useCreateDocAccess, useCreateInvitation } from '../api';
+import { useCreateDocAccess } from '../api';
 import {
   OptionInvitation,
   OptionNewMember,
@@ -39,7 +40,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
   const [selectedUsers, setSelectedUsers] = useState<OptionsSelect>([]);
   const [selectedRole, setSelectedRole] = useState<Role>();
   const { toast } = useToastProvider();
-  const { mutateAsync: createInvitation } = useCreateInvitation();
+  const { mutateAsync: createInvitation } = useCreateDocInvitation();
   const { mutateAsync: createDocAccess } = useCreateDocAccess();
   const [resetKey, setResetKey] = useState(1);
 
