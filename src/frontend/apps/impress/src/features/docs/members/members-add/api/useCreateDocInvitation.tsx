@@ -1,10 +1,11 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
 import { Doc, Role } from '@/features/docs/doc-management';
 import { ContentLanguage } from '@/i18n/types';
 
+import { KEY_LIST_DOC_INVITATIONS } from '../../invitation-list';
 import { DocInvitation, OptionType } from '../types';
 
 interface CreateDocInvitationParams {
@@ -45,7 +46,13 @@ export const createDocInvitation = async ({
 };
 
 export function useCreateInvitation() {
+  const queryClient = useQueryClient();
   return useMutation<DocInvitation, APIError, CreateDocInvitationParams>({
     mutationFn: createDocInvitation,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [KEY_LIST_DOC_INVITATIONS],
+      });
+    },
   });
 }

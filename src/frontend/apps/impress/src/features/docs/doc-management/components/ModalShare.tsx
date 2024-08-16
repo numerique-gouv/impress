@@ -2,11 +2,11 @@ import { t } from 'i18next';
 import { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-import { Box, Card, Text } from '@/components';
-import { SideModal } from '@/components/SideModal';
+import { Box, Card, SideModal, Text } from '@/components';
+import { InvitationList } from '@/features/docs/members/invitation-list';
+import { AddMembers } from '@/features/docs/members/members-add';
+import { MemberList } from '@/features/docs/members/members-list';
 
-import { AddMembers } from '../../members/members-add';
-import { MemberList } from '../../members/members-list/components/MemberList';
 import { Doc } from '../types';
 import { currentDocRole } from '../utils';
 
@@ -67,6 +67,7 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
         }
       >
         <AddMembers doc={doc} currentRole={currentDocRole(doc.abilities)} />
+        <InvitationList doc={doc} />
         <MemberList doc={doc} />
       </SideModal>
     </>

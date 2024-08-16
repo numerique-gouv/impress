@@ -16,6 +16,7 @@ and this project adheres to
 - 🌐Internationalize invitation email #167
 - ✨(frontend) White branding #164
 - ✨Email invitation when add user to doc #171
+- ✨Invitation management #174
 
 ## Fixed
 
