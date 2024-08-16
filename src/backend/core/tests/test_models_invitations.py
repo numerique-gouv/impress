@@ -19,13 +19,6 @@ pytestmark = pytest.mark.django_db
 fake = Faker()
 
 
-def test_models_invitations_readonly_after_create():
-    """Existing invitations should be readonly."""
-    invitation = factories.InvitationFactory()
-    with pytest.raises(exceptions.PermissionDenied):
-        invitation.save()
-
-
 def test_models_invitations_email_no_empty_mail():
     """The "email" field should not be empty."""
     with pytest.raises(exceptions.ValidationError, match="This field cannot be blank"):
@@ -217,8 +210,8 @@ def test_models_document_invitations_get_abilities_privileged_member(
     assert abilities == {
         "destroy": True,
         "retrieve": True,
-        "partial_update": False,
-        "update": False,
+        "partial_update": True,
+        "update": True,
     }
 
 

@@ -341,8 +341,8 @@ def test_api_document_invitations__list__authenticated(
                 "is_expired": False,
                 "abilities": {
                     "destroy": role in ["administrator", "owner"],
-                    "update": False,
-                    "partial_update": False,
+                    "update": role in ["administrator", "owner"],
+                    "partial_update": role in ["administrator", "owner"],
                     "retrieve": True,
                 },
             }
@@ -393,8 +393,8 @@ def test_api_document_invitations__list__expired_invitations_still_listed(settin
                 "is_expired": True,
                 "abilities": {
                     "destroy": True,
-                    "update": False,
-                    "partial_update": False,
+                    "update": True,
+                    "partial_update": True,
                     "retrieve": True,
                 },
             },
@@ -468,21 +468,17 @@ def test_api_document_invitations__retrieve__document_member(via, mock_user_get_
         "is_expired": False,
         "abilities": {
             "destroy": role in ["administrator", "owner"],
-            "update": False,
-            "partial_update": False,
+            "update": role in ["administrator", "owner"],
+            "partial_update": role in ["administrator", "owner"],
             "retrieve": True,
         },
     }
 
 
 @pytest.mark.parametrize("via", VIA)
-@pytest.mark.parametrize(
-    "method",
-    ["put", "patch"],
-)
-def test_api_document_invitations__update__forbidden(method, via, mock_user_get_teams):
+def test_api_document_invitations__put_authenticated(via, mock_user_get_teams):
     """
-    Update of invitations is currently forbidden.
+    Authenticated user can put invitations.
     """
     user = factories.UserFactory()
     invitation = factories.InvitationFactory()
@@ -499,13 +495,88 @@ def test_api_document_invitations__update__forbidden(method, via, mock_user_get_
     client = APIClient()
     client.force_login(user)
     url = f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/"
+    response = client.patch(url, {"email": "test@test.test"}, format="json")
+
+    assert response.status_code == status.HTTP_200_OK
+
+    invitation.refresh_from_db()
+    assert invitation.email == "test@test.test"
+
+
+@pytest.mark.parametrize("via", VIA)
+def test_api_document_invitations__patch_authenticated(via, mock_user_get_teams):
+    """
+    Authenticated user can patch invitations.
+    """
+    user = factories.UserFactory()
+    invitation = factories.InvitationFactory(role="owner")
+    if via == USER:
+        factories.UserDocumentAccessFactory(
+            document=invitation.document, user=user, role="owner"
+        )
+    elif via == TEAM:
+        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=invitation.document, team="lasuite", role="owner"
+        )
+
+    assert invitation.role == "owner"
+
+    client = APIClient()
+    client.force_login(user)
+    url = f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/"
+    response = client.patch(
+        url,
+        {"role": "reader"},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    invitation.refresh_from_db()
+    assert invitation.role == "reader"
+
+
+@pytest.mark.parametrize("via", VIA)
+@pytest.mark.parametrize(
+    "method",
+    ["put", "patch"],
+)
+@pytest.mark.parametrize(
+    "role",
+    ["editor", "reader"],
+)
+def test_api_document_invitations__update__forbidden__not_authenticated(
+    method, via, role, mock_user_get_teams
+):
+    """
+    Update of invitations is currently forbidden.
+    """
+    user = factories.UserFactory()
+    invitation = factories.InvitationFactory()
+    if via == USER:
+        factories.UserDocumentAccessFactory(
+            document=invitation.document, user=user, role=role
+        )
+    elif via == TEAM:
+        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=invitation.document, team="lasuite", role=role
+        )
+
+    client = APIClient()
+    client.force_login(user)
+    url = f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/"
     if method == "put":
         response = client.put(url)
     if method == "patch":
         response = client.patch(url)
 
-    assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-    assert response.json()["detail"] == f'Method "{method.upper()}" not allowed.'
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert (
+        response.json()["detail"]
+        == "You do not have permission to perform this action."
+    )
 
 
 def test_api_document_invitations__delete__anonymous():
