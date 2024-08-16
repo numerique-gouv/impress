@@ -124,6 +124,15 @@ test.describe('Document create member', () => {
     expect(responseAddUser.request().headers()['content-language']).toBe(
       'en-us',
     );
+
+    const listInvitation = page.getByLabel('List invitation card');
+    await expect(listInvitation.locator('li').getByText(email)).toBeVisible();
+    await expect(
+      listInvitation.locator('li').getByText('Invited'),
+    ).toBeVisible();
+
+    const listMember = page.getByLabel('List members card');
+    await expect(listMember.locator('li').getByText(user.email)).toBeVisible();
   });
 
   test('it try to add twice the same user', async ({ page, browserName }) => {
@@ -254,5 +263,48 @@ test.describe('Document create member', () => {
     expect(
       responseCreateInvitation.request().headers()['content-language'],
     ).toBe('fr-fr');
+  });
+
+  test('it manages invitation', async ({ page, browserName }) => {
+    await createDoc(page, 'user-invitation', browserName, 1);
+
+    await page.getByRole('button', { name: 'Share' }).click();
+
+    const inputSearch = page.getByLabel(/Find a member to add to the document/);
+
+    const email = randomName('test@test.fr', browserName, 1)[0];
+    await inputSearch.fill(email);
+    await page.getByRole('option', { name: email }).click();
+
+    // Choose a role
+    await page.getByRole('combobox', { name: /Choose a role/ }).click();
+    await page.getByRole('option', { name: 'Administrator' }).click();
+
+    const responsePromiseCreateInvitation = page.waitForResponse(
+      (response) =>
+        response.url().includes('/invitations/') && response.status() === 201,
+    );
+
+    await page.getByRole('button', { name: 'Validate' }).click();
+
+    // Check invitation sent
+    await expect(page.getByText(`Invitation sent to ${email}`)).toBeVisible();
+    const responseCreateInvitation = await responsePromiseCreateInvitation;
+    expect(responseCreateInvitation.ok()).toBeTruthy();
+
+    const listInvitation = page.getByLabel('List invitation card');
+    const li = listInvitation.locator('li').filter({
+      hasText: email,
+    });
+    await expect(li.getByText(email)).toBeVisible();
+
+    await li.getByRole('combobox', { name: /Role/ }).click();
+    await li.getByRole('option', { name: 'Reader' }).click();
+    await expect(page.getByText(`The role has been updated.`)).toBeVisible();
+    await li.getByText('delete').click();
+    await expect(
+      page.getByText(`The invitation has been removed.`),
+    ).toBeVisible();
+    await expect(listInvitation.locator('li').getByText(email)).toBeHidden();
   });
 });
