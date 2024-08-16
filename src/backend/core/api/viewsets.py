@@ -538,6 +538,7 @@ class InvitationViewset(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
     """API ViewSet for user invitations to document.
@@ -551,8 +552,9 @@ class InvitationViewset(
         - role: str [administrator|editor|reader]
         Return newly created invitation (issuer and document are automatically set)
 
-    PUT / PATCH : Not permitted. Instead of updating your invitation,
-        delete and create a new one.
+    PATCH /api/v1.0/documents/<document_id>/invitations/:<invitation_id>/ with expected data:
+        - role: str [owner|admin|editor|reader]
+        Return partially updated document invitation
 
     DELETE  /api/v1.0/documents/<document_id>/invitations/<invitation_id>/
         Delete targeted invitation

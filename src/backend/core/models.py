@@ -742,13 +742,6 @@ class Invitation(BaseModel):
     def __str__(self):
         return f"{self.email} invited to {self.document}"
 
-    def save(self, *args, **kwargs):
-        """Make invitations read-only."""
-        if self.created_at:
-            raise exceptions.PermissionDenied()
-
-        super().save(*args, **kwargs)
-
     def clean(self):
         """Validate fields."""
         super().clean()
@@ -771,6 +764,7 @@ class Invitation(BaseModel):
     def get_abilities(self, user):
         """Compute and return abilities for a given user."""
         can_delete = False
+        can_update = False
         roles = []
 
         if user.is_authenticated:
@@ -789,9 +783,13 @@ class Invitation(BaseModel):
                 set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
             )
 
+            can_update = bool(
+                set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+            )
+
         return {
             "destroy": can_delete,
-            "update": False,
-            "partial_update": False,
+            "update": can_update,
+            "partial_update": can_update,
             "retrieve": bool(roles),
         }
