@@ -4,6 +4,7 @@ import { PropsWithChildren, useEffect } from 'react';
 import { Box } from '@/components';
 
 import { useAuthStore } from './useAuthStore';
+
 export const Auth = ({ children }: PropsWithChildren) => {
   const { authenticated, initAuth } = useAuthStore();
 

@@ -147,7 +147,7 @@ export const mockedDocument = async (page: Page, json: object) => {
     if (request.method().includes('GET') && !request.url().includes('page=')) {
       await route.fulfill({
         json: {
-          id: 'b0df4343-c8bd-4c20-9ff6-fbf94fc94egg',
+          id: 'mocked-document-id',
           content: '',
           title: 'Mocked document',
           accesses: [],
