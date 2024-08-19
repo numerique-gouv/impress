@@ -15,7 +15,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "lib0": "0.2.95",
+    "lib0": "0.2.97",
     "ws": "8.18.0"
   },
   "devDependencies": {
@@ -23,7 +23,7 @@
     "@types/ws": "8.5.12",
     "eslint-config-impress": "*",
     "nodemon": "3.1.4",
-    "ts-jest": "29.2.3",
+    "ts-jest": "29.2.4",
     "ts-node": "10.9.2",
     "typescript": "*"
   }
