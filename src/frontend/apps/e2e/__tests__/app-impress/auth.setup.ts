@@ -17,3 +17,11 @@ setup('authenticate-webkit', async ({ page }) => {
     .context()
     .storageState({ path: `playwright/.auth/user-webkit.json` });
 });
+
+setup('authenticate-firefox', async ({ page }) => {
+  await page.goto('/');
+  await keyCloakSignIn(page, 'firefox');
+  await page
+    .context()
+    .storageState({ path: `playwright/.auth/user-firefox.json` });
+});

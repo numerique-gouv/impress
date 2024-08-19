@@ -27,8 +27,8 @@ test.describe('Doc Version', () => {
     await expect(page.getByText('Hello World')).toBeVisible();
 
     await page
-      .locator('.ProseMirror.bn-editor')
-      .last()
+      .locator('.ProseMirror .bn-block')
+      .getByText('Hello World')
       .fill('It will create a version');
 
     await goToGridDoc(page, {
