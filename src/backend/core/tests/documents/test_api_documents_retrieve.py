@@ -22,6 +22,7 @@ def test_api_documents_retrieve_anonymous_public():
         "id": str(document.id),
         "abilities": {
             "destroy": False,
+            "attachment_upload": False,
             "manage_accesses": False,
             "partial_update": False,
             "retrieve": True,
@@ -69,6 +70,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public():
         "id": str(document.id),
         "abilities": {
             "destroy": False,
+            "attachment_upload": False,
             "manage_accesses": False,
             "partial_update": False,
             "retrieve": True,

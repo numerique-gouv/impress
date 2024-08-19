@@ -1,5 +1,8 @@
 """Client serializers for the impress core app."""
 
+import mimetypes
+
+from django.conf import settings
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -151,6 +154,34 @@ class DocumentSerializer(BaseResourceSerializer):
             "updated_at",
         ]
         read_only_fields = ["id", "accesses", "abilities", "created_at", "updated_at"]
+
+
+# Suppress the warning about not implementing `create` and `update` methods
+# since we don't use a model and only rely on the serializer for validation
+# pylint: disable=abstract-method
+class FileUploadSerializer(serializers.Serializer):
+    """Receive file upload requests."""
+
+    file = serializers.FileField()
+
+    def validate_file(self, file):
+        """Add file size and type constraints as defined in settings."""
+        # Validate file size
+        if file.size > settings.DOCUMENT_IMAGE_MAX_SIZE:
+            max_size = settings.DOCUMENT_IMAGE_MAX_SIZE // (1024 * 1024)
+            raise serializers.ValidationError(
+                f"File size exceeds the maximum limit of {max_size:d} MB."
+            )
+
+        # Validate file type
+        mime_type, _ = mimetypes.guess_type(file.name)
+        if mime_type not in settings.DOCUMENT_IMAGE_ALLOWED_MIME_TYPES:
+            mime_types = ", ".join(settings.DOCUMENT_IMAGE_ALLOWED_MIME_TYPES)
+            raise serializers.ValidationError(
+                f"File type '{mime_type:s}' is not allowed. Allowed types are: {mime_types:s}"
+            )
+
+        return file
 
 
 class TemplateSerializer(BaseResourceSerializer):
