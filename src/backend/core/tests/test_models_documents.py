@@ -63,10 +63,11 @@ def test_models_documents_get_abilities_anonymous_public():
     abilities = document.get_abilities(AnonymousUser())
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
-        "update": False,
+        "attachment_upload": False,
         "manage_accesses": False,
         "partial_update": False,
+        "retrieve": True,
+        "update": False,
         "versions_destroy": False,
         "versions_list": False,
         "versions_retrieve": False,
@@ -79,10 +80,11 @@ def test_models_documents_get_abilities_anonymous_not_public():
     abilities = document.get_abilities(AnonymousUser())
     assert abilities == {
         "destroy": False,
-        "retrieve": False,
-        "update": False,
+        "attachment_upload": False,
         "manage_accesses": False,
         "partial_update": False,
+        "retrieve": False,
+        "update": False,
         "versions_destroy": False,
         "versions_list": False,
         "versions_retrieve": False,
@@ -95,10 +97,11 @@ def test_models_documents_get_abilities_authenticated_unrelated_public():
     abilities = document.get_abilities(factories.UserFactory())
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
-        "update": False,
+        "attachment_upload": False,
         "manage_accesses": False,
         "partial_update": False,
+        "retrieve": True,
+        "update": False,
         "versions_destroy": False,
         "versions_list": False,
         "versions_retrieve": False,
@@ -111,10 +114,11 @@ def test_models_documents_get_abilities_authenticated_unrelated_not_public():
     abilities = document.get_abilities(factories.UserFactory())
     assert abilities == {
         "destroy": False,
-        "retrieve": False,
-        "update": False,
+        "attachment_upload": False,
         "manage_accesses": False,
         "partial_update": False,
+        "retrieve": False,
+        "update": False,
         "versions_destroy": False,
         "versions_list": False,
         "versions_retrieve": False,
@@ -128,10 +132,11 @@ def test_models_documents_get_abilities_owner():
     abilities = access.document.get_abilities(access.user)
     assert abilities == {
         "destroy": True,
-        "retrieve": True,
-        "update": True,
+        "attachment_upload": True,
         "manage_accesses": True,
         "partial_update": True,
+        "retrieve": True,
+        "update": True,
         "versions_destroy": True,
         "versions_list": True,
         "versions_retrieve": True,
@@ -144,10 +149,11 @@ def test_models_documents_get_abilities_administrator():
     abilities = access.document.get_abilities(access.user)
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
-        "update": True,
+        "attachment_upload": True,
         "manage_accesses": True,
         "partial_update": True,
+        "retrieve": True,
+        "update": True,
         "versions_destroy": True,
         "versions_list": True,
         "versions_retrieve": True,
@@ -163,10 +169,11 @@ def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
 
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
-        "update": True,
+        "attachment_upload": True,
         "manage_accesses": False,
         "partial_update": True,
+        "retrieve": True,
+        "update": True,
         "versions_destroy": False,
         "versions_list": True,
         "versions_retrieve": True,
@@ -182,10 +189,11 @@ def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
 
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
-        "update": False,
+        "attachment_upload": False,
         "manage_accesses": False,
         "partial_update": False,
+        "retrieve": True,
+        "update": False,
         "versions_destroy": False,
         "versions_list": True,
         "versions_retrieve": True,
@@ -202,10 +210,11 @@ def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
 
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
-        "update": False,
+        "attachment_upload": False,
         "manage_accesses": False,
         "partial_update": False,
+        "retrieve": True,
+        "update": False,
         "versions_destroy": False,
         "versions_list": True,
         "versions_retrieve": True,
@@ -217,7 +226,7 @@ def test_models_documents_get_versions_slice(settings):
     The "get_versions_slice" method should allow navigating all versions of
     the document with pagination.
     """
-    settings.S3_VERSIONS_PAGE_SIZE = 4
+    settings.DOCUMENT_VERSIONS_PAGE_SIZE = 4
 
     # Create a document with 7 versions
     document = factories.DocumentFactory()

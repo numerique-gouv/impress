@@ -1,6 +1,11 @@
 """API endpoints"""
 
+import os
+import uuid
+
+from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.core.files.storage import default_storage
 from django.db.models import (
     OuterRef,
     Q,
@@ -28,6 +33,8 @@ from core.utils import email_invitation
 from . import permissions, serializers
 
 # pylint: disable=too-many-ancestors
+
+ATTACHMENTS_FOLDER = "attachments"
 
 
 class NestedGenericViewSet(viewsets.GenericViewSet):
@@ -265,7 +272,7 @@ class ResourceAccessViewsetMixin:
         ):
             return drf_response.Response(
                 {"detail": "Cannot delete the last owner access for the resource."},
-                status=403,
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         return super().destroy(request, *args, **kwargs)
@@ -388,6 +395,31 @@ class DocumentViewSet(
                 "last_modified": response["LastModified"],
                 "id": version_id,
             }
+        )
+
+    @decorators.action(detail=True, methods=["post"], url_path="attachment-upload")
+    def attachment_upload(self, request, *args, **kwargs):
+        """Upload a file related to a given document"""
+        # Check permissions first
+        document = self.get_object()
+
+        # Validate metadata in payload
+        serializer = serializers.FileUploadSerializer(data=request.data)
+        if not serializer.is_valid():
+            return drf_response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+        # Extract the file extension from the original filename
+        file = serializer.validated_data["file"]
+        extension = os.path.splitext(file.name)[1]
+
+        # Generate a generic yet unique filename to store the image in object storage
+        file_id = uuid.uuid4()
+        key = f"{document.key_base}/{ATTACHMENTS_FOLDER:s}/{file_id!s}{extension:s}"
+
+        default_storage.save(key, file)
+        return drf_response.Response(
+            {"file": f"{settings.MEDIA_URL:s}{key:s}"}, status=status.HTTP_201_CREATED
         )
 
 

@@ -36,18 +36,19 @@ logger = getLogger(__name__)
 
 def get_resource_roles(resource, user):
     """Compute the roles a user has on a resource."""
-    roles = []
-    if user.is_authenticated:
+    if not user.is_authenticated:
+        return []
+
+    try:
+        roles = resource.user_roles or []
+    except AttributeError:
+        teams = user.get_teams()
         try:
-            roles = resource.user_roles or []
-        except AttributeError:
-            teams = user.get_teams()
-            try:
-                roles = resource.accesses.filter(
-                    models.Q(user=user) | models.Q(team__in=teams),
-                ).values_list("role", flat=True)
-            except (models.ObjectDoesNotExist, IndexError):
-                roles = []
+            roles = resource.accesses.filter(
+                models.Q(user=user) | models.Q(team__in=teams),
+            ).values_list("role", flat=True)
+        except (models.ObjectDoesNotExist, IndexError):
+            roles = []
     return roles
 
 
@@ -403,7 +404,7 @@ class Document(BaseModel):
             response = default_storage.connection.meta.client.list_object_versions(
                 Bucket=default_storage.bucket_name,
                 Prefix=self.file_key,
-                MaxKeys=settings.S3_VERSIONS_PAGE_SIZE,
+                MaxKeys=settings.DOCUMENT_VERSIONS_PAGE_SIZE,
                 **token,
             )
 
@@ -421,7 +422,7 @@ class Document(BaseModel):
                     if response["NextVersionIdMarker"]:
                         return self.get_versions_slice(
                             from_version_id=response["NextVersionIdMarker"],
-                            page_size=settings.S3_VERSIONS_PAGE_SIZE,
+                            page_size=settings.DOCUMENT_VERSIONS_PAGE_SIZE,
                             from_datetime=from_datetime,
                         )
                     return {
@@ -433,9 +434,9 @@ class Document(BaseModel):
         response = default_storage.connection.meta.client.list_object_versions(
             Bucket=default_storage.bucket_name,
             Prefix=self.file_key,
-            MaxKeys=min(page_size, settings.S3_VERSIONS_PAGE_SIZE)
+            MaxKeys=min(page_size, settings.DOCUMENT_VERSIONS_PAGE_SIZE)
             if page_size
-            else settings.S3_VERSIONS_PAGE_SIZE,
+            else settings.DOCUMENT_VERSIONS_PAGE_SIZE,
             **token,
         )
         return {
@@ -475,13 +476,14 @@ class Document(BaseModel):
 
         return {
             "destroy": RoleChoices.OWNER in roles,
+            "attachment_upload": is_owner_or_admin or is_editor,
+            "manage_accesses": is_owner_or_admin,
+            "partial_update": is_owner_or_admin or is_editor,
+            "retrieve": can_get,
+            "update": is_owner_or_admin or is_editor,
             "versions_destroy": is_owner_or_admin,
             "versions_list": can_get_versions,
             "versions_retrieve": can_get_versions,
-            "manage_accesses": is_owner_or_admin,
-            "update": is_owner_or_admin or is_editor,
-            "partial_update": is_owner_or_admin or is_editor,
-            "retrieve": can_get,
         }
 
 

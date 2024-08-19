@@ -138,7 +138,24 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
-    S3_VERSIONS_PAGE_SIZE = 50
+    # Document images
+    DOCUMENT_IMAGE_MAX_SIZE = values.Value(
+        10 * (2**20),  # 10MB
+        environ_name="DOCUMENT_IMAGE_MAX_SIZE",
+        environ_prefix=None,
+    )
+    DOCUMENT_IMAGE_ALLOWED_MIME_TYPES = [
+        "image/bmp",
+        "image/gif",
+        "image/jpeg",
+        "image/png",
+        "image/svg+xml",
+        "image/tiff",
+        "image/webp",
+    ]
+
+    # Document versions
+    DOCUMENT_VERSIONS_PAGE_SIZE = 50
 
     # Internationalization
     # https://docs.djangoproject.com/en/3.1/topics/i18n/
