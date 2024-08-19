@@ -170,7 +170,9 @@ def test_api_template_accesses_retrieve_authenticated_unrelated():
         )
 
         assert response.status_code == 404
-        assert response.json() == {"detail": "Not found."}
+        assert response.json() == {
+            "detail": "No TemplateAccess matches the given query."
+        }
 
 
 @pytest.mark.parametrize("via", VIA)

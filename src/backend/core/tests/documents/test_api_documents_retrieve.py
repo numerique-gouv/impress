@@ -45,7 +45,7 @@ def test_api_documents_retrieve_anonymous_not_public():
     response = APIClient().get(f"/api/v1.0/documents/{document.id!s}/")
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 def test_api_documents_retrieve_authenticated_unrelated_public():
@@ -101,7 +101,7 @@ def test_api_documents_retrieve_authenticated_unrelated_not_public():
         f"/api/v1.0/documents/{document.id!s}/",
     )
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 def test_api_documents_retrieve_authenticated_related_direct():
@@ -184,7 +184,7 @@ def test_api_documents_retrieve_authenticated_related_team_none(mock_user_get_te
 
     response = client.get(f"/api/v1.0/documents/{document.id!s}/")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 @pytest.mark.parametrize(

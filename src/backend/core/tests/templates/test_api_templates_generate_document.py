@@ -44,7 +44,7 @@ def test_api_templates_generate_document_anonymous_not_public():
     )
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Template matches the given query."}
 
 
 def test_api_templates_generate_document_authenticated_public():
@@ -87,7 +87,7 @@ def test_api_templates_generate_document_authenticated_not_public():
     )
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Template matches the given query."}
 
 
 @pytest.mark.parametrize("via", VIA)

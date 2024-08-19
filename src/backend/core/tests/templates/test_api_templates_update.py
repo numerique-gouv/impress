@@ -58,7 +58,7 @@ def test_api_templates_update_authenticated_unrelated():
     )
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Template matches the given query."}
 
     template.refresh_from_db()
     template_values = serializers.TemplateSerializer(instance=template).data
