@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "install": "playwright install --with-deps",
+    "install-playwright": "playwright install --with-deps",
     "test": "playwright test",
-    "test:ui": "yarn test --ui"
+    "test:ui": "yarn test --ui",
+    "test:ui::firefox": "yarn test:ui --project=firefox",
+    "test:ui::webkit": "yarn test:ui --project=webkit",
+    "test:ui::chromium": "yarn test:ui --project=chromium"
   },
   "devDependencies": {
     "@playwright/test": "1.45.3",

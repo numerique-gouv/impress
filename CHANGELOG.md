@@ -26,6 +26,7 @@ and this project adheres to
 ## Changed
 
 - 🎨(frontend) stop limit layout height to screen size #158
+- ⚡️(CI) only e2e chrome mandatory #177
 
 ## [1.1.0] - 2024-07-15
 

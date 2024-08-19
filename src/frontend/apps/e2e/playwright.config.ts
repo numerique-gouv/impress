@@ -63,5 +63,15 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        locale: 'en-US',
+        timezoneId: 'Europe/Paris',
+        storageState: 'playwright/.auth/user-firefox.json',
+      },
+      dependencies: ['setup'],
+    },
   ],
 });

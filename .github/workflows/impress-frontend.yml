@@ -96,7 +96,7 @@ jobs:
       - name: Check linting
         run: cd src/frontend/ && yarn lint
 
-  test-e2e:
+  test-e2e-chromium:
     runs-on: ubuntu-latest
     needs: build-front
     timeout-minutes: 20
@@ -158,14 +158,88 @@ jobs:
           make demo FLUSH_ARGS='--no-input'
 
       - name: Install Playwright Browsers
-        run: cd src/frontend/apps/e2e && yarn install
+        run: cd src/frontend/apps/e2e && yarn install-playwright chromium
 
       - name: Run e2e tests
-        run: cd src/frontend/ && yarn e2e:test
+        run: cd src/frontend/ && yarn e2e:test --project='chromium'
 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
+          name: playwright-chromium-report
+          path: src/frontend/apps/e2e/report/
+          retention-days: 7
+
+  test-e2e-other-browser:
+    runs-on: ubuntu-latest
+    needs: build-front
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set services env variables
+        run: |
+          make data/media
+          make create-env-files
+          cat env.d/development/common.e2e.dist >> env.d/development/common
+
+      - name: Restore the mail templates
+        uses: actions/cache@v4
+        id: mail-templates
+        with:
+          path: "src/backend/core/templates/mail"
+          key: mail-templates-${{ hashFiles('src/mail/mjml') }}
+
+      - name: Restore the frontend cache
+        uses: actions/cache@v4
+        id: front-node_modules
+        with:
+          path: "src/frontend/**/node_modules"
+          key: front-node_modules-${{ hashFiles('src/frontend/**/yarn.lock') }}
+
+      - name: Restore the build cache
+        uses: actions/cache@v4
+        id: cache-build
+        with:
+          path: src/frontend/apps/impress/out/
+          key: build-front-${{ github.run_id }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the Docker images
+        uses: docker/bake-action@v4
+        with:
+          targets: |
+            app-dev
+            y-webrtc-signaling
+          load: true
+          set: |
+            *.cache-from=type=gha,scope=cached-stage
+            *.cache-to=type=gha,scope=cached-stage,mode=max
+
+      - name: Start Docker services
+        run: |
+          make run
+
+      - name: Apply DRF migrations
+        run: |
+          make migrate
+
+      - name: Add dummy data
+        run: |
+          make demo FLUSH_ARGS='--no-input'
+
+      - name: Install Playwright Browsers
+        run: cd src/frontend/apps/e2e && yarn install-playwright firefox webkit chromium
+
+      - name: Run e2e tests
+        run: cd src/frontend/ && yarn e2e:test --project=firefox --project=webkit
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-other-report
           path: src/frontend/apps/e2e/report/
           retention-days: 7
