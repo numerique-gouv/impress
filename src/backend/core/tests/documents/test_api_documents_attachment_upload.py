@@ -103,9 +103,7 @@ def test_api_documents_attachment_upload_reader(via, mock_user_get_teams):
 
 @pytest.mark.parametrize("role", ["editor", "administrator", "owner"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_attachment_upload_success(
-    via, role, mock_user_get_teams, settings
-):
+def test_api_documents_attachment_upload_success(via, role, mock_user_get_teams):
     """
     Editors, administrators and owners of a document should be able to upload an attachment.
     """
@@ -130,7 +128,7 @@ def test_api_documents_attachment_upload_success(
 
     assert response.status_code == 201
 
-    pattern = re.compile(rf"^{settings.MEDIA_URL}{document.id!s}/attachments/(.*)\.jpg")
+    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.jpg")
     match = pattern.search(response.json()["file"])
     file_id = match.group(1)
 
