@@ -324,16 +324,23 @@ class Document(BaseModel):
             file_key = self.file_key
             bytes_content = self._content.encode("utf-8")
 
-            if default_storage.exists(file_key):
+            # Attempt to directly check if the object exists using the storage client.
+            try:
                 response = default_storage.connection.meta.client.head_object(
                     Bucket=default_storage.bucket_name, Key=file_key
                 )
+            except ClientError as excpt:
+                # If the error is a 404, the object doesn't exist, so we should create it.
+                if excpt.response["Error"]["Code"] == "404":
+                    has_changed = True
+                else:
+                    raise
+            else:
+                # Compare the existing ETag with the MD5 hash of the new content.
                 has_changed = (
                     response["ETag"].strip('"')
-                    != hashlib.md5(bytes_content).hexdigest()  # noqa
+                    != hashlib.md5(bytes_content).hexdigest()  # noqa: S324
                 )
-            else:
-                has_changed = True
 
             if has_changed:
                 content_file = ContentFile(bytes_content)
