@@ -58,7 +58,7 @@ def test_api_documents_update_authenticated_unrelated():
     )
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
     document.refresh_from_db()
     document_values = serializers.DocumentSerializer(instance=document).data

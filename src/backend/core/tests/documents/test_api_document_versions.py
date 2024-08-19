@@ -38,7 +38,7 @@ def test_api_document_versions_list_anonymous_private():
     response = APIClient().get(f"/api/v1.0/documents/{document.id!s}/versions/")
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 def test_api_document_versions_list_authenticated_unrelated_public():
@@ -86,7 +86,7 @@ def test_api_document_versions_list_authenticated_unrelated_private():
         f"/api/v1.0/documents/{document.id!s}/versions/",
     )
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -169,7 +169,7 @@ def test_api_document_versions_retrieve_anonymous_private():
     response = APIClient().get(url)
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 def test_api_document_versions_retrieve_authenticated_unrelated_public():
@@ -211,7 +211,7 @@ def test_api_document_versions_retrieve_authenticated_unrelated_private():
         f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
     )
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -434,7 +434,7 @@ def test_api_document_versions_delete_authenticated_private():
     )
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Not found."}
+    assert response.json() == {"detail": "No Document matches the given query."}
 
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
