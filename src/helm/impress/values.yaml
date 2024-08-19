@@ -37,7 +37,7 @@ ingress:
   ## @param ingress.hosts Additional host to configure for the Ingress
   hosts: []
   #  - chart-example.local
-  ## @param ingress.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingress.tls.enabled Wether to enable TLS for the Ingress
   ## @skip ingress.tls.additional
   ## @extra ingress.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingress.tls.additional[].hosts[] Hosts for additional TLS config
@@ -60,7 +60,7 @@ ingressWS:
   ## @param ingress.hosts Additional host to configure for the Ingress
   hosts: []
   #  - chart-example.local
-  ## @param ingressWS.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingressWS.tls.enabled Wether to enable TLS for the Ingress
   ## @skip ingressWS.tls.additional
   ## @extra ingressWS.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingressWS.tls.additional[].hosts[] Hosts for additional TLS config
@@ -87,13 +87,43 @@ ingressAdmin:
   ## @param ingressAdmin.hosts Additional host to configure for the Ingress
   hosts: [ ]
   #  - chart-example.local
-  ## @param ingressAdmin.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingressAdmin.tls.enabled Wether to enable TLS for the Ingress
   ## @skip ingressAdmin.tls.additional
   ## @extra ingressAdmin.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingressAdmin.tls.additional[].hosts[] Hosts for additional TLS config
   tls:
     enabled: true
     additional: []
+
+## @param ingressMedia.enabled whether to enable the Ingress or not
+## @param ingressMedia.className IngressClass to use for the Ingress
+## @param ingressMedia.host Host for the Ingress
+## @param ingressMedia.path Path to use for the Ingress
+ingressMedia:
+  enabled: false
+  className: null
+  host: impress.example.com
+  path: /media/(.*)
+  ## @param ingressMedia.hosts Additional host to configure for the Ingress
+  hosts: [ ]
+  #  - chart-example.local
+  ## @param ingressMedia.tls.enabled Wether to enable TLS for the Ingress
+  ## @skip ingressMedia.tls.additional
+  ## @extra ingressMedia.tls.additional[].secretName Secret name for additional TLS config
+  ## @extra ingressMedia.tls.additional[].hosts[] Hosts for additional TLS config
+  tls:
+    enabled: true
+    additional: []
+
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: https://impress.example.com/api/v1.0/documents/retrieve-auth/
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Amz-Date, X-Amz-Content-SHA256"
+    nginx.ingress.kubernetes.io/upstream-vhost: minio.impress.svc.cluster.local:9000
+
+serviceMedia:
+  host: minio.impress.svc.cluster.local
+  port: 9000
+  annotations: {}
 
 
 ## @section backend

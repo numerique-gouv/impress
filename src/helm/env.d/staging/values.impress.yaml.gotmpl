@@ -154,3 +154,24 @@ ingressAdmin:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-preprod.beta.numerique.gouv.fr/oauth2/start
     nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-preprod.beta.numerique.gouv.fr/oauth2/auth
+
+ingressMedia:
+  enabled: true
+  host: impress-staging.beta.numerique.gouv.fr
+
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/auth-url: https://impress-staging.beta.numerique.gouv.fr/api/v1.0/documents/retrieve-auth/
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Amz-Date, X-Amz-Content-SHA256"
+    nginx.ingress.kubernetes.io/upstream-vhost:
+      secretKeyRef:
+        name: impress-media-storage.bucket.libre.sh
+        key: url
+    nginx.ingress.kubernetes.io/rewrite-target: /impress-media-storage/$1
+
+serviceMedia:
+  host:
+    secretKeyRef:
+      name: impress-media-storage.bucket.libre.sh
+      key: url
+  port: 9000

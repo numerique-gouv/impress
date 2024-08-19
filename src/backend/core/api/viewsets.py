@@ -1,7 +1,9 @@
 """API endpoints"""
 
 import os
+import re
 import uuid
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -30,7 +32,17 @@ from rest_framework import (
 from core import models
 from core.utils import email_invitation
 
-from . import permissions, serializers
+from . import permissions, serializers, utils
+
+ATTACHMENTS_FOLDER = "attachments"
+UUID_REGEX = (
+    r"[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+)
+FILE_EXT_REGEX = r"\.[a-zA-Z]{3,4}"
+MEDIA_URL_PATTERN = re.compile(
+    f"{settings.MEDIA_URL:s}({UUID_REGEX:s})/"
+    f"({ATTACHMENTS_FOLDER:s}/{UUID_REGEX:s}{FILE_EXT_REGEX:s})$"
+)
 
 # pylint: disable=too-many-ancestors
 
@@ -421,6 +433,48 @@ class DocumentViewSet(
         return drf_response.Response(
             {"file": f"{settings.MEDIA_URL:s}{key:s}"}, status=status.HTTP_201_CREATED
         )
+
+    @decorators.action(detail=False, methods=["get"], url_path="retrieve-auth")
+    def retrieve_auth(self, request, *args, **kwargs):
+        """
+        This view is used by an Nginx subrequest to control access to a document's
+        attachment file.
+
+        The original url is passed by nginx in the "HTTP_X_ORIGINAL_URL" header.
+        See corresponding ingress configuration in Helm chart and read about the
+        nginx.ingress.kubernetes.io/auth-url annotation to understand how the Nginx ingress
+        is configured to do this.
+
+        Based on the original url and the logged in user, we must decide if we authorize Nginx
+        to let this request go through (by returning a 200 code) or if we block it (by returning
+        a 403 error). Note that we return 403 errors without any further details for security
+        reasons.
+
+        When we let the request go through, we compute authorization headers that will be added to
+        the request going through thanks to the nginx.ingress.kubernetes.io/auth-response-headers
+        annotation. The request will then be proxied to the object storage backend who will
+        respond with the file after checking the signature included in headers.
+        """
+        original_url = urlparse(request.META.get("HTTP_X_ORIGINAL_URL"))
+        match = MEDIA_URL_PATTERN.search(original_url.path)
+
+        try:
+            pk, attachment_key = match.groups()
+        except AttributeError as excpt:
+            raise exceptions.PermissionDenied() from excpt
+
+        # Check permission
+        try:
+            document = models.Document.objects.get(pk=pk)
+        except models.Document.DoesNotExist as excpt:
+            raise exceptions.PermissionDenied() from excpt
+
+        if not document.get_abilities(request.user).get("retrieve", False):
+            raise exceptions.PermissionDenied()
+
+        # Generate authorization headers and return an authorization to proceed with the request
+        request = utils.generate_s3_authorization_headers(f"{pk:s}/{attachment_key:s}")
+        return drf_response.Response("authorized", headers=request.headers, status=200)
 
 
 class DocumentAccessViewSet(
