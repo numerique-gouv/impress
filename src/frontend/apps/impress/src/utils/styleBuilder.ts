@@ -24,7 +24,6 @@ const spacings = {
 };
 
 type SpacingsKey = keyof typeof spacings;
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type Spacings = SpacingsKey | (string & {});
 
 export const spacingValue = (value?: Spacings) =>
