@@ -1,4 +1,5 @@
 """Permission handlers for the impress core app."""
+
 from django.core import exceptions
 
 from rest_framework import permissions

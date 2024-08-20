@@ -1,4 +1,5 @@
 """Admin classes and registrations for core app."""
+
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.utils.translation import gettext_lazy as _

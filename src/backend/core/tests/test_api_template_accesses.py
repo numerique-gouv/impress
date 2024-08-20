@@ -1,6 +1,7 @@
 """
 Test template accesses API endpoints for users in impress's core app.
 """
+
 import random
 from uuid import uuid4
 
@@ -67,6 +68,7 @@ def test_api_template_accesses_list_authenticated_related(via, mock_user_get_tea
     client.force_login(user)
 
     template = factories.TemplateFactory()
+    user_access = None
     if via == USER:
         user_access = models.TemplateAccess.objects.create(
             template=template,
@@ -733,6 +735,7 @@ def test_api_template_accesses_update_owner_self(via, mock_user_get_teams):
     client.force_login(user)
 
     template = factories.TemplateFactory()
+    access = None
     if via == USER:
         access = factories.UserTemplateAccessFactory(
             template=template, user=user, role="owner"
@@ -957,6 +960,7 @@ def test_api_template_accesses_delete_owners_last_owner(via, mock_user_get_teams
     client.force_login(user)
 
     template = factories.TemplateFactory()
+    access = None
     if via == USER:
         access = factories.UserTemplateAccessFactory(
             template=template, user=user, role="owner"

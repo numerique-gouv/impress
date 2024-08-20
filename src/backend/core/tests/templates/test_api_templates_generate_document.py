@@ -1,6 +1,7 @@
 """
 Test users API endpoints in the impress core app.
 """
+
 import pytest
 from rest_framework.test import APIClient
 
@@ -97,7 +98,7 @@ def test_api_templates_generate_document_related(via, mock_user_get_teams):
 
     client = APIClient()
     client.force_login(user)
-
+    access = None
     if via == USER:
         access = factories.UserTemplateAccessFactory(user=user)
     elif via == TEAM:

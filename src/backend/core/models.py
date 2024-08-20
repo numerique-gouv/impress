@@ -1,6 +1,7 @@
 """
 Declare and configure the models for the impress core application
 """
+
 import hashlib
 import os
 import tempfile
@@ -316,6 +317,29 @@ class Document(BaseModel):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        """Write content to object storage only if _content has changed."""
+        super().save(*args, **kwargs)
+
+        if self._content:
+            file_key = self.file_key
+            bytes_content = self._content.encode("utf-8")
+
+            if default_storage.exists(file_key):
+                response = default_storage.connection.meta.client.head_object(
+                    Bucket=default_storage.bucket_name, Key=file_key
+                )
+                has_changed = (
+                    response["ETag"].strip('"')
+                    != hashlib.md5(bytes_content).hexdigest()  # noqa
+                )
+            else:
+                has_changed = True
+
+            if has_changed:
+                content_file = ContentFile(bytes_content)
+                default_storage.save(file_key, content_file)
+
     @property
     def key_base(self):
         """Key base of the location where the document is stored in object storage."""
@@ -355,28 +379,6 @@ class Document(BaseModel):
         return default_storage.connection.meta.client.get_object(
             Bucket=default_storage.bucket_name, Key=self.file_key, VersionId=version_id
         )
-
-    def save(self, *args, **kwargs):
-        """Write content to object storage only if _content has changed."""
-        super().save(*args, **kwargs)
-
-        if self._content:
-            file_key = self.file_key
-            bytes_content = self._content.encode("utf-8")
-
-            if default_storage.exists(file_key):
-                response = default_storage.connection.meta.client.head_object(
-                    Bucket=default_storage.bucket_name, Key=file_key
-                )
-                has_changed = (
-                    response["ETag"].strip('"')
-                    != hashlib.md5(bytes_content).hexdigest()  # noqa
-                )
-            else:
-                has_changed = True
-            if has_changed:
-                content_file = ContentFile(bytes_content)
-                default_storage.save(file_key, content_file)
 
     def get_versions_slice(
         self, from_version_id="", from_datetime=None, page_size=None

@@ -1,6 +1,7 @@
 """
 Tests for Templates API endpoint in impress's core app: list
 """
+
 from unittest import mock
 
 import pytest

@@ -1,4 +1,5 @@
 """URL configuration for the core app."""
+
 from django.conf import settings
 from django.urls import include, path, re_path
 

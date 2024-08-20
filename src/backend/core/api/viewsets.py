@@ -1,4 +1,5 @@
 """API endpoints"""
+
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import (
     OuterRef,

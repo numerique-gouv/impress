@@ -1,6 +1,7 @@
 """
 Tests for Templates API endpoint in impress's core app: update
 """
+
 import random
 
 import pytest
