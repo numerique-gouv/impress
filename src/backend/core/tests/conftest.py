@@ -1,4 +1,5 @@
 """Fixtures for tests in the impress core application"""
+
 from unittest import mock
 
 import pytest

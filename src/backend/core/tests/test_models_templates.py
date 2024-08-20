@@ -1,6 +1,7 @@
 """
 Unit tests for the Template model
 """
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 

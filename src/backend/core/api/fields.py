@@ -1,4 +1,5 @@
 """A JSONField for DRF to handle serialization/deserialization."""
+
 import json
 
 from rest_framework import serializers

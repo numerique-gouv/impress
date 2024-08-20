@@ -1,6 +1,7 @@
 """
 Test document accesses API endpoints for users in impress's core app.
 """
+
 import random
 
 from django.core import mail

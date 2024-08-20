@@ -1,6 +1,7 @@
 """
 Tests for Documents API endpoint in impress's core app: create
 """
+
 import uuid
 
 import pytest

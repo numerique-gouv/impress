@@ -1,6 +1,7 @@
 """
 Test document versions API endpoints for users in impress's core app.
 """
+
 import random
 import time
 

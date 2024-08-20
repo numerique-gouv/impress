@@ -1,6 +1,7 @@
 """
 Unit tests for the Invitation model
 """
+
 import smtplib
 from logging import Logger
 from unittest import mock

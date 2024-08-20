@@ -1,6 +1,7 @@
 """
 Unit tests for the User model
 """
+
 from unittest import mock
 
 from django.core.exceptions import ValidationError

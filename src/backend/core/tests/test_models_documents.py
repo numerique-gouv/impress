@@ -1,6 +1,7 @@
 """
 Unit tests for the Document model
 """
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage

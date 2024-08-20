@@ -1,6 +1,7 @@
 """
 Tests for Documents API endpoint in impress's core app: retrieve
 """
+
 import pytest
 from rest_framework.test import APIClient
 
@@ -228,6 +229,8 @@ def test_api_documents_retrieve_authenticated_related_team_members(
     factories.TeamDocumentAccessFactory()
 
     response = client.get(f"/api/v1.0/documents/{document.id!s}/")
+
+    # pylint: disable=R0801
     assert response.status_code == 200
     content = response.json()
     expected_abilities = {

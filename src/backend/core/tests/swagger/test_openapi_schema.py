@@ -1,6 +1,7 @@
 """
 Test suite for generated openapi schema.
 """
+
 import json
 from io import StringIO
 

@@ -100,11 +100,11 @@ exclude = [
     "__pycache__",
     "*/migrations/*",
 ]
-ignore= ["DJ001", "PLR2004"]
 line-length = 88
 
 
 [tool.ruff.lint]
+ignore = ["DJ001", "PLR2004"]
 select = [
     "B", # flake8-bugbear
     "BLE", # flake8-blind-except
@@ -126,7 +126,7 @@ select = [
 section-order = ["future","standard-library","django","third-party","impress","first-party","local-folder"]
 sections = { impress=["core"], django=["django"] }
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "**/tests/*" = ["S", "SLF"]
 
 [tool.pytest.ini_options]

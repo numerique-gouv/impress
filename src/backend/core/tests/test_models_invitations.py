@@ -1,6 +1,7 @@
 """
 Unit tests for the Invitation model
 """
+
 import time
 
 from django.contrib.auth.models import AnonymousUser

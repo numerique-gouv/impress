@@ -1,6 +1,7 @@
 """
 Test document accesses API endpoints for users in impress's core app.
 """
+
 import random
 from uuid import uuid4
 
@@ -67,6 +68,7 @@ def test_api_document_accesses_list_authenticated_related(via, mock_user_get_tea
     client.force_login(user)
 
     document = factories.DocumentFactory()
+    user_access = None
     if via == USER:
         user_access = models.DocumentAccess.objects.create(
             document=document,
@@ -543,6 +545,7 @@ def test_api_document_accesses_update_owner_self(via, mock_user_get_teams):
     client.force_login(user)
 
     document = factories.DocumentFactory()
+    access = None
     if via == USER:
         access = factories.UserDocumentAccessFactory(
             document=document, user=user, role="owner"
@@ -773,6 +776,7 @@ def test_api_document_accesses_delete_owners_last_owner(via, mock_user_get_teams
     client.force_login(user)
 
     document = factories.DocumentFactory()
+    access = None
     if via == USER:
         access = factories.UserDocumentAccessFactory(
             document=document, user=user, role="owner"

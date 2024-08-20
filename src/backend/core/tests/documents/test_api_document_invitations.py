@@ -1,6 +1,7 @@
 """
 Unit tests for the Invitation model
 """
+
 import random
 import time
 
@@ -250,7 +251,7 @@ def test_api_document_invitations__create__cannot_duplicate_invitation():
     )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json()["__all__"] == [
+    assert response.json() == [
         "Document invitation with this Email address and Document already exists."
     ]
 
@@ -278,9 +279,7 @@ def test_api_document_invitations__create__cannot_invite_existing_users():
     )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json()["email"] == [
-        "This email is already associated to a registered user."
-    ]
+    assert response.json() == ["This email is already associated to a registered user."]
 
 
 def test_api_document_invitations__list__anonymous_user():
@@ -567,8 +566,9 @@ def test_api_document_invitations__update__forbidden__not_authenticated(
     client = APIClient()
     client.force_login(user)
     url = f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/"
-    if method == "put":
-        response = client.put(url)
+
+    response = client.put(url)
+
     if method == "patch":
         response = client.patch(url)
 

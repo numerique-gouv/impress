@@ -1,6 +1,7 @@
 """
 Unit tests for the DocumentAccess model
 """
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 
@@ -318,7 +319,7 @@ def test_models_document_access_get_abilities_for_editor_of_administrator():
 
 
 def test_models_document_access_get_abilities_for_editor_of_editor_user(
-    django_assert_num_queries
+    django_assert_num_queries,
 ):
     """Check abilities of editor access for the editor of a document."""
     access = factories.UserDocumentAccessFactory(role="editor")
@@ -377,7 +378,7 @@ def test_models_document_access_get_abilities_for_reader_of_administrator():
 
 
 def test_models_document_access_get_abilities_for_reader_of_reader_user(
-    django_assert_num_queries
+    django_assert_num_queries,
 ):
     """Check abilities of reader access for the reader of a document."""
     access = factories.UserDocumentAccessFactory(role="reader")

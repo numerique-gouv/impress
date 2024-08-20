@@ -1,6 +1,7 @@
 """
 Utilities for the core app.
 """
+
 import smtplib
 from logging import getLogger
 
