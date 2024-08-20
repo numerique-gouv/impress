@@ -49,5 +49,7 @@ export function revertUpdate(
       currentStateVector,
     );
     Y.applyUpdate(doc, revertChangesSinceSnapshotUpdate, snapshotOrigin);
-  } catch (e) {}
+  } catch (e) {
+    console.error('Failed to revert the doc to a previous state', e);
+  }
 }

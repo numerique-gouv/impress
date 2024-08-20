@@ -17,7 +17,6 @@ export interface TextProps extends BoxProps {
   $isMaterialIcon?: boolean;
   $weight?: CSSProperties['fontWeight'];
   $textAlign?: CSSProperties['textAlign'];
-  // eslint-disable-next-line @typescript-eslint/ban-types
   $size?: TextSizes | (string & {});
   $theme?:
     | 'primary'
