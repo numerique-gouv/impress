@@ -45,7 +45,7 @@ Whenever we are cooking a new release (e.g. `4.18.1`) we should follow a standar
 7.  Tag and push your commit:
 
     ```bash
-    git tag v4.18.1 && git push origin --tags
+    git tag v4.18.1 && git push origin tag v4.18.1
     ```
 
     Doing this triggers the CI and tells it to build the new Docker image versions that you targeted earlier in the Helm files.
