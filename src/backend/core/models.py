@@ -3,7 +3,6 @@ Declare and configure the models for the impress core application
 """
 
 import hashlib
-import os
 import tempfile
 import textwrap
 import uuid
@@ -609,26 +608,25 @@ class Template(BaseModel):
         """
 
         reference_docx = "core/static/reference.docx"
+        output = BytesIO()
 
         # Convert the HTML to a temporary docx file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
+        with tempfile.NamedTemporaryFile(suffix=".docx", prefix="docx_") as tmp_file:
             output_path = tmp_file.name
 
-        pypandoc.convert_text(
-            html_string,
-            "docx",
-            format="html",
-            outputfile=output_path,
-            extra_args=["--reference-doc", reference_docx],
-        )
+            pypandoc.convert_text(
+                html_string,
+                "docx",
+                format="html",
+                outputfile=output_path,
+                extra_args=["--reference-doc", reference_docx],
+            )
 
-        # Create a BytesIO object to store the output of the temporary docx file
-        with open(output_path, "rb") as f:
-            output = BytesIO(f.read())
+            # Create a BytesIO object to store the output of the temporary docx file
+            with open(output_path, "rb") as f:
+                output = BytesIO(f.read())
 
-        # Remove the temporary docx file
-        os.remove(output_path)
-
+        # Ensure the pointer is at the beginning
         output.seek(0)
 
         response = FileResponse(
@@ -636,6 +634,7 @@ class Template(BaseModel):
             content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         )
         response["Content-Disposition"] = f"attachment; filename={self.title}.docx"
+
         return response
 
     def generate_document(self, body, body_type, export_format):
