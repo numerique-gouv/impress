@@ -29,6 +29,10 @@ and this project adheres to
 - 🎨(frontend) stop limit layout height to screen size #158
 - ⚡️(CI) only e2e chrome mandatory #177
 
+## Removed
+- 🔥(helm) remove htaccess #181
+
+
 ## [1.1.0] - 2024-07-15
 
 ## Added
