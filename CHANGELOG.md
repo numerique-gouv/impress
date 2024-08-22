@@ -11,7 +11,6 @@ and this project adheres to
 ## Added
 
 - 🎨(frontend) better conversion editor to pdf #151
-- ✨(frontend) Versioning #147
 - ✨Export docx (word) #161
 - 🌐Internationalize invitation email #167
 - ✨(frontend) White branding #164
