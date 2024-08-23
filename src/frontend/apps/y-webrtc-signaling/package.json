@@ -1,6 +1,6 @@
 {
   "name": "y-webrtc-signaling",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "WebRTC server for Yjs",
   "repository": "https://github.com/numerique-gouv/impress",
   "license": "MIT",

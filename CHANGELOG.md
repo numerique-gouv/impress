@@ -8,13 +8,16 @@ and this project adheres to
 
 ## [Unreleased]
 
+
+## [1.2.1] - 2024-08-23
+
 ## Changed
 
 - ♻️ Change ordering docs datagrid #195
 - 🔥(helm) use scaleway email #194
 
 
-## [1.2.0] - 2024-08-06
+## [1.2.0] - 2024-08-22
 
 ## Added
 
@@ -103,7 +106,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.2.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.2.1...main
+[1.2.1]: https://github.com/numerique-gouv/impress/releases/v1.2.1
 [1.2.0]: https://github.com/numerique-gouv/impress/releases/v1.2.0
 [1.1.0]: https://github.com/numerique-gouv/impress/releases/v1.1.0
 [1.0.0]: https://github.com/numerique-gouv/impress/releases/v1.0.0
