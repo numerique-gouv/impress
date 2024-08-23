@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Changed
+
+- ♻️ Change ordering docs datagrid #195
+
+
 ## [1.2.0] - 2024-08-06
 
 ## Added

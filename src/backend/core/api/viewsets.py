@@ -310,6 +310,7 @@ class DocumentViewSet(
     access_model_class = models.DocumentAccess
     resource_field_name = "document"
     queryset = models.Document.objects.all()
+    ordering = ["-updated_at"]
 
     def perform_create(self, serializer):
         """
