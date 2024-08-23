@@ -313,3 +313,13 @@ start-tilt: ## start the kubernetes cluster using kind
 	tilt up -f ./bin/Tiltfile
 .PHONY: build-k8s-cluster
 
+VERSION_TYPE ?= minor
+bump-packages-version: ## bump the version of the project - VERSION_TYPE can be "major", "minor", "patch"
+	cd ./src/mail && yarn version --no-git-tag-version --$(VERSION_TYPE)
+	cd ./src/frontend/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
+	cd ./src/frontend/apps/e2e/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
+	cd ./src/frontend/apps/impress/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
+	cd ./src/frontend/apps/y-webrtc-signaling/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
+	cd ./src/frontend/packages/eslint-config-impress/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
+	cd ./src/frontend/packages/i18n/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
+.PHONY: bump-packages-version
