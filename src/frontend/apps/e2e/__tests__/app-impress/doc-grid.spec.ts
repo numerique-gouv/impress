@@ -49,111 +49,130 @@ test.describe('Documents Grid', () => {
       nameColumn: 'Document name',
       ordering: 'title',
       cellNumber: 1,
+      orderDefault: '',
+      orderDesc: '&ordering=-title',
+      orderAsc: '&ordering=title',
     },
     {
       nameColumn: 'Created at',
       ordering: 'created_at',
       cellNumber: 2,
+      orderDefault: '',
+      orderDesc: '&ordering=-created_at',
+      orderAsc: '&ordering=created_at',
     },
     {
       nameColumn: 'Updated at',
       ordering: 'updated_at',
       cellNumber: 3,
+      orderDefault: '&ordering=-updated_at',
+      orderDesc: '&ordering=updated_at',
+      orderAsc: '',
     },
-  ].forEach(({ nameColumn, ordering, cellNumber }) => {
-    test(`checks datagrid ordering ${ordering}`, async ({ page }) => {
-      const responsePromise = page.waitForResponse(
-        (response) =>
-          response.url().includes(`/documents/?page=1`) &&
-          response.status() === 200,
-      );
+  ].forEach(
+    ({
+      nameColumn,
+      ordering,
+      cellNumber,
+      orderDefault,
+      orderDesc,
+      orderAsc,
+    }) => {
+      test(`checks datagrid ordering ${ordering}`, async ({ page }) => {
+        const responsePromise = page.waitForResponse(
+          (response) =>
+            response.url().includes(`/documents/?page=1${orderDefault}`) &&
+            response.status() === 200,
+        );
 
-      const responsePromiseOrderingDesc = page.waitForResponse(
-        (response) =>
-          response.url().includes(`/documents/?page=1&ordering=-${ordering}`) &&
-          response.status() === 200,
-      );
+        const responsePromiseOrderingDesc = page.waitForResponse(
+          (response) =>
+            response.url().includes(`/documents/?page=1${orderDesc}`) &&
+            response.status() === 200,
+        );
 
-      const responsePromiseOrderingAsc = page.waitForResponse(
-        (response) =>
-          response.url().includes(`/documents/?page=1&ordering=${ordering}`) &&
-          response.status() === 200,
-      );
+        const responsePromiseOrderingAsc = page.waitForResponse(
+          (response) =>
+            response.url().includes(`/documents/?page=1${orderAsc}`) &&
+            response.status() === 200,
+        );
 
-      const datagrid = page
-        .getByLabel('Datagrid of the documents page 1')
-        .getByRole('table');
-      const thead = datagrid.locator('thead');
+        // Checks the initial state
+        const datagrid = page
+          .getByLabel('Datagrid of the documents page 1')
+          .getByRole('table');
+        const thead = datagrid.locator('thead');
 
-      const response = await responsePromise;
-      expect(response.ok()).toBeTruthy();
+        const response = await responsePromise;
+        expect(response.ok()).toBeTruthy();
 
-      const docNameRow1 = datagrid
-        .getByRole('row')
-        .nth(1)
-        .getByRole('cell')
-        .nth(cellNumber);
-      const docNameRow2 = datagrid
-        .getByRole('row')
-        .nth(2)
-        .getByRole('cell')
-        .nth(cellNumber);
+        const docNameRow1 = datagrid
+          .getByRole('row')
+          .nth(1)
+          .getByRole('cell')
+          .nth(cellNumber);
+        const docNameRow2 = datagrid
+          .getByRole('row')
+          .nth(2)
+          .getByRole('cell')
+          .nth(cellNumber);
 
-      await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+        await expect(datagrid.getByLabel('Loading data')).toBeHidden();
 
-      // Initial state
-      await expect(docNameRow1).toHaveText(/.*/);
-      await expect(docNameRow2).toHaveText(/.*/);
-      const initialDocNameRow1 = await docNameRow1.textContent();
-      const initialDocNameRow2 = await docNameRow2.textContent();
+        // Initial state
+        await expect(docNameRow1).toHaveText(/.*/);
+        await expect(docNameRow2).toHaveText(/.*/);
+        const initialDocNameRow1 = await docNameRow1.textContent();
+        const initialDocNameRow2 = await docNameRow2.textContent();
 
-      expect(initialDocNameRow1).toBeDefined();
-      expect(initialDocNameRow2).toBeDefined();
+        expect(initialDocNameRow1).toBeDefined();
+        expect(initialDocNameRow2).toBeDefined();
 
-      // Ordering ASC
-      await thead.getByText(nameColumn).click();
+        // Ordering ASC
+        await thead.getByText(nameColumn).click();
 
-      const responseOrderingAsc = await responsePromiseOrderingAsc;
-      expect(responseOrderingAsc.ok()).toBeTruthy();
+        const responseOrderingAsc = await responsePromiseOrderingAsc;
+        expect(responseOrderingAsc.ok()).toBeTruthy();
 
-      await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+        await expect(datagrid.getByLabel('Loading data')).toBeHidden();
 
-      await expect(docNameRow1).toHaveText(/.*/);
-      await expect(docNameRow2).toHaveText(/.*/);
-      const textDocNameRow1Asc = await docNameRow1.textContent();
-      const textDocNameRow2Asc = await docNameRow2.textContent();
-      expect(
-        textDocNameRow1Asc &&
-          textDocNameRow2Asc &&
-          textDocNameRow1Asc.localeCompare(textDocNameRow2Asc, 'en', {
-            caseFirst: 'false',
-            ignorePunctuation: true,
-          }) <= 0,
-      ).toBeTruthy();
+        await expect(docNameRow1).toHaveText(/.*/);
+        await expect(docNameRow2).toHaveText(/.*/);
+        const textDocNameRow1Asc = await docNameRow1.textContent();
+        const textDocNameRow2Asc = await docNameRow2.textContent();
+        expect(
+          textDocNameRow1Asc &&
+            textDocNameRow2Asc &&
+            textDocNameRow1Asc.localeCompare(textDocNameRow2Asc, 'en', {
+              caseFirst: 'false',
+              ignorePunctuation: true,
+            }) <= 0,
+        ).toBeTruthy();
 
-      // Ordering Desc
-      await thead.getByText(nameColumn).click();
+        // Ordering Desc
+        await thead.getByText(nameColumn).click();
 
-      const responseOrderingDesc = await responsePromiseOrderingDesc;
-      expect(responseOrderingDesc.ok()).toBeTruthy();
+        const responseOrderingDesc = await responsePromiseOrderingDesc;
+        expect(responseOrderingDesc.ok()).toBeTruthy();
 
-      await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+        await expect(datagrid.getByLabel('Loading data')).toBeHidden();
 
-      await expect(docNameRow1).toHaveText(/.*/);
-      await expect(docNameRow2).toHaveText(/.*/);
-      const textDocNameRow1Desc = await docNameRow1.textContent();
-      const textDocNameRow2Desc = await docNameRow2.textContent();
+        await expect(docNameRow1).toHaveText(/.*/);
+        await expect(docNameRow2).toHaveText(/.*/);
+        const textDocNameRow1Desc = await docNameRow1.textContent();
+        const textDocNameRow2Desc = await docNameRow2.textContent();
 
-      expect(
-        textDocNameRow1Desc &&
-          textDocNameRow2Desc &&
-          textDocNameRow1Desc.localeCompare(textDocNameRow2Desc, 'en', {
-            caseFirst: 'false',
-            ignorePunctuation: true,
-          }) >= 0,
-      ).toBeTruthy();
-    });
-  });
+        expect(
+          textDocNameRow1Desc &&
+            textDocNameRow2Desc &&
+            textDocNameRow1Desc.localeCompare(textDocNameRow2Desc, 'en', {
+              caseFirst: 'false',
+              ignorePunctuation: true,
+            }) >= 0,
+        ).toBeTruthy();
+      });
+    },
+  );
 
   test('checks the pagination', async ({ page }) => {
     const responsePromisePage1 = page.waitForResponse(
