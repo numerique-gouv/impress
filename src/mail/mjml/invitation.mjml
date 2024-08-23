@@ -2,10 +2,10 @@
   <mj-include path="./partial/header.mjml" />
 
   <mj-body mj-class="bg--blue-100">
-    <mj-wrapper css-class="wrapper" padding="0 40px 40px 40px">
-      <mj-section background-url="{% base64_static 'images/mail-header-background.png' %}" background-size="cover" background-repeat="no-repeat" background-position="0 -30px">
+    <mj-wrapper css-class="wrapper" padding="0 25px 0px 25px">
+      <mj-section background-url="{{site.domain}}/assets/mail-header-background.png" background-size="cover" background-repeat="no-repeat" background-position="0 -30px">
         <mj-column>
-            <mj-image align="center" src="{% base64_static 'images/logo-suite-numerique.png' %}" width="250px" align="left" alt="{%trans 'La Suite Numérique' %}" />
+            <mj-image align="center" src="{{site.domain}}/assets/logo-suite-numerique.png" width="250px" align="left" alt="{%trans 'La Suite Numérique' %}" />
         </mj-column>
       </mj-section>
       <mj-section mj-class="bg--white-100" padding="30px 20px 60px 20px">
@@ -30,7 +30,7 @@
               <li>{% trans "Invite members of your community to your document in just a few clicks."%}</li>
             </ul>
           </mj-text>
-          <mj-button href="//{{site.domain}}/docs/{{document_id}}/" background-color="#000091" color="white" padding-bottom="30px">
+          <mj-button href="{{site.domain}}/docs/{{document_id}}/" background-color="#000091" color="white" padding-bottom="30px">
             {% trans "Visit Docs"%}
           </mj-button>
           <mj-text>{% trans "We are confident that Docs will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
@@ -46,7 +46,5 @@
       </mj-section>
     </mj-wrapper>
   </mj-body>
-
-  <mj-include path="./partial/footer.mjml" />
 </mjml>
 
