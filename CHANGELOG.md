@@ -11,6 +11,7 @@ and this project adheres to
 ## Changed
 
 - ♻️ Change ordering docs datagrid #195
+- 🔥(helm) use scaleway email #194
 
 
 ## [1.2.0] - 2024-08-06
