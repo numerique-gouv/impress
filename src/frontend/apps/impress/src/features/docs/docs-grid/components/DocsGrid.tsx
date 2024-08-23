@@ -53,7 +53,12 @@ export const DocsGrid = () => {
   const pagination = usePagination({
     pageSize: PAGE_SIZE,
   });
-  const [sortModel, setSortModel] = useState<SortModel>([]);
+  const [sortModel, setSortModel] = useState<SortModel>([
+    {
+      field: 'updated_at',
+      sort: 'desc',
+    },
+  ]);
   const { page, pageSize, setPagesCount } = pagination;
   const [docs, setDocs] = useState<Doc[]>([]);
 
