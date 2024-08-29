@@ -1,34 +1,33 @@
 import { baseApiUrl, useAuthStore } from '@/core';
 
-/**
- * Retrieves the CSRF token from the document's cookies.
- *
- * @returns {string|null} The CSRF token if found in the cookies, or null if not present.
- */
-function getCSRFToken() {
-  return document.cookie
-    .split(';')
-    .filter((cookie) => cookie.trim().startsWith('csrftoken='))
-    .map((cookie) => cookie.split('=')[1])
-    .pop();
+import { getCSRFToken } from './utils';
+
+interface FetchAPIInit extends RequestInit {
+  withoutContentType?: boolean;
 }
 
 export const fetchAPI = async (
   input: string,
-  init?: RequestInit,
+  init?: FetchAPIInit,
   apiVersion = '1.0',
 ) => {
   const apiUrl = `${baseApiUrl(apiVersion)}${input}`;
   const csrfToken = getCSRFToken();
 
+  const headers = {
+    'Content-Type': 'application/json',
+    ...init?.headers,
+    ...(csrfToken && { 'X-CSRFToken': csrfToken }),
+  };
+
+  if (init?.withoutContentType) {
+    delete headers?.['Content-Type' as keyof typeof headers];
+  }
+
   const response = await fetch(apiUrl, {
     ...init,
     credentials: 'include',
-    headers: {
-      ...init?.headers,
-      'Content-Type': 'application/json',
-      ...(csrfToken && { 'X-CSRFToken': csrfToken }),
-    },
+    headers,
   });
 
   if (response.status === 401) {
