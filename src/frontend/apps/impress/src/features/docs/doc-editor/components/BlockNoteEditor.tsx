@@ -2,14 +2,16 @@ import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { WebrtcProvider } from 'y-webrtc';
 
-import { Box } from '@/components';
+import { Box, TextErrors } from '@/components';
+import { mediaUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
 import { Doc } from '@/features/docs/doc-management';
 import { Version } from '@/features/docs/doc-versioning/';
 
+import { useCreateDocAttachment } from '../api/useCreateDocUpload';
 import useSaveDoc from '../hook/useSaveDoc';
 import { useDocStore } from '../stores';
 import { randomColor } from '../utils';
@@ -56,8 +58,28 @@ export const BlockNoteContent = ({
   const { setStore, docsStore } = useDocStore();
   const canSave = doc.abilities.partial_update && !isVersion;
   useSaveDoc(doc.id, provider.doc, canSave);
-
   const storedEditor = docsStore?.[storeId]?.editor;
+  const {
+    mutateAsync: createDocAttachment,
+    isError: isErrorAttachment,
+    error: errorAttachment,
+  } = useCreateDocAttachment();
+
+  const uploadFile = useCallback(
+    async (file: File) => {
+      const body = new FormData();
+      body.append('file', file);
+
+      const ret = await createDocAttachment({
+        docId: doc.id,
+        body,
+      });
+
+      return `${mediaUrl()}${ret.file}`;
+    },
+    [createDocAttachment, doc.id],
+  );
+
   const editor = useMemo(() => {
     if (storedEditor) {
       return storedEditor;
@@ -72,8 +94,9 @@ export const BlockNoteContent = ({
           color: randomColor(),
         },
       },
+      uploadFile,
     });
-  }, [provider, storedEditor, userData?.email]);
+  }, [provider, storedEditor, uploadFile, userData?.email]);
 
   useEffect(() => {
     setStore(storeId, { editor });
@@ -90,6 +113,12 @@ export const BlockNoteContent = ({
         }
       `}
     >
+      {isErrorAttachment && (
+        <Box $margin={{ bottom: 'big' }}>
+          <TextErrors causes={errorAttachment.cause} />
+        </Box>
+      )}
+
       <BlockNoteView
         editor={editor}
         formattingToolbar={false}
