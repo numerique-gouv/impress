@@ -1,10 +1,13 @@
-export const baseApiUrl = (apiVersion: string = '1.0') => {
-  const origin =
-    process.env.NEXT_PUBLIC_API_ORIGIN ||
-    (typeof window !== 'undefined' ? window.location.origin : '');
+export const mediaUrl = () =>
+  process.env.NEXT_PUBLIC_MEDIA_URL ||
+  (typeof window !== 'undefined' ? window.location.origin : '');
 
-  return `${origin}/api/v${apiVersion}/`;
-};
+export const backendUrl = () =>
+  process.env.NEXT_PUBLIC_API_ORIGIN ||
+  (typeof window !== 'undefined' ? window.location.origin : '');
+
+export const baseApiUrl = (apiVersion: string = '1.0') =>
+  `${backendUrl()}/api/v${apiVersion}/`;
 
 export const signalingUrl = (docId: string) => {
   const base =

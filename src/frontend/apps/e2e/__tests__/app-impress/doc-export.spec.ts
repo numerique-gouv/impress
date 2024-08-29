@@ -176,6 +176,11 @@ test.describe('Doc Export', () => {
       })
       .click();
     await page
+      .getByRole('tab', {
+        name: 'Embed',
+      })
+      .click();
+    await page
       .getByPlaceholder('Enter URL')
       .fill('https://example.com/image.jpg');
     await page

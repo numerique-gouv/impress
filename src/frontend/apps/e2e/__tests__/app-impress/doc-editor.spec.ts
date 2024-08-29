@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { expect, test } from '@playwright/test';
 
 import { createDoc, goToGridDoc, mockedDocument } from './common';
@@ -158,5 +160,32 @@ test.describe('Doc Editor', () => {
     await expect(
       page.getByText('Read only, you cannot edit this document.'),
     ).toBeVisible();
+  });
+
+  test('it adds an image to the doc editor', async ({ page }) => {
+    await goToGridDoc(page);
+
+    const fileChooserPromise = page.waitForEvent('filechooser');
+
+    await page.locator('.bn-block-outer').last().fill('Hello World');
+
+    await page.keyboard.press('Enter');
+    await page.locator('.bn-block-outer').last().fill('/');
+    await page.getByText('Resizable image with caption').click();
+    await page.getByText('Upload image').click();
+
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(
+      path.join(__dirname, 'assets/logo-suite-numerique.png'),
+    );
+
+    const image = page.getByRole('img', { name: 'logo-suite-numerique.png' });
+
+    await expect(image).toBeVisible();
+
+    // Check src of image
+    expect(await image.getAttribute('src')).toMatch(
+      /http:\/\/localhost:8083\/media\/.*\/attachments\/.*.png/,
+    );
   });
 });
