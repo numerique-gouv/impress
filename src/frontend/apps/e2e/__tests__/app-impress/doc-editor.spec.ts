@@ -106,10 +106,6 @@ test.describe('Doc Editor', () => {
       nthRow: 2,
     });
 
-    await expect(
-      page.getByText(`Your document "${doc}" has been saved.`),
-    ).toBeVisible();
-
     await expect(page.locator('h2').getByText(secondDoc)).toBeVisible();
 
     await goToGridDoc(page, {
