@@ -161,17 +161,14 @@ ingressMedia:
 
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/auth-url: https://docs.numerique.gouv.fr/api/v1.0/documents/retrieve-auth/
     nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Amz-Date, X-Amz-Content-SHA256"
-    nginx.ingress.kubernetes.io/upstream-vhost:
-      secretKeyRef:
-        name: impress-media-storage.bucket.libre.sh
-        key: url
-    nginx.ingress.kubernetes.io/rewrite-target: /impress-media-storage/$1
+    nginx.ingress.kubernetes.io/auth-url: https://docs.numerique.gouv.fr/api/v1.0/documents/retrieve-auth/
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /impress-production-impress-media-storage/$1
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/upstream-vhost: s3.hedy-lamarr.indiehosters.net
 
 serviceMedia:
-  host:
-    secretKeyRef:
-      name: impress-media-storage.bucket.libre.sh
-      key: url
-  port: 9000
+  host: s3.hedy-lamarr.indiehosters.net
+  port: 443
