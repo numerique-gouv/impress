@@ -11,9 +11,10 @@ import {
   UnnestBlockButton,
   useBlockNoteEditor,
   useComponentsContext,
+  useSelectedBlocks,
 } from '@blocknote/react';
 import { forEach, isArray } from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export const BlockNoteToolbar = () => {
   return (
@@ -91,6 +92,7 @@ const recursiveContent = (content: Block[], base: string = '') => {
 export function MarkdownButton() {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
+  const selectedBlocks = useSelectedBlocks(editor);
 
   const handleConvertMarkdown = () => {
     const blocks = editor.getSelection()?.blocks;
@@ -114,7 +116,11 @@ export function MarkdownButton() {
     });
   };
 
-  if (!Components) {
+  const show = useMemo(() => {
+    return !!selectedBlocks.find((block) => block.content !== undefined);
+  }, [selectedBlocks]);
+
+  if (!show || !editor.isEditable || !Components) {
     return null;
   }
 
