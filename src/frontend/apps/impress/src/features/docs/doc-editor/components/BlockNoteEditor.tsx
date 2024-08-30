@@ -18,6 +18,20 @@ import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
 
+const cssEditor = `
+  &, & > .bn-container, & .ProseMirror {
+    height:100%
+  };
+  & .collaboration-cursor__caret.ProseMirror-widget{
+    word-wrap: initial;
+  }
+  & .bn-inline-content code {
+    background-color: gainsboro;
+    padding: 2px;
+    border-radius: 4px;
+  }
+`;
+
 interface BlockNoteEditorProps {
   doc: Doc;
   version?: Version;
@@ -103,16 +117,7 @@ export const BlockNoteContent = ({
   }, [setStore, storeId, editor]);
 
   return (
-    <Box
-      $css={`
-        &, & > .bn-container, & .ProseMirror {
-          height:100%
-        };
-        & .collaboration-cursor__caret.ProseMirror-widget{
-          word-wrap: initial;
-        }
-      `}
-    >
+    <Box $css={cssEditor}>
       {isErrorAttachment && (
         <Box $margin={{ bottom: 'big' }}>
           <TextErrors causes={errorAttachment.cause} />

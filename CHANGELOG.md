@@ -16,6 +16,7 @@ and this project adheres to
 
 ## Changed
 
+- 💄(frontend) code background darkened on editor #214
 - 🔥(frontend) hide markdown button if not text #213
 
 ## Removed
