@@ -9,10 +9,18 @@ and this project adheres to
 
 ## [Unreleased]
 
-# Added
+## Added
 
 - ✨Add image attachments with access control
-- ✨(frontend) Upload image to a document
+- ✨(frontend) Upload image to a document #211
+
+## Changed
+
+- 🔥(frontend) hide markdown button if not text #213
+
+## Removed
+
+- 🔥(frontend) remove saving modal #213
 
 
 ## [1.2.1] - 2024-08-23

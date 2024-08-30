@@ -1,7 +1,5 @@
-import { VariantType, useToastProvider } from '@openfun/cunningham-react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import * as Y from 'yjs';
 
 import { useUpdateDoc } from '@/features/docs/doc-management/';
@@ -11,22 +9,9 @@ import { useDocStore } from '../stores';
 import { toBase64 } from '../utils';
 
 const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
-  const { toast } = useToastProvider();
-  const { t } = useTranslation();
   const { forceSave, setForceSave } = useDocStore();
 
   const { mutate: updateDoc } = useUpdateDoc({
-    onSuccess: (data) => {
-      toast(
-        t('Your document "{{docTitle}}" has been saved.', {
-          docTitle: data.title,
-        }),
-        VariantType.SUCCESS,
-        {
-          duration: 1500,
-        },
-      );
-    },
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
   });
   const [initialDoc, setInitialDoc] = useState<string>(
