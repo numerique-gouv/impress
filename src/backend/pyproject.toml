@@ -25,7 +25,7 @@ license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "boto3==1.35.0",
+    "boto3==1.35.10",
     "Brotli==1.1.0",
     "celery[redis]==5.4.0",
     "django-configurations==2.5.1",
@@ -36,7 +36,7 @@ dependencies = [
     "django-redis==5.4.0",
     "django-storages[s3]==1.14.4",
     "django-timezone-field>=5.1",
-    "django==5.0.8",
+    "django==5.1",
     "djangorestframework==3.15.2",
     "drf_spectacular==0.27.2",
     "dockerflow==2024.4.2",
@@ -70,17 +70,17 @@ dev = [
     "django-extensions==3.2.3",
     "drf-spectacular-sidecar==2024.7.1",
     "ipdb==0.13.13",
-    "ipython==8.26.0",
+    "ipython==8.27.0",
     "pyfakefs==5.6.0",
     "pylint-django==2.5.5",
-    "pylint==3.2.6",
+    "pylint==3.2.7",
     "pytest-cov==5.0.0",
-    "pytest-django==4.8.0",
+    "pytest-django==4.9.0",
     "pytest==8.3.2",
     "pytest-icdiff==0.9",
     "pytest-xdist==3.6.1",
     "responses==0.25.3",
-    "ruff==0.6.1",
+    "ruff==0.6.3",
     "types-requests==2.32.0.20240712",
 ]
 
