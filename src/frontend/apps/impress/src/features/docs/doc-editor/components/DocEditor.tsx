@@ -35,7 +35,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
 
   return (
     <>
-      <DocHeader doc={doc} />
+      <DocHeader doc={doc} versionId={versionId as Versions['version_id']} />
       {!doc.abilities.partial_update && (
         <Box $margin={{ all: 'small', top: 'none' }}>
           <Alert type={VariantType.WARNING}>

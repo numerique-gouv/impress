@@ -13,6 +13,7 @@ and this project adheres to
 
 - ✨Add image attachments with access control
 - ✨(frontend) Upload image to a document #211
+- ✨(frontend) Versions #217
 
 ## Changed
 
