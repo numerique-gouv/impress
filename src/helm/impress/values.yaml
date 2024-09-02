@@ -338,7 +338,7 @@ webrtc:
   args: []
 
   ## @param webrtc.replicas Amount of webrtc replicas
-  replicas: 3
+  replicas: 1
 
   ## @param webrtc.shareProcessNamespace Enable share process namewebrtc between containers
   shareProcessNamespace: false
