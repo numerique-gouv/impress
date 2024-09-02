@@ -8,7 +8,12 @@ import { Box, Card, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
-import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
+import {
+  Panel,
+  Versions,
+  useDocVersion,
+  useDocVersionStore,
+} from '@/features/docs/doc-versioning/';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
 
@@ -20,6 +25,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   const {
     query: { versionId },
   } = useRouter();
+  const { isPanelOpen } = useDocVersionStore();
 
   const { t } = useTranslation();
 
@@ -58,6 +64,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
             <BlockNoteEditor doc={doc} />
           )}
         </Card>
+        {doc.abilities.versions_list && isPanelOpen && <Panel doc={doc} />}
       </Box>
     </>
   );

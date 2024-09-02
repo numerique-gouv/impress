@@ -9,6 +9,7 @@ import {
   ModalShare,
   ModalUpdateDoc,
 } from '@/features/docs/doc-management';
+import { useDocVersionStore } from '@/features/docs/doc-versioning';
 
 import { ModalPDF } from './ModalExport';
 
@@ -23,6 +24,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
+  const { setIsPanelOpen } = useDocVersionStore();
 
   return (
     <Box
@@ -75,6 +77,19 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
               size="small"
             >
               <Text $theme="primary">{t('Delete document')}</Text>
+            </Button>
+          )}
+          {doc.abilities.versions_list && (
+            <Button
+              onClick={() => {
+                setIsPanelOpen(true);
+                setIsDropOpen(false);
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">history</span>}
+              size="small"
+            >
+              <Text $theme="primary">{t('Version history')}</Text>
             </Button>
           )}
           <Button
