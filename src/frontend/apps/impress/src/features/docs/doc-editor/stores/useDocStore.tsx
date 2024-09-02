@@ -11,24 +11,16 @@ interface DocStore {
   editor?: BlockNoteEditor;
 }
 
-type ForceSaveState = 'false' | 'version' | 'current';
-
 export interface UseDocStore {
   docsStore: {
     [storeId: string]: DocStore;
   };
   createProvider: (storeId: string, initialDoc: Base64) => WebrtcProvider;
   setStore: (storeId: string, props: Partial<DocStore>) => void;
-  forceSave: ForceSaveState;
-  setForceSave: (forceSave: ForceSaveState) => void;
 }
 
 export const useDocStore = create<UseDocStore>((set, get) => ({
   docsStore: {},
-  forceSave: 'false',
-  setForceSave: (forceSave) => {
-    set(() => ({ forceSave }));
-  },
   createProvider: (storeId: string, initialDoc: Base64) => {
     const doc = new Y.Doc({
       guid: storeId,

@@ -5,12 +5,9 @@ import * as Y from 'yjs';
 import { useUpdateDoc } from '@/features/docs/doc-management/';
 import { KEY_LIST_DOC_VERSIONS } from '@/features/docs/doc-versioning';
 
-import { useDocStore } from '../stores';
 import { toBase64 } from '../utils';
 
 const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
-  const { forceSave, setForceSave } = useDocStore();
-
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
   });
@@ -67,18 +64,6 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
       content: newDoc,
     });
   }, [doc, docId, updateDoc]);
-
-  useEffect(() => {
-    if (forceSave === 'false') {
-      return;
-    }
-
-    setForceSave('false');
-
-    if ((forceSave === 'current' && hasChanged()) || forceSave === 'version') {
-      saveDoc();
-    }
-  }, [forceSave, hasChanged, saveDoc, setForceSave]);
 
   const timeout = useRef<NodeJS.Timeout>();
   const router = useRouter();

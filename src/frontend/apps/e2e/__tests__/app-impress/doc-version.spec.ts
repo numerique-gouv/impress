@@ -119,6 +119,14 @@ test.describe('Doc Version', () => {
     await panel.getByLabel('Open the version options').click();
     await page.getByText('Restore the version').click();
 
+    await expect(page.getByText('Restore this version?')).toBeVisible();
+
+    await page
+      .getByRole('button', {
+        name: 'Restore',
+      })
+      .click();
+
     await expect(panel.locator('li')).toHaveCount(3);
 
     await panel.getByText('Current version').click();
