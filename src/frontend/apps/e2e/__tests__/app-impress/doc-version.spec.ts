@@ -133,4 +133,62 @@ test.describe('Doc Version', () => {
     await expect(page.getByText('Hello')).toBeVisible();
     await expect(page.getByText('World')).toBeHidden();
   });
+
+  test('it restores the doc version from button title', async ({
+    page,
+    browserName,
+  }) => {
+    const [randomDoc] = await createDoc(page, 'doc-version', browserName, 1);
+
+    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
+
+    await page.locator('.bn-block-outer').last().click();
+    await page.locator('.bn-block-outer').last().fill('Hello');
+
+    await goToGridDoc(page, {
+      title: randomDoc,
+    });
+
+    await expect(page.getByText('Hello')).toBeVisible();
+    await page.locator('.bn-block-outer').last().click();
+    await page.keyboard.press('Enter');
+    await page.locator('.bn-block-outer').last().fill('World');
+
+    await goToGridDoc(page, {
+      title: randomDoc,
+    });
+
+    await expect(page.getByText('World')).toBeVisible();
+
+    await page.getByLabel('Open the document options').click();
+    await page
+      .getByRole('button', {
+        name: 'Version history',
+      })
+      .click();
+
+    const panel = page.getByLabel('Document version panel');
+    await panel.locator('li').nth(1).click();
+    await expect(page.getByText('World')).toBeHidden();
+
+    await page
+      .getByRole('button', {
+        name: 'Restore this version',
+      })
+      .click();
+
+    await expect(page.getByText('Restore this version?')).toBeVisible();
+
+    await page
+      .getByRole('button', {
+        name: 'Restore',
+      })
+      .click();
+
+    await expect(panel.locator('li')).toHaveCount(3);
+
+    await panel.getByText('Current version').click();
+    await expect(page.getByText('Hello')).toBeVisible();
+    await expect(page.getByText('World')).toBeHidden();
+  });
 });
