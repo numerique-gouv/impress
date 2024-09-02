@@ -1,7 +1,7 @@
 image:
   repository: lasuite/impress-backend
   pullPolicy: Always
-  tag: "main"
+  tag: "fix-webrtc-multi-pods"
 
 backend:
   migrateJobAnnotations:
@@ -124,13 +124,13 @@ frontend:
   image:
     repository: lasuite/impress-frontend
     pullPolicy: Always
-    tag: "main"
+    tag: "fix-webrtc-multi-pods"
 
 webrtc:
   image:
     repository: lasuite/impress-y-webrtc-signaling
     pullPolicy: Always
-    tag: "main"
+    tag: "fix-webrtc-multi-pods"
 
 ingress:
   enabled: true
