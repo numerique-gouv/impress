@@ -9,6 +9,7 @@ import {
   ModalShare,
   ModalUpdateDoc,
 } from '@/features/docs/doc-management';
+import { useDocSummaryStore } from '@/features/docs/doc-summary';
 import { useDocVersionStore } from '@/features/docs/doc-versioning';
 
 import { ModalPDF } from './ModalExport';
@@ -25,6 +26,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
   const { setIsPanelVersionOpen } = useDocVersionStore();
+  const { setIsPanelSummaryOpen } = useDocSummaryStore();
 
   return (
     <Box
@@ -83,6 +85,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
             <Button
               onClick={() => {
                 setIsPanelVersionOpen(true);
+                setIsPanelSummaryOpen(false);
                 setIsDropOpen(false);
               }}
               color="primary-text"
@@ -92,6 +95,18 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
               <Text $theme="primary">{t('Version history')}</Text>
             </Button>
           )}
+          <Button
+            onClick={() => {
+              setIsPanelSummaryOpen(true);
+              setIsPanelVersionOpen(false);
+              setIsDropOpen(false);
+            }}
+            color="primary-text"
+            icon={<span className="material-icons">summarize</span>}
+            size="small"
+          >
+            <Text $theme="primary">{t('Summary')}</Text>
+          </Button>
           <Button
             onClick={() => {
               setIsModalPDFOpen(true);
