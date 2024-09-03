@@ -76,6 +76,7 @@ RUN apt-get update && \
       libpango-1.0-0 \
       libpangocairo-1.0-0 \
       pandoc \
+      fonts-noto-color-emoji \
       shared-mime-info && \
   rm -rf /var/lib/apt/lists/*
 
