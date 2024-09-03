@@ -21,6 +21,10 @@ and this project adheres to
 - 💄(frontend) code background darkened on editor #214
 - 🔥(frontend) hide markdown button if not text #213
 
+## Fixed
+
+- 🐛 Fix emoticon in pdf export #225
+
 ## Removed
 
 - 🔥(frontend) remove saving modal #213
