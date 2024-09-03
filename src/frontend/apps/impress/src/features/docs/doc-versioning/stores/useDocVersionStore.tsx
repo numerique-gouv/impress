@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 
 export interface UseDocVersionStore {
-  isPanelOpen: boolean;
-  setIsPanelOpen: (isOpen: boolean) => void;
+  isPanelVersionOpen: boolean;
+  setIsPanelVersionOpen: (isOpen: boolean) => void;
 }
 
 export const useDocVersionStore = create<UseDocVersionStore>((set) => ({
-  isPanelOpen: false,
-  setIsPanelOpen: (isPanelOpen) => {
-    set(() => ({ isPanelOpen }));
+  isPanelVersionOpen: false,
+  setIsPanelVersionOpen: (isPanelVersionOpen) => {
+    set(() => ({ isPanelVersionOpen }));
   },
 }));
