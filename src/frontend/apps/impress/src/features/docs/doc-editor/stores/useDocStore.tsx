@@ -32,7 +32,6 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
 
     const provider = new WebrtcProvider(storeId, doc, {
       signaling: [signalingUrl(storeId)],
-      maxConns: 5,
     });
 
     get().setStore(storeId, { provider });
