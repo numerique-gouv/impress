@@ -29,6 +29,7 @@ const BoxButton = forwardRef<HTMLDivElement, BoxType>(
           border: none;
           outline: none;
           transition: all 0.2s ease-in-out;
+          font-family: inherit;
           ${$css || ''}
         `}
         {...props}
