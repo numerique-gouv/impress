@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, IconBG, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Doc } from '@/features/docs/doc-management';
-
-import { useDocVersionStore } from '../stores';
-
-import { VersionList } from './VersionList';
 
 interface PanelProps {
-  doc: Doc;
+  title: string;
+  setIsPanelOpen: (isOpen: boolean) => void;
 }
 
-export const Panel = ({ doc }: PanelProps) => {
+export const Panel = ({
+  children,
+  title,
+  setIsPanelOpen,
+}: PropsWithChildren<PanelProps>) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
-  const { setIsPanelOpen } = useDocVersionStore();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -50,7 +49,7 @@ export const Panel = ({ doc }: PanelProps) => {
           `
         }
       `}
-      aria-label={t('Document version panel')}
+      aria-label={t('Document panel')}
       {...closedOverridingStyles}
     >
       <Box
@@ -69,11 +68,7 @@ export const Panel = ({ doc }: PanelProps) => {
         >
           <IconBG
             iconName="menu_open"
-            aria-label={
-              isOpen
-                ? t('Close the document version panel')
-                : t('Open the document version panel')
-            }
+            aria-label={isOpen ? t('Close the panel') : t('Open the panel')}
             $background="transparent"
             $size="h2"
             $zIndex={1}
@@ -96,10 +91,10 @@ export const Panel = ({ doc }: PanelProps) => {
             $radius="2px"
           />
           <Text $weight="bold" $size="l" $theme="primary">
-            {t('VERSIONS')}
+            {title}
           </Text>
         </Box>
-        <VersionList doc={doc} />
+        {children}
       </Box>
     </Card>
   );

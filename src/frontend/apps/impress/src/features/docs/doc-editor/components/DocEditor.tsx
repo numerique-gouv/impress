@@ -5,11 +5,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors } from '@/components';
+import { Panel } from '@/components/Panel';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
 import {
-  Panel,
+  VersionList,
   Versions,
   useDocVersion,
   useDocVersionStore,
@@ -25,7 +26,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   const {
     query: { versionId },
   } = useRouter();
-  const { isPanelOpen } = useDocVersionStore();
+  const { isPanelVersionOpen, setIsPanelVersionOpen } = useDocVersionStore();
 
   const { t } = useTranslation();
 
@@ -64,7 +65,11 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
             <BlockNoteEditor doc={doc} />
           )}
         </Card>
-        {doc.abilities.versions_list && isPanelOpen && <Panel doc={doc} />}
+        {doc.abilities.versions_list && isPanelVersionOpen && (
+          <Panel title={t('VERSIONS')} setIsPanelOpen={setIsPanelVersionOpen}>
+            <VersionList doc={doc} />
+          </Panel>
+        )}
       </Box>
     </>
   );

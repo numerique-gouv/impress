@@ -19,7 +19,7 @@ test.describe('Doc Version', () => {
       })
       .click();
 
-    const panel = page.getByLabel('Document version panel');
+    const panel = page.getByLabel('Document panel');
 
     await expect(panel.getByText('Current version')).toBeVisible();
     expect(await panel.locator('li').count()).toBe(1);
@@ -79,7 +79,7 @@ test.describe('Doc Version', () => {
       page.getByRole('button', { name: 'Version history' }),
     ).toBeHidden();
 
-    await expect(page.getByLabel('Document version panel')).toBeHidden();
+    await expect(page.getByLabel('Document panel')).toBeHidden();
   });
 
   test('it restores the doc version', async ({ page, browserName }) => {
@@ -112,7 +112,7 @@ test.describe('Doc Version', () => {
       })
       .click();
 
-    const panel = page.getByLabel('Document version panel');
+    const panel = page.getByLabel('Document panel');
     await panel.locator('li').nth(1).click();
     await expect(page.getByText('World')).toBeHidden();
 
@@ -167,7 +167,7 @@ test.describe('Doc Version', () => {
       })
       .click();
 
-    const panel = page.getByLabel('Document version panel');
+    const panel = page.getByLabel('Document panel');
     await panel.locator('li').nth(1).click();
     await expect(page.getByText('World')).toBeHidden();
 

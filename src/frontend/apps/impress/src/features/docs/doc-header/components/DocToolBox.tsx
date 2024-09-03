@@ -24,7 +24,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
-  const { setIsPanelOpen } = useDocVersionStore();
+  const { setIsPanelVersionOpen } = useDocVersionStore();
 
   return (
     <Box
@@ -82,7 +82,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
           {doc.abilities.versions_list && (
             <Button
               onClick={() => {
-                setIsPanelOpen(true);
+                setIsPanelVersionOpen(true);
                 setIsDropOpen(false);
               }}
               color="primary-text"
