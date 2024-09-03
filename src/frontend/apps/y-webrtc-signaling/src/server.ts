@@ -21,7 +21,7 @@ const pingTimeout = 30000;
 const port = process.env.PORT || 4444;
 
 const wss = new WebSocketServer({ noServer: true });
-const topics = new Map<string, Set<{ url: string; conn: WebSocket }>>();
+const topics = new Map<string, Set<WebSocket>>();
 
 const send = (conn: WebSocket, message: MessageYJSTypes) => {
   if (
@@ -40,7 +40,7 @@ const send = (conn: WebSocket, message: MessageYJSTypes) => {
 /**
  * Setup a new client
  */
-const onconnection = (conn: WebSocket, url: string) => {
+const onconnection = (conn: WebSocket) => {
   const subscribedTopics = new Set<string>();
   let closed = false;
   // Check if connection is still alive
@@ -67,11 +67,7 @@ const onconnection = (conn: WebSocket, url: string) => {
   conn.on('close', () => {
     subscribedTopics.forEach((topicName) => {
       const subs = topics.get(topicName) || new Set();
-      subs.forEach((sub) => {
-        if (sub.url === url && sub.conn === conn) {
-          subs.delete(sub);
-        }
-      });
+      subs.delete(conn);
       if (subs.size === 0) {
         topics.delete(topicName);
       }
@@ -96,18 +92,9 @@ const onconnection = (conn: WebSocket, url: string) => {
                 topicName,
                 () => new Set(),
               );
-
-              let isAlreadyAdded = false;
-              topic.forEach((sub) => {
-                if (sub.url === url && sub.conn === conn) {
-                  isAlreadyAdded = true;
-                }
-              });
-
-              if (!isAlreadyAdded) {
-                topic.add({ url, conn });
-                subscribedTopics.add(topicName);
-              }
+              topic.add(conn);
+              // add topic to conn
+              subscribedTopics.add(topicName);
             }
           });
           break;
@@ -116,11 +103,7 @@ const onconnection = (conn: WebSocket, url: string) => {
           (message.topics || []).forEach((topicName) => {
             const subs = topics.get(topicName);
             if (subs) {
-              subs.forEach((sub) => {
-                if (sub.conn === conn) {
-                  subs.delete(sub);
-                }
-              });
+              subs.delete(conn);
             }
           });
           break;
@@ -130,11 +113,7 @@ const onconnection = (conn: WebSocket, url: string) => {
             const receivers = topics.get(message.topic);
             if (receivers) {
               message.clients = receivers.size;
-              receivers.forEach(({ url: receiverUrl, conn: receiverConn }) => {
-                if (receiverUrl === url) {
-                  send(receiverConn, message);
-                }
-              });
+              receivers.forEach((receiver) => send(receiver, message));
             }
           }
           break;
@@ -146,10 +125,7 @@ const onconnection = (conn: WebSocket, url: string) => {
   });
 };
 
-wss.on('connection', (conn, request) => {
-  const url = request.url;
-  onconnection(conn, url || '');
-});
+wss.on('connection', onconnection);
 
 const server = http.createServer((request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -165,4 +141,4 @@ server.on('upgrade', (request, socket, head) => {
 
 server.listen(port);
 
-console.log('Signaling server running on port :', port);
+console.log('Signaling server running on localhost:', port);
