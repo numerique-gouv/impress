@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
 
 import { useDocStore } from '../../doc-editor';
 import { Doc } from '../../doc-management';
+import { useDocSummaryStore } from '../stores';
 
 interface SummaryProps {
   doc: Doc;
@@ -14,13 +15,20 @@ export const Summary = ({ doc }: SummaryProps) => {
   const { docsStore } = useDocStore();
   const { t } = useTranslation();
 
-  const editor = docsStore?.[doc.id].editor;
+  const editor = docsStore?.[doc.id]?.editor;
   const headingFiltering = useCallback(
     () => editor?.document.filter((block) => block.type === 'heading'),
     [editor?.document],
   );
 
   const [headings, setHeadings] = useState(headingFiltering());
+  const { setIsPanelSummaryOpen } = useDocSummaryStore();
+
+  useEffect(() => {
+    return () => {
+      setIsPanelSummaryOpen(false);
+    };
+  }, [setIsPanelSummaryOpen]);
 
   if (!editor) {
     return null;
@@ -64,7 +72,7 @@ export const Summary = ({ doc }: SummaryProps) => {
       <BoxButton
         onClick={() => {
           editor.focus();
-          document.querySelector(`[data-id="initialBlockId"]`)?.scrollIntoView({
+          document.querySelector(`.bn-editor`)?.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
           });
