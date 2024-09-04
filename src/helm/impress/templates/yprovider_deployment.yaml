@@ -1,6 +1,6 @@
-{{- $envVars := include "impress.common.env" (list . .Values.webrtc) -}}
-{{- $fullName := include "impress.webrtc.fullname" . -}}
-{{- $component := "webrtc" -}}
+{{- $envVars := include "impress.common.env" (list . .Values.yProvider) -}}
+{{- $fullName := include "impress.yProvider.fullname" . -}}
+{{- $component := "yProvider" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,14 +9,14 @@ metadata:
   labels:
     {{- include "impress.common.labels" (list . $component) | nindent 4 }}
 spec:
-  replicas: {{ .Values.webrtc.replicas }}
+  replicas: {{ .Values.yProvider.replicas }}
   selector:
     matchLabels:
       {{- include "impress.common.selectorLabels" (list . $component) | nindent 6 }}
   template:
     metadata:
       annotations:
-        {{- with .Values.webrtc.podAnnotations }}
+        {{- with .Values.yProvider.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
@@ -26,19 +26,19 @@ spec:
       imagePullSecrets:
         - name: {{ include "impress.secret.dockerconfigjson.name" (dict "fullname" (include "impress.fullname" .) "imageCredentials" $.Values.image.credentials) }}
       {{- end}}
-      shareProcessNamespace: {{ .Values.webrtc.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.yProvider.shareProcessNamespace }}
       containers:
-        {{- with .Values.webrtc.sidecars }}
+        {{- with .Values.yProvider.sidecars }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
         - name: {{ .Chart.Name }}
-          image: "{{ (.Values.webrtc.image | default dict).repository | default .Values.image.repository }}:{{ (.Values.webrtc.image | default dict).tag | default .Values.image.tag }}"
-          imagePullPolicy: {{ (.Values.webrtc.image | default dict).pullPolicy | default .Values.image.pullPolicy }}
-          {{- with .Values.webrtc.command }}
+          image: "{{ (.Values.yProvider.image | default dict).repository | default .Values.image.repository }}:{{ (.Values.yProvider.image | default dict).tag | default .Values.image.tag }}"
+          imagePullPolicy: {{ (.Values.yProvider.image | default dict).pullPolicy | default .Values.image.pullPolicy }}
+          {{- with .Values.yProvider.command }}
           command:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.webrtc.args }}
+          {{- with .Values.yProvider.args }}
           args:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -46,27 +46,27 @@ spec:
             {{- if $envVars}}
             {{- $envVars | indent 12 }}
             {{- end }}
-          {{- with .Values.webrtc.securityContext }}
+          {{- with .Values.yProvider.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.webrtc.service.targetPort }}
+              containerPort: {{ .Values.yProvider.service.targetPort }}
               protocol: TCP
-          {{- if .Values.webrtc.probes.liveness }}
+          {{- if .Values.yProvider.probes.liveness }}
           livenessProbe:
-            {{- include "impress.probes.abstract" (merge .Values.webrtc.probes.liveness (dict "targetPort" .Values.webrtc.service.targetPort )) | nindent 12 }}
+            {{- include "impress.probes.abstract" (merge .Values.yProvider.probes.liveness (dict "targetPort" .Values.yProvider.service.targetPort )) | nindent 12 }}
           {{- end }}
-          {{- if .Values.webrtc.probes.readiness }}
+          {{- if .Values.yProvider.probes.readiness }}
           readinessProbe:
-            {{- include "impress.probes.abstract" (merge .Values.webrtc.probes.readiness (dict "targetPort" .Values.webrtc.service.targetPort )) | nindent 12 }}
+            {{- include "impress.probes.abstract" (merge .Values.yProvider.probes.readiness (dict "targetPort" .Values.yProvider.service.targetPort )) | nindent 12 }}
           {{- end }}
-          {{- if .Values.webrtc.probes.startup }}
+          {{- if .Values.yProvider.probes.startup }}
           startupProbe:
-            {{- include "impress.probes.abstract" (merge .Values.webrtc.probes.startup (dict "targetPort" .Values.webrtc.service.targetPort )) | nindent 12 }}
+            {{- include "impress.probes.abstract" (merge .Values.yProvider.probes.startup (dict "targetPort" .Values.yProvider.service.targetPort )) | nindent 12 }}
           {{- end }}
-          {{- with .Values.webrtc.resources }}
+          {{- with .Values.yProvider.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -76,25 +76,25 @@ spec:
               mountPath: {{ $value.path }}
               subPath: content
             {{- end }}
-            {{- range $name, $volume := .Values.webrtc.persistence }}
+            {{- range $name, $volume := .Values.yProvider.persistence }}
             - name: "{{ $name }}"
               mountPath: "{{ $volume.mountPath }}"
             {{- end }}
-            {{- range .Values.webrtc.extraVolumeMounts }}
+            {{- range .Values.yProvider.extraVolumeMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
               subPath: {{ .subPath | default "" }}
               readOnly: {{ .readOnly }}
             {{- end }}
-      {{- with .Values.webrtc.nodeSelector }}
+      {{- with .Values.yProvider.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.webrtc.affinity }}
+      {{- with .Values.yProvider.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.webrtc.tolerations }}
+      {{- with .Values.yProvider.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -104,7 +104,7 @@ spec:
           configMap:
             name: "{{ include "impress.fullname" $ }}-files-{{ $index }}"
         {{- end }}
-        {{- range $name, $volume := .Values.webrtc.persistence }}
+        {{- range $name, $volume := .Values.yProvider.persistence }}
         - name: "{{ $name }}"
           {{- if eq $volume.type "emptyDir" }}
           emptyDir: {}
@@ -113,7 +113,7 @@ spec:
             claimName: "{{ $fullName }}-{{ $name }}"
           {{- end }}
         {{- end }}
-        {{- range .Values.webrtc.extraVolumes }}
+        {{- range .Values.yProvider.extraVolumes }}
         - name: {{ .name }}
           {{- if .existingClaim }}
           persistentVolumeClaim:

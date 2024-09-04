@@ -139,7 +139,7 @@ jobs:
         with:
           targets: |
             app-dev
-            y-webrtc-signaling
+            y-provider
           load: true
           set: |
             *.cache-from=type=gha,scope=cached-stage
@@ -213,7 +213,7 @@ jobs:
         with:
           targets: |
             app-dev
-            y-webrtc-signaling
+            y-provider
           load: true
           set: |
             *.cache-from=type=gha,scope=cached-stage

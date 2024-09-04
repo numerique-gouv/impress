@@ -52,17 +52,17 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "impress.webrtc.fullname" . }}
+                name: {{ include "impress.yProvider.fullname" . }}
                 port:
-                  number: {{ .Values.webrtc.service.port }}
+                  number: {{ .Values.yProvider.service.port }}
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "impress.webrtc.fullname" . }}
+                name: {{ include "impress.yProvider.fullname" . }}
                 port:
-                  number: {{ .Values.webrtc.service.port }}
+                  number: {{ .Values.yProvider.service.port }}
               {{- else }}
-              serviceName: {{ include "impress.webrtc.fullname" . }}
-              servicePort: {{ .Values.webrtc.service.port }}
+              serviceName: {{ include "impress.yProvider.fullname" . }}
+              servicePort: {{ .Values.yProvider.service.port }}
             {{- end }}
           {{- with .Values.ingressWS.customBackends }}
             {{- toYaml . | nindent 10 }}

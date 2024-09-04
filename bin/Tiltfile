@@ -18,13 +18,13 @@ docker_build(
 )
 
 docker_build(
-    'localhost:5001/impress-y-webrtc-signaling:latest',
+    'localhost:5001/impress-y-provider:latest',
     context='..',
     dockerfile='../src/frontend/Dockerfile',
     only=['./src/frontend/', './docker/', './.dockerignore'],
-    target = 'y-webrtc-signaling',
+    target = 'y-provider',
     live_update=[
-        sync('../src/frontend/apps/y-webrtc-signaling/src', '/home/frontend/apps/y-webrtc-signaling/src'),
+        sync('../src/frontend/servers/y-provider/src', '/home/frontend/servers/y-provider/src'),
     ]
 )
 

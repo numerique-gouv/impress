@@ -104,7 +104,7 @@ logs: ## display app-dev logs (follow mode)
 
 run: ## start the wsgi (production) and development server
 	@$(COMPOSE) up --force-recreate -d celery-dev
-	@$(COMPOSE) up --force-recreate -d y-webrtc-signaling
+	@$(COMPOSE) up --force-recreate -d y-provider
 	@echo "Wait for postgresql to be up..."
 	@$(WAIT_DB)
 .PHONY: run
@@ -319,7 +319,7 @@ bump-packages-version: ## bump the version of the project - VERSION_TYPE can be 
 	cd ./src/frontend/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
 	cd ./src/frontend/apps/e2e/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
 	cd ./src/frontend/apps/impress/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
-	cd ./src/frontend/apps/y-webrtc-signaling/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
+	cd ./src/frontend/servers/y-provider/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
 	cd ./src/frontend/packages/eslint-config-impress/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
 	cd ./src/frontend/packages/i18n/ && yarn version --no-git-tag-version --$(VERSION_TYPE)
 .PHONY: bump-packages-version

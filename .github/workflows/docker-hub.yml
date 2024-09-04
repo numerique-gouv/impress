@@ -104,7 +104,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  build-and-push-y-webrtc-signaling:
+  build-and-push-y-provider:
     runs-on: ubuntu-latest
     steps:
       -
@@ -132,7 +132,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: lasuite/impress-y-webrtc-signaling
+          images: lasuite/impress-y-provider
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
@@ -143,7 +143,7 @@ jobs:
         with:
           context: .
           file: ./src/frontend/Dockerfile
-          target: y-webrtc-signaling
+          target: y-provider
           build-args: DOCKER_USER=${{ env.DOCKER_USER }}:-1000
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}

@@ -24,6 +24,7 @@ and this project adheres to
 ## Fixed
 
 - 🐛 Fix emoticon in pdf export #225
+- 🐛 Fix collaboration on document #226
 
 ## Removed
 
