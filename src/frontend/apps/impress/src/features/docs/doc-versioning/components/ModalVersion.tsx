@@ -51,9 +51,9 @@ export const ModalVersion = ({
       });
 
       revertUpdate(
-        docsStore[docId].provider.doc,
-        docsStore[docId].provider.doc,
-        docsStore[versionId].provider.doc,
+        docsStore[docId].provider.document,
+        docsStore[docId].provider.document,
+        docsStore[versionId].provider.document,
       );
 
       onDisplaySuccess();
@@ -83,7 +83,7 @@ export const ModalVersion = ({
           fullWidth
           onClick={() => {
             const newDoc = toBase64(
-              Y.encodeStateAsUpdate(docsStore?.[versionId]?.provider.doc),
+              Y.encodeStateAsUpdate(docsStore?.[versionId]?.provider.document),
             );
 
             updateDoc({
