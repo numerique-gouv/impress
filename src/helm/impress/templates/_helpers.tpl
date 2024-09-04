@@ -149,12 +149,12 @@ Requires top level scope
 {{- end }}
 
 {{/*
-Full name for the webrtc
+Full name for the yProvider
 
 Requires top level scope
 */}}
-{{- define "impress.webrtc.fullname" -}}
-{{ include "impress.fullname" . }}-webrtc
+{{- define "impress.yProvider.fullname" -}}
+{{ include "impress.fullname" . }}-y-provider
 {{- end }}
 
 {{/*

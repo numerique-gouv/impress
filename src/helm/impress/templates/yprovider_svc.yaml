@@ -1,0 +1,21 @@
+{{- $envVars := include "impress.common.env" (list . .Values.yProvider) -}}
+{{- $fullName := include "impress.yProvider.fullname" . -}}
+{{- $component := "yProvider" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "impress.common.labels" (list . $component) | nindent 4 }}
+  annotations:
+    {{- toYaml $.Values.yProvider.service.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.yProvider.service.type }}
+  ports:
+    - port: {{ .Values.yProvider.service.port }}
+      targetPort: {{ .Values.yProvider.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "impress.common.selectorLabels" (list . $component) | nindent 4 }}

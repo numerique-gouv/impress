@@ -1,10 +1,10 @@
-FROM node:20-alpine as frontend-deps-y-webrtc-signaling
+FROM node:20-alpine as frontend-deps-y-provider
 
 WORKDIR /home/frontend/
 
 COPY ./src/frontend/package.json ./package.json
 COPY ./src/frontend/yarn.lock ./yarn.lock
-COPY ./src/frontend/apps/y-webrtc-signaling/package.json ./apps/y-webrtc-signaling/package.json
+COPY ./src/frontend/servers/y-provider/package.json ./servers/y-provider/package.json
 COPY ./src/frontend/packages/eslint-config-impress/package.json ./packages/eslint-config-impress/package.json
 
 RUN yarn install
@@ -14,10 +14,10 @@ COPY ./src/frontend/ .
 # Copy entrypoint
 COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
 
-# ---- y-webrtc-signaling ----
-FROM frontend-deps-y-webrtc-signaling as y-webrtc-signaling
+# ---- y-provider ----
+FROM frontend-deps-y-provider as y-provider
 
-WORKDIR /home/frontend/apps/y-webrtc-signaling
+WORKDIR /home/frontend/servers/y-provider
 RUN yarn build
 
 # Un-privileged user running the application
@@ -64,8 +64,8 @@ WORKDIR /home/frontend/apps/impress
 ARG FRONTEND_THEME
 ENV NEXT_PUBLIC_THEME=${FRONTEND_THEME}
 
-ARG SIGNALING_URL
-ENV NEXT_PUBLIC_SIGNALING_URL=${SIGNALING_URL}
+ARG Y_PROVIDER_URL
+ENV NEXT_PUBLIC_Y_PROVIDER_URL=${Y_PROVIDER_URL}
 
 ARG API_ORIGIN
 ENV NEXT_PUBLIC_API_ORIGIN=${API_ORIGIN}

@@ -141,19 +141,19 @@ services:
     volumes:
       - ".:/app"
 
-  y-webrtc-signaling:
+  y-provider:
     user: ${DOCKER_USER:-1000}
     build: 
       context: .
       dockerfile: ./src/frontend/Dockerfile
-      target: y-webrtc-signaling
+      target: y-provider
     restart: unless-stopped
     ports:
       - "4444:4444"
     volumes:
-      - ./src/frontend/apps/y-webrtc-signaling:/home/frontend/apps/y-webrtc-signaling
-      - /home/frontend/apps/y-webrtc-signaling/node_modules/
-      - /home/frontend/apps/y-webrtc-signaling/dist/
+      - ./src/frontend/servers/y-provider:/home/frontend/servers/y-provider
+      - /home/frontend/servers/y-provider/node_modules/
+      - /home/frontend/servers/y-provider/dist/
 
   frontend-dev:
     user: "${DOCKER_USER:-1000}"
@@ -167,7 +167,7 @@ services:
       - ./src/frontend/apps/impress:/home/frontend/apps/impress
       - /home/frontend/node_modules/
     depends_on:
-      - y-webrtc-signaling
+      - y-provider
       - celery-dev
 
   kc_postgresql:

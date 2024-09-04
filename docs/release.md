@@ -23,9 +23,9 @@ Whenever we are cooking a new release (e.g. `4.18.1`) we should follow a standar
              pullPolicy: Always
              tag: "v4.18.1" 
 
-          webrtc:
+          y-provider:
             image:
-              repository: lasuite/impress-y-webrtc-signaling
+              repository: lasuite/impress-y-provider
               pullPolicy: Always
               tag: "v4.18.1" 
          ```
