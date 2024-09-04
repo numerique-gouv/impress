@@ -81,20 +81,6 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
               <Text $theme="primary">{t('Delete document')}</Text>
             </Button>
           )}
-          {doc.abilities.versions_list && (
-            <Button
-              onClick={() => {
-                setIsPanelVersionOpen(true);
-                setIsPanelSummaryOpen(false);
-                setIsDropOpen(false);
-              }}
-              color="primary-text"
-              icon={<span className="material-icons">history</span>}
-              size="small"
-            >
-              <Text $theme="primary">{t('Version history')}</Text>
-            </Button>
-          )}
           <Button
             onClick={() => {
               setIsPanelSummaryOpen(true);
