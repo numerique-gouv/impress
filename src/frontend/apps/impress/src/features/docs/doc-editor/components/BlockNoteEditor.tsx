@@ -2,8 +2,8 @@ import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
+import { HocuspocusProvider } from '@hocuspocus/provider';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { WebrtcProvider } from 'y-webrtc';
 
 import { Box, TextErrors } from '@/components';
 import { mediaUrl } from '@/core';
@@ -44,7 +44,7 @@ export const BlockNoteEditor = ({ doc, version }: BlockNoteEditorProps) => {
   const provider = docsStore?.[storeId]?.provider;
 
   useEffect(() => {
-    if (!provider || provider.doc.guid !== storeId) {
+    if (!provider || provider.document.guid !== storeId) {
       createProvider(storeId, initialContent);
     }
   }, [createProvider, initialContent, provider, storeId]);
@@ -58,7 +58,7 @@ export const BlockNoteEditor = ({ doc, version }: BlockNoteEditorProps) => {
 
 interface BlockNoteContentProps {
   doc: Doc;
-  provider: WebrtcProvider;
+  provider: HocuspocusProvider;
   storeId: string;
 }
 
@@ -71,7 +71,7 @@ export const BlockNoteContent = ({
   const { userData } = useAuthStore();
   const { setStore, docsStore } = useDocStore();
   const canSave = doc.abilities.partial_update && !isVersion;
-  useSaveDoc(doc.id, provider.doc, canSave);
+  useSaveDoc(doc.id, provider.document, canSave);
   const storedEditor = docsStore?.[storeId]?.editor;
   const {
     mutateAsync: createDocAttachment,
@@ -102,7 +102,7 @@ export const BlockNoteContent = ({
     return BlockNoteEditorCore.create({
       collaboration: {
         provider,
-        fragment: provider.doc.getXmlFragment('document-store'),
+        fragment: provider.document.getXmlFragment('document-store'),
         user: {
           name: userData?.email || 'Anonymous',
           color: randomColor(),

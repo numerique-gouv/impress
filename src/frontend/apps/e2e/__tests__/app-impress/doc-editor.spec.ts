@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Doc Editor', () => {
-  test('checks the Doc is connected to the webrtc server', async ({
+  test('checks the Doc is connected to the provider server', async ({
     page,
     browserName,
   }) => {
@@ -29,12 +29,7 @@ test.describe('Doc Editor', () => {
     await page.locator('.ProseMirror.bn-editor').fill('Hello World');
 
     const framesent = await framesentPromise;
-    const payload = JSON.parse(framesent.payload as string) as {
-      type: string;
-    };
-
-    const typeCases = ['publish', 'subscribe', 'unsubscribe', 'ping'];
-    expect(typeCases.includes(payload.type)).toBeTruthy();
+    expect(framesent.payload).not.toBeNull();
   });
 
   test('markdown button converts from markdown to the editor syntax json', async ({
