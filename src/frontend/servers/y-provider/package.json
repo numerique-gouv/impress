@@ -1,7 +1,7 @@
 {
-  "name": "y-webrtc-signaling",
+  "name": "server-y-provider",
   "version": "1.2.1",
-  "description": "WebRTC server for Yjs",
+  "description": "Y.js provider for docs",
   "repository": "https://github.com/numerique-gouv/impress",
   "license": "MIT",
   "type": "module",
@@ -15,12 +15,10 @@
     "node": ">=18"
   },
   "dependencies": {
-    "lib0": "0.2.97",
-    "ws": "8.18.0"
+    "@hocuspocus/server": "2.13.5"
   },
   "devDependencies": {
     "@types/node": "*",
-    "@types/ws": "8.5.12",
     "eslint-config-impress": "*",
     "nodemon": "3.1.4",
     "ts-jest": "29.2.5",
