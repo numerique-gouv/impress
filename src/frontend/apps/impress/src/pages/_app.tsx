@@ -21,7 +21,12 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <>
       <Head>
         <title>{t('Docs')}</title>
-        <meta name="description" content={t('Docs Description')} />
+        <meta
+          name="description"
+          content={t(
+            'Docs: Your new companion to collaborate on documents efficiently, intuitively, and securely.',
+          )}
+        />
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </Head>
       <AppProvider>{getLayout(<Component {...pageProps} />)}</AppProvider>

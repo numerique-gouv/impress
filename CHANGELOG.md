@@ -14,6 +14,7 @@ and this project adheres to
 - ✨Add image attachments with access control
 - ✨(frontend) Upload image to a document #211
 - ✨(frontend) Summary #223
+- ✨(frontend) update meta title for docs page #231
 
 ## Changed
 

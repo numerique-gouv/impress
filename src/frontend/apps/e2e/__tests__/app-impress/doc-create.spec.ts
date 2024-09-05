@@ -55,6 +55,10 @@ test.describe('Doc Create', () => {
       true,
     );
 
+    expect(await page.locator('title').textContent()).toMatch(
+      /My new doc - Docs/,
+    );
+
     const header = page.locator('header').first();
     await header.locator('h2').getByText('Docs').click();
 

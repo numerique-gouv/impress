@@ -1,6 +1,7 @@
 import { Loader } from '@openfun/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
@@ -32,6 +33,12 @@ interface DocProps {
 const DocPage = ({ id }: DocProps) => {
   const { data: doc, isLoading, isError, error } = useDoc({ id });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (doc?.title) {
+      document.title = `${doc.title} - Docs`;
+    }
+  }, [doc?.title]);
 
   if (isError && error) {
     if (error.status === 404) {
