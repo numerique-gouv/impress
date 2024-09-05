@@ -24,6 +24,7 @@ and this project adheres to
 
 - 🐛 Fix emoticon in pdf export #225
 - 🐛 Fix collaboration on document #226
+- 🐛 (docker) Fix compatibility with mac #230
 
 ## Removed
 
