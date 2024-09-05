@@ -172,7 +172,6 @@ services:
 
   kc_postgresql:
     image: postgres:14.3
-    platform: linux/amd64
     ports:
       - "5433:5432"
     env_file:
