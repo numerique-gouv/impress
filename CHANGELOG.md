@@ -9,6 +9,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.3.0] - 2024-09-05
+
 ## Added
 
 - ✨Add image attachments with access control
@@ -127,7 +129,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.2.1...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.3.0...main
+[1.3.0]: https://github.com/numerique-gouv/impress/releases/v1.3.0
 [1.2.1]: https://github.com/numerique-gouv/impress/releases/v1.2.1
 [1.2.0]: https://github.com/numerique-gouv/impress/releases/v1.2.0
 [1.1.0]: https://github.com/numerique-gouv/impress/releases/v1.1.0
