@@ -66,7 +66,7 @@ def test_api_document_accesses_create_authenticated_unrelated():
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_accesses_create_authenticated_reader_or_editor(
-    via, role, mock_user_get_teams
+    via, role, mock_user_teams
 ):
     """Readers or editors of a document should not be allowed to create document accesses."""
     user = factories.UserFactory()
@@ -78,7 +78,7 @@ def test_api_document_accesses_create_authenticated_reader_or_editor(
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -101,9 +101,7 @@ def test_api_document_accesses_create_authenticated_reader_or_editor(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_create_authenticated_administrator(
-    via, mock_user_get_teams
-):
+def test_api_document_accesses_create_authenticated_administrator(via, mock_user_teams):
     """
     Administrators of a document should be able to create document accesses
     except for the "owner" role.
@@ -120,7 +118,7 @@ def test_api_document_accesses_create_authenticated_administrator(
             document=document, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="administrator"
         )
@@ -178,7 +176,7 @@ def test_api_document_accesses_create_authenticated_administrator(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_create_authenticated_owner(via, mock_user_get_teams):
+def test_api_document_accesses_create_authenticated_owner(via, mock_user_teams):
     """
     Owners of a document should be able to create document accesses whatever the role.
     An email should be sent to the accesses to notify them of the adding.
@@ -192,7 +190,7 @@ def test_api_document_accesses_create_authenticated_owner(via, mock_user_get_tea
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="owner"
         )

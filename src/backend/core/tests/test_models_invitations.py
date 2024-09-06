@@ -189,7 +189,7 @@ def test_models_document_invitations_get_abilities_authenticated():
 @pytest.mark.parametrize("via", VIA)
 @pytest.mark.parametrize("role", ["administrator", "owner"])
 def test_models_document_invitations_get_abilities_privileged_member(
-    role, via, mock_user_get_teams
+    role, via, mock_user_teams
 ):
     """Check abilities for a document member with a privileged role."""
 
@@ -198,7 +198,7 @@ def test_models_document_invitations_get_abilities_privileged_member(
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -217,7 +217,7 @@ def test_models_document_invitations_get_abilities_privileged_member(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_models_document_invitations_get_abilities_reader(via, mock_user_get_teams):
+def test_models_document_invitations_get_abilities_reader(via, mock_user_teams):
     """Check abilities for a document reader with 'reader' role."""
 
     user = factories.UserFactory()
@@ -225,7 +225,7 @@ def test_models_document_invitations_get_abilities_reader(via, mock_user_get_tea
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="reader")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="reader"
         )
@@ -242,7 +242,7 @@ def test_models_document_invitations_get_abilities_reader(via, mock_user_get_tea
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_models_document_invitations_get_abilities_editor(via, mock_user_get_teams):
+def test_models_document_invitations_get_abilities_editor(via, mock_user_teams):
     """Check abilities for a document editor with 'editor' role."""
 
     user = factories.UserFactory()
@@ -250,7 +250,7 @@ def test_models_document_invitations_get_abilities_editor(via, mock_user_get_tea
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="editor")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="editor"
         )

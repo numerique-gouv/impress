@@ -10,7 +10,9 @@ VIA = [USER, TEAM]
 
 
 @pytest.fixture
-def mock_user_get_teams():
-    """Mock for the "get_teams" method on the User model."""
-    with mock.patch("core.models.User.get_teams") as mock_get_teams:
-        yield mock_get_teams
+def mock_user_teams():
+    """Mock for the "teams" property on the User model."""
+    with mock.patch(
+        "core.models.User.teams", new_callable=mock.PropertyMock
+    ) as mock_teams:
+        yield mock_teams

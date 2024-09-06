@@ -6,7 +6,6 @@ from unittest import mock
 
 import pytest
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.status import HTTP_200_OK
 from rest_framework.test import APIClient
 
 from core import factories
@@ -15,18 +14,15 @@ pytestmark = pytest.mark.django_db
 
 
 def test_api_templates_list_anonymous():
-    """Anonymous users should only be able to list public templates."""
+    """Anonymous users should not be able to list templates, public or not."""
     factories.TemplateFactory.create_batch(2, is_public=False)
-    templates = factories.TemplateFactory.create_batch(2, is_public=True)
-    expected_ids = {str(template.id) for template in templates}
+    factories.TemplateFactory.create_batch(2, is_public=True)
 
     response = APIClient().get("/api/v1.0/templates/")
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     results = response.json()["results"]
-    assert len(results) == 2
-    results_id = {result["id"] for result in results}
-    assert expected_ids == results_id
+    assert len(results) == 0
 
 
 def test_api_templates_list_authenticated_direct():
@@ -43,25 +39,23 @@ def test_api_templates_list_authenticated_direct():
         access.template
         for access in factories.UserTemplateAccessFactory.create_batch(5, user=user)
     ]
-    public_templates = factories.TemplateFactory.create_batch(2, is_public=True)
+    factories.TemplateFactory.create_batch(2, is_public=True)
     factories.TemplateFactory.create_batch(2, is_public=False)
 
-    expected_ids = {
-        str(template.id) for template in related_templates + public_templates
-    }
+    expected_ids = {str(template.id) for template in related_templates}
 
     response = client.get(
         "/api/v1.0/templates/",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     results = response.json()["results"]
-    assert len(results) == 7
+    assert len(results) == 5
     results_id = {result["id"] for result in results}
     assert expected_ids == results_id
 
 
-def test_api_templates_list_authenticated_via_team(mock_user_get_teams):
+def test_api_templates_list_authenticated_via_team(mock_user_teams):
     """
     Authenticated users should be able to list templates they are a
     owner/administrator/member of via a team.
@@ -71,7 +65,7 @@ def test_api_templates_list_authenticated_via_team(mock_user_get_teams):
     client = APIClient()
     client.force_login(user)
 
-    mock_user_get_teams.return_value = ["team1", "team2", "unknown"]
+    mock_user_teams.return_value = ["team1", "team2", "unknown"]
 
     templates_team1 = [
         access.template
@@ -81,19 +75,16 @@ def test_api_templates_list_authenticated_via_team(mock_user_get_teams):
         access.template
         for access in factories.TeamTemplateAccessFactory.create_batch(3, team="team2")
     ]
-    public_templates = factories.TemplateFactory.create_batch(2, is_public=True)
+    factories.TemplateFactory.create_batch(2, is_public=True)
     factories.TemplateFactory.create_batch(2, is_public=False)
 
-    expected_ids = {
-        str(template.id)
-        for template in templates_team1 + templates_team2 + public_templates
-    }
+    expected_ids = {str(template.id) for template in templates_team1 + templates_team2}
 
     response = client.get("/api/v1.0/templates/")
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     results = response.json()["results"]
-    assert len(results) == 7
+    assert len(results) == 5
     results_id = {result["id"] for result in results}
     assert expected_ids == results_id
 
@@ -118,7 +109,7 @@ def test_api_templates_list_pagination(
         "/api/v1.0/templates/",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     content = response.json()
 
     assert content["count"] == 3
@@ -134,7 +125,7 @@ def test_api_templates_list_pagination(
         "/api/v1.0/templates/?page=2",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     content = response.json()
 
     assert content["count"] == 3
@@ -161,26 +152,24 @@ def test_api_templates_list_authenticated_distinct():
         "/api/v1.0/templates/",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     content = response.json()
     assert len(content["results"]) == 1
     assert content["results"][0]["id"] == str(template.id)
 
 
-def test_api_templates_order():
-    """
-    Test that the endpoint GET templates is sorted in 'created_at' descending order by default.
-    """
+def test_api_templates_list_order_default():
+    """The templates list should be sorted by 'created_at' in descending order by default."""
     user = factories.UserFactory()
     client = APIClient()
     client.force_login(user)
 
     template_ids = [
-        str(template.id)
-        for template in factories.TemplateFactory.create_batch(5, is_public=True)
+        str(access.template.id)
+        for access in factories.UserTemplateAccessFactory.create_batch(5, user=user)
     ]
 
-    response = APIClient().get(
+    response = client.get(
         "/api/v1.0/templates/",
     )
 
@@ -195,21 +184,21 @@ def test_api_templates_order():
     ), "created_at values are not sorted from newest to oldest"
 
 
-def test_api_templates_order_param():
+def test_api_templates_list_order_param():
     """
-    Test that the 'created_at' field is sorted in ascending order
-    when the 'ordering' query parameter is set.
+    The templates list is sorted by 'created_at' in ascending order when setting
+    the "ordering" query parameter.
     """
     user = factories.UserFactory()
     client = APIClient()
     client.force_login(user)
 
     templates_ids = [
-        str(template.id)
-        for template in factories.TemplateFactory.create_batch(5, is_public=True)
+        str(access.template.id)
+        for access in factories.UserTemplateAccessFactory.create_batch(5, user=user)
     ]
 
-    response = APIClient().get(
+    response = client.get(
         "/api/v1.0/templates/?ordering=created_at",
     )
     assert response.status_code == 200

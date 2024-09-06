@@ -87,12 +87,14 @@ def test_api_templates_generate_document_authenticated_not_public():
         format="json",
     )
 
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Template matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_templates_generate_document_related(via, mock_user_get_teams):
+def test_api_templates_generate_document_related(via, mock_user_teams):
     """Users related to a template can generate pdf document."""
     user = factories.UserFactory()
 
@@ -102,7 +104,7 @@ def test_api_templates_generate_document_related(via, mock_user_get_teams):
     if via == USER:
         access = factories.UserTemplateAccessFactory(user=user)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         access = factories.TeamTemplateAccessFactory(team="lasuite")
 
     data = {"body": "# Test markdown body"}

@@ -157,7 +157,7 @@ def test_api_documents_retrieve_auth_authenticated_not_public():
 
 @pytest.mark.parametrize("is_public", [True, False])
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_retrieve_auth_related(via, is_public, mock_user_get_teams):
+def test_api_documents_retrieve_auth_related(via, is_public, mock_user_teams):
     """
     Users who have a role on a document, whatever the role, should be able to
     retrieve related attachments.
@@ -170,7 +170,7 @@ def test_api_documents_retrieve_auth_related(via, is_public, mock_user_get_teams
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(document=document, team="lasuite")
 
     filename = f"{uuid.uuid4()!s}.jpg"

@@ -94,8 +94,10 @@ def test_api_templates_retrieve_authenticated_unrelated_not_public():
     response = client.get(
         f"/api/v1.0/templates/{template.id!s}/",
     )
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Template matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
 
 def test_api_templates_retrieve_authenticated_related_direct():
@@ -146,12 +148,12 @@ def test_api_templates_retrieve_authenticated_related_direct():
     }
 
 
-def test_api_templates_retrieve_authenticated_related_team_none(mock_user_get_teams):
+def test_api_templates_retrieve_authenticated_related_team_none(mock_user_teams):
     """
     Authenticated users should not be able to retrieve a template related to teams in
     which the user is not.
     """
-    mock_user_get_teams.return_value = []
+    mock_user_teams.return_value = []
 
     user = factories.UserFactory()
 
@@ -174,8 +176,10 @@ def test_api_templates_retrieve_authenticated_related_team_none(mock_user_get_te
     factories.TeamTemplateAccessFactory()
 
     response = client.get(f"/api/v1.0/templates/{template.id!s}/")
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Template matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
 
 @pytest.mark.parametrize(
@@ -188,13 +192,13 @@ def test_api_templates_retrieve_authenticated_related_team_none(mock_user_get_te
     ],
 )
 def test_api_templates_retrieve_authenticated_related_team_readers_or_editors(
-    teams, mock_user_get_teams
+    teams, mock_user_teams
 ):
     """
     Authenticated users should be allowed to retrieve a template to which they
     are related via a team whatever the role and see all its accesses.
     """
-    mock_user_get_teams.return_value = teams
+    mock_user_teams.return_value = teams
 
     user = factories.UserFactory()
 
@@ -287,13 +291,13 @@ def test_api_templates_retrieve_authenticated_related_team_readers_or_editors(
     ],
 )
 def test_api_templates_retrieve_authenticated_related_team_administrators(
-    teams, mock_user_get_teams
+    teams, mock_user_teams
 ):
     """
     Authenticated users should be allowed to retrieve a template to which they
     are related via a team whatever the role and see all its accesses.
     """
-    mock_user_get_teams.return_value = teams
+    mock_user_teams.return_value = teams
 
     user = factories.UserFactory()
 
@@ -405,13 +409,13 @@ def test_api_templates_retrieve_authenticated_related_team_administrators(
     ],
 )
 def test_api_templates_retrieve_authenticated_related_team_owners(
-    teams, mock_user_get_teams
+    teams, mock_user_teams
 ):
     """
     Authenticated users should be allowed to retrieve a template to which they
     are related via a team whatever the role and see all its accesses.
     """
-    mock_user_get_teams.return_value = teams
+    mock_user_teams.return_value = teams
 
     user = factories.UserFactory()
 

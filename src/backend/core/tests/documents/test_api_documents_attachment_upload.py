@@ -67,12 +67,14 @@ def test_api_documents_attachment_upload_authenticated_private():
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
     response = client.post(url, {"file": file}, format="multipart")
 
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_attachment_upload_reader(via, mock_user_get_teams):
+def test_api_documents_attachment_upload_reader(via, mock_user_teams):
     """
     Users who are simple readers on a document should not be allowed to upload an attachment.
     """
@@ -85,7 +87,7 @@ def test_api_documents_attachment_upload_reader(via, mock_user_get_teams):
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="reader")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="reader"
         )
@@ -103,7 +105,7 @@ def test_api_documents_attachment_upload_reader(via, mock_user_get_teams):
 
 @pytest.mark.parametrize("role", ["editor", "administrator", "owner"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_attachment_upload_success(via, role, mock_user_get_teams):
+def test_api_documents_attachment_upload_success(via, role, mock_user_teams):
     """
     Editors, administrators and owners of a document should be able to upload an attachment.
     """
@@ -116,7 +118,7 @@ def test_api_documents_attachment_upload_success(via, role, mock_user_get_teams)
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )

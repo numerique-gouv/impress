@@ -21,7 +21,7 @@ from django.http import FileResponse
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
 from django.utils import html, timezone
-from django.utils.functional import lazy
+from django.utils.functional import cached_property, lazy
 from django.utils.translation import gettext_lazy as _
 
 import frontmatter
@@ -42,10 +42,9 @@ def get_resource_roles(resource, user):
     try:
         roles = resource.user_roles or []
     except AttributeError:
-        teams = user.get_teams()
         try:
             roles = resource.accesses.filter(
-                models.Q(user=user) | models.Q(team__in=teams),
+                models.Q(user=user) | models.Q(team__in=user.teams),
             ).values_list("role", flat=True)
         except (models.ObjectDoesNotExist, IndexError):
             roles = []
@@ -215,7 +214,8 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
             raise ValueError("User has no email address.")
         mail.send_mail(subject, message, from_email, [self.email], **kwargs)
 
-    def get_teams(self):
+    @cached_property
+    def teams(self):
         """
         Get list of teams in which the user is, as a list of strings.
         Must be cached if retrieved remotely.
@@ -247,7 +247,7 @@ class BaseAccess(BaseModel):
         """
         roles = []
         if user.is_authenticated:
-            teams = user.get_teams()
+            teams = user.teams
             try:
                 roles = self.user_roles or []
             except AttributeError:
@@ -778,7 +778,7 @@ class Invitation(BaseModel):
         roles = []
 
         if user.is_authenticated:
-            teams = user.get_teams()
+            teams = user.teams
             try:
                 roles = self.user_roles or []
             except AttributeError:
