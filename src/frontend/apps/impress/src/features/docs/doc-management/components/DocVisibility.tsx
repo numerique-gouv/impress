@@ -1,4 +1,5 @@
 import {
+  Button,
   Switch,
   VariantType,
   useToastProvider,
@@ -60,6 +61,26 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
           )}
         />
       </Box>
+      <Button
+        onClick={() => {
+          navigator.clipboard
+            .writeText(window.location.href)
+            .then(() => {
+              toast(t('Link Copied !'), VariantType.SUCCESS, {
+                duration: 3000,
+              });
+            })
+            .catch(() => {
+              toast(t('Failed to copy link'), VariantType.ERROR, {
+                duration: 3000,
+              });
+            });
+        }}
+        color="primary"
+        icon={<span className="material-icons">copy</span>}
+      >
+        {t('Copy link')}
+      </Button>
     </Card>
   );
 };

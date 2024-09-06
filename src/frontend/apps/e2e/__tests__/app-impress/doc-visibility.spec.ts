@@ -33,6 +33,28 @@ test.describe('Doc Visibility', () => {
 
     await expect(row.getByRole('cell').nth(0)).toHaveText('Public');
   });
+
+  test('It checks the copy link button', async ({ page, browserName }) => {
+    // eslint-disable-next-line playwright/no-skipped-test
+    test.skip(
+      browserName === 'webkit',
+      'navigator.clipboard is not working with webkit and playwright',
+    );
+
+    await createDoc(page, 'My button copy doc', browserName, 1);
+
+    await page.getByRole('button', { name: 'Share' }).click();
+    await page.getByRole('button', { name: 'Copy link' }).click();
+
+    await expect(page.getByText('Link Copied !')).toBeVisible();
+
+    const handle = await page.evaluateHandle(() =>
+      navigator.clipboard.readText(),
+    );
+    const clipboardContent = await handle.jsonValue();
+
+    expect(clipboardContent).toMatch(page.url());
+  });
 });
 
 test.describe('Doc Visibility: Not loggued', () => {
