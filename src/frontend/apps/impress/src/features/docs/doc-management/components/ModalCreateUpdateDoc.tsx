@@ -3,7 +3,6 @@ import {
   Button,
   Modal,
   ModalSize,
-  Switch,
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
@@ -44,9 +43,8 @@ export const ModalCreateDoc = ({ onClose }: ModalCreateDocProps) => {
         onClose,
         isPublic: false,
         titleModal: t('Create a new document'),
-        validate: (title, is_public) =>
+        validate: (title) =>
           api.mutate({
-            is_public,
             title,
           }),
         ...api,
@@ -85,9 +83,8 @@ export const ModalUpdateDoc = ({ onClose, doc }: ModalUpdateDocProps) => {
         titleModal: t('Update document "{{documentTitle}}"', {
           documentTitle: doc.title,
         }),
-        validate: (title, is_public) =>
+        validate: (title) =>
           api.mutate({
-            is_public,
             title,
             id: doc.id,
           }),
@@ -99,10 +96,9 @@ export const ModalUpdateDoc = ({ onClose, doc }: ModalUpdateDocProps) => {
 
 type ModalDoc<T> = {
   buttonText: string;
-  isPublic: boolean;
   onClose: () => void;
   titleModal: string;
-  validate: (title: string, is_public: boolean) => void;
+  validate: (title: string) => void;
   initialTitle?: string;
   infoText?: string;
 } & UseMutationResult<Doc, APIError<unknown>, T, unknown>;
@@ -111,7 +107,6 @@ const ModalDoc = <T,>({
   buttonText,
   infoText,
   initialTitle,
-  isPublic,
   onClose,
   titleModal,
   validate,
@@ -120,8 +115,6 @@ const ModalDoc = <T,>({
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const [title, setTitle] = useState(initialTitle || '');
-
-  const [docPublic, setDocPublic] = useState(isPublic);
 
   return (
     <Modal
@@ -144,7 +137,7 @@ const ModalDoc = <T,>({
           aria-label={buttonText}
           color="primary"
           fullWidth
-          onClick={() => validate(title, docPublic)}
+          onClick={() => validate(title)}
         >
           {buttonText}
         </Button>
@@ -176,12 +169,6 @@ const ModalDoc = <T,>({
               isPending: api.isPending,
               setDocName: setTitle,
             }}
-          />
-          <Switch
-            label={t('Is it public ?')}
-            labelSide="right"
-            defaultChecked={docPublic}
-            onChange={() => setDocPublic(!docPublic)}
           />
         </Box>
       </Box>

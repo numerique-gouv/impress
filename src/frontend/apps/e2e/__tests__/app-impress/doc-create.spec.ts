@@ -21,8 +21,6 @@ test.describe('Doc Create', () => {
     ).toBeVisible();
     await expect(card.getByLabel('Document name')).toBeVisible();
 
-    await expect(card.getByText('Is it public ?')).toBeVisible();
-
     await expect(
       card.getByRole('button', {
         name: 'Create the document',
@@ -46,14 +44,8 @@ test.describe('Doc Create', () => {
     await expect(buttonCreateHomepage).toBeVisible();
   });
 
-  test('create a new public doc', async ({ page, browserName }) => {
-    const [docTitle] = await createDoc(
-      page,
-      'My new doc',
-      browserName,
-      1,
-      true,
-    );
+  test('it creates a doc', async ({ page, browserName }) => {
+    const [docTitle] = await createDoc(page, 'My new doc', browserName, 1);
 
     expect(await page.locator('title').textContent()).toMatch(
       /My new doc - Docs/,
@@ -69,11 +61,5 @@ test.describe('Doc Create', () => {
     await expect(datagrid.getByLabel('Loading data')).toBeHidden();
 
     await expect(datagrid.getByText(docTitle)).toBeVisible();
-
-    const row = datagrid.getByRole('row').filter({
-      hasText: docTitle,
-    });
-
-    await expect(row.getByRole('cell').nth(0)).toHaveText('Public');
   });
 });

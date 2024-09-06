@@ -13,6 +13,10 @@ and this project adheres to
 
 - 🛂(frontend) access public docs without being logged #235
 
+## Changed
+
+- 🚚(frontend) change visibility in share modal #235
+
 
 ## [1.3.0] - 2024-09-05
 

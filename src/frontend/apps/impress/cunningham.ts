@@ -340,6 +340,10 @@ const config = {
         'forms-checkbox': {
           'border-radius': '0',
           color: 'var(--c--theme--colors--primary-text)',
+          text: {
+            color: 'var(--c--theme--colors--greyscale-text)',
+            size: 'var(--c--theme--font--sizes--t)',
+          },
         },
         'forms-datepicker': {
           'border-radius': '0',
