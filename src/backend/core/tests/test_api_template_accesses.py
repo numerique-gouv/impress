@@ -57,7 +57,7 @@ def test_api_template_accesses_list_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_list_authenticated_related(via, mock_user_get_teams):
+def test_api_template_accesses_list_authenticated_related(via, mock_user_teams):
     """
     Authenticated users should be able to list template accesses for a template
     to which they are directly related, whatever their role in the template.
@@ -76,7 +76,7 @@ def test_api_template_accesses_list_authenticated_related(via, mock_user_get_tea
             role=random.choice(models.RoleChoices.choices)[0],
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         user_access = models.TemplateAccess.objects.create(
             template=template,
             team="lasuite",
@@ -178,7 +178,7 @@ def test_api_template_accesses_retrieve_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_retrieve_authenticated_related(via, mock_user_get_teams):
+def test_api_template_accesses_retrieve_authenticated_related(via, mock_user_teams):
     """
     A user who is related to a template should be allowed to retrieve the
     associated template user accesses.
@@ -192,7 +192,7 @@ def test_api_template_accesses_retrieve_authenticated_related(via, mock_user_get
     if via == USER:
         factories.UserTemplateAccessFactory(template=template, user=user)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(template=template, team="lasuite")
 
     access = factories.UserTemplateAccessFactory(template=template)
@@ -261,7 +261,7 @@ def test_api_template_accesses_create_authenticated_unrelated():
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
 def test_api_template_accesses_create_authenticated_editor_or_reader(
-    via, role, mock_user_get_teams
+    via, role, mock_user_teams
 ):
     """Editors or readers of a template should not be allowed to create template accesses."""
     user = factories.UserFactory()
@@ -273,7 +273,7 @@ def test_api_template_accesses_create_authenticated_editor_or_reader(
     if via == USER:
         factories.UserTemplateAccessFactory(template=template, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role=role
         )
@@ -296,9 +296,7 @@ def test_api_template_accesses_create_authenticated_editor_or_reader(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_create_authenticated_administrator(
-    via, mock_user_get_teams
-):
+def test_api_template_accesses_create_authenticated_administrator(via, mock_user_teams):
     """
     Administrators of a template should be able to create template accesses
     except for the "owner" role.
@@ -314,7 +312,7 @@ def test_api_template_accesses_create_authenticated_administrator(
             template=template, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="administrator"
         )
@@ -363,7 +361,7 @@ def test_api_template_accesses_create_authenticated_administrator(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_create_authenticated_owner(via, mock_user_get_teams):
+def test_api_template_accesses_create_authenticated_owner(via, mock_user_teams):
     """
     Owners of a template should be able to create template accesses whatever the role.
     """
@@ -376,7 +374,7 @@ def test_api_template_accesses_create_authenticated_owner(via, mock_user_get_tea
     if via == USER:
         factories.UserTemplateAccessFactory(template=template, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="owner"
         )
@@ -466,7 +464,7 @@ def test_api_template_accesses_update_authenticated_unrelated():
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
 def test_api_template_accesses_update_authenticated_editor_or_reader(
-    via, role, mock_user_get_teams
+    via, role, mock_user_teams
 ):
     """Editors or readers of a template should not be allowed to update its accesses."""
     user = factories.UserFactory()
@@ -478,7 +476,7 @@ def test_api_template_accesses_update_authenticated_editor_or_reader(
     if via == USER:
         factories.UserTemplateAccessFactory(template=template, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role=role
         )
@@ -506,9 +504,7 @@ def test_api_template_accesses_update_authenticated_editor_or_reader(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_update_administrator_except_owner(
-    via, mock_user_get_teams
-):
+def test_api_template_accesses_update_administrator_except_owner(via, mock_user_teams):
     """
     A user who is a direct administrator in a template should be allowed to update a user
     access for this template, as long as they don't try to set the role to owner.
@@ -524,7 +520,7 @@ def test_api_template_accesses_update_administrator_except_owner(
             template=template, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="administrator"
         )
@@ -565,9 +561,7 @@ def test_api_template_accesses_update_administrator_except_owner(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_update_administrator_from_owner(
-    via, mock_user_get_teams
-):
+def test_api_template_accesses_update_administrator_from_owner(via, mock_user_teams):
     """
     A user who is an administrator in a template, should not be allowed to update
     the user access of an "owner" for this template.
@@ -583,7 +577,7 @@ def test_api_template_accesses_update_administrator_from_owner(
             template=template, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="administrator"
         )
@@ -614,7 +608,7 @@ def test_api_template_accesses_update_administrator_from_owner(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_update_administrator_to_owner(via, mock_user_get_teams):
+def test_api_template_accesses_update_administrator_to_owner(via, mock_user_teams):
     """
     A user who is an administrator in a template, should not be allowed to update
     the user access of another user to grant template ownership.
@@ -630,7 +624,7 @@ def test_api_template_accesses_update_administrator_to_owner(via, mock_user_get_
             template=template, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="administrator"
         )
@@ -668,7 +662,7 @@ def test_api_template_accesses_update_administrator_to_owner(via, mock_user_get_
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_update_owner(via, mock_user_get_teams):
+def test_api_template_accesses_update_owner(via, mock_user_teams):
     """
     A user who is an owner in a template should be allowed to update
     a user access for this template whatever the role.
@@ -682,7 +676,7 @@ def test_api_template_accesses_update_owner(via, mock_user_get_teams):
     if via == USER:
         factories.UserTemplateAccessFactory(template=template, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="owner"
         )
@@ -724,7 +718,7 @@ def test_api_template_accesses_update_owner(via, mock_user_get_teams):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_update_owner_self(via, mock_user_get_teams):
+def test_api_template_accesses_update_owner_self(via, mock_user_teams):
     """
     A user who is owner of a template should be allowed to update
     their own user access provided there are other owners in the template.
@@ -741,7 +735,7 @@ def test_api_template_accesses_update_owner_self(via, mock_user_get_teams):
             template=template, user=user, role="owner"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         access = factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="owner"
         )
@@ -810,7 +804,7 @@ def test_api_template_accesses_delete_authenticated():
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_get_teams):
+def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_teams):
     """
     Authenticated users should not be allowed to delete a template access for a
     template in which they are a simple editor or reader.
@@ -824,7 +818,7 @@ def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_get_
     if via == USER:
         factories.UserTemplateAccessFactory(template=template, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role=role
         )
@@ -844,7 +838,7 @@ def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_get_
 
 @pytest.mark.parametrize("via", VIA)
 def test_api_template_accesses_delete_administrators_except_owners(
-    via, mock_user_get_teams
+    via, mock_user_teams
 ):
     """
     Users who are administrators in a template should be allowed to delete an access
@@ -861,7 +855,7 @@ def test_api_template_accesses_delete_administrators_except_owners(
             template=template, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="administrator"
         )
@@ -882,7 +876,7 @@ def test_api_template_accesses_delete_administrators_except_owners(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_delete_administrator_on_owners(via, mock_user_get_teams):
+def test_api_template_accesses_delete_administrator_on_owners(via, mock_user_teams):
     """
     Users who are administrators in a template should not be allowed to delete an ownership
     access from the template.
@@ -898,7 +892,7 @@ def test_api_template_accesses_delete_administrator_on_owners(via, mock_user_get
             template=template, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="administrator"
         )
@@ -917,7 +911,7 @@ def test_api_template_accesses_delete_administrator_on_owners(via, mock_user_get
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_delete_owners(via, mock_user_get_teams):
+def test_api_template_accesses_delete_owners(via, mock_user_teams):
     """
     Users should be able to delete the template access of another user
     for a template of which they are owner.
@@ -931,7 +925,7 @@ def test_api_template_accesses_delete_owners(via, mock_user_get_teams):
     if via == USER:
         factories.UserTemplateAccessFactory(template=template, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="owner"
         )
@@ -950,7 +944,7 @@ def test_api_template_accesses_delete_owners(via, mock_user_get_teams):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_template_accesses_delete_owners_last_owner(via, mock_user_get_teams):
+def test_api_template_accesses_delete_owners_last_owner(via, mock_user_teams):
     """
     It should not be possible to delete the last owner access from a template
     """
@@ -966,7 +960,7 @@ def test_api_template_accesses_delete_owners_last_owner(via, mock_user_get_teams
             template=template, user=user, role="owner"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         access = factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="owner"
         )

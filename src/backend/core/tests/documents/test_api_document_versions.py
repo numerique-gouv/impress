@@ -86,12 +86,14 @@ def test_api_document_versions_list_authenticated_unrelated_private():
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/versions/",
     )
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_list_authenticated_related(via, mock_user_get_teams):
+def test_api_document_versions_list_authenticated_related(via, mock_user_teams):
     """
     Authenticated users should be able to list document versions for a document
     to which they are directly related, whatever their role in the document.
@@ -109,7 +111,7 @@ def test_api_document_versions_list_authenticated_related(via, mock_user_get_tea
             role=random.choice(models.RoleChoices.choices)[0],
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         models.DocumentAccess.objects.create(
             document=document,
             team="lasuite",
@@ -211,12 +213,14 @@ def test_api_document_versions_retrieve_authenticated_unrelated_private():
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
     )
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_retrieve_authenticated_related(via, mock_user_get_teams):
+def test_api_document_versions_retrieve_authenticated_related(via, mock_user_teams):
     """
     A user who is related to a document should be allowed to retrieve the
     associated document user accesses.
@@ -232,10 +236,10 @@ def test_api_document_versions_retrieve_authenticated_related(via, mock_user_get
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(document=document, team="lasuite")
 
-    # Versions created before the document was shared should not be available to the user
+    # Versions created before the document was shared should not be seen by the user
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
     )
@@ -295,7 +299,7 @@ def test_api_document_versions_create_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_create_authenticated_related(via, mock_user_get_teams):
+def test_api_document_versions_create_authenticated_related(via, mock_user_teams):
     """
     Authenticated users related to a document should not be allowed to create document versions
     whatever their role.
@@ -309,7 +313,7 @@ def test_api_document_versions_create_authenticated_related(via, mock_user_get_t
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(document=document, team="lasuite")
 
     response = client.post(
@@ -356,7 +360,7 @@ def test_api_document_versions_update_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_update_authenticated_related(via, mock_user_get_teams):
+def test_api_document_versions_update_authenticated_related(via, mock_user_teams):
     """
     Authenticated users with access to a document should not be able to update its versions
     whatever their role.
@@ -372,7 +376,7 @@ def test_api_document_versions_update_authenticated_related(via, mock_user_get_t
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(document=document, team="lasuite")
 
     response = client.put(
@@ -434,13 +438,15 @@ def test_api_document_versions_delete_authenticated_private():
         f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
     )
 
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_get_teams):
+def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_teams):
     """
     Authenticated users should not be allowed to delete a document version for a
     document in which they are a simple reader or editor.
@@ -454,7 +460,7 @@ def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_get_
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -484,7 +490,7 @@ def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_get_
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_delete_administrator_or_owner(via, mock_user_get_teams):
+def test_api_document_versions_delete_administrator_or_owner(via, mock_user_teams):
     """
     Users who are administrator or owner of a document should be allowed to delete a version.
     """
@@ -498,7 +504,7 @@ def test_api_document_versions_delete_administrator_or_owner(via, mock_user_get_
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )

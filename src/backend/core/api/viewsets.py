@@ -189,24 +189,35 @@ class ResourceViewsetMixin:
             return queryset.filter(is_public=True)
 
         user = self.request.user
-        teams = user.get_teams()
-
         user_roles_query = (
             self.access_model_class.objects.filter(
-                Q(user=user) | Q(team__in=teams),
+                Q(user=user) | Q(team__in=user.teams),
                 **{self.resource_field_name: OuterRef("pk")},
             )
             .values(self.resource_field_name)
             .annotate(roles_array=ArrayAgg("role"))
             .values("roles_array")
         )
-        return (
-            queryset.filter(
-                Q(accesses__user=user) | Q(accesses__team__in=teams) | Q(is_public=True)
+        return queryset.annotate(user_roles=Subquery(user_roles_query)).distinct()
+
+    def list(self, request, *args, **kwargs):
+        """Restrict resources returned by the list endpoint"""
+        queryset = self.filter_queryset(self.get_queryset())
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            queryset = queryset.filter(
+                Q(accesses__user=user) | Q(accesses__team__in=user.teams)
             )
-            .annotate(user_roles=Subquery(user_roles_query))
-            .distinct()
-        )
+        else:
+            queryset = queryset.none()
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return drf_response.Response(serializer.data)
 
     def perform_create(self, serializer):
         """Set the current user as owner of the newly created object."""
@@ -245,8 +256,7 @@ class ResourceAccessViewsetMixin:
 
         if self.action == "list":
             user = self.request.user
-            teams = user.get_teams()
-
+            teams = user.teams
             user_roles_query = (
                 queryset.filter(
                     Q(user=user) | Q(team__in=teams),
@@ -314,7 +324,6 @@ class DocumentViewSet(
     ResourceViewsetMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
@@ -351,10 +360,11 @@ class DocumentViewSet(
         to the document
         """
         document = self.get_object()
+        user = request.user
         from_datetime = min(
             access.created_at
             for access in document.accesses.filter(
-                Q(user=request.user) | Q(team__in=request.user.get_teams()),
+                Q(user=user) | Q(team__in=user.teams),
             )
         )
 
@@ -386,10 +396,11 @@ class DocumentViewSet(
 
         # Don't let users access versions that were created before they were given access
         # to the document
+        user = request.user
         from_datetime = min(
             access.created_at
             for access in document.accesses.filter(
-                Q(user=request.user) | Q(team__in=request.user.get_teams()),
+                Q(user=user) | Q(team__in=user.teams),
             )
         )
         if response["LastModified"] < from_datetime:
@@ -529,7 +540,6 @@ class TemplateViewSet(
     ResourceViewsetMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
@@ -671,7 +681,7 @@ class InvitationViewset(
 
         if self.action == "list":
             user = self.request.user
-            teams = user.get_teams()
+            teams = user.teams
 
             # Determine which role the logged-in user has in the document
             user_roles_query = (

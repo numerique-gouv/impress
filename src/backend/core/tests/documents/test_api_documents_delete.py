@@ -48,7 +48,7 @@ def test_api_documents_delete_authenticated_unrelated():
 
 @pytest.mark.parametrize("role", ["reader", "editor", "administrator"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_delete_authenticated_not_owner(via, role, mock_user_get_teams):
+def test_api_documents_delete_authenticated_not_owner(via, role, mock_user_teams):
     """
     Authenticated users should not be allowed to delete a document for which they are
     only a reader, editor or administrator.
@@ -62,7 +62,7 @@ def test_api_documents_delete_authenticated_not_owner(via, role, mock_user_get_t
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -79,7 +79,7 @@ def test_api_documents_delete_authenticated_not_owner(via, role, mock_user_get_t
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_delete_authenticated_owner(via, mock_user_get_teams):
+def test_api_documents_delete_authenticated_owner(via, mock_user_teams):
     """
     Authenticated users should be able to delete a document they own.
     """
@@ -92,7 +92,7 @@ def test_api_documents_delete_authenticated_owner(via, mock_user_get_teams):
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="owner"
         )

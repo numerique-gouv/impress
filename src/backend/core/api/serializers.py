@@ -66,9 +66,8 @@ class BaseAccessSerializer(serializers.ModelSerializer):
                     "You must set a resource ID in kwargs to create a new access."
                 ) from exc
 
-            teams = user.get_teams()
             if not self.Meta.model.objects.filter(  # pylint: disable=no-member
-                Q(user=user) | Q(team__in=teams),
+                Q(user=user) | Q(team__in=user.teams),
                 role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
             ).exists():
                 raise exceptions.PermissionDenied(
@@ -78,7 +77,7 @@ class BaseAccessSerializer(serializers.ModelSerializer):
             if (
                 role == models.RoleChoices.OWNER
                 and not self.Meta.model.objects.filter(  # pylint: disable=no-member
-                    Q(user=user) | Q(team__in=teams),
+                    Q(user=user) | Q(team__in=user.teams),
                     role=models.RoleChoices.OWNER,
                     **{self.Meta.resource_field_name: resource_id},  # pylint: disable=no-member
                 ).exists()
@@ -272,9 +271,8 @@ class InvitationSerializer(serializers.ModelSerializer):
                 "Anonymous users are not allowed to create invitations."
             )
 
-        teams = user.get_teams()
         if not models.DocumentAccess.objects.filter(
-            Q(user=user) | Q(team__in=teams),
+            Q(user=user) | Q(team__in=user.teams),
             document=document_id,
             role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
         ).exists():
@@ -285,7 +283,7 @@ class InvitationSerializer(serializers.ModelSerializer):
         if (
             role == models.RoleChoices.OWNER
             and not models.DocumentAccess.objects.filter(
-                Q(user=user) | Q(team__in=teams),
+                Q(user=user) | Q(team__in=user.teams),
                 document=document_id,
                 role=models.RoleChoices.OWNER,
             ).exists()
