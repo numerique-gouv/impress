@@ -16,6 +16,7 @@ and this project adheres to
 
 ## Changed
 
+- 🛂(backend) stop to list public doc to everyone #234
 - 🚚(frontend) change visibility in share modal #235
 
 

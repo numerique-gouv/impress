@@ -7,7 +7,6 @@ from unittest import mock
 import pytest
 from faker import Faker
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.status import HTTP_200_OK
 from rest_framework.test import APIClient
 
 from core import factories
@@ -17,18 +16,19 @@ pytestmark = pytest.mark.django_db
 
 
 def test_api_documents_list_anonymous():
-    """Anonymous users should only be able to list public documents."""
+    """Anonymous users should only be able to list documents public or not."""
     factories.DocumentFactory.create_batch(2, is_public=False)
-    documents = factories.DocumentFactory.create_batch(2, is_public=True)
-    expected_ids = {str(document.id) for document in documents}
+    factories.DocumentFactory.create_batch(2, is_public=True)
 
     response = APIClient().get("/api/v1.0/documents/")
 
-    assert response.status_code == HTTP_200_OK
-    results = response.json()["results"]
-    assert len(results) == 2
-    results_id = {result["id"] for result in results}
-    assert expected_ids == results_id
+    assert response.status_code == 200
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }
 
 
 def test_api_documents_list_authenticated_direct():
@@ -45,25 +45,23 @@ def test_api_documents_list_authenticated_direct():
         access.document
         for access in factories.UserDocumentAccessFactory.create_batch(5, user=user)
     ]
-    public_documents = factories.DocumentFactory.create_batch(2, is_public=True)
+    factories.DocumentFactory.create_batch(2, is_public=True)
     factories.DocumentFactory.create_batch(2, is_public=False)
 
-    expected_ids = {
-        str(document.id) for document in related_documents + public_documents
-    }
+    expected_ids = {str(document.id) for document in related_documents}
 
     response = client.get(
         "/api/v1.0/documents/",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     results = response.json()["results"]
-    assert len(results) == 7
+    assert len(results) == 5
     results_id = {result["id"] for result in results}
     assert expected_ids == results_id
 
 
-def test_api_documents_list_authenticated_via_team(mock_user_get_teams):
+def test_api_documents_list_authenticated_via_team(mock_user_teams):
     """
     Authenticated users should be able to list documents they are a
     owner/administrator/member of via a team.
@@ -73,7 +71,7 @@ def test_api_documents_list_authenticated_via_team(mock_user_get_teams):
     client = APIClient()
     client.force_login(user)
 
-    mock_user_get_teams.return_value = ["team1", "team2", "unknown"]
+    mock_user_teams.return_value = ["team1", "team2", "unknown"]
 
     documents_team1 = [
         access.document
@@ -83,19 +81,16 @@ def test_api_documents_list_authenticated_via_team(mock_user_get_teams):
         access.document
         for access in factories.TeamDocumentAccessFactory.create_batch(3, team="team2")
     ]
-    public_documents = factories.DocumentFactory.create_batch(2, is_public=True)
+    factories.DocumentFactory.create_batch(2, is_public=True)
     factories.DocumentFactory.create_batch(2, is_public=False)
 
-    expected_ids = {
-        str(document.id)
-        for document in documents_team1 + documents_team2 + public_documents
-    }
+    expected_ids = {str(document.id) for document in documents_team1 + documents_team2}
 
     response = client.get("/api/v1.0/documents/")
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     results = response.json()["results"]
-    assert len(results) == 7
+    assert len(results) == 5
     results_id = {result["id"] for result in results}
     assert expected_ids == results_id
 
@@ -120,7 +115,7 @@ def test_api_documents_list_pagination(
         "/api/v1.0/documents/",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     content = response.json()
 
     assert content["count"] == 3
@@ -136,7 +131,7 @@ def test_api_documents_list_pagination(
         "/api/v1.0/documents/?page=2",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     content = response.json()
 
     assert content["count"] == 3
@@ -163,7 +158,7 @@ def test_api_documents_list_authenticated_distinct():
         "/api/v1.0/documents/",
     )
 
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == 200
     content = response.json()
     assert len(content["results"]) == 1
     assert content["results"][0]["id"] == str(document.id)
@@ -181,13 +176,13 @@ def test_api_documents_order_updated_at_desc_default():
     documents_updated = [
         document.updated_at.isoformat().replace("+00:00", "Z")
         for document in factories.DocumentFactory.create_batch(
-            5, is_public=True, updated_at=fake.date_time_this_year(before_now=False)
+            5, updated_at=fake.date_time_this_year(before_now=False), users=[user]
         )
     ]
 
     documents_updated.sort(reverse=True)
 
-    response = APIClient().get(
+    response = client.get(
         "/api/v1.0/documents/",
     )
     assert response.status_code == 200
@@ -223,14 +218,14 @@ def test_api_documents_ordering_desc(ordering_field, factory_field):
     if factory_field == "title":
         documents_field_values = [
             factories.DocumentFactory(
-                is_public=True, title=fake.sentence(nb_words=4)
+                title=fake.sentence(nb_words=4), users=[user]
             ).title
             for _ in range(5)
         ]
     else:
         documents_field_values = [
             getattr(document, factory_field).isoformat().replace("+00:00", "Z")
-            for document in factories.DocumentFactory.create_batch(5, is_public=True)
+            for document in factories.DocumentFactory.create_batch(5, users=[user])
         ]
 
     documents_field_values.sort(reverse=True)
@@ -273,14 +268,14 @@ def test_api_documents_ordering_asc(field):
     if field == "title":
         documents_field_values = [
             factories.DocumentFactory(
-                is_public=True, title=fake.sentence(nb_words=4)
+                users=[user], title=fake.sentence(nb_words=4)
             ).title
             for _ in range(5)
         ]
     else:
         documents_field_values = [
             getattr(document, field).isoformat().replace("+00:00", "Z")
-            for document in factories.DocumentFactory.create_batch(5, is_public=True)
+            for document in factories.DocumentFactory.create_batch(5, users=[user])
         ]
 
     documents_field_values.sort()

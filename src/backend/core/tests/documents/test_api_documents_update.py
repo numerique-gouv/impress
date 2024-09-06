@@ -58,8 +58,10 @@ def test_api_documents_update_authenticated_unrelated():
         format="json",
     )
 
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
+    assert response.status_code == 403
+    assert response.json() == {
+        "detail": "You do not have permission to perform this action."
+    }
 
     document.refresh_from_db()
     document_values = serializers.DocumentSerializer(instance=document).data
@@ -67,7 +69,7 @@ def test_api_documents_update_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_update_authenticated_reader(via, mock_user_get_teams):
+def test_api_documents_update_authenticated_reader(via, mock_user_teams):
     """
     Users who are editors or reader of a document but not administrators should
     not be allowed to update it.
@@ -81,7 +83,7 @@ def test_api_documents_update_authenticated_reader(via, mock_user_get_teams):
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="reader")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="reader"
         )
@@ -110,7 +112,7 @@ def test_api_documents_update_authenticated_reader(via, mock_user_get_teams):
 @pytest.mark.parametrize("role", ["editor", "administrator", "owner"])
 @pytest.mark.parametrize("via", VIA)
 def test_api_documents_update_authenticated_editor_administrator_or_owner(
-    via, role, mock_user_get_teams
+    via, role, mock_user_teams
 ):
     """A user who is editor, administrator or owner of a document should be allowed to update it."""
     user = factories.UserFactory()
@@ -122,7 +124,7 @@ def test_api_documents_update_authenticated_editor_administrator_or_owner(
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -151,7 +153,7 @@ def test_api_documents_update_authenticated_editor_administrator_or_owner(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_update_authenticated_owners(via, mock_user_get_teams):
+def test_api_documents_update_authenticated_owners(via, mock_user_teams):
     """Administrators of a document should be allowed to update it."""
     user = factories.UserFactory()
 
@@ -162,7 +164,7 @@ def test_api_documents_update_authenticated_owners(via, mock_user_get_teams):
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="owner"
         )
@@ -190,9 +192,7 @@ def test_api_documents_update_authenticated_owners(via, mock_user_get_teams):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_update_administrator_or_owner_of_another(
-    via, mock_user_get_teams
-):
+def test_api_documents_update_administrator_or_owner_of_another(via, mock_user_teams):
     """
     Being administrator or owner of a document should not grant authorization to update
     another document.
@@ -208,7 +208,7 @@ def test_api_documents_update_administrator_or_owner_of_another(
             document=document, user=user, role=random.choice(["administrator", "owner"])
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document,
             team="lasuite",

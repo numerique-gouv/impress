@@ -80,7 +80,7 @@ def test_api_document_invitations__create__authenticated_outsider():
 )
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_invitations__create__privileged_members(
-    via, inviting, invited, is_allowed, mock_user_get_teams
+    via, inviting, invited, is_allowed, mock_user_teams
 ):
     """
     Only owners and administrators should be able to invite new users.
@@ -91,7 +91,7 @@ def test_api_document_invitations__create__privileged_members(
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=inviting)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=inviting
         )
@@ -291,7 +291,7 @@ def test_api_document_invitations__list__anonymous_user():
 
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_invitations__list__authenticated(
-    via, mock_user_get_teams, django_assert_num_queries
+    via, mock_user_teams, django_assert_num_queries
 ):
     """
     Authenticated users should be able to list invitations for documents to which they are
@@ -304,7 +304,7 @@ def test_api_document_invitations__list__authenticated(
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -432,7 +432,7 @@ def test_api_document_invitations__retrieve__unrelated_user():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__retrieve__document_member(via, mock_user_get_teams):
+def test_api_document_invitations__retrieve__document_member(via, mock_user_teams):
     """
     Authenticated users related to the document should be able to retrieve invitations
     whatever their role in the document.
@@ -445,7 +445,7 @@ def test_api_document_invitations__retrieve__document_member(via, mock_user_get_
             document=invitation.document, user=user, role=role
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=invitation.document, team="lasuite", role=role
         )
@@ -475,7 +475,7 @@ def test_api_document_invitations__retrieve__document_member(via, mock_user_get_
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__put_authenticated(via, mock_user_get_teams):
+def test_api_document_invitations__put_authenticated(via, mock_user_teams):
     """
     Authenticated user can put invitations.
     """
@@ -486,7 +486,7 @@ def test_api_document_invitations__put_authenticated(via, mock_user_get_teams):
             document=invitation.document, user=user, role="owner"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=invitation.document, team="lasuite", role="owner"
         )
@@ -503,7 +503,7 @@ def test_api_document_invitations__put_authenticated(via, mock_user_get_teams):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__patch_authenticated(via, mock_user_get_teams):
+def test_api_document_invitations__patch_authenticated(via, mock_user_teams):
     """
     Authenticated user can patch invitations.
     """
@@ -514,7 +514,7 @@ def test_api_document_invitations__patch_authenticated(via, mock_user_get_teams)
             document=invitation.document, user=user, role="owner"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=invitation.document, team="lasuite", role="owner"
         )
@@ -546,7 +546,7 @@ def test_api_document_invitations__patch_authenticated(via, mock_user_get_teams)
     ["editor", "reader"],
 )
 def test_api_document_invitations__update__forbidden__not_authenticated(
-    method, via, role, mock_user_get_teams
+    method, via, role, mock_user_teams
 ):
     """
     Update of invitations is currently forbidden.
@@ -558,7 +558,7 @@ def test_api_document_invitations__update__forbidden__not_authenticated(
             document=invitation.document, user=user, role=role
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=invitation.document, team="lasuite", role=role
         )
@@ -607,7 +607,7 @@ def test_api_document_invitations__delete__authenticated_outsider():
 @pytest.mark.parametrize("via", VIA)
 @pytest.mark.parametrize("role", ["owner", "administrator"])
 def test_api_document_invitations__delete__privileged_members(
-    role, via, mock_user_get_teams
+    role, via, mock_user_teams
 ):
     """Privileged member should be able to cancel invitation."""
     user = factories.UserFactory()
@@ -615,7 +615,7 @@ def test_api_document_invitations__delete__privileged_members(
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -632,16 +632,14 @@ def test_api_document_invitations__delete__privileged_members(
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations_delete_readers_or_editors(
-    via, role, mock_user_get_teams
-):
+def test_api_document_invitations_delete_readers_or_editors(via, role, mock_user_teams):
     """Readers or editors should not be able to cancel invitation."""
     user = factories.UserFactory()
     document = factories.DocumentFactory()
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )

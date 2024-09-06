@@ -57,7 +57,7 @@ def test_api_document_accesses_list_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_list_authenticated_related(via, mock_user_get_teams):
+def test_api_document_accesses_list_authenticated_related(via, mock_user_teams):
     """
     Authenticated users should be able to list document accesses for a document
     to which they are directly related, whatever their role in the document.
@@ -76,7 +76,7 @@ def test_api_document_accesses_list_authenticated_related(via, mock_user_get_tea
             role=random.choice(models.RoleChoices.choices)[0],
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         user_access = models.DocumentAccess.objects.create(
             document=document,
             team="lasuite",
@@ -181,7 +181,7 @@ def test_api_document_accesses_retrieve_authenticated_unrelated():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_retrieve_authenticated_related(via, mock_user_get_teams):
+def test_api_document_accesses_retrieve_authenticated_related(via, mock_user_teams):
     """
     A user who is related to a document should be allowed to retrieve the
     associated document user accesses.
@@ -195,7 +195,7 @@ def test_api_document_accesses_retrieve_authenticated_related(via, mock_user_get
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(document=document, team="lasuite")
 
     access = factories.UserDocumentAccessFactory(document=document)
@@ -276,7 +276,7 @@ def test_api_document_accesses_update_authenticated_unrelated():
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_accesses_update_authenticated_reader_or_editor(
-    via, role, mock_user_get_teams
+    via, role, mock_user_teams
 ):
     """Readers or editors of a document should not be allowed to update its accesses."""
     user = factories.UserFactory()
@@ -288,7 +288,7 @@ def test_api_document_accesses_update_authenticated_reader_or_editor(
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -316,9 +316,7 @@ def test_api_document_accesses_update_authenticated_reader_or_editor(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_administrator_except_owner(
-    via, mock_user_get_teams
-):
+def test_api_document_accesses_update_administrator_except_owner(via, mock_user_teams):
     """
     A user who is a direct administrator in a document should be allowed to update a user
     access for this document, as long as they don't try to set the role to owner.
@@ -334,7 +332,7 @@ def test_api_document_accesses_update_administrator_except_owner(
             document=document, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="administrator"
         )
@@ -375,9 +373,7 @@ def test_api_document_accesses_update_administrator_except_owner(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_administrator_from_owner(
-    via, mock_user_get_teams
-):
+def test_api_document_accesses_update_administrator_from_owner(via, mock_user_teams):
     """
     A user who is an administrator in a document, should not be allowed to update
     the user access of an "owner" for this document.
@@ -393,7 +389,7 @@ def test_api_document_accesses_update_administrator_from_owner(
             document=document, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="administrator"
         )
@@ -424,7 +420,7 @@ def test_api_document_accesses_update_administrator_from_owner(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_administrator_to_owner(via, mock_user_get_teams):
+def test_api_document_accesses_update_administrator_to_owner(via, mock_user_teams):
     """
     A user who is an administrator in a document, should not be allowed to update
     the user access of another user to grant document ownership.
@@ -440,7 +436,7 @@ def test_api_document_accesses_update_administrator_to_owner(via, mock_user_get_
             document=document, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="administrator"
         )
@@ -478,7 +474,7 @@ def test_api_document_accesses_update_administrator_to_owner(via, mock_user_get_
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_owner(via, mock_user_get_teams):
+def test_api_document_accesses_update_owner(via, mock_user_teams):
     """
     A user who is an owner in a document should be allowed to update
     a user access for this document whatever the role.
@@ -492,7 +488,7 @@ def test_api_document_accesses_update_owner(via, mock_user_get_teams):
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="owner"
         )
@@ -534,7 +530,7 @@ def test_api_document_accesses_update_owner(via, mock_user_get_teams):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_owner_self(via, mock_user_get_teams):
+def test_api_document_accesses_update_owner_self(via, mock_user_teams):
     """
     A user who is owner of a document should be allowed to update
     their own user access provided there are other owners in the document.
@@ -551,7 +547,7 @@ def test_api_document_accesses_update_owner_self(via, mock_user_get_teams):
             document=document, user=user, role="owner"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         access = factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="owner"
         )
@@ -626,7 +622,7 @@ def test_api_document_accesses_delete_authenticated():
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_get_teams):
+def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_teams):
     """
     Authenticated users should not be allowed to delete a document access for a
     document in which they are a simple reader or editor.
@@ -640,7 +636,7 @@ def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_get_
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role=role
         )
@@ -660,7 +656,7 @@ def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_get_
 
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_accesses_delete_administrators_except_owners(
-    via, mock_user_get_teams
+    via, mock_user_teams
 ):
     """
     Users who are administrators in a document should be allowed to delete an access
@@ -677,7 +673,7 @@ def test_api_document_accesses_delete_administrators_except_owners(
             document=document, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="administrator"
         )
@@ -698,7 +694,7 @@ def test_api_document_accesses_delete_administrators_except_owners(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_get_teams):
+def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_teams):
     """
     Users who are administrators in a document should not be allowed to delete an ownership
     access from the document.
@@ -714,7 +710,7 @@ def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_get
             document=document, user=user, role="administrator"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="administrator"
         )
@@ -733,7 +729,7 @@ def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_get
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_delete_owners(via, mock_user_get_teams):
+def test_api_document_accesses_delete_owners(via, mock_user_teams):
     """
     Users should be able to delete the document access of another user
     for a document of which they are owner.
@@ -747,7 +743,7 @@ def test_api_document_accesses_delete_owners(via, mock_user_get_teams):
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="owner"
         )
@@ -766,7 +762,7 @@ def test_api_document_accesses_delete_owners(via, mock_user_get_teams):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_delete_owners_last_owner(via, mock_user_get_teams):
+def test_api_document_accesses_delete_owners_last_owner(via, mock_user_teams):
     """
     It should not be possible to delete the last owner access from a document
     """
@@ -782,7 +778,7 @@ def test_api_document_accesses_delete_owners_last_owner(via, mock_user_get_teams
             document=document, user=user, role="owner"
         )
     elif via == TEAM:
-        mock_user_get_teams.return_value = ["lasuite", "unknown"]
+        mock_user_teams.return_value = ["lasuite", "unknown"]
         access = factories.TeamDocumentAccessFactory(
             document=document, team="lasuite", role="owner"
         )
