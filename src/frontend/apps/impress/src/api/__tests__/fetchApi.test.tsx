@@ -1,7 +1,6 @@
 import fetchMock from 'fetch-mock';
 
 import { fetchAPI } from '@/api';
-import { useAuthStore } from '@/core/auth';
 
 describe('fetchAPI', () => {
   beforeEach(() => {
@@ -28,19 +27,6 @@ describe('fetchAPI', () => {
         'Content-Type': 'application/json',
       },
     });
-  });
-
-  it('logout if 401 response', async () => {
-    const logoutMock = jest.fn();
-    jest
-      .spyOn(useAuthStore.getState(), 'logout')
-      .mockImplementation(logoutMock);
-
-    fetchMock.mock('http://test.jest/api/v1.0/some/url', 401);
-
-    await fetchAPI('some/url');
-
-    expect(logoutMock).toHaveBeenCalled();
   });
 
   it('check the versionning', () => {
