@@ -22,6 +22,12 @@ test.describe('Header', () => {
       /Marianne/i,
     );
 
+    await expect(
+      header.getByRole('button', {
+        name: 'Logout',
+      }),
+    ).toBeVisible();
+
     await expect(header.getByAltText('Language Icon')).toBeVisible();
 
     await expect(
@@ -67,12 +73,6 @@ test.describe('Header: Log out', () => {
   test('checks logout button', async ({ page, browserName }) => {
     await page.goto('/');
     await keyCloakSignIn(page, browserName);
-
-    await page
-      .getByRole('button', {
-        name: 'My account',
-      })
-      .click();
 
     await page
       .getByRole('button', {

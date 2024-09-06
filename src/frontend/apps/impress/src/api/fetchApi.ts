@@ -1,4 +1,4 @@
-import { baseApiUrl, useAuthStore } from '@/core';
+import { baseApiUrl } from '@/core';
 
 import { getCSRFToken } from './utils';
 
@@ -29,11 +29,6 @@ export const fetchAPI = async (
     credentials: 'include',
     headers,
   });
-
-  if (response.status === 401) {
-    const { logout } = useAuthStore.getState();
-    logout();
-  }
 
   return response;
 };

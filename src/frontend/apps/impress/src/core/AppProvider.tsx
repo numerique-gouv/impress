@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCunninghamTheme } from '@/cunningham';
 import '@/i18n/initI18n';
 
-import { Auth } from './auth/Auth';
+import { Auth } from './auth/';
 
 /**
  * QueryClient:

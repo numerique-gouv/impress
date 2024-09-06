@@ -9,6 +9,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- 🛂(frontend) access public docs without being logged #235
+
+
 ## [1.3.0] - 2024-09-05
 
 ## Added

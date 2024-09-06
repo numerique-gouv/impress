@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, StyledLink, Text } from '@/components/';
+import { AccountDropdown } from '@/core/auth';
 import { useCunninghamTheme } from '@/cunningham';
 
 import { LanguagePicker } from '../language/';
 
-import { AccountDropdown } from './AccountDropdown';
 import { LaGaufre } from './LaGaufre';
 import { default as IconDocs } from './assets/icon-docs.svg?url';
 
