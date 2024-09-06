@@ -50,6 +50,9 @@ export default defineConfig({
         locale: 'en-US',
         timezoneId: 'Europe/Paris',
         storageState: 'playwright/.auth/user-chromium.json',
+        contextOptions: {
+          permissions: ['clipboard-read', 'clipboard-write'],
+        },
       },
       dependencies: ['setup'],
     },
@@ -70,6 +73,12 @@ export default defineConfig({
         locale: 'en-US',
         timezoneId: 'Europe/Paris',
         storageState: 'playwright/.auth/user-firefox.json',
+        launchOptions: {
+          firefoxUserPrefs: {
+            'dom.events.asyncClipboard.readText': true,
+            'dom.events.testing.asyncClipboard': true,
+          },
+        },
       },
       dependencies: ['setup'],
     },
