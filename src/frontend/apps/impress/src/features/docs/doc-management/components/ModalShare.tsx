@@ -10,6 +10,8 @@ import { MemberList } from '@/features/docs/members/members-list';
 import { Doc } from '../types';
 import { currentDocRole } from '../utils';
 
+import { DocVisibility } from './DocVisibility';
+
 const ModalShareStyle = createGlobalStyle`
   & .c__modal__scroller{
     background: #FAFAFA;
@@ -66,6 +68,7 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
           </Card>
         }
       >
+        <DocVisibility doc={doc} />
         <AddMembers doc={doc} currentRole={currentDocRole(doc.abilities)} />
         <InvitationList doc={doc} />
         <MemberList doc={doc} />

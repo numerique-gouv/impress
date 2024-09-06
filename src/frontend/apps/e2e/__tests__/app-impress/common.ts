@@ -55,14 +55,19 @@ export const createDoc = async (
       })
       .fill(randomDocs[i]);
 
-    if (isPublic) {
-      await page.getByText('Is it public ?').click();
-    }
-
     await expect(buttonCreate).toBeEnabled();
     await buttonCreate.click();
 
     await expect(page.locator('h2').getByText(randomDocs[i])).toBeVisible();
+
+    if (isPublic) {
+      await page.getByRole('button', { name: 'Share' }).click();
+      await page.getByText('Doc private').click();
+
+      await page.locator('.c__modal__backdrop').click({
+        position: { x: 0, y: 0 },
+      });
+    }
   }
 
   return randomDocs;

@@ -463,6 +463,10 @@
   );
   --c--components--forms-checkbox--border-radius: 0;
   --c--components--forms-checkbox--color: var(--c--theme--colors--primary-text);
+  --c--components--forms-checkbox--text--color: var(
+    --c--theme--colors--greyscale-text
+  );
+  --c--components--forms-checkbox--text--size: var(--c--theme--font--sizes--t);
   --c--components--forms-datepicker--border-radius: 0;
   --c--components--forms-fileuploader--border-radius: 0;
   --c--components--forms-field--color: var(--c--theme--colors--primary-text);

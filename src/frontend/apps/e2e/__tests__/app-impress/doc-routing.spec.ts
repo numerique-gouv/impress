@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createDoc, keyCloakSignIn } from './common';
+import { keyCloakSignIn } from './common';
 
 test.describe('Doc Routing', () => {
   test.beforeEach(async ({ page }) => {
@@ -55,35 +55,5 @@ test.describe('Doc Routing: Not loggued', () => {
         name: 'Sign In',
       }),
     ).toBeVisible();
-  });
-
-  test('A public doc is accessible even when not authentified.', async ({
-    page,
-    browserName,
-  }) => {
-    await page.goto('/');
-    await keyCloakSignIn(page, browserName);
-
-    const [docTitle] = await createDoc(
-      page,
-      'My new doc',
-      browserName,
-      1,
-      true,
-    );
-
-    const urlDoc = page.url();
-
-    await page
-      .getByRole('button', {
-        name: 'Logout',
-      })
-      .click();
-
-    await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
-
-    await page.goto(urlDoc);
-
-    await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
   });
 });

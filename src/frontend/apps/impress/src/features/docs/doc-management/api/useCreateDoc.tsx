@@ -6,17 +6,13 @@ import { Doc } from '../types';
 
 import { KEY_LIST_DOC } from './useDocs';
 
-export type CreateDocParam = Pick<Doc, 'title' | 'is_public'>;
+export type CreateDocParam = Pick<Doc, 'title'>;
 
-export const createDoc = async ({
-  title,
-  is_public,
-}: CreateDocParam): Promise<Doc> => {
+export const createDoc = async ({ title }: CreateDocParam): Promise<Doc> => {
   const response = await fetchAPI(`documents/`, {
     method: 'POST',
     body: JSON.stringify({
       title,
-      is_public,
     }),
   });
 

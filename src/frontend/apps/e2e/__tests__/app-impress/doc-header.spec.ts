@@ -65,13 +65,7 @@ test.describe('Doc Header', () => {
   });
 
   test('it updates the doc', async ({ page, browserName }) => {
-    const [randomDoc] = await createDoc(
-      page,
-      'doc-update',
-      browserName,
-      1,
-      true,
-    );
+    const [randomDoc] = await createDoc(page, 'doc-update', browserName, 1);
     await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
 
     await page.getByLabel('Open the document options').click();
@@ -85,12 +79,7 @@ test.describe('Doc Header', () => {
       page.locator('h2').getByText(`Update document "${randomDoc}"`),
     ).toBeVisible();
 
-    await expect(
-      page.getByRole('checkbox', { name: 'Is it public ?' }),
-    ).toBeChecked();
-
     await page.getByText('Document name').fill(`${randomDoc}-updated`);
-    await page.getByText('Is it public ?').click();
 
     await page
       .getByRole('button', {
@@ -116,8 +105,8 @@ test.describe('Doc Header', () => {
       .click();
 
     await expect(
-      page.getByRole('checkbox', { name: 'Is it public ?' }),
-    ).not.toBeChecked();
+      page.getByRole('textbox', { name: 'Document name' }),
+    ).toHaveValue(`${randomDoc}-updated`);
   });
 
   test('it deletes the doc', async ({ page, browserName }) => {

@@ -308,6 +308,11 @@ input:-webkit-autofill:focus {
   transition: all 0.8s ease-in-out;
 }
 
+.c__checkbox .c__field__text {
+  color: var(--c--components--forms-checkbox--text--color);
+  font-size: var(--c--components--forms-checkbox--text--size);
+}
+
 /**
  * Button
 */
