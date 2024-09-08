@@ -2,8 +2,6 @@
 Tests for Documents API endpoint in impress's core app: delete
 """
 
-import random
-
 import pytest
 from rest_framework.test import APIClient
 
@@ -25,24 +23,25 @@ def test_api_documents_delete_anonymous():
     assert models.Document.objects.count() == 1
 
 
-def test_api_documents_delete_authenticated_unrelated():
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+@pytest.mark.parametrize("role", models.LinkRoleChoices.values)
+def test_api_documents_delete_authenticated_unrelated(reach, role):
     """
-    Authenticated users should not be allowed to delete a document to which they are not
-    related.
+    Authenticated users should not be allowed to delete a document to which
+    they are not related.
     """
     user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
-    is_public = random.choice([True, False])
-    document = factories.DocumentFactory(is_public=is_public)
+    document = factories.DocumentFactory(link_reach=reach, link_role=role)
 
     response = client.delete(
         f"/api/v1.0/documents/{document.id!s}/",
     )
 
-    assert response.status_code == 403 if is_public else 404
+    assert response.status_code == 403
     assert models.Document.objects.count() == 1
 
 

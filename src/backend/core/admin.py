@@ -92,6 +92,14 @@ class DocumentAdmin(admin.ModelAdmin):
     """Document admin interface declaration."""
 
     inlines = (DocumentAccessInline,)
+    list_display = (
+        "id",
+        "title",
+        "link_reach",
+        "link_role",
+        "created_at",
+        "updated_at",
+    )
 
 
 @admin.register(models.Invitation)

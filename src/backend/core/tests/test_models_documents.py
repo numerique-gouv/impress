@@ -57,13 +57,57 @@ def test_models_documents_file_key():
 # get_abilities
 
 
-def test_models_documents_get_abilities_anonymous_public():
-    """Check abilities returned for an anonymous user if the document is public."""
-    document = factories.DocumentFactory(is_public=True)
-    abilities = document.get_abilities(AnonymousUser())
+@pytest.mark.parametrize(
+    "is_authenticated,reach,role",
+    [
+        (True, "restricted", "reader"),
+        (True, "restricted", "editor"),
+        (False, "restricted", "reader"),
+        (False, "restricted", "editor"),
+        (False, "authenticated", "reader"),
+        (False, "authenticated", "editor"),
+    ],
+)
+def test_models_documents_get_abilities_forbidden(is_authenticated, reach, role):
+    """
+    Check abilities returned for a document giving insufficient roles to link holders
+    i.e anonymous users or authenticated users who have no specific role on the document.
+    """
+    document = factories.DocumentFactory(link_reach=reach, link_role=role)
+    user = factories.UserFactory() if is_authenticated else AnonymousUser()
+    abilities = document.get_abilities(user)
     assert abilities == {
-        "destroy": False,
         "attachment_upload": False,
+        "destroy": False,
+        "manage_accesses": False,
+        "partial_update": False,
+        "retrieve": False,
+        "update": False,
+        "versions_destroy": False,
+        "versions_list": False,
+        "versions_retrieve": False,
+    }
+
+
+@pytest.mark.parametrize(
+    "is_authenticated,reach",
+    [
+        (True, "public"),
+        (False, "public"),
+        (True, "authenticated"),
+    ],
+)
+def test_models_documents_get_abilities_reader(is_authenticated, reach):
+    """
+    Check abilities returned for a document giving reader role to link holders
+    i.e anonymous users or authenticated users who have no specific role on the document.
+    """
+    document = factories.DocumentFactory(link_reach=reach, link_role="reader")
+    user = factories.UserFactory() if is_authenticated else AnonymousUser()
+    abilities = document.get_abilities(user)
+    assert abilities == {
+        "attachment_upload": False,
+        "destroy": False,
         "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,
@@ -74,51 +118,29 @@ def test_models_documents_get_abilities_anonymous_public():
     }
 
 
-def test_models_documents_get_abilities_anonymous_not_public():
-    """Check abilities returned for an anonymous user if the document is private."""
-    document = factories.DocumentFactory(is_public=False)
-    abilities = document.get_abilities(AnonymousUser())
+@pytest.mark.parametrize(
+    "is_authenticated,reach",
+    [
+        (True, "public"),
+        (False, "public"),
+        (True, "authenticated"),
+    ],
+)
+def test_models_documents_get_abilities_editor(is_authenticated, reach):
+    """
+    Check abilities returned for a document giving editor role to link holders
+    i.e anonymous users or authenticated users who have no specific role on the document.
+    """
+    document = factories.DocumentFactory(link_reach=reach, link_role="editor")
+    user = factories.UserFactory() if is_authenticated else AnonymousUser()
+    abilities = document.get_abilities(user)
     assert abilities == {
+        "attachment_upload": True,
         "destroy": False,
-        "attachment_upload": False,
         "manage_accesses": False,
-        "partial_update": False,
-        "retrieve": False,
-        "update": False,
-        "versions_destroy": False,
-        "versions_list": False,
-        "versions_retrieve": False,
-    }
-
-
-def test_models_documents_get_abilities_authenticated_unrelated_public():
-    """Check abilities returned for an authenticated user if the user is public."""
-    document = factories.DocumentFactory(is_public=True)
-    abilities = document.get_abilities(factories.UserFactory())
-    assert abilities == {
-        "destroy": False,
-        "attachment_upload": False,
-        "manage_accesses": False,
-        "partial_update": False,
+        "partial_update": True,
         "retrieve": True,
-        "update": False,
-        "versions_destroy": False,
-        "versions_list": False,
-        "versions_retrieve": False,
-    }
-
-
-def test_models_documents_get_abilities_authenticated_unrelated_not_public():
-    """Check abilities returned for an authenticated user if the document is private."""
-    document = factories.DocumentFactory(is_public=False)
-    abilities = document.get_abilities(factories.UserFactory())
-    assert abilities == {
-        "destroy": False,
-        "attachment_upload": False,
-        "manage_accesses": False,
-        "partial_update": False,
-        "retrieve": False,
-        "update": False,
+        "update": True,
         "versions_destroy": False,
         "versions_list": False,
         "versions_retrieve": False,
@@ -131,8 +153,8 @@ def test_models_documents_get_abilities_owner():
     access = factories.UserDocumentAccessFactory(role="owner", user=user)
     abilities = access.document.get_abilities(access.user)
     assert abilities == {
-        "destroy": True,
         "attachment_upload": True,
+        "destroy": True,
         "manage_accesses": True,
         "partial_update": True,
         "retrieve": True,
@@ -148,8 +170,8 @@ def test_models_documents_get_abilities_administrator():
     access = factories.UserDocumentAccessFactory(role="administrator")
     abilities = access.document.get_abilities(access.user)
     assert abilities == {
-        "destroy": False,
         "attachment_upload": True,
+        "destroy": False,
         "manage_accesses": True,
         "partial_update": True,
         "retrieve": True,
@@ -168,8 +190,8 @@ def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
         abilities = access.document.get_abilities(access.user)
 
     assert abilities == {
-        "destroy": False,
         "attachment_upload": True,
+        "destroy": False,
         "manage_accesses": False,
         "partial_update": True,
         "retrieve": True,
@@ -182,14 +204,16 @@ def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
 
 def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
     """Check abilities returned for the reader of a document."""
-    access = factories.UserDocumentAccessFactory(role="reader")
+    access = factories.UserDocumentAccessFactory(
+        role="reader", document__link_role="reader"
+    )
 
     with django_assert_num_queries(1):
         abilities = access.document.get_abilities(access.user)
 
     assert abilities == {
-        "destroy": False,
         "attachment_upload": False,
+        "destroy": False,
         "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,
@@ -202,15 +226,17 @@ def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
 
 def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
     """No query is done if the role is preset e.g. with query annotation."""
-    access = factories.UserDocumentAccessFactory(role="reader")
+    access = factories.UserDocumentAccessFactory(
+        role="reader", document__link_role="reader"
+    )
     access.document.user_roles = ["reader"]
 
     with django_assert_num_queries(0):
         abilities = access.document.get_abilities(access.user)
 
     assert abilities == {
-        "destroy": False,
         "attachment_upload": False,
+        "destroy": False,
         "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,

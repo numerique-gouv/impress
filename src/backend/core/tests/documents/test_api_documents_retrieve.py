@@ -13,7 +13,7 @@ pytestmark = pytest.mark.django_db
 
 def test_api_documents_retrieve_anonymous_public():
     """Anonymous users should be allowed to retrieve public documents."""
-    document = factories.DocumentFactory(is_public=True)
+    document = factories.DocumentFactory(link_reach="public")
 
     response = APIClient().get(f"/api/v1.0/documents/{document.id!s}/")
 
@@ -21,36 +21,41 @@ def test_api_documents_retrieve_anonymous_public():
     assert response.json() == {
         "id": str(document.id),
         "abilities": {
+            "attachment_upload": document.link_role == "editor",
             "destroy": False,
-            "attachment_upload": False,
             "manage_accesses": False,
-            "partial_update": False,
+            "partial_update": document.link_role == "editor",
             "retrieve": True,
-            "update": False,
+            "update": document.link_role == "editor",
             "versions_destroy": False,
             "versions_list": False,
             "versions_retrieve": False,
         },
         "accesses": [],
+        "link_reach": "public",
+        "link_role": document.link_role,
         "title": document.title,
-        "is_public": True,
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
-def test_api_documents_retrieve_anonymous_not_public():
+@pytest.mark.parametrize("reach", ["restricted", "authenticated"])
+def test_api_documents_retrieve_anonymous_restricted_or_authenticated(reach):
     """Anonymous users should not be able to retrieve a document that is not public."""
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach=reach)
 
     response = APIClient().get(f"/api/v1.0/documents/{document.id!s}/")
 
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Authentication credentials were not provided."
+    }
 
 
-def test_api_documents_retrieve_authenticated_unrelated_public():
+@pytest.mark.parametrize("reach", ["public", "authenticated"])
+def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(reach):
     """
     Authenticated users should be able to retrieve a public document to which they are
     not related.
@@ -60,7 +65,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public():
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=True)
+    document = factories.DocumentFactory(link_reach=reach)
 
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/",
@@ -69,28 +74,29 @@ def test_api_documents_retrieve_authenticated_unrelated_public():
     assert response.json() == {
         "id": str(document.id),
         "abilities": {
+            "attachment_upload": document.link_role == "editor",
             "destroy": False,
-            "attachment_upload": False,
             "manage_accesses": False,
-            "partial_update": False,
+            "partial_update": document.link_role == "editor",
             "retrieve": True,
-            "update": False,
+            "update": document.link_role == "editor",
             "versions_destroy": False,
             "versions_list": False,
             "versions_retrieve": False,
         },
         "accesses": [],
+        "link_reach": reach,
+        "link_role": document.link_role,
         "title": document.title,
-        "is_public": True,
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
 
-def test_api_documents_retrieve_authenticated_unrelated_not_public():
+def test_api_documents_retrieve_authenticated_unrelated_restricted():
     """
-    Authenticated users should not be allowed to retrieve a document that is not public and
+    Authenticated users should not be allowed to retrieve a document that is restricted and
     to which they are not related.
     """
     user = factories.UserFactory()
@@ -98,7 +104,7 @@ def test_api_documents_retrieve_authenticated_unrelated_not_public():
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach="restricted")
 
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/",
@@ -154,7 +160,8 @@ def test_api_documents_retrieve_authenticated_related_direct():
         "title": document.title,
         "content": document.content,
         "abilities": document.get_abilities(user),
-        "is_public": document.is_public,
+        "link_reach": document.link_reach,
+        "link_role": document.link_role,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
@@ -162,8 +169,8 @@ def test_api_documents_retrieve_authenticated_related_direct():
 
 def test_api_documents_retrieve_authenticated_related_team_none(mock_user_teams):
     """
-    Authenticated users should not be able to retrieve a document related to teams in
-    which the user is not.
+    Authenticated users should not be able to retrieve a restricted document related to
+    teams in which the user is not.
     """
     mock_user_teams.return_value = []
 
@@ -172,7 +179,7 @@ def test_api_documents_retrieve_authenticated_related_team_none(mock_user_teams)
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach="restricted")
 
     factories.TeamDocumentAccessFactory(
         document=document, team="readers", role="reader"
@@ -217,7 +224,7 @@ def test_api_documents_retrieve_authenticated_related_team_members(
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach="restricted")
 
     access_reader = factories.TeamDocumentAccessFactory(
         document=document, team="readers", role="reader"
@@ -291,7 +298,8 @@ def test_api_documents_retrieve_authenticated_related_team_members(
         "title": document.title,
         "content": document.content,
         "abilities": document.get_abilities(user),
-        "is_public": False,
+        "link_reach": "restricted",
+        "link_role": document.link_role,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
@@ -319,7 +327,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach="restricted")
 
     access_reader = factories.TeamDocumentAccessFactory(
         document=document, team="readers", role="reader"
@@ -410,7 +418,8 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
         "title": document.title,
         "content": document.content,
         "abilities": document.get_abilities(user),
-        "is_public": False,
+        "link_reach": "restricted",
+        "link_role": document.link_role,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
@@ -429,8 +438,8 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
     teams, mock_user_teams
 ):
     """
-    Authenticated users should be allowed to retrieve a document to which they
-    are related via a team whatever the role and see all its accesses.
+    Authenticated users should be allowed to retrieve a restricted document to which
+    they are related via a team whatever the role and see all its accesses.
     """
     mock_user_teams.return_value = teams
 
@@ -439,7 +448,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach="restricted")
 
     access_reader = factories.TeamDocumentAccessFactory(
         document=document, team="readers", role="reader"
@@ -533,7 +542,8 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
         "title": document.title,
         "content": document.content,
         "abilities": document.get_abilities(user),
-        "is_public": False,
+        "link_reach": "restricted",
+        "link_role": document.link_role,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }

@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.files.storage import default_storage
+from django.db import IntegrityError
 from django.db.models import (
     OuterRef,
     Q,
@@ -185,10 +186,11 @@ class ResourceViewsetMixin:
     def get_queryset(self):
         """Custom queryset to get user related resources."""
         queryset = super().get_queryset()
-        if not self.request.user.is_authenticated:
-            return queryset.filter(is_public=True)
-
         user = self.request.user
+
+        if not user.is_authenticated:
+            return queryset
+
         user_roles_query = (
             self.access_model_class.objects.filter(
                 Q(user=user) | Q(team__in=user.teams),
@@ -199,25 +201,6 @@ class ResourceViewsetMixin:
             .values("roles_array")
         )
         return queryset.annotate(user_roles=Subquery(user_roles_query)).distinct()
-
-    def list(self, request, *args, **kwargs):
-        """Restrict resources returned by the list endpoint"""
-        queryset = self.filter_queryset(self.get_queryset())
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            queryset = queryset.filter(
-                Q(accesses__user=user) | Q(accesses__team__in=user.teams)
-            )
-        else:
-            queryset = queryset.none()
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return drf_response.Response(serializer.data)
 
     def perform_create(self, serializer):
         """Set the current user as owner of the newly created object."""
@@ -324,14 +307,12 @@ class DocumentViewSet(
     ResourceViewsetMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
-    mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
     """Document ViewSet"""
 
     permission_classes = [
-        permissions.IsAuthenticatedOrSafe,
         permissions.AccessPermission,
     ]
     serializer_class = serializers.DocumentSerializer
@@ -353,12 +334,62 @@ class DocumentViewSet(
             **{self.resource_field_name: document},
         )
 
+    def list(self, request, *args, **kwargs):
+        """Restrict resources returned by the list endpoint"""
+        queryset = self.filter_queryset(self.get_queryset())
+        user = self.request.user
+        if user.is_authenticated:
+            queryset = queryset.filter(
+                Q(accesses__user=user)
+                | Q(accesses__team__in=user.teams)
+                | (
+                    Q(link_traces__user=user)
+                    & ~Q(link_reach=models.LinkReachChoices.RESTRICTED)
+                )
+            )
+        else:
+            queryset = queryset.none()
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return drf_response.Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Add a trace that the document was accessed by a user. This is used to list documents
+        on a user's list view even though the user has no specific role in the document (link
+        access when the link reach configuration of the document allows it).
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        if self.request.user.is_authenticated:
+            try:
+                # Add a trace that the user visited the document (this is needed to include
+                # the document in the user's list view)
+                models.LinkTrace.objects.create(
+                    document=instance,
+                    user=self.request.user,
+                )
+            except IntegrityError:
+                # The trace already exists, so we just pass without doing anything
+                pass
+
+        return drf_response.Response(serializer.data)
+
     @decorators.action(detail=True, methods=["get"], url_path="versions")
     def versions_list(self, request, *args, **kwargs):
         """
         Return the document's versions but only those created after the user got access
         to the document
         """
+        if not request.user.is_authenticated:
+            return drf_response.Response([])
+
         document = self.get_object()
         user = request.user
         from_datetime = min(
@@ -554,6 +585,27 @@ class TemplateViewSet(
     access_model_class = models.TemplateAccess
     resource_field_name = "template"
     queryset = models.Template.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        """Restrict templates returned by the list endpoint"""
+        queryset = self.filter_queryset(self.get_queryset())
+        user = self.request.user
+        if user.is_authenticated:
+            queryset = queryset.filter(
+                Q(accesses__user=user)
+                | Q(accesses__team__in=user.teams)
+                | Q(is_public=True)
+            )
+        else:
+            queryset = queryset.filter(is_public=True)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return drf_response.Response(serializer.data)
 
     @decorators.action(
         detail=True,

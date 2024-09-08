@@ -148,11 +148,20 @@ class DocumentSerializer(BaseResourceSerializer):
             "title",
             "accesses",
             "abilities",
-            "is_public",
+            "link_role",
+            "link_reach",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "accesses", "abilities", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "accesses",
+            "abilities",
+            "link_role",
+            "link_reach",
+            "created_at",
+            "updated_at",
+        ]
 
 
 # Suppress the warning about not implementing `create` and `update` methods

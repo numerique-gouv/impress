@@ -130,7 +130,9 @@ def create_demo(stdout):
             queue.push(
                 models.Document(
                     title=fake.sentence(nb_words=4),
-                    is_public=random_true_with_probability(0.5),
+                    link_reach=models.LinkReachChoices.AUTHENTICATED
+                    if random_true_with_probability(0.5)
+                    else random.choice(models.LinkReachChoices.values),
                 )
             )
 

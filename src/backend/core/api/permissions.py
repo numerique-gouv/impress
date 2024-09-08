@@ -62,6 +62,9 @@ class IsOwnedOrPublic(IsAuthenticated):
 class AccessPermission(permissions.BasePermission):
     """Permission class for access objects."""
 
+    def has_permission(self, request, view):
+        return request.user.is_authenticated or view.action != "create"
+
     def has_object_permission(self, request, view, obj):
         """Check permission for a given object."""
         abilities = obj.get_abilities(request.user)
