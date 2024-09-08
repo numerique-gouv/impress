@@ -14,62 +14,29 @@ from core.tests.conftest import TEAM, USER, VIA
 pytestmark = pytest.mark.django_db
 
 
-def test_api_document_versions_list_anonymous_public():
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+@pytest.mark.parametrize("role", models.LinkRoleChoices.values)
+def test_api_document_versions_list_anonymous(role, reach):
     """
-    Anonymous users should not be allowed to list document versions for a public document.
+    Anonymous users should not be allowed to list document versions for a document
+    whatever the reach and role.
     """
-    document = factories.DocumentFactory(is_public=True)
-    factories.UserDocumentAccessFactory.create_batch(2, document=document)
+    document = factories.DocumentFactory(link_role=role, link_reach=reach)
+
+    # Accesses and traces for other users should not interfere
+    factories.UserDocumentAccessFactory(document=document)
+    models.LinkTrace.objects.create(document=document, user=factories.UserFactory())
 
     response = APIClient().get(f"/api/v1.0/documents/{document.id!s}/versions/")
 
-    assert response.status_code == 401
-    assert response.json() == {
-        "detail": "Authentication credentials were not provided."
-    }
-
-
-def test_api_document_versions_list_anonymous_private():
-    """
-    Anonymous users should not be allowed to find document versions for a private document.
-    """
-    document = factories.DocumentFactory(is_public=False)
-    factories.UserDocumentAccessFactory.create_batch(2, document=document)
-
-    response = APIClient().get(f"/api/v1.0/documents/{document.id!s}/versions/")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
-
-
-def test_api_document_versions_list_authenticated_unrelated_public():
-    """
-    Authenticated users should not be allowed to list document versions for a public document
-    to which they are not related.
-    """
-    user = factories.UserFactory()
-
-    client = APIClient()
-    client.force_login(user)
-
-    document = factories.DocumentFactory(is_public=True)
-    factories.UserDocumentAccessFactory.create_batch(3, document=document)
-
-    # The versions of another document to which the user is related should not be listed either
-    factories.UserDocumentAccessFactory(user=user)
-
-    response = client.get(
-        f"/api/v1.0/documents/{document.id!s}/versions/",
-    )
     assert response.status_code == 403
-    assert response.json() == {
-        "detail": "You do not have permission to perform this action."
-    }
+    assert response.json() == {'detail': 'Authentication required.'}
 
 
-def test_api_document_versions_list_authenticated_unrelated_private():
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+def test_api_document_versions_list_authenticated_unrelated(reach):
     """
-    Authenticated users should not be allowed to find document versions for a private document
+    Authenticated users should not be allowed to list document versions for a document
     to which they are not related.
     """
     user = factories.UserFactory()
@@ -77,7 +44,7 @@ def test_api_document_versions_list_authenticated_unrelated_private():
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach=reach)
     factories.UserDocumentAccessFactory.create_batch(3, document=document)
 
     # The versions of another document to which the user is related should not be listed either
@@ -145,11 +112,13 @@ def test_api_document_versions_list_authenticated_related(via, mock_user_teams):
     assert content["count"] == 1
 
 
-def test_api_document_versions_retrieve_anonymous_public():
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+def test_api_document_versions_retrieve_anonymous(reach):
     """
-    Anonymous users should not be allowed to retrieve specific versions for a public document.
+    Anonymous users should not be allowed to find specific versions for a document with
+    restricted or authenticated link reach.
     """
-    document = factories.DocumentFactory(is_public=True)
+    document = factories.DocumentFactory(link_reach=reach)
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     url = f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/"
@@ -161,23 +130,10 @@ def test_api_document_versions_retrieve_anonymous_public():
     }
 
 
-def test_api_document_versions_retrieve_anonymous_private():
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+def test_api_document_versions_retrieve_authenticated_unrelated(reach):
     """
-    Anonymous users should not be allowed to find specific versions for a private document.
-    """
-    document = factories.DocumentFactory(is_public=False)
-    version_id = document.get_versions_slice()["versions"][0]["version_id"]
-
-    url = f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/"
-    response = APIClient().get(url)
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Document matches the given query."}
-
-
-def test_api_document_versions_retrieve_authenticated_unrelated_public():
-    """
-    Authenticated users should not be allowed to retrieve specific versions for a public
+    Authenticated users should not be allowed to retrieve specific versions for a
     document to which they are not related.
     """
     user = factories.UserFactory()
@@ -185,29 +141,7 @@ def test_api_document_versions_retrieve_authenticated_unrelated_public():
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=True)
-    version_id = document.get_versions_slice()["versions"][0]["version_id"]
-
-    response = client.get(
-        f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
-    )
-    assert response.status_code == 403
-    assert response.json() == {
-        "detail": "You do not have permission to perform this action."
-    }
-
-
-def test_api_document_versions_retrieve_authenticated_unrelated_private():
-    """
-    Authenticated users should not be allowed to find specific versions for a private document
-    to which they are not related.
-    """
-    user = factories.UserFactory()
-
-    client = APIClient()
-    client.force_login(user)
-
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach=reach)
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = client.get(
@@ -271,10 +205,8 @@ def test_api_document_versions_create_anonymous():
         format="json",
     )
 
-    assert response.status_code == 401
-    assert response.json() == {
-        "detail": "Authentication credentials were not provided."
-    }
+    assert response.status_code == 405
+    assert response.json() == {"detail": 'Method "POST" not allowed.'}
 
 
 def test_api_document_versions_create_authenticated_unrelated():
@@ -335,7 +267,7 @@ def test_api_document_versions_update_anonymous():
         {"foo": "bar"},
         format="json",
     )
-    assert response.status_code == 401
+    assert response.status_code == 405
 
 
 def test_api_document_versions_update_authenticated_unrelated():
@@ -401,7 +333,8 @@ def test_api_document_versions_delete_anonymous():
     assert response.status_code == 401
 
 
-def test_api_document_versions_delete_authenticated_public():
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+def test_api_document_versions_delete_authenticated(reach):
     """
     Authenticated users should not be allowed to delete a document version for a
     public document to which they are not related.
@@ -411,7 +344,7 @@ def test_api_document_versions_delete_authenticated_public():
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=True)
+    document = factories.DocumentFactory(link_reach=reach)
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = client.delete(
@@ -419,29 +352,6 @@ def test_api_document_versions_delete_authenticated_public():
     )
 
     assert response.status_code == 403
-
-
-def test_api_document_versions_delete_authenticated_private():
-    """
-    Authenticated users should not be allowed to find a document version to delete it
-    for a private document to which they are not related.
-    """
-    user = factories.UserFactory()
-
-    client = APIClient()
-    client.force_login(user)
-
-    document = factories.DocumentFactory(is_public=False)
-    version_id = document.get_versions_slice()["versions"][0]["version_id"]
-
-    response = client.delete(
-        f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
-    )
-
-    assert response.status_code == 403
-    assert response.json() == {
-        "detail": "You do not have permission to perform this action."
-    }
 
 
 @pytest.mark.parametrize("role", ["reader", "editor"])

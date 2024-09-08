@@ -11,6 +11,7 @@ and this project adheres to
 
 ## Added
 
+- ✨Add link public/authenticated/restricted access with read/editor roles #234
 - ✨(frontend) add copy link button #235
 - 🛂(frontend) access public docs without being logged #235
 

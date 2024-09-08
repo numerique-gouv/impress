@@ -22,7 +22,7 @@ pytestmark = pytest.mark.django_db
 
 def test_api_documents_retrieve_auth_anonymous_public():
     """Anonymous users should be able to retrieve attachments linked to a public document"""
-    document = factories.DocumentFactory(is_public=True)
+    document = factories.DocumentFactory(link_reach="public")
 
     filename = f"{uuid.uuid4()!s}.jpg"
     key = f"{document.pk!s}/attachments/{filename:s}"
@@ -64,12 +64,13 @@ def test_api_documents_retrieve_auth_anonymous_public():
     assert response.content.decode("utf-8") == "my prose"
 
 
-def test_api_documents_retrieve_auth_anonymous_not_public():
+@pytest.mark.parametrize("reach", ["authenticated", "restricted"])
+def test_api_documents_retrieve_auth_anonymous_authenticated_or_restricted(reach):
     """
     Anonymous users should not be allowed to retrieve attachments linked to a document
-    that is not public.
+    with link reach set to authenticated or restricted.
     """
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach=reach)
 
     filename = f"{uuid.uuid4()!s}.jpg"
     media_url = f"http://localhost/media/{document.pk!s}/attachments/{filename:s}"
@@ -82,12 +83,13 @@ def test_api_documents_retrieve_auth_anonymous_not_public():
     assert "Authorization" not in response
 
 
-def test_api_documents_retrieve_auth_authenticated_public():
+@pytest.mark.parametrize("reach", ["public", "authenticated"])
+def test_api_documents_retrieve_auth_authenticated_public_or_authenticated(reach):
     """
-    Authenticated users who are not related to a document should be able to
-    retrieve attachments linked to a public document.
+    Authenticated users who are not related to a document should be able to retrieve
+    attachments related to a document with public or authenticated link reach.
     """
-    document = factories.DocumentFactory(is_public=True)
+    document = factories.DocumentFactory(link_reach=reach)
 
     user = factories.UserFactory()
     client = APIClient()
@@ -104,7 +106,7 @@ def test_api_documents_retrieve_auth_authenticated_public():
     )
 
     original_url = f"http://localhost/media/{key:s}"
-    response = APIClient().get(
+    response = client.get(
         "/api/v1.0/documents/retrieve-auth/", HTTP_X_ORIGINAL_URL=original_url
     )
 
@@ -133,12 +135,12 @@ def test_api_documents_retrieve_auth_authenticated_public():
     assert response.content.decode("utf-8") == "my prose"
 
 
-def test_api_documents_retrieve_auth_authenticated_not_public():
+def test_api_documents_retrieve_auth_authenticated_restricted():
     """
     Authenticated users who are not related to a document should not be allowed to
-    retrieve attachments linked to a document that is not public.
+    retrieve attachments linked to a document that is restricted.
     """
-    document = factories.DocumentFactory(is_public=False)
+    document = factories.DocumentFactory(link_reach="restricted")
 
     user = factories.UserFactory()
     client = APIClient()
@@ -147,7 +149,7 @@ def test_api_documents_retrieve_auth_authenticated_not_public():
     filename = f"{uuid.uuid4()!s}.jpg"
     media_url = f"http://localhost/media/{document.pk!s}/attachments/{filename:s}"
 
-    response = APIClient().get(
+    response = client.get(
         "/api/v1.0/documents/retrieve-auth/", HTTP_X_ORIGINAL_URL=media_url
     )
 
@@ -155,18 +157,17 @@ def test_api_documents_retrieve_auth_authenticated_not_public():
     assert "Authorization" not in response
 
 
-@pytest.mark.parametrize("is_public", [True, False])
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_retrieve_auth_related(via, is_public, mock_user_teams):
+def test_api_documents_retrieve_auth_related(via, mock_user_teams):
     """
-    Users who have a role on a document, whatever the role, should be able to
+    Users who have a specific access to a document, whatever the role, should be able to
     retrieve related attachments.
     """
     user = factories.UserFactory()
     client = APIClient()
     client.force_login(user)
 
-    document = factories.DocumentFactory(is_public=is_public)
+    document = factories.DocumentFactory()
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user)
     elif via == TEAM:

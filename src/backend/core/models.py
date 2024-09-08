@@ -51,13 +51,34 @@ def get_resource_roles(resource, user):
     return roles
 
 
+class LinkRoleChoices(models.TextChoices):
+    """Defines the possible roles a link can offer on a document."""
+
+    READER = "reader", _("Reader")  # Can read
+    EDITOR = "editor", _("Editor")  # Can read and edit
+
+
 class RoleChoices(models.TextChoices):
-    """Defines the possible roles a user can have in a template."""
+    """Defines the possible roles a user can have in a resource."""
 
     READER = "reader", _("Reader")  # Can read
     EDITOR = "editor", _("Editor")  # Can read and edit
     ADMIN = "administrator", _("Administrator")  # Can read, edit, delete and share
     OWNER = "owner", _("Owner")
+
+
+class LinkReachChoices(models.TextChoices):
+    """Defines types of access for links"""
+
+    RESTRICTED = (
+        "restricted",
+        _("Restricted"),
+    )  # Only users with a specific access can read/edit the document
+    AUTHENTICATED = (
+        "authenticated",
+        _("Authenticated"),
+    )  # Any authenticated user can access the document
+    PUBLIC = "public", _("Public")  # Even anonymous users can access the document
 
 
 class BaseModel(models.Model):
@@ -300,10 +321,13 @@ class Document(BaseModel):
     """Pad document carrying the content."""
 
     title = models.CharField(_("title"), max_length=255)
-    is_public = models.BooleanField(
-        _("public"),
-        default=False,
-        help_text=_("Whether this document is public for anyone to use."),
+    link_reach = models.CharField(
+        max_length=20,
+        choices=LinkReachChoices.choices,
+        default=LinkReachChoices.AUTHENTICATED,
+    )
+    link_role = models.CharField(
+        max_length=20, choices=LinkRoleChoices.choices, default=LinkRoleChoices.READER
     )
 
     _content = None
@@ -466,17 +490,28 @@ class Document(BaseModel):
         """
         Compute and return abilities for a given user on the document.
         """
-        roles = get_resource_roles(self, user)
-        is_owner_or_admin = bool(
-            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
-        )
-        is_editor = bool(RoleChoices.EDITOR in roles)
-        can_get = self.is_public or bool(roles)
+        roles = set(get_resource_roles(self, user))
+
+        # Compute version roles before adding link roles because we don't
+        # want anonymous users to access versions (we wouldn't know from
+        # which date to allow them anyway)
         can_get_versions = bool(roles)
 
+        # Add role provided by the document link
+        if self.link_reach == LinkReachChoices.PUBLIC or (
+            self.link_reach == LinkReachChoices.AUTHENTICATED and user.is_authenticated
+        ):
+            roles.add(self.link_role)
+
+        is_owner_or_admin = bool(
+            roles.intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+        )
+        is_editor = bool(RoleChoices.EDITOR in roles)
+        can_get = bool(roles)
+
         return {
-            "destroy": RoleChoices.OWNER in roles,
             "attachment_upload": is_owner_or_admin or is_editor,
+            "destroy": RoleChoices.OWNER in roles,
             "manage_accesses": is_owner_or_admin,
             "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,
@@ -485,6 +520,38 @@ class Document(BaseModel):
             "versions_list": can_get_versions,
             "versions_retrieve": can_get_versions,
         }
+
+
+class LinkTrace(BaseModel):
+    """
+    Relation model to trace accesses to a document via a link by a logged-in user.
+    This is necessary to show the document in the user's list of documents even
+    though the user does not have a role on the document.
+    """
+
+    document = models.ForeignKey(
+        Document,
+        on_delete=models.CASCADE,
+        related_name="link_traces",
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="link_traces")
+
+    class Meta:
+        db_table = "impress_link_trace"
+        verbose_name = _("Document/user link trace")
+        verbose_name_plural = _("Document/user link traces")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "document"],
+                name="unique_link_trace_document_user",
+                violation_error_message=_(
+                    "A link trace already exists for this document/user."
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user!s} trace on document {self.document!s}"
 
 
 class DocumentAccess(BaseAccess):

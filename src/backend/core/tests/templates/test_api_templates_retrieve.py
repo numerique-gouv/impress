@@ -41,8 +41,10 @@ def test_api_templates_retrieve_anonymous_not_public():
 
     response = APIClient().get(f"/api/v1.0/templates/{template.id!s}/")
 
-    assert response.status_code == 404
-    assert response.json() == {"detail": "No Template matches the given query."}
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Authentication credentials were not provided."
+    }
 
 
 def test_api_templates_retrieve_authenticated_unrelated_public():
