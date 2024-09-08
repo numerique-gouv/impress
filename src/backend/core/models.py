@@ -512,6 +512,7 @@ class Document(BaseModel):
         return {
             "attachment_upload": is_owner_or_admin or is_editor,
             "destroy": RoleChoices.OWNER in roles,
+            "link_configuration": is_owner_or_admin,
             "manage_accesses": is_owner_or_admin,
             "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,

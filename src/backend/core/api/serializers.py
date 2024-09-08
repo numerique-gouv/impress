@@ -164,6 +164,20 @@ class DocumentSerializer(BaseResourceSerializer):
         ]
 
 
+class LinkDocumentSerializer(BaseResourceSerializer):
+    """
+    Serialize link configuration for documents.
+    We expose it separately from document in order to simplify and secure access control.
+    """
+
+    class Meta:
+        model = models.Document
+        fields = [
+            "link_role",
+            "link_reach",
+        ]
+
+
 # Suppress the warning about not implementing `create` and `update` methods
 # since we don't use a model and only rely on the serializer for validation
 # pylint: disable=abstract-method
