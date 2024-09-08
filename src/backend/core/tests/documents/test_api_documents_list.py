@@ -224,133 +224,51 @@ def test_api_documents_list_authenticated_distinct():
     assert content["results"][0]["id"] == str(document.id)
 
 
-def test_api_documents_order_updated_at_desc_default():
-    """
-    Test that the endpoint GET documents is sorted in 'updated_at' descending order by default.
-    """
+def test_api_documents_list_ordering_default():
+    """Documents should be ordered by descending "updated_at" by default"""
     user = factories.UserFactory()
     client = APIClient()
     client.force_login(user)
 
-    # Updated at next year to ensure the order is correct
-    documents_updated = [
-        document.updated_at.isoformat().replace("+00:00", "Z")
-        for document in factories.DocumentFactory.create_batch(
-            5, updated_at=fake.date_time_this_year(before_now=False), users=[user]
-        )
-    ]
+    factories.DocumentFactory.create_batch(5, users=[user])
 
-    documents_updated.sort(reverse=True)
+    response = client.get("/api/v1.0/documents/")
 
-    response = client.get(
-        "/api/v1.0/documents/",
-    )
     assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 5
 
-    response_data = response.json()
-
-    response_document_updated = [
-        document["updated_at"] for document in response_data["results"]
-    ]
-
-    assert (
-        response_document_updated == documents_updated
-    ), "updated_at values are not sorted from newest to oldest"
+    # Check that results are sorted by descending "updated_at" as expected
+    for i in range(4):
+        assert operator.ge(results[i]["updated_at"], results[i + 1]["updated_at"])
 
 
-@pytest.mark.parametrize(
-    "ordering_field, factory_field",
-    [
-        ("-created_at", "created_at"),
-        ("-updated_at", "updated_at"),
-        ("-title", "title"),
-    ],
-)
-def test_api_documents_ordering_desc(ordering_field, factory_field):
-    """
-    Test that the specified field is sorted in descending order
-    when the 'ordering' query parameter is set.
-    """
+def test_api_documents_list_ordering_by_fields():
+    """It should be possible to order by several fields"""
     user = factories.UserFactory()
     client = APIClient()
     client.force_login(user)
 
-    if factory_field == "title":
-        documents_field_values = [
-            factories.DocumentFactory(
-                title=fake.sentence(nb_words=4), users=[user]
-            ).title
-            for _ in range(5)
-        ]
-    else:
-        documents_field_values = [
-            getattr(document, factory_field).isoformat().replace("+00:00", "Z")
-            for document in factories.DocumentFactory.create_batch(5, users=[user])
-        ]
+    factories.DocumentFactory.create_batch(5, users=[user])
 
-    documents_field_values.sort(reverse=True)
+    for parameter in [
+        "created_at",
+        "-created_at",
+        "updated_at",
+        "-updated_at",
+        "title",
+        "-title",
+    ]:
+        is_descending = parameter.startswith("-")
+        field = parameter.lstrip("-")
+        querystring = f"?ordering={parameter}"
 
-    response = client.get(
-        f"/api/v1.0/documents/?ordering={ordering_field}"
-        if ordering_field != "-created_at"
-        else "/api/v1.0/documents/",
-    )
-    assert response.status_code == 200
+        response = client.get(f"/api/v1.0/documents/{querystring:s}")
+        assert response.status_code == 200
+        results = response.json()["results"]
+        assert len(results) == 5
 
-    response_data = response.json()
-
-    response_documents_field_values = [
-        document[factory_field] for document in response_data["results"]
-    ]
-
-    assert (
-        response_documents_field_values == documents_field_values
-    ), f"{factory_field} values are not sorted as expected"
-
-
-@pytest.mark.parametrize(
-    "field",
-    [
-        ("updated_at"),
-        ("title"),
-        ("created_at"),
-    ],
-)
-def test_api_documents_ordering_asc(field):
-    """
-    Test that the specified field is sorted in ascending order
-    when the 'ordering' query parameter is set.
-    """
-    user = factories.UserFactory()
-    client = APIClient()
-    client.force_login(user)
-
-    if field == "title":
-        documents_field_values = [
-            factories.DocumentFactory(
-                users=[user], title=fake.sentence(nb_words=4)
-            ).title
-            for _ in range(5)
-        ]
-    else:
-        documents_field_values = [
-            getattr(document, field).isoformat().replace("+00:00", "Z")
-            for document in factories.DocumentFactory.create_batch(5, users=[user])
-        ]
-
-    documents_field_values.sort()
-
-    response = client.get(
-        f"/api/v1.0/documents/?ordering={field}",
-    )
-    assert response.status_code == 200
-
-    response_data = response.json()
-
-    response_documents_field_values = [
-        document[field] for document in response_data["results"]
-    ]
-
-    assert (
-        response_documents_field_values == documents_field_values
-    ), f"{field} values are not sorted as expected"
+        # Check that results are sorted by the field in querystring as expected
+        compare = operator.ge if is_descending else operator.le
+        for i in range(4):
+            assert compare(results[i][field], results[i + 1][field])
