@@ -321,19 +321,6 @@ class DocumentViewSet(
     queryset = models.Document.objects.all()
     ordering = ["-updated_at"]
 
-    def perform_create(self, serializer):
-        """
-        Override perform_create to use the provided ID in the payload if it exists
-        """
-        document_id = self.request.data.get("id")
-        document = serializer.save(id=document_id) if document_id else serializer.save()
-
-        self.access_model_class.objects.create(
-            user=self.request.user,
-            role=models.RoleChoices.OWNER,
-            **{self.resource_field_name: document},
-        )
-
     def list(self, request, *args, **kwargs):
         """Restrict resources returned by the list endpoint"""
         queryset = self.filter_queryset(self.get_queryset())
