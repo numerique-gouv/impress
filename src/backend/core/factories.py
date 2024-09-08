@@ -35,8 +35,13 @@ class DocumentFactory(factory.django.DjangoModelFactory):
         skip_postgeneration_save = True
 
     title = factory.Sequence(lambda n: f"document{n}")
-    is_public = factory.Faker("boolean")
     content = factory.Sequence(lambda n: f"content{n}")
+    link_reach = factory.fuzzy.FuzzyChoice(
+        [a[0] for a in models.LinkReachChoices.choices]
+    )
+    link_role = factory.fuzzy.FuzzyChoice(
+        [r[0] for r in models.LinkRoleChoices.choices]
+    )
 
     @factory.post_generation
     def users(self, create, extracted, **kwargs):
@@ -47,6 +52,13 @@ class DocumentFactory(factory.django.DjangoModelFactory):
                     UserDocumentAccessFactory(document=self, user=item)
                 else:
                     UserDocumentAccessFactory(document=self, user=item[0], role=item[1])
+
+    @factory.post_generation
+    def link_traces(self, create, extracted, **kwargs):
+        """Add link traces to document from a given list of users."""
+        if create and extracted:
+            for item in extracted:
+                models.LinkTrace.objects.create(document=self, user=item)
 
 
 class UserDocumentAccessFactory(factory.django.DjangoModelFactory):

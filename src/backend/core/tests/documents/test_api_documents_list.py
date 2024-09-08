@@ -2,6 +2,7 @@
 Tests for Documents API endpoint in impress's core app: list
 """
 
+import operator
 from unittest import mock
 
 import pytest
@@ -9,46 +10,50 @@ from faker import Faker
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.test import APIClient
 
-from core import factories
+from core import factories, models
 
 fake = Faker()
 pytestmark = pytest.mark.django_db
 
 
-def test_api_documents_list_anonymous():
-    """Anonymous users should only be able to list documents public or not."""
-    factories.DocumentFactory.create_batch(2, is_public=False)
-    factories.DocumentFactory.create_batch(2, is_public=True)
+@pytest.mark.parametrize("role", models.LinkRoleChoices.values)
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+def test_api_documents_list_anonymous(reach, role):
+    """
+    Anonymous users should not be allowed to list documents whatever the
+    link reach and the role
+    """
+    factories.DocumentFactory(link_reach=reach, link_role=role)
 
     response = APIClient().get("/api/v1.0/documents/")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "count": 0,
-        "next": None,
-        "previous": None,
-        "results": [],
-    }
+    results = response.json()["results"]
+    assert len(results) == 0
 
 
 def test_api_documents_list_authenticated_direct():
     """
     Authenticated users should be able to list documents they are a direct
-    owner/administrator/member of.
+    owner/administrator/member of or documents that have a link reach other
+    than restricted.
     """
     user = factories.UserFactory()
 
     client = APIClient()
     client.force_login(user)
 
-    related_documents = [
+    documents = [
         access.document
-        for access in factories.UserDocumentAccessFactory.create_batch(5, user=user)
+        for access in factories.UserDocumentAccessFactory.create_batch(2, user=user)
     ]
-    factories.DocumentFactory.create_batch(2, is_public=True)
-    factories.DocumentFactory.create_batch(2, is_public=False)
 
-    expected_ids = {str(document.id) for document in related_documents}
+    # Unrelated and untraced documents
+    for reach in models.LinkReachChoices:
+        for role in models.LinkRoleChoices:
+            factories.DocumentFactory(link_reach=reach, link_role=role)
+
+    expected_ids = {str(document.id) for document in documents}
 
     response = client.get(
         "/api/v1.0/documents/",
@@ -56,7 +61,7 @@ def test_api_documents_list_authenticated_direct():
 
     assert response.status_code == 200
     results = response.json()["results"]
-    assert len(results) == 5
+    assert len(results) == 2
     results_id = {result["id"] for result in results}
     assert expected_ids == results_id
 
@@ -81,8 +86,6 @@ def test_api_documents_list_authenticated_via_team(mock_user_teams):
         access.document
         for access in factories.TeamDocumentAccessFactory.create_batch(3, team="team2")
     ]
-    factories.DocumentFactory.create_batch(2, is_public=True)
-    factories.DocumentFactory.create_batch(2, is_public=False)
 
     expected_ids = {str(document.id) for document in documents_team1 + documents_team2}
 
@@ -91,6 +94,63 @@ def test_api_documents_list_authenticated_via_team(mock_user_teams):
     assert response.status_code == 200
     results = response.json()["results"]
     assert len(results) == 5
+    results_id = {result["id"] for result in results}
+    assert expected_ids == results_id
+
+
+def test_api_documents_list_authenticated_link_reach_restricted():
+    """
+    An authenticated user who has link traces to a document that is restricted should not
+    see it on the list view
+    """
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    document = factories.DocumentFactory(link_traces=[user], link_reach="restricted")
+
+    # Link traces for other documents or other users should not interfere
+    models.LinkTrace.objects.create(document=document, user=factories.UserFactory())
+    other_document = factories.DocumentFactory(link_reach="public")
+    models.LinkTrace.objects.create(document=other_document, user=user)
+
+    response = client.get(
+        "/api/v1.0/documents/",
+    )
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    # Only the other document is returned but not the restricted document even though the user
+    # visited it earlier (probably b/c it previously had public or authenticated reach...)
+    assert len(results) == 1
+    assert results[0]["id"] == str(other_document.id)
+
+
+def test_api_documents_list_authenticated_link_reach_public_or_authenticated():
+    """
+    An authenticated user who has link traces to a document with public or authenticated
+    link reach should see it on the list view.
+    """
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    documents = [
+        factories.DocumentFactory(link_traces=[user], link_reach=reach)
+        for reach in models.LinkReachChoices
+        if reach != "restricted"
+    ]
+    expected_ids = {str(document.id) for document in documents}
+
+    response = client.get(
+        "/api/v1.0/documents/",
+    )
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 2
     results_id = {result["id"] for result in results}
     assert expected_ids == results_id
 
@@ -152,7 +212,7 @@ def test_api_documents_list_authenticated_distinct():
 
     other_user = factories.UserFactory()
 
-    document = factories.DocumentFactory(users=[user, other_user], is_public=True)
+    document = factories.DocumentFactory(users=[user, other_user])
 
     response = client.get(
         "/api/v1.0/documents/",
