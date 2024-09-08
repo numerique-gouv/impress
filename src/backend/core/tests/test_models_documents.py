@@ -78,6 +78,7 @@ def test_models_documents_get_abilities_forbidden(is_authenticated, reach, role)
     abilities = document.get_abilities(user)
     assert abilities == {
         "attachment_upload": False,
+        "link_configuration": False,
         "destroy": False,
         "manage_accesses": False,
         "partial_update": False,
@@ -108,6 +109,7 @@ def test_models_documents_get_abilities_reader(is_authenticated, reach):
     assert abilities == {
         "attachment_upload": False,
         "destroy": False,
+        "link_configuration": False,
         "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,
@@ -137,6 +139,7 @@ def test_models_documents_get_abilities_editor(is_authenticated, reach):
     assert abilities == {
         "attachment_upload": True,
         "destroy": False,
+        "link_configuration": False,
         "manage_accesses": False,
         "partial_update": True,
         "retrieve": True,
@@ -155,6 +158,7 @@ def test_models_documents_get_abilities_owner():
     assert abilities == {
         "attachment_upload": True,
         "destroy": True,
+        "link_configuration": True,
         "manage_accesses": True,
         "partial_update": True,
         "retrieve": True,
@@ -172,6 +176,7 @@ def test_models_documents_get_abilities_administrator():
     assert abilities == {
         "attachment_upload": True,
         "destroy": False,
+        "link_configuration": True,
         "manage_accesses": True,
         "partial_update": True,
         "retrieve": True,
@@ -192,6 +197,7 @@ def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
     assert abilities == {
         "attachment_upload": True,
         "destroy": False,
+        "link_configuration": False,
         "manage_accesses": False,
         "partial_update": True,
         "retrieve": True,
@@ -214,6 +220,7 @@ def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
     assert abilities == {
         "attachment_upload": False,
         "destroy": False,
+        "link_configuration": False,
         "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,
@@ -237,6 +244,7 @@ def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
     assert abilities == {
         "attachment_upload": False,
         "destroy": False,
+        "link_configuration": False,
         "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,

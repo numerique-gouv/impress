@@ -23,6 +23,7 @@ def test_api_documents_retrieve_anonymous_public():
         "abilities": {
             "attachment_upload": document.link_role == "editor",
             "destroy": False,
+            "link_configuration": False,
             "manage_accesses": False,
             "partial_update": document.link_role == "editor",
             "retrieve": True,
@@ -75,6 +76,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
         "id": str(document.id),
         "abilities": {
             "attachment_upload": document.link_role == "editor",
+            "link_configuration": False,
             "destroy": False,
             "manage_accesses": False,
             "partial_update": document.link_role == "editor",
