@@ -30,7 +30,7 @@ def test_api_document_versions_list_anonymous(role, reach):
     response = APIClient().get(f"/api/v1.0/documents/{document.id!s}/versions/")
 
     assert response.status_code == 403
-    assert response.json() == {'detail': 'Authentication required.'}
+    assert response.json() == {"detail": "Authentication required."}
 
 
 @pytest.mark.parametrize("reach", models.LinkReachChoices.values)
