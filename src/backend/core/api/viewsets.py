@@ -451,6 +451,24 @@ class DocumentViewSet(
             }
         )
 
+    @decorators.action(detail=True, methods=["put"], url_path="link-configuration")
+    def link_configuration(self, request, *args, **kwargs):
+        """Update link configuration with specific rights (cf get_abilities)."""
+        # Check permissions first
+        document = self.get_object()
+
+        # Deserialize and validate the data
+        serializer = serializers.LinkDocumentSerializer(
+            document, data=request.data, partial=True
+        )
+        if not serializer.is_valid():
+            return drf_response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.save()
+        return drf_response.Response(serializer.data, status=status.HTTP_200_OK)
+
     @decorators.action(detail=True, methods=["post"], url_path="attachment-upload")
     def attachment_upload(self, request, *args, **kwargs):
         """Upload a file related to a given document"""
