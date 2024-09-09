@@ -320,7 +320,7 @@ class BaseAccess(BaseModel):
 class Document(BaseModel):
     """Pad document carrying the content."""
 
-    title = models.CharField(_("title"), max_length=255)
+    title = models.CharField(_("title"), max_length=255, null=True, blank=True)
     link_reach = models.CharField(
         max_length=20,
         choices=LinkReachChoices.choices,
@@ -339,7 +339,7 @@ class Document(BaseModel):
         verbose_name_plural = _("Documents")
 
     def __str__(self):
-        return self.title
+        return str(self.title) if self.title else str(_("Untitled Document"))
 
     def save(self, *args, **kwargs):
         """Write content to object storage only if _content has changed."""
