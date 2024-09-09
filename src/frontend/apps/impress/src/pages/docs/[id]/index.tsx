@@ -36,7 +36,9 @@ const DocPage = ({ id }: DocProps) => {
 
   useEffect(() => {
     if (doc?.title) {
-      document.title = `${doc.title} - Docs`;
+      setTimeout(() => {
+        document.title = `${doc.title} - Docs`;
+      }, 100);
     }
   }, [doc?.title]);
 
