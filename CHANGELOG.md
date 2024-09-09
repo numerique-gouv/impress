@@ -20,6 +20,10 @@ and this project adheres to
 - 🛂(backend) stop to list public doc to everyone #234
 - 🚚(frontend) change visibility in share modal #235
 
+## Fixed
+
+- 🐛 Fix forcing ID when creating a document via API endpoint #234
+
 
 ## [1.3.0] - 2024-09-05
 

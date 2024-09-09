@@ -163,6 +163,29 @@ class DocumentSerializer(BaseResourceSerializer):
             "updated_at",
         ]
 
+    def get_fields(self):
+        """Dynamically make `id` read-only on PUT requests but writable on POST requests."""
+        fields = super().get_fields()
+
+        request = self.context.get("request")
+        if request and request.method == "POST":
+            fields["id"].read_only = False
+
+        return fields
+
+    def validate_id(self, value):
+        """Ensure the provided ID does not already exist when creating a new document."""
+        request = self.context.get("request")
+
+        # Only check this on POST (creation)
+        if request and request.method == "POST":
+            if models.Document.objects.filter(id=value).exists():
+                raise serializers.ValidationError(
+                    "A document with this ID already exists. You cannot override it."
+                )
+
+        return value
+
 
 class LinkDocumentSerializer(BaseResourceSerializer):
     """
