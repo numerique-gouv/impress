@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'refacto/reactivate-versions'
     tags:
       - 'v*'
   pull_request:
