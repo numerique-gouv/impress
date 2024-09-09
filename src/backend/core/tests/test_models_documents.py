@@ -27,15 +27,15 @@ def test_models_documents_id_unique():
 
 
 def test_models_documents_title_null():
-    """The "title" field should not be null."""
-    with pytest.raises(ValidationError, match="This field cannot be null."):
-        models.Document.objects.create(title=None)
+    """The "title" field can be null."""
+    document = models.Document.objects.create(title=None)
+    assert document.title is None
 
 
 def test_models_documents_title_empty():
-    """The "title" field should not be empty."""
-    with pytest.raises(ValidationError, match="This field cannot be blank."):
-        models.Document.objects.create(title="")
+    """The "title" field can be empty."""
+    document = models.Document.objects.create(title="")
+    assert document.title == ""
 
 
 def test_models_documents_title_max_length():
