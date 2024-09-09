@@ -165,7 +165,7 @@ ingressMedia:
     nginx.ingress.kubernetes.io/auth-url: https://docs.numerique.gouv.fr/api/v1.0/documents/retrieve-auth/
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /impress-production-impress-media-storage/$1
+    nginx.ingress.kubernetes.io/rewrite-target: /impress-impress-media-storage/$1
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/upstream-vhost: s3.hedy-lamarr.indiehosters.net
 
