@@ -26,7 +26,7 @@ def test_api_documents_create_anonymous():
     assert not Document.objects.exists()
 
 
-def test_api_documents_create_authenticated():
+def test_api_documents_create_authenticated_success():
     """
     Authenticated users should be able to create documents and should automatically be declared
     as the owner of the newly created document.
@@ -48,6 +48,21 @@ def test_api_documents_create_authenticated():
     document = Document.objects.get()
     assert document.title == "my document"
     assert document.accesses.filter(role="owner", user=user).exists()
+
+
+def test_api_documents_create_authenticated_title_null():
+    """It should be possible to create several documents with a null title."""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory(title=None)
+
+    response = client.post("/api/v1.0/documents/", {}, format="json")
+
+    assert response.status_code == 201
+    assert Document.objects.filter(title__isnull=True).count() == 2
 
 
 def test_api_documents_create_force_id_success():

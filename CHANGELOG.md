@@ -17,6 +17,7 @@ and this project adheres to
 
 ## Changed
 
+- ♻️ Allow null titles on documents for easier creation #234
 - 🛂(backend) stop to list public doc to everyone #234
 - 🚚(frontend) change visibility in share modal #235
 
