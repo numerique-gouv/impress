@@ -358,7 +358,7 @@ class DocumentViewSet(
             try:
                 # Add a trace that the user visited the document (this is needed to include
                 # the document in the user's list view)
-                models.LinkTrace.objects.create(
+                models.LinkTrace.objects.update_or_create(
                     document=instance,
                     user=self.request.user,
                 )
