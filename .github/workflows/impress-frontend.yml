@@ -149,6 +149,10 @@ jobs:
         run: |
           make run
 
+      - name: Start Nginx for the frontend
+        run: |
+          docker compose up --force-recreate -d nginx-front
+
       - name: Apply DRF migrations
         run: |
           make migrate
@@ -222,6 +226,10 @@ jobs:
       - name: Start Docker services
         run: |
           make run
+
+      - name: Start Nginx for the frontend
+        run: |
+          docker compose up --force-recreate -d nginx-front
 
       - name: Apply DRF migrations
         run: |
