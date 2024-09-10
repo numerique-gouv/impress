@@ -13,6 +13,7 @@ import {
 import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
 import { useDate } from '@/hook';
 
+import { DocTagPublic } from './DocTagPublic';
 import { DocToolBox } from './DocToolBox';
 
 interface DocHeaderProps {
@@ -84,18 +85,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
           $wrap="wrap"
         >
           <Box $direction="row" $align="center" $gap="0.5rem 2rem" $wrap="wrap">
-            {doc.is_public && (
-              <Text
-                $weight="bold"
-                $background={colorsTokens()['primary-600']}
-                $color="white"
-                $padding="xtiny"
-                $radius="3px"
-                $size="s"
-              >
-                {t('Public')}
-              </Text>
-            )}
+            <DocTagPublic />
             <Text $size="s" $display="inline">
               {t('Created at')} <strong>{formatDate(doc.created_at)}</strong>
             </Text>
