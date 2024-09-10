@@ -121,6 +121,14 @@ services:
     depends_on:
       - keycloak
 
+  nginx-front:
+    image: nginx:1.25
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/frontend/apps/impress/conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./src/frontend/apps/impress/out:/usr/share/nginx/html
+
   dockerize:
     image: jwilder/dockerize
 
