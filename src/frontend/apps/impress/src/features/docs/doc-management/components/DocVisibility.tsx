@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Card, IconBG } from '@/components';
 
-import { KEY_DOC, KEY_LIST_DOC, useUpdateDoc } from '../api';
+import { KEY_DOC_VISIBILITY, KEY_LIST_DOC, useUpdateDoc } from '../api';
 import { Doc } from '../types';
 
 interface DocVisibilityProps {
@@ -30,7 +30,7 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
         },
       );
     },
-    listInvalideQueries: [KEY_LIST_DOC],
+    listInvalideQueries: [KEY_LIST_DOC, KEY_DOC_VISIBILITY],
   });
 
   return (
