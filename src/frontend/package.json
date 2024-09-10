@@ -25,15 +25,15 @@
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
-    "@blocknote/core": "0.15.6",
-    "@blocknote/mantine": "0.15.6",
-    "@blocknote/react": "0.15.6",
-    "@types/node": "20.16.3",
+    "@blocknote/core": "0.15.7",
+    "@blocknote/mantine": "0.15.7",
+    "@blocknote/react": "0.15.7",
+    "@types/node": "20.16.5",
     "@types/react-dom": "18.3.0",
     "cross-env": "7.0.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "typescript": "5.5.4",
-    "yjs": "13.6.18"
+    "typescript": "5.6.2",
+    "yjs": "13.6.19"
   }
 }
