@@ -8,9 +8,9 @@
   "dependencies": {
     "@next/eslint-plugin-next": "14.2.9",
     "@tanstack/eslint-plugin-query": "5.53.0",
-    "@typescript-eslint/eslint-plugin": "8.5.0",
-    "@typescript-eslint/parser": "8.5.0",
-    "eslint": "8.57.0",
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "eslint": "*",
     "eslint-config-next": "14.2.9",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.30.0",
@@ -19,6 +19,7 @@
     "eslint-plugin-playwright": "1.6.2",
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-react": "7.35.2",
-    "eslint-plugin-testing-library": "6.3.0"
+    "eslint-plugin-testing-library": "6.3.0",
+    "prettier": "3.3.3"
   }
 }
