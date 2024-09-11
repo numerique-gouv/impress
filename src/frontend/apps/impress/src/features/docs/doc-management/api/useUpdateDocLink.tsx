@@ -3,39 +3,42 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { Doc } from '@/features/docs';
 
-export type UpdateDocParams = Pick<Doc, 'id'> &
-  Partial<Pick<Doc, 'content' | 'title'>>;
+export type UpdateDocLinkParams = Pick<Doc, 'id'> &
+  Partial<Pick<Doc, 'link_role' | 'link_reach'>>;
 
-export const updateDoc = async ({
+export const updateDocLink = async ({
   id,
   ...params
-}: UpdateDocParams): Promise<Doc> => {
-  const response = await fetchAPI(`documents/${id}/`, {
-    method: 'PATCH',
+}: UpdateDocLinkParams): Promise<Doc> => {
+  const response = await fetchAPI(`documents/${id}/link-configuration/`, {
+    method: 'PUT',
     body: JSON.stringify({
       ...params,
     }),
   });
 
   if (!response.ok) {
-    throw new APIError('Failed to update the doc', await errorCauses(response));
+    throw new APIError(
+      'Failed to update the doc link',
+      await errorCauses(response),
+    );
   }
 
   return response.json() as Promise<Doc>;
 };
 
-interface UpdateDocProps {
+interface UpdateDocLinkProps {
   onSuccess?: (data: Doc) => void;
   listInvalideQueries?: string[];
 }
 
-export function useUpdateDoc({
+export function useUpdateDocLink({
   onSuccess,
   listInvalideQueries,
-}: UpdateDocProps = {}) {
+}: UpdateDocLinkProps = {}) {
   const queryClient = useQueryClient();
-  return useMutation<Doc, APIError, UpdateDocParams>({
-    mutationFn: updateDoc,
+  return useMutation<Doc, APIError, UpdateDocLinkParams>({
+    mutationFn: updateDocLink,
     onSuccess: (data) => {
       listInvalideQueries?.forEach((queryKey) => {
         void queryClient.resetQueries({

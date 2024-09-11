@@ -1,26 +1,18 @@
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 
 import { Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { KEY_DOC_VISIBILITY, useDoc } from '@/features/docs/doc-management';
+import { Doc, LinkReach } from '@/features/docs/doc-management';
 
-export const DocTagPublic = () => {
+interface DocTagPublicProps {
+  doc: Doc;
+}
+
+export const DocTagPublic = ({ doc }: DocTagPublicProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
-  const {
-    query: { id },
-  } = useRouter();
 
-  const { data: doc } = useDoc(
-    { id: id as string },
-    {
-      enabled: !!id,
-      queryKey: [KEY_DOC_VISIBILITY, { id }],
-    },
-  );
-
-  if (!doc?.is_public) {
+  if (doc?.link_reach !== LinkReach.PUBLIC) {
     return null;
   }
 

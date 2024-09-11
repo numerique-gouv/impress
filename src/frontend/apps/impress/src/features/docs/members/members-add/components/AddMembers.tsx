@@ -138,7 +138,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
   return (
     <Card
       $gap="1rem"
-      $padding="1rem"
+      $padding={{ horizontal: 'small', vertical: 'tiny' }}
       $margin="tiny"
       $direction="row"
       $align="center"

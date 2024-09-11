@@ -189,6 +189,7 @@ export class ApiPlugin implements WorkboxPlugin {
       updated_at: new Date().toISOString(),
       abilities: {
         destroy: true,
+        link_configuration: true,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,

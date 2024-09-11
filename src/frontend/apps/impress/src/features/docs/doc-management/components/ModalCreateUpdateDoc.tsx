@@ -78,7 +78,6 @@ export const ModalUpdateDoc = ({ onClose, doc }: ModalUpdateDocProps) => {
         buttonText: t('Validate the modification'),
         onClose,
         initialTitle: doc.title,
-        isPublic: doc.is_public,
         infoText: t('Enter the new name of the selected document.'),
         titleModal: t('Update document "{{documentTitle}}"', {
           documentTitle: doc.title,

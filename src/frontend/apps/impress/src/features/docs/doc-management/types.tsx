@@ -20,18 +20,26 @@ export enum Role {
   OWNER = 'owner',
 }
 
+export enum LinkReach {
+  RESTRICTED = 'restricted',
+  PUBLIC = 'public',
+  AUTHENTICATED = 'authenticated',
+}
+
 export type Base64 = string;
 
 export interface Doc {
   id: string;
   title: string;
   content: Base64;
-  is_public: boolean;
+  link_reach: LinkReach;
+  link_role: 'reader' | 'editor';
   accesses: Access[];
   created_at: string;
   updated_at: string;
   abilities: {
     destroy: boolean;
+    link_configuration: boolean;
     manage_accesses: boolean;
     partial_update: boolean;
     retrieve: boolean;

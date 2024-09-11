@@ -34,6 +34,7 @@ test.describe('Doc Header', () => {
       ],
       abilities: {
         destroy: true, // Means owner
+        link_configuration: true,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
@@ -42,7 +43,7 @@ test.describe('Doc Header', () => {
         partial_update: true,
         retrieve: true,
       },
-      is_public: true,
+      link_reach: 'public',
       created_at: '2021-09-01T09:00:00Z',
     });
 
@@ -153,6 +154,7 @@ test.describe('Doc Header', () => {
     await mockedDocument(page, {
       abilities: {
         destroy: false, // Means not owner
+        link_configuration: true,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
@@ -184,6 +186,7 @@ test.describe('Doc Header', () => {
     await mockedDocument(page, {
       abilities: {
         destroy: false, // Means not owner
+        link_configuration: false,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
@@ -215,6 +218,7 @@ test.describe('Doc Header', () => {
     await mockedDocument(page, {
       abilities: {
         destroy: false, // Means not owner
+        link_configuration: false,
         versions_destroy: false,
         versions_list: true,
         versions_retrieve: true,

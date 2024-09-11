@@ -46,28 +46,26 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
         onClose={onClose}
         width="70vw"
         $css="min-width: 320px;max-width: 777px;"
-        title={
-          <Card
-            $direction="row"
-            $align="center"
-            $margin={{ horizontal: 'tiny', top: 'none', bottom: 'big' }}
-            $padding="tiny"
-            $gap="1rem"
-          >
-            <Text $isMaterialIcon $size="48px" $theme="primary">
-              share
-            </Text>
-            <Box $align="flex-start">
-              <Text as="h3" $size="26px" $margin="none">
-                {t('Share')}
-              </Text>
-              <Text $size="small" $weight="normal" $textAlign="left">
-                {doc.title}
-              </Text>
-            </Box>
-          </Card>
-        }
       >
+        <Card
+          $direction="row"
+          $align="center"
+          $margin={{ horizontal: 'tiny', top: 'none', bottom: 'big' }}
+          $padding="tiny"
+          $gap="1rem"
+        >
+          <Text $isMaterialIcon $size="48px" $theme="primary">
+            share
+          </Text>
+          <Box $align="flex-start">
+            <Text as="h3" $size="26px" $margin="none">
+              {t('Share')}
+            </Text>
+            <Text $size="small" $weight="normal" $textAlign="left">
+              {doc.title}
+            </Text>
+          </Box>
+        </Card>
         <DocVisibility doc={doc} />
         <AddMembers doc={doc} currentRole={currentDocRole(doc.abilities)} />
         <InvitationList doc={doc} />

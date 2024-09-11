@@ -85,7 +85,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
           $wrap="wrap"
         >
           <Box $direction="row" $align="center" $gap="0.5rem 2rem" $wrap="wrap">
-            <DocTagPublic />
+            <DocTagPublic doc={doc} />
             <Text $size="s" $display="inline">
               {t('Created at')} <strong>{formatDate(doc.created_at)}</strong>
             </Text>

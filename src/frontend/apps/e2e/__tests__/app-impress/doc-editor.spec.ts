@@ -136,6 +136,7 @@ test.describe('Doc Editor', () => {
     await mockedDocument(page, {
       abilities: {
         destroy: false, // Means not owner
+        link_configuration: false,
         versions_destroy: false,
         versions_list: true,
         versions_retrieve: true,
