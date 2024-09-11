@@ -15,7 +15,8 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@hocuspocus/server": "2.13.5"
+    "@hocuspocus/server": "2.13.5",
+    "y-protocols": "1.0.6"
   },
   "devDependencies": {
     "@types/node": "*",
