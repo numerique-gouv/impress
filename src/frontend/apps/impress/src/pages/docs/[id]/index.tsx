@@ -1,7 +1,7 @@
 import { Loader } from '@openfun/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
@@ -31,7 +31,9 @@ interface DocProps {
 }
 
 const DocPage = ({ id }: DocProps) => {
-  const { data: doc, isLoading, isError, error } = useDoc({ id });
+  const { data: docQuery, isError, error } = useDoc({ id });
+  const [doc, setDoc] = useState(docQuery);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +43,14 @@ const DocPage = ({ id }: DocProps) => {
       }, 100);
     }
   }, [doc?.title]);
+
+  useEffect(() => {
+    if (!docQuery) {
+      return;
+    }
+
+    setDoc(docQuery);
+  }, [docQuery]);
 
   if (isError && error) {
     if (error.status === 404) {
@@ -64,7 +74,7 @@ const DocPage = ({ id }: DocProps) => {
     );
   }
 
-  if (isLoading || !doc) {
+  if (!doc) {
     return (
       <Box $align="center" $justify="center" $height="100%">
         <Loader />

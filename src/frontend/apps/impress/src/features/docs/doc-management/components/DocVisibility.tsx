@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Card, IconBG } from '@/components';
 
-import { KEY_DOC_VISIBILITY, KEY_LIST_DOC, useUpdateDoc } from '../api';
-import { Doc } from '../types';
+import { KEY_DOC, KEY_LIST_DOC, useUpdateDocLink } from '../api';
+import { Doc, LinkReach } from '../types';
 
 interface DocVisibilityProps {
   doc: Doc;
@@ -18,9 +18,11 @@ interface DocVisibilityProps {
 
 export const DocVisibility = ({ doc }: DocVisibilityProps) => {
   const { t } = useTranslation();
-  const [docPublic, setDocPublic] = useState(doc.is_public);
+  const [docPublic, setDocPublic] = useState(
+    doc.link_reach === LinkReach.PUBLIC,
+  );
   const { toast } = useToastProvider();
-  const api = useUpdateDoc({
+  const api = useUpdateDocLink({
     onSuccess: () => {
       toast(
         t('The document visiblitity has been updated.'),
@@ -30,13 +32,13 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
         },
       );
     },
-    listInvalideQueries: [KEY_LIST_DOC, KEY_DOC_VISIBILITY],
+    listInvalideQueries: [KEY_LIST_DOC, KEY_DOC],
   });
 
   return (
     <Card
       $margin="tiny"
-      $padding="small"
+      $padding={{ horizontal: 'small', vertical: 'tiny' }}
       aria-label={t('Doc visibility card')}
       $direction="row"
       $align="center"
@@ -50,10 +52,12 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
           onChange={() => {
             api.mutate({
               id: doc.id,
-              is_public: !docPublic,
+              link_reach: docPublic ? LinkReach.RESTRICTED : LinkReach.PUBLIC,
+              link_role: 'reader',
             });
             setDocPublic(!docPublic);
           }}
+          disabled={!doc.abilities.link_configuration}
           text={t(
             docPublic
               ? 'Anyone on the internet with the link can view'
