@@ -8,6 +8,7 @@ import { useCunninghamTheme } from '@/cunningham';
 import {
   Doc,
   DocsOrdering,
+  LinkReach,
   currentDocRole,
   isDocsOrdering,
   useDocs,
@@ -109,7 +110,7 @@ export const DocsGrid = () => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  {row.is_public && (
+                  {row.link_reach === LinkReach.PUBLIC && (
                     <Text
                       $weight="bold"
                       $background={colorsTokens()['primary-600']}
@@ -117,7 +118,7 @@ export const DocsGrid = () => {
                       $padding="xtiny"
                       $radius="3px"
                     >
-                      {row.is_public ? t('Public') : ''}
+                      {t('Public')}
                     </Text>
                   )}
                 </StyledLink>

@@ -98,7 +98,7 @@ export const InvitationList = ({ doc }: InvitationListProps) => {
     <Card
       $margin="tiny"
       $padding="tiny"
-      $maxHeight="60%"
+      $maxHeight="40%"
       $overflow="auto"
       aria-label={t('List invitation card')}
     >

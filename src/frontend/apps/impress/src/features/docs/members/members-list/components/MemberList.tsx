@@ -93,7 +93,7 @@ export const MemberList = ({ doc }: MemberListProps) => {
     <Card
       $margin="tiny"
       $padding="tiny"
-      $maxHeight="85%"
+      $maxHeight="69%"
       $overflow="auto"
       aria-label={t('List members card')}
     >

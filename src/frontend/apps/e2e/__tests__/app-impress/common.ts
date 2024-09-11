@@ -164,6 +164,7 @@ export const mockedDocument = async (page: Page, json: object) => {
           accesses: [],
           abilities: {
             destroy: false, // Means not owner
+            link_configuration: false,
             versions_destroy: false,
             versions_list: true,
             versions_retrieve: true,
@@ -172,7 +173,7 @@ export const mockedDocument = async (page: Page, json: object) => {
             partial_update: false, // Means not editor
             retrieve: true,
           },
-          is_public: false,
+          link_reach: 'restricted',
           created_at: '2021-09-01T09:00:00Z',
           ...json,
         },
