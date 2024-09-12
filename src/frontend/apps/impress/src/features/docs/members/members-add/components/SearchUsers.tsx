@@ -145,7 +145,8 @@ export const SearchUsers = ({
         control: (base) => ({
           ...base,
           minHeight: '45px',
-          borderColor: colorsTokens()['greyscale-500'],
+          borderColor: colorsTokens()['greyscale-300'],
+          borderRadius: '8px',
         }),
         input: (base) => ({
           ...base,

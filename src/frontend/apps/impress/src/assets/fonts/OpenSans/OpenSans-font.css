@@ -16,3 +16,15 @@
   src: url('OpenSans-Bold.woff2') format('woff2');
   font-weight: 700;
 }
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('OpenSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('OpenSans-Bold.woff2') format('woff2');
+  font-weight: 500;
+}

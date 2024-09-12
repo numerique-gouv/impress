@@ -20,6 +20,7 @@ export const DocsGridContainer = () => {
               onClick={() => {
                 setIsModalCreateOpen(true);
               }}
+              icon={<span className="material-icons">add</span>}
             >
               {t('Create a new document')}
             </Button>

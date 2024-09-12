@@ -32,6 +32,7 @@ export const ChooseRole = ({
       onChange={(evt) => setRole(evt.target.value as Role)}
       disabled={disabled}
       value={defaultRole}
+      fullWidth={true}
     />
   );
 };

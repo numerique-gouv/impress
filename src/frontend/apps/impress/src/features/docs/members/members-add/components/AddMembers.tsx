@@ -146,8 +146,8 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
     >
       <IconBG iconName="group_add" />
       <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 70%;">
-        <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
-          <Box $css="flex: auto;" $width="15rem">
+        <Box $gap="1rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
+          <Box $css="flex-shrink: 0;" $width="15rem">
             <SearchUsers
               key={resetKey + 1}
               doc={doc}
@@ -156,7 +156,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
               disabled={isPending}
             />
           </Box>
-          <Box $css="flex: auto;">
+          <Box $css="width: 50%; flex-shrink: 1;">
             <ChooseRole
               key={resetKey}
               currentRole={currentRole}

@@ -327,4 +327,12 @@
   .c__datagrid__table__container > table tbody tr {
     border: 1px var(--c--theme--colors--greyscale-100) solid;
   }
+
+  .c__button--with-icon--left {
+    padding: 0 1.5rem 0 var(--c--theme--spacings--s);
+  }
+
+  .c__button--medium {
+    padding: 0 var(--c--theme--spacings--s);
+  }
 }
