@@ -37,6 +37,13 @@
   font-size: var(--c--components--datagrid--header--size);
 }
 
+.c__datagrid__table__container > table {
+  th:first-child,
+  td:first-child {
+    padding-left: 24px;
+  }
+}
+
 /**
  * Modal
 */

@@ -81,13 +81,13 @@
   --c--theme--font--sizes--ml: 0.938rem;
   --c--theme--font--sizes--xl: 1.5rem;
   --c--theme--font--sizes--t: 0.6875rem;
-  --c--theme--font--weights--thin: 100;
+  --c--theme--font--weights--thin: 200;
   --c--theme--font--weights--light: 300;
   --c--theme--font--weights--regular: 400;
   --c--theme--font--weights--medium: 500;
   --c--theme--font--weights--bold: 600;
-  --c--theme--font--weights--extrabold: 800;
-  --c--theme--font--weights--black: 900;
+  --c--theme--font--weights--extrabold: 700;
+  --c--theme--font--weights--black: 800;
   --c--theme--font--families--base: 'Roboto Flex Variable', sans-serif;
   --c--theme--font--families--accent: 'Roboto Flex Variable', sans-serif;
   --c--theme--font--letterspacings--h1: normal;

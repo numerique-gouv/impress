@@ -90,13 +90,13 @@ export const tokens = {
             t: '0.6875rem',
           },
           weights: {
-            thin: 100,
+            thin: 200,
             light: 300,
             regular: 400,
             medium: 500,
             bold: 600,
-            extrabold: 800,
-            black: 900,
+            extrabold: 700,
+            black: 800,
           },
           families: {
             base: '"Roboto Flex Variable", sans-serif',

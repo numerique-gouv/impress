@@ -1,9 +1,9 @@
 import { DataGrid, SortModel, usePagination } from '@openfun/cunningham-react';
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 
-import { Card, StyledLink, Text, TextErrors } from '@/components';
+import { Box, Card, StyledLink, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import {
   Doc,
@@ -45,7 +45,7 @@ function formatSortModel(sortModel: SortModelItem): DocsOrdering | undefined {
   }
 }
 
-export const DocsGrid = () => {
+export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
   const { colorsTokens } = useCunninghamTheme();
   const transRole = useTransRole();
   const { t } = useTranslation();
@@ -83,26 +83,48 @@ export const DocsGrid = () => {
 
   return (
     <Card
-      $padding={{ bottom: 'small', horizontal: 'big' }}
-      $margin={{ all: 'big', top: 'none' }}
+      $margin={{ all: 'big' }}
       $overflow="auto"
       aria-label={t(`Datagrid of the documents page {{page}}`, { page })}
     >
       <DocsGridStyle />
-      <Text
-        $weight="bold"
-        as="h2"
-        $theme="primary"
-        $margin={{ bottom: 'none' }}
-        $variation="600"
+      <Box
+        style={{
+          padding: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
       >
-        {t('Documents')}
-      </Text>
-
+        <Text
+          $weight="bold"
+          as="h2"
+          $theme="primary"
+          $margin="none"
+          $variation="600"
+        >
+          {t('Documents')}
+        </Text>
+        <div>{topSlot}</div>
+      </Box>
       {error && <TextErrors causes={error.cause} />}
 
       <DataGrid
         columns={[
+          {
+            headerName: t('Document name'),
+            field: 'title',
+            renderCell: ({ row }) => {
+              return (
+                <StyledLink href={`/docs/${row.id}`}>
+                  <Text $weight="bold" $theme="greyscale" $variation="900">
+                    {row.title}
+                  </Text>
+                </StyledLink>
+              );
+            },
+          },
           {
             headerName: '',
             id: 'visibility',
@@ -121,19 +143,6 @@ export const DocsGrid = () => {
                       {row.is_public ? t('Public') : ''}
                     </Text>
                   )}
-                </StyledLink>
-              );
-            },
-          },
-          {
-            headerName: t('Document name'),
-            field: 'title',
-            renderCell: ({ row }) => {
-              return (
-                <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold" $theme="greyscale" $variation="900">
-                    {row.title}
-                  </Text>
                 </StyledLink>
               );
             },
