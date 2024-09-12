@@ -386,6 +386,52 @@ const config = {
         },
       },
     },
+    openDesk: {
+      theme: {
+        colors: {
+          'primary-text': '#4519C2',
+          'primary-100': '#F7F5FF',
+          'primary-200': '#ECE7FE',
+          'primary-300': '#DCD2FE',
+          'primary-400': '#C8B9FD',
+          'primary-500': '#8E75FA',
+          'primary-600': '#7051FA',
+          'primary-700': '#571EFA',
+          'primary-800': '#4519C2',
+          'primary-900': '#341291',
+
+          'secondary-text': '#008A7B',
+          'secondary-100': '#EDFDFB',
+          'secondary-200': '#BFF9F2',
+          'secondary-300': '#71EFE1',
+          'secondary-400': '#00E6CC',
+          'secondary-500': '#00A896',
+          'secondary-600': '#008A7B',
+          'secondary-700': '#006C60',
+          'secondary-800': '#00564D',
+          'secondary-900': '#004039',
+        },
+      },
+      components: {
+        alert: {
+          'border-radius': '0',
+        },
+        button: {
+          'medium-height': '48px',
+          'border-radius': '4px',
+          primary: {
+            background: {
+              color: 'var(--c--theme--colors--primary-text)',
+              'color-hover': '#1212ff',
+              'color-active': '#2323ff',
+            },
+            color: '#ffffff',
+            'color-hover': '#ffffff',
+            'color-active': '#ffffff',
+          },
+        },
+      },
+    },
   },
 };
 
