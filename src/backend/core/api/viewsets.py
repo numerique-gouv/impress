@@ -1,5 +1,6 @@
 """API endpoints"""
 
+import json
 import os
 import re
 import uuid
@@ -17,6 +18,9 @@ from django.db.models import (
 from django.http import Http404
 
 from botocore.exceptions import ClientError
+
+from openai import OpenAI
+
 from rest_framework import (
     decorators,
     exceptions,
@@ -371,8 +375,7 @@ class DocumentViewSet(
     @decorators.action(detail=True, methods=["post"], url_path="ai")
     def ai(self, request, *args, **kwargs):
         """
-        Return the document's versions but only those created after the user got access
-        to the document
+        Process text using AI based on the specified action.
         """
         if not request.user.is_authenticated:
             raise exceptions.PermissionDenied("Authentication required.")
@@ -380,7 +383,26 @@ class DocumentViewSet(
         action = request.data.get("action")
         text = request.data.get("text")
 
-        return drf_response.Response(text.upper())
+        client = OpenAI(
+            base_url = settings.AI_BASE_URL,
+            api_key= settings.AI_API_KEY
+        )
+
+        if action == "rephrase":
+            try:
+                response = client.chat.completions.create(
+                    model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+                    messages=[
+                        {"role": "system", "content": 'Tu es un correcteur de texte. Corrige uniquement la grammaire et l\'orthographe de la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase_corrigee": "ta phrase corrigée"}. Ne donne aucune autre information.'},
+                        {"role": "user", "content": f'{{"phrase": "{text}"}}'},
+                    ]
+                )
+                corrected_response = json.loads(response.choices[0].message.content)
+                return drf_response.Response(corrected_response['phrase_corrigee'])
+            except (json.JSONDecodeError, KeyError) as e:
+                return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
+        else:
+            return drf_response.Response({"error": "Invalid action"}, status=400)
 
 
     @decorators.action(detail=True, methods=["get"], url_path="versions")

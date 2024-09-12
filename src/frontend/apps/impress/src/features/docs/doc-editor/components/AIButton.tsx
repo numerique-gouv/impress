@@ -36,6 +36,8 @@ export function AIButton({ doc }: AIButtonProps) {
       action,
     });
 
+    console.log('AI response:', newText);
+
     editor.insertInlineContent([
       newText,
       //{ type: 'text', text: 'World', styles: { bold: true } },

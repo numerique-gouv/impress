@@ -387,6 +387,12 @@ class Base(Configuration):
     ALLOW_LOGOUT_GET_METHOD = values.BooleanValue(
         default=True, environ_name="ALLOW_LOGOUT_GET_METHOD", environ_prefix=None
     )
+    AI_BASE_URL = values.Value(
+        None, environ_name="AI_BASE_URL", environ_prefix=None
+    )
+    AI_API_KEY = values.Value(
+        None, environ_name="AI_API_KEY", environ_prefix=None
+    )
 
     # pylint: disable=invalid-name
     @property
