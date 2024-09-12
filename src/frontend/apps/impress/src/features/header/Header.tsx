@@ -78,7 +78,13 @@ export const Header = () => {
               >
                 BETA
               </Text>
-              <Text $margin="none" as="h2" $theme="primary" $zIndex={1}>
+              <Text
+                $margin="none"
+                as="h2"
+                $theme="primary"
+                $variation="800"
+                $zIndex={1}
+              >
                 {t('Docs')}
               </Text>
             </Box>

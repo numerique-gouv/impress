@@ -21,6 +21,10 @@ const config = {
             black: 900,
           },
         },
+        spacings: {
+          '0': '0',
+          none: '0',
+        },
       },
     },
     dsfr: {
@@ -101,6 +105,12 @@ const config = {
             accent: 'Marianne',
             base: 'Marianne',
           },
+        },
+        logo: {
+          src: '/assets/logo-gouv.svg',
+          widthHeader: '110px',
+          widthFooter: '220px',
+          alt: 'Gouvernement Logo',
         },
       },
       components: {

@@ -84,7 +84,9 @@ export const Footer = () => {
                   }
                 `}
               >
-                <Text $weight="bold">{label}</Text>
+                <Text $weight="bold" $theme="greyscale" $variation="800">
+                  {label}
+                </Text>
                 <IconLink width={18} />
               </StyledLink>
             ))}

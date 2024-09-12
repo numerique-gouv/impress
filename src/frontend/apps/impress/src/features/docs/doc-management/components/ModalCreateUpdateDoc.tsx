@@ -145,7 +145,7 @@ const ModalDoc = <T,>({
       size={ModalSize.MEDIUM}
       title={
         <Box $align="center" $gap="1rem" $margin={{ bottom: '2.5rem' }}>
-          <IconEdit width={48} color={colorsTokens()['primary-text']} />
+          <IconEdit width={48} color={colorsTokens()['primary-8 00']} />
           <Text as="h2" $size="h3" $margin="none">
             {titleModal}
           </Text>

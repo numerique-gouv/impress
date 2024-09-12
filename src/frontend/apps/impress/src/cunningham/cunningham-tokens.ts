@@ -115,12 +115,14 @@ export const tokens = {
           },
         },
         spacings: {
+          '0': '0',
           xl: '4rem',
           l: '3rem',
           b: '1.625rem',
           s: '1rem',
           t: '0.5rem',
           st: '0.25rem',
+          none: '0',
         },
         transitions: {
           'ease-in': 'cubic-bezier(0.32, 0, 0.67, 0)',
@@ -264,6 +266,12 @@ export const tokens = {
           'danger-900': '#3a1c1c',
         },
         font: { families: { accent: 'Marianne', base: 'Marianne' } },
+        logo: {
+          src: '/assets/logo-gouv.svg',
+          widthHeader: '110px',
+          widthFooter: '220px',
+          alt: 'Gouvernement Logo',
+        },
       },
       components: {
         alert: {
@@ -386,7 +394,7 @@ export const tokens = {
             background: {
               color: 'var(--c--theme--colors--primary-700)',
               'color-hover': 'var(--c--theme--colors--primary-900)',
-              'color-active': '#2323ff',
+              'color-active': 'var(--c--theme--colors--primary-900)',
             },
             color: '#ffffff',
             'color-hover': '#ffffff',

@@ -94,6 +94,7 @@ export const DocsGrid = () => {
         as="h2"
         $theme="primary"
         $margin={{ bottom: 'none' }}
+        $variation="600"
       >
         {t('Documents')}
       </Text>
@@ -130,7 +131,7 @@ export const DocsGrid = () => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold" $theme="primary">
+                  <Text $weight="bold" $theme="primary" $variation="900">
                     {row.title}
                   </Text>
                 </StyledLink>
@@ -143,7 +144,9 @@ export const DocsGrid = () => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold">{formatDate(row.created_at)}</Text>
+                  <Text $weight="bold" $theme="primary" $variation="900">
+                    {formatDate(row.created_at)}
+                  </Text>
                 </StyledLink>
               );
             },
@@ -154,7 +157,9 @@ export const DocsGrid = () => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold">{formatDate(row.updated_at)}</Text>
+                  <Text $weight="bold" $theme="primary" $variation="900">
+                    {formatDate(row.updated_at)}
+                  </Text>
                 </StyledLink>
               );
             },
@@ -165,7 +170,7 @@ export const DocsGrid = () => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold">
+                  <Text $weight="bold" $theme="primary" $variation="900">
                     {transRole(currentDocRole(row.abilities))}
                   </Text>
                 </StyledLink>
@@ -178,7 +183,9 @@ export const DocsGrid = () => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold">{row.accesses.length}</Text>
+                  <Text $weight="bold" $theme="primary" $variation="900">
+                    {row.accesses.length}
+                  </Text>
                 </StyledLink>
               );
             },

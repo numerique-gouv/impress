@@ -99,12 +99,14 @@
   --c--theme--font--letterspacings--l: normal;
   --c--theme--font--letterspacings--m: normal;
   --c--theme--font--letterspacings--s: normal;
+  --c--theme--spacings--0: 0;
   --c--theme--spacings--xl: 4rem;
   --c--theme--spacings--l: 3rem;
   --c--theme--spacings--b: 1.625rem;
   --c--theme--spacings--s: 1rem;
   --c--theme--spacings--t: 0.5rem;
   --c--theme--spacings--st: 0.25rem;
+  --c--theme--spacings--none: 0;
   --c--theme--transitions--ease-in: cubic-bezier(0.32, 0, 0.67, 0);
   --c--theme--transitions--ease-out: cubic-bezier(0.33, 1, 0.68, 1);
   --c--theme--transitions--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -236,6 +238,10 @@
   --c--theme--colors--danger-900: #3a1c1c;
   --c--theme--font--families--accent: Marianne;
   --c--theme--font--families--base: Marianne;
+  --c--theme--logo--src: /assets/logo-gouv.svg;
+  --c--theme--logo--widthHeader: 110px;
+  --c--theme--logo--widthFooter: 220px;
+  --c--theme--logo--alt: Gouvernement Logo;
   --c--components--alert--border-radius: 0;
   --c--components--alert--background-color: var(
     --c--theme--colors--greyscale-000
@@ -363,7 +369,9 @@
   --c--components--button--primary--background--color-hover: var(
     --c--theme--colors--primary-900
   );
-  --c--components--button--primary--background--color-active: #2323ff;
+  --c--components--button--primary--background--color-active: var(
+    --c--theme--colors--primary-900
+  );
   --c--components--button--primary--color: #ffffff;
   --c--components--button--primary--color-hover: #ffffff;
   --c--components--button--primary--color-active: #ffffff;
@@ -889,6 +897,21 @@
 .f-accent {
   font-family: var(--c--theme--font--families--accent);
 }
+.m-0 {
+  margin: var(--c--theme--spacings--0);
+}
+.mb-0 {
+  margin-bottom: var(--c--theme--spacings--0);
+}
+.mt-0 {
+  margin-top: var(--c--theme--spacings--0);
+}
+.ml-0 {
+  margin-left: var(--c--theme--spacings--0);
+}
+.mr-0 {
+  margin-right: var(--c--theme--spacings--0);
+}
 .m-xl {
   margin: var(--c--theme--spacings--xl);
 }
@@ -979,6 +1002,36 @@
 .mr-st {
   margin-right: var(--c--theme--spacings--st);
 }
+.m-none {
+  margin: var(--c--theme--spacings--none);
+}
+.mb-none {
+  margin-bottom: var(--c--theme--spacings--none);
+}
+.mt-none {
+  margin-top: var(--c--theme--spacings--none);
+}
+.ml-none {
+  margin-left: var(--c--theme--spacings--none);
+}
+.mr-none {
+  margin-right: var(--c--theme--spacings--none);
+}
+.p-0 {
+  padding: var(--c--theme--spacings--0);
+}
+.pb-0 {
+  padding-bottom: var(--c--theme--spacings--0);
+}
+.pt-0 {
+  padding-top: var(--c--theme--spacings--0);
+}
+.pl-0 {
+  padding-left: var(--c--theme--spacings--0);
+}
+.pr-0 {
+  padding-right: var(--c--theme--spacings--0);
+}
 .p-xl {
   padding: var(--c--theme--spacings--xl);
 }
@@ -1068,4 +1121,19 @@
 }
 .pr-st {
   padding-right: var(--c--theme--spacings--st);
+}
+.p-none {
+  padding: var(--c--theme--spacings--none);
+}
+.pb-none {
+  padding-bottom: var(--c--theme--spacings--none);
+}
+.pt-none {
+  padding-top: var(--c--theme--spacings--none);
+}
+.pl-none {
+  padding-left: var(--c--theme--spacings--none);
+}
+.pr-none {
+  padding-right: var(--c--theme--spacings--none);
 }
