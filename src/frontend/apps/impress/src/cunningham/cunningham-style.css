@@ -28,6 +28,16 @@
 }
 
 /**
+ * DataGrid
+*/
+
+.c__datagrid__table__container > table th .c__datagrid__header {
+  color: var(--c--components--datagrid--header--color);
+  font-weight: var(--c--components--datagrid--header--weight);
+  font-size: var(--c--components--datagrid--header--size);
+}
+
+/**
  * Modal
 */
 .c__modal__backdrop {
@@ -49,6 +59,10 @@
 .c__toast__container {
   z-index: 10000;
 }
+
+/**
+ * DataGrid
+*/
 
 .cunningham-theme--dsfr {
   .c__input,

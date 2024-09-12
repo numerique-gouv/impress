@@ -363,8 +363,13 @@
   --c--theme--colors--secondary-900: #004039;
   --c--theme--font--families--accent: Open Sans;
   --c--theme--font--families--base: Open Sans;
+  --c--theme--logo--src: /assets/logo-opendesk.svg;
+  --c--theme--logo--widthHeader: 110px;
+  --c--theme--logo--widthFooter: 220px;
+  --c--theme--logo--alt: Gouvernement Logo;
   --c--components--button--medium-height: 48px;
   --c--components--button--border-radius: 8px;
+  --c--components--button--font-weight: 600;
   --c--components--button--primary--background--color: var(
     --c--theme--colors--primary-700
   );
@@ -403,6 +408,10 @@
   --c--components--button--tertiary-text--color-hover: var(
     --c--theme--colors--primary-text
   );
+  --c--components--datagrid--header--color: var(
+    --c--theme--colors--primary-600
+  );
+  --c--components--datagrid--header--size: var(--c--theme--font--sizes--s);
 }
 .clr-secondary-text {
   color: var(--c--theme--colors--secondary-text);

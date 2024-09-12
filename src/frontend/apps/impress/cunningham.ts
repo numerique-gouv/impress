@@ -234,14 +234,21 @@ const config = {
         font: {
           families: {
             accent: 'Open Sans',
-            base: 'Marianne',
+            base: 'Open Sans',
           },
+        },
+        logo: {
+          src: '/assets/logo-opendesk.svg',
+          widthHeader: '110px',
+          widthFooter: '220px',
+          alt: 'Gouvernement Logo',
         },
       },
       components: {
         button: {
           'medium-height': '48px',
           'border-radius': '8px',
+          'font-weight': '600',
           primary: {
             background: {
               color: 'var(--c--theme--colors--primary-700)',
@@ -275,6 +282,12 @@ const config = {
               'color-hover': 'var(--c--theme--colors--primary-100)',
             },
             'color-hover': 'var(--c--theme--colors--primary-text)',
+          },
+        },
+        datagrid: {
+          header: {
+            color: 'var(--c--theme--colors--primary-600)',
+            size: 'var(--c--theme--font--sizes--s)',
           },
         },
       },
