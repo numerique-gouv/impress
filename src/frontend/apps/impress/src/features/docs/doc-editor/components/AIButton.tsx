@@ -5,34 +5,19 @@ import {
 } from '@blocknote/react';
 import { useMemo } from 'react';
 
-import { BoxButton } from '@/components';
+import { Box, BoxButton } from '@/components';
 
 import { Doc } from '../../doc-management';
 import { AIActions, useAIRewrite } from '../api/useAIRewrite';
 
-interface AIButtonProps {
+interface AIGroupButtonProps {
   doc: Doc;
 }
 
-export function AIButton({ doc }: AIButtonProps) {
+export function AIGroupButton({ doc }: AIGroupButtonProps) {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
   const selectedBlocks = useSelectedBlocks(editor);
-  const { mutateAsync: requestAI } = useAIRewrite();
-
-  const handleRephraseAI = async (action: AIActions) => {
-    const textCursorPosition = editor.getSelectedText();
-    const newText = await requestAI({
-      docId: doc.id,
-      text: textCursorPosition,
-      action,
-    });
-
-    editor.insertInlineContent([
-      newText,
-      //{ type: 'text', text: 'World', styles: { bold: true } },
-    ]);
-  };
 
   const show = useMemo(() => {
     return !!selectedBlocks.find((block) => block.content !== undefined);
@@ -81,21 +66,60 @@ export function AIButton({ doc }: AIButtonProps) {
             action: 'translate_de',
           },
         ].map(({ label, action }) => (
-          <BoxButton
+          <AIButton
             key={`button-${action}`}
-            $padding={{ horizontal: 'tiny', vertical: 'tiny' }}
-            $margin="auto"
-            onClick={() => void handleRephraseAI(action as AIActions)}
-            $hasTransition
-            $radius="6px"
-            $width="100%"
-            $align="center"
-            $css="&:hover{background-color: #f2f8ff;}text-transform: capitalize!important;"
-          >
-            {label}
-          </BoxButton>
+            action={action as AIActions}
+            label={label}
+            docId={doc.id}
+          />
         ))}
       </Components.Generic.Menu.Dropdown>
     </Components.Generic.Menu.Root>
   );
 }
+
+interface AIButtonProps {
+  action: AIActions;
+  label: string;
+  docId: Doc['id'];
+}
+
+const AIButton = ({ action, label, docId }: AIButtonProps) => {
+  const editor = useBlockNoteEditor();
+  const { mutateAsync: requestAI, isPending } = useAIRewrite();
+
+  const handleRephraseAI = async (action: AIActions) => {
+    const textCursorPosition = editor.getSelectedText();
+
+    const newText = await requestAI({
+      docId,
+      text: textCursorPosition,
+      action,
+    });
+
+    editor.insertInlineContent([
+      newText,
+      //{ type: 'text', text: 'World', styles: { bold: true } },
+    ]);
+  };
+
+  return (
+    <BoxButton
+      key={`button-${action}`}
+      $padding={{ horizontal: 'tiny', vertical: 'tiny' }}
+      $margin="auto"
+      onClick={() => void handleRephraseAI(action)}
+      $hasTransition
+      $radius="6px"
+      $width="100%"
+      $justify="center"
+      $align="center"
+      $gap="1rem"
+      $css="&:hover{background-color: #f2f8ff;}text-transform: capitalize!important;"
+      $direction="row"
+    >
+      {label}
+      {isPending && <Box className="loader" />}
+    </BoxButton>
+  );
+};

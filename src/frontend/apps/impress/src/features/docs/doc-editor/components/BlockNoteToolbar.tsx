@@ -19,7 +19,7 @@ import React, { useMemo } from 'react';
 import { Doc } from '../../doc-management';
 
 // import { AIButton } from './AIButton';
-import { AIButton } from './AIButton';
+import { AIGroupButton } from './AIButton';
 
 interface BlockNoteToolbarProps {
   doc: Doc;
@@ -33,7 +33,7 @@ export const BlockNoteToolbar = ({ doc }: BlockNoteToolbarProps) => {
           <BlockTypeSelect key="blockTypeSelect" />
 
           {/* Extra button to convert from markdown to json */}
-          <AIButton key="AIButton" doc={doc} />
+          <AIGroupButton key="AIButton" doc={doc} />
 
           {/* Extra button to convert from markdown to json */}
           <MarkdownButton key="customButton" />
