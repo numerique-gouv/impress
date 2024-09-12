@@ -92,6 +92,7 @@ bootstrap: \
 # -- Docker/compose
 build: ## build the app-dev container
 	@$(COMPOSE) build app-dev --no-cache
+	@$(COMPOSE) build frontend-dev --no-cache
 .PHONY: build
 
 down: ## stop and remove containers, networks, images, and volumes
