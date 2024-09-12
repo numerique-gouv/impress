@@ -1,4 +1,4 @@
-import { Block, BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
+import { Block, BlockNoteEditor as BlockNoteEditorCore, PartialBlock } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -104,19 +104,25 @@ export const BlockNoteContent = ({
     // TODO decrypt doc.content
     //localStorage.getItem('KEY');
 
-    const docId = 'uuid-du-doc';
-    const purpose = `doc:${docId}`;
+    const docId = doc.id;
+    const purpose = `docs:${docId}`;
     const key = e2eClient.findKeyByPurpose(purpose);
+    console.log('purpose', purpose, 'key', key);
+    let plaintextContent: Array<PartialBlock> | undefined;
     if (!key) {
       alert('probleme de key');
-      //  return;
+      return;
     } else {
-      const decryptedMessage = e2eClient.decrypt(
-        doc.content,
-        key.keychainFingerprint,
-      );
+      if (doc.content) {
+        plaintextContent = JSON.parse(e2eClient.decrypt(
+          doc.content,
+          key.keychainFingerprint,
+        ) as string) as Array<PartialBlock>;
 
-      console.log('decryptedMessage', decryptedMessage);
+        console.log('decryptedMessage', plaintextContent);
+      } else {
+        plaintextContent = undefined;
+      }
     }
 
     return BlockNoteEditorCore.create({
@@ -129,10 +135,11 @@ export const BlockNoteContent = ({
       //   },
       // },
       uploadFile,
-      initialContent: JSON.parse(doc.content),
+      initialContent: plaintextContent,
     });
   }, [doc.content, storedEditor, uploadFile]);
 
+  console.log("useSaveDoc", doc.id, provider.document, canSave, editor);
   useSaveDoc(doc.id, provider.document, canSave, editor);
 
   useEffect(() => {
