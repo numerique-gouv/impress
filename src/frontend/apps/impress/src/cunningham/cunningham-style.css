@@ -208,14 +208,6 @@
     );
   }
 
-  .c__button--primary-text:hover,
-  .c__button--primary-text:focus-visible {
-    background-color: var(
-      --c--components--button--primary-text--background--color-hover
-    );
-    color: var(--c--components--button--primary-text--color-hover);
-  }
-
   .c__button--tertiary:disabled {
     background-color: var(--c--theme--colors--greyscale-100);
   }

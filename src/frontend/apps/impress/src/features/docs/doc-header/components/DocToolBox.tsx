@@ -65,7 +65,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
               icon={<span className="material-icons">edit</span>}
               size="small"
             >
-              <Text $theme="primary">{t('Update document')}</Text>
+              <Text>{t('Update document')}</Text>
             </Button>
           )}
           {doc.abilities.destroy && (
@@ -78,7 +78,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
               icon={<span className="material-icons">delete</span>}
               size="small"
             >
-              <Text $theme="primary">{t('Delete document')}</Text>
+              <Text>{t('Delete document')}</Text>
             </Button>
           )}
           <Button
@@ -91,7 +91,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
             icon={<span className="material-icons">summarize</span>}
             size="small"
           >
-            <Text $theme="primary">{t('Summary')}</Text>
+            <Text>{t('Summary')}</Text>
           </Button>
           <Button
             onClick={() => {
@@ -102,7 +102,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
             icon={<span className="material-icons">file_download</span>}
             size="small"
           >
-            <Text $theme="primary">{t('Export')}</Text>
+            <Text>{t('Export')}</Text>
           </Button>
         </Box>
       </DropButton>
