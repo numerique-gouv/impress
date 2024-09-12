@@ -54,7 +54,12 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
             $padding="tiny"
             $gap="1rem"
           >
-            <Text $isMaterialIcon $size="48px" $theme="primary" $variation="600">
+            <Text
+              $isMaterialIcon
+              $size="48px"
+              $theme="primary"
+              $variation="600"
+            >
               share
             </Text>
             <Box $align="flex-start">

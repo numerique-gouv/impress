@@ -385,11 +385,12 @@ export const tokens = {
           'secondary-800': '#00564D',
           'secondary-900': '#004039',
         },
+        font: { families: { accent: 'Open Sans', base: 'Open Sans' } },
       },
       components: {
         button: {
           'medium-height': '48px',
-          'border-radius': '0',
+          'border-radius': '8px',
           primary: {
             background: {
               color: 'var(--c--theme--colors--primary-700)',

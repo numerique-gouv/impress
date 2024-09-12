@@ -361,8 +361,10 @@
   --c--theme--colors--secondary-700: #006c60;
   --c--theme--colors--secondary-800: #00564d;
   --c--theme--colors--secondary-900: #004039;
+  --c--theme--font--families--accent: Open Sans;
+  --c--theme--font--families--base: Open Sans;
   --c--components--button--medium-height: 48px;
-  --c--components--button--border-radius: 0;
+  --c--components--button--border-radius: 8px;
   --c--components--button--primary--background--color: var(
     --c--theme--colors--primary-700
   );
