@@ -15,11 +15,6 @@ const config = {
             h5: '1rem',
             h6: '0.87rem',
           },
-          weights: {
-            thin: 100,
-            extrabold: 800,
-            black: 900,
-          },
         },
         spacings: {
           '0': '0',
