@@ -1,3 +1,4 @@
+import { BlockNoteEditor } from '@blocknote/core';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
@@ -6,17 +7,24 @@ import { useUpdateDoc } from '@/features/docs/doc-management/';
 import { KEY_LIST_DOC_VERSIONS } from '@/features/docs/doc-versioning';
 
 import { toBase64 } from '../utils';
+import { useE2ESDKClient } from '@socialgouv/e2esdk-react';
 
-const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
+const useSaveDoc = (
+  docId: string,
+  doc: Y.Doc,
+  canSave: boolean,
+  editor: BlockNoteEditor,
+) => {
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
   });
+  const e2eClient = useE2ESDKClient();
   const [initialDoc, setInitialDoc] = useState<string>(
-    toBase64(Y.encodeStateAsUpdate(doc)),
+    JSON.stringify(editor.document)
   );
 
   useEffect(() => {
-    setInitialDoc(toBase64(Y.encodeStateAsUpdate(doc)));
+    setInitialDoc(JSON.stringify(editor.document));
   }, [doc]);
 
   /**
@@ -32,7 +40,7 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
       transaction: Y.Transaction,
     ) => {
       if (!transaction.local) {
-        setInitialDoc(toBase64(Y.encodeStateAsUpdate(updatedDoc)));
+        setInitialDoc(JSON.stringify(editor.document));
       }
     };
 
@@ -47,23 +55,41 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
    * Check if the doc has been updated and can be saved.
    */
   const hasChanged = useCallback(() => {
-    const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
-    return initialDoc !== newDoc;
+    return initialDoc !== JSON.stringify(editor.document);
   }, [doc, initialDoc]);
 
   const shouldSave = useCallback(() => {
+    console.log('hasChanged', hasChanged(), 'canSave', canSave);
     return hasChanged() && canSave;
   }, [canSave, hasChanged]);
 
   const saveDoc = useCallback(() => {
-    const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
+    const newDoc = JSON.stringify(editor.document);
+    //const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
+
+    // TODO encode the content
+
+    const purpose = `docs:${docId}`;
+    const key = e2eClient.findKeyByPurpose(purpose);
+    console.log("purpose", purpose, "key", key);
+    if (!key) {
+      alert('probleme de key');
+      return;
+    }
+
+    const encrypted = e2eClient.encrypt(newDoc, key.keychainFingerprint);
+
+    console.log('encrypted', encrypted);
+
+    // todo
+
     setInitialDoc(newDoc);
 
     updateDoc({
       id: docId,
-      content: newDoc,
+      content: encrypted,
     });
-  }, [doc, docId, updateDoc]);
+  }, [docId, editor?.document, updateDoc]);
 
   const timeout = useRef<NodeJS.Timeout>();
   const router = useRouter();
@@ -74,10 +100,12 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
     }
 
     const onSave = (e?: Event) => {
+      console.log('entered onSave');
       if (!shouldSave()) {
         return;
       }
 
+      console.log('will save');
       saveDoc();
 
       /**
@@ -96,7 +124,7 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
     };
 
     // Save every minute
-    timeout.current = setInterval(onSave, 60000);
+    timeout.current = setInterval(onSave, 1000);
     // Save when the user leaves the page
     addEventListener('beforeunload', onSave);
     // Save when the user navigates to another page

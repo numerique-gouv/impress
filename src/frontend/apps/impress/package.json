@@ -21,6 +21,9 @@
     "@gouvfr-lasuite/integration": "1.0.2",
     "@hocuspocus/provider": "2.13.5",
     "@openfun/cunningham-react": "2.9.4",
+    "@socialgouv/e2esdk-client": "1.0.0-beta.28",
+    "@socialgouv/e2esdk-devtools": "1.0.0-beta.38",
+    "@socialgouv/e2esdk-react": "1.0.0-beta.28",
     "@tanstack/react-query": "5.55.4",
     "i18next": "23.15.1",
     "idb": "8.0.0",
@@ -33,8 +36,8 @@
     "react-i18next": "15.0.1",
     "react-select": "5.8.0",
     "styled-components": "6.1.13",
-    "yjs": "*",
     "y-protocols": "1.0.6",
+    "yjs": "*",
     "zustand": "4.5.5"
   },
   "devDependencies": {

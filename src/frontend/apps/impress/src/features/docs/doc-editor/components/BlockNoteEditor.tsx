@@ -1,4 +1,4 @@
-import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
+import { Block, BlockNoteEditor as BlockNoteEditorCore, PartialBlock } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -17,6 +17,7 @@ import { useDocStore } from '../stores';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
+import { useE2ESDKClient } from '@socialgouv/e2esdk-react';
 
 const cssEditor = `
   &, & > .bn-container, & .ProseMirror {
@@ -71,7 +72,8 @@ export const BlockNoteContent = ({
   const { userData } = useAuthStore();
   const { setStore, docsStore } = useDocStore();
   const canSave = doc.abilities.partial_update && !isVersion;
-  useSaveDoc(doc.id, provider.document, canSave);
+
+  const e2eClient = useE2ESDKClient();
   const storedEditor = docsStore?.[storeId]?.editor;
   const {
     mutateAsync: createDocAttachment,
@@ -99,18 +101,46 @@ export const BlockNoteContent = ({
       return storedEditor;
     }
 
+    // TODO decrypt doc.content
+    //localStorage.getItem('KEY');
+
+    const docId = doc.id;
+    const purpose = `docs:${docId}`;
+    const key = e2eClient.findKeyByPurpose(purpose);
+    console.log('purpose', purpose, 'key', key);
+    let plaintextContent: Array<PartialBlock> | undefined;
+    if (!key) {
+      alert('probleme de key');
+      return;
+    } else {
+      if (doc.content) {
+        plaintextContent = JSON.parse(e2eClient.decrypt(
+          doc.content,
+          key.keychainFingerprint,
+        ) as string) as Array<PartialBlock>;
+
+        console.log('decryptedMessage', plaintextContent);
+      } else {
+        plaintextContent = undefined;
+      }
+    }
+
     return BlockNoteEditorCore.create({
-      collaboration: {
-        provider,
-        fragment: provider.document.getXmlFragment('document-store'),
-        user: {
-          name: userData?.email || 'Anonymous',
-          color: randomColor(),
-        },
-      },
+      // collaboration: {
+      //   provider,
+      //   fragment: provider.document.getXmlFragment('document-store'),
+      //   user: {
+      //     name: userData?.email || 'Anonymous',
+      //     color: randomColor(),
+      //   },
+      // },
       uploadFile,
+      initialContent: plaintextContent,
     });
-  }, [provider, storedEditor, uploadFile, userData?.email]);
+  }, [doc.content, storedEditor, uploadFile]);
+
+  console.log("useSaveDoc", doc.id, provider.document, canSave, editor);
+  useSaveDoc(doc.id, provider.document, canSave, editor);
 
   useEffect(() => {
     setStore(storeId, { editor });

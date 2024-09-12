@@ -329,6 +329,7 @@ class Document(BaseModel):
     link_role = models.CharField(
         max_length=20, choices=LinkRoleChoices.choices, default=LinkRoleChoices.READER
     )
+    is_e2ee = models.BooleanField(default=False)
 
     _content = None
 

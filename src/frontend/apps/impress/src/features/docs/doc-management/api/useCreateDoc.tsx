@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { e2esdkClient } from '@/core/auth/useAuthStore';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
@@ -13,6 +14,7 @@ export const createDoc = async ({ title }: CreateDocParam): Promise<Doc> => {
     method: 'POST',
     body: JSON.stringify({
       title,
+      is_e2ee: true
     }),
   });
 
@@ -20,7 +22,16 @@ export const createDoc = async ({ title }: CreateDocParam): Promise<Doc> => {
     throw new APIError('Failed to create the doc', await errorCauses(response));
   }
 
-  return response.json() as Promise<Doc>;
+  const resp = await (response.json() as Promise<Doc>);
+
+  const { keychainFingerprint } = await e2esdkClient.createNewKeychain(
+    `docs:${resp.id}`,
+    'secretBox'
+  );
+
+  console.log('new e2ee keychain registered', keychainFingerprint);
+
+  return resp;
 };
 
 interface CreateDocProps {
