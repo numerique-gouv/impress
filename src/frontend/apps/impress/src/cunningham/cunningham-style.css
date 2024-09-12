@@ -5,133 +5,6 @@
 @import './cunningham-custom-tokens';
 @import '../assets/fonts/Marianne/Marianne-font';
 
-.c__input,
-.c__field,
-.c__select,
-.c__datagrid {
-  font-family: var(--c--theme--font--families--base);
-}
-
-/**
- * DataGrid
-*/
-
-.c__datagrid__table__container > table th .c__datagrid__header {
-  color: var(--c--components--datagrid--header--color);
-  font-weight: var(--c--components--datagrid--header--weight);
-  font-size: var(--c--components--datagrid--header--size);
-}
-
-.c__datagrid__table__container > table tbody tr {
-  border: none;
-  border-top: 1px var(--c--theme--colors--greyscale-300) solid;
-  border-bottom: 1px var(--c--theme--colors--greyscale-300) solid;
-}
-
-.c__datagrid__table__container > table tbody {
-  background-color: var(--c--components--datagrid--body--background-color);
-}
-
-.c__datagrid__table__container > table tbody tr:hover {
-  background-color: var(
-    --c--components--datagrid--body--background-color-hover
-  );
-}
-
-.c__datagrid > .c__pagination {
-  padding-inline: 1rem;
-  justify-content: flex-end;
-}
-
-.c__pagination__list {
-  gap: 3px;
-  border-radius: 4px;
-  background: var(--c--components--datagrid--pagination--background-color);
-}
-
-.c__pagination__list .c__button--tertiary-text.c__button--active {
-  background-color: var(
-    --c--components--datagrid--pagination--background-color-active
-  );
-  color: var(--c--theme--colors--greyscale-800);
-}
-
-.c__pagination__list .c__button--tertiary-text:disabled {
-  display: none;
-}
-
-@media (width <= 380px) {
-  .c__datagrid > .c__pagination {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-}
-
-/**
- * Date picker
-*/
-.c__popover.c__popover--borderless {
-  z-index: 3;
-}
-
-.c__date-picker__wrapper {
-  transition: all var(--c--theme--transitions--duration)
-    var(--c--theme--transitions--ease-out);
-}
-
-.c__date-picker:not(.c__date-picker--disabled):hover .c__date-picker__wrapper {
-  box-shadow: var(--c--theme--colors--primary-500) 0 0 0 2px;
-}
-
-.c__date-picker.c__date-picker--invalid:not(.c__date-picker--disabled):hover
-  .c__date-picker__wrapper {
-  box-shadow: var(--c--theme--colors--danger-300) 0 0 0 2px;
-}
-
-.c__date-picker__wrapper button[aria-label='Clear date'],
-.c__date-picker.c__date-picker--invalid .c__date-picker__wrapper * {
-  color: var(--c--theme--colors--danger-300);
-}
-
-/**
- * Others
-*/
-.c__checkbox:focus-within {
-  border-color: transparent;
-  background-color: transparent;
-}
-
-.c__checkbox {
-  transition: all 0.8s ease-in-out;
-}
-
-/**
- * Button
-*/
-.c__button {
-  text-decoration: none;
-}
-
-.c__button:hover.c__button-no-bg,
-.c__button.c__button-no-bg,
-.c__button:disabled.c__button-no-bg {
-  background-color: transparent;
-}
-
-.c__button--medium {
-  padding: 0.9rem var(--c--theme--spacings--s);
-}
-
-.c__button--small {
-  padding: 0.6rem 0.75rem;
-}
-
-.c__button--with-icon--right {
-  padding: 0.7rem var(--c--theme--spacings--t) 0.7rem
-    var(--c--theme--spacings--s);
-}
-
 .c__button--primary {
   background-color: var(--c--components--button--primary--background--color);
   color: var(--c--components--button--primary--color);
@@ -151,88 +24,6 @@
   );
   color: var(--c--components--button--primary--color-active);
   border-color: var(--c--components--button--primary--border--color-active);
-}
-
-.c__button--primary-text:active,
-.c__button--primary-text.c__button--active {
-  border: none;
-  background-color: var(
-    --c--components--button--primary-text--background--color-active
-  );
-}
-
-.c__button--primary-text:hover,
-.c__button--primary-text:focus-visible {
-  background-color: var(
-    --c--components--button--primary-text--background--color-hover
-  );
-  color: var(--c--components--button--primary-text--color-hover);
-}
-
-.c__button--tertiary:disabled {
-  background-color: var(--c--theme--colors--greyscale-100);
-}
-
-.c__button--success {
-  background-color: var(--c--components--button--success--background--color);
-  color: var(--c--components--button--success--color);
-}
-
-.c__button--success:hover,
-.c__button--success:focus-visible {
-  background-color: var(
-    --c--components--button--success--background--color-hover
-  );
-  color: var(--c--components--button--success--color-hover);
-}
-
-.c__button--success:disabled {
-  background-color: var(
-    --c--components--button--success--background--color-disabled
-  );
-  color: var(--c--components--button--success--color-disabled);
-}
-
-.c__button--secondary {
-  background-color: var(--c--components--button--secondary--background--color);
-  color: var(--c--components--button--secondary--color);
-  border: 1px solid var(--c--components--button--secondary--border--color);
-
-  &:disabled {
-    background-color: var(--c--theme--colors--greyscale-000);
-    border-color: var(--c--theme--colors--greyscale-200);
-  }
-}
-
-.c__button--secondary:hover,
-.c__button--secondary:focus-visible {
-  background-color: var(
-    --c--components--button--secondary--background--color-hover
-  );
-  color: var(--c--components--button--secondary--color-hover);
-  border: 1px solid var(--c--components--button--secondary--border--color-hover);
-}
-
-.c__button--tertiary-text {
-  border: none;
-}
-
-.c__button--danger {
-  background-color: var(--c--components--button--danger--background--color);
-}
-
-.c__button--danger:hover,
-.c__button--danger:focus-visible {
-  background-color: var(
-    --c--components--button--danger--background--color-hover
-  );
-  color: var(--c--components--button--danger--color-hover);
-}
-
-.c__button--danger:disabled {
-  background-color: var(
-    --c--components--button--danger--background--color-disabled
-  );
 }
 
 /**
@@ -258,16 +49,231 @@
   z-index: 10000;
 }
 
-/**
- * Alert
- */
+.cunningham-theme--dsfr {
+  .c__input,
+  .c__field,
+  .c__select,
+  .c__datagrid {
+    font-family: var(--c--theme--font--families--base);
+  }
 
-.c__alert--success {
-  border-color: var(--c--theme--colors--success-600);
-}
-.c__alert--info {
-  border-color: var(--c--theme--colors--info-600);
-}
-.c__alert--error {
-  border-color: var(--c--theme--colors--danger-600);
+  /**
+   * DataGrid
+  */
+
+  .c__datagrid__table__container > table th .c__datagrid__header {
+    color: var(--c--components--datagrid--header--color);
+    font-weight: var(--c--components--datagrid--header--weight);
+    font-size: var(--c--components--datagrid--header--size);
+  }
+
+  .c__datagrid__table__container > table tbody tr {
+    border: none;
+    border-top: 1px var(--c--theme--colors--greyscale-300) solid;
+    border-bottom: 1px var(--c--theme--colors--greyscale-300) solid;
+  }
+
+  .c__datagrid__table__container > table tbody {
+    background-color: var(--c--components--datagrid--body--background-color);
+  }
+
+  .c__datagrid__table__container > table tbody tr:hover {
+    background-color: var(
+      --c--components--datagrid--body--background-color-hover
+    );
+  }
+
+  .c__datagrid > .c__pagination {
+    padding-inline: 1rem;
+    justify-content: flex-end;
+  }
+
+  .c__pagination__list {
+    gap: 3px;
+    border-radius: 4px;
+    background: var(--c--components--datagrid--pagination--background-color);
+  }
+
+  .c__pagination__list .c__button--tertiary-text.c__button--active {
+    background-color: var(
+      --c--components--datagrid--pagination--background-color-active
+    );
+    color: var(--c--theme--colors--greyscale-800);
+  }
+
+  .c__pagination__list .c__button--tertiary-text:disabled {
+    display: none;
+  }
+
+  @media (width <= 380px) {
+    .c__datagrid > .c__pagination {
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+
+  /**
+   * Date picker
+  */
+  .c__popover.c__popover--borderless {
+    z-index: 3;
+  }
+
+  .c__date-picker__wrapper {
+    transition: all var(--c--theme--transitions--duration)
+      var(--c--theme--transitions--ease-out);
+  }
+
+  .c__date-picker:not(.c__date-picker--disabled):hover
+    .c__date-picker__wrapper {
+    box-shadow: var(--c--theme--colors--primary-500) 0 0 0 2px;
+  }
+
+  .c__date-picker.c__date-picker--invalid:not(.c__date-picker--disabled):hover
+    .c__date-picker__wrapper {
+    box-shadow: var(--c--theme--colors--danger-300) 0 0 0 2px;
+  }
+
+  .c__date-picker__wrapper button[aria-label='Clear date'],
+  .c__date-picker.c__date-picker--invalid .c__date-picker__wrapper * {
+    color: var(--c--theme--colors--danger-300);
+  }
+
+  /**
+   * Others
+  */
+  .c__checkbox:focus-within {
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  .c__checkbox {
+    transition: all 0.8s ease-in-out;
+  }
+
+  /**
+   * Button
+  */
+  .c__button {
+    text-decoration: none;
+  }
+
+  .c__button:hover.c__button-no-bg,
+  .c__button.c__button-no-bg,
+  .c__button:disabled.c__button-no-bg {
+    background-color: transparent;
+  }
+
+  .c__button--medium {
+    padding: 0.9rem var(--c--theme--spacings--s);
+  }
+
+  .c__button--small {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .c__button--with-icon--right {
+    padding: 0.7rem var(--c--theme--spacings--t) 0.7rem
+      var(--c--theme--spacings--s);
+  }
+
+  .c__button--primary-text:active,
+  .c__button--primary-text.c__button--active {
+    border: none;
+    background-color: var(
+      --c--components--button--primary-text--background--color-active
+    );
+  }
+
+  .c__button--primary-text:hover,
+  .c__button--primary-text:focus-visible {
+    background-color: var(
+      --c--components--button--primary-text--background--color-hover
+    );
+    color: var(--c--components--button--primary-text--color-hover);
+  }
+
+  .c__button--tertiary:disabled {
+    background-color: var(--c--theme--colors--greyscale-100);
+  }
+
+  .c__button--success {
+    background-color: var(--c--components--button--success--background--color);
+    color: var(--c--components--button--success--color);
+  }
+
+  .c__button--success:hover,
+  .c__button--success:focus-visible {
+    background-color: var(
+      --c--components--button--success--background--color-hover
+    );
+    color: var(--c--components--button--success--color-hover);
+  }
+
+  .c__button--success:disabled {
+    background-color: var(
+      --c--components--button--success--background--color-disabled
+    );
+    color: var(--c--components--button--success--color-disabled);
+  }
+
+  .c__button--secondary {
+    background-color: var(
+      --c--components--button--secondary--background--color
+    );
+    color: var(--c--components--button--secondary--color);
+    border: 1px solid var(--c--components--button--secondary--border--color);
+
+    &:disabled {
+      background-color: var(--c--theme--colors--greyscale-000);
+      border-color: var(--c--theme--colors--greyscale-200);
+    }
+  }
+
+  .c__button--secondary:hover,
+  .c__button--secondary:focus-visible {
+    background-color: var(
+      --c--components--button--secondary--background--color-hover
+    );
+    color: var(--c--components--button--secondary--color-hover);
+    border: 1px solid
+      var(--c--components--button--secondary--border--color-hover);
+  }
+
+  .c__button--tertiary-text {
+    border: none;
+  }
+
+  .c__button--danger {
+    background-color: var(--c--components--button--danger--background--color);
+  }
+
+  .c__button--danger:hover,
+  .c__button--danger:focus-visible {
+    background-color: var(
+      --c--components--button--danger--background--color-hover
+    );
+    color: var(--c--components--button--danger--color-hover);
+  }
+
+  .c__button--danger:disabled {
+    background-color: var(
+      --c--components--button--danger--background--color-disabled
+    );
+  }
+
+  /**
+   * Alert
+   */
+
+  .c__alert--success {
+    border-color: var(--c--theme--colors--success-600);
+  }
+  .c__alert--info {
+    border-color: var(--c--theme--colors--info-600);
+  }
+  .c__alert--error {
+    border-color: var(--c--theme--colors--danger-600);
+  }
 }

@@ -38,7 +38,7 @@ export const Header = () => {
     >
       <RedStripe />
       <Box
-        $margin={{ horizontal: 'xbig' }}
+        $margin={{ horizontal: '2.2rem' }}
         $align="center"
         $justify="space-between"
         $direction="row"

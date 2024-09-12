@@ -204,6 +204,70 @@ const config = {
         },
       },
     },
+    openDesk: {
+      theme: {
+        colors: {
+          'primary-100': '#F7F5FF',
+          'primary-200': '#ECE7FE',
+          'primary-300': '#DCD2FE',
+          'primary-400': '#C8B9FD',
+          'primary-500': '#8E75FA',
+          'primary-600': '#7051FA',
+          'primary-700': '#571EFA',
+          'primary-800': '#4519C2',
+          'primary-900': '#341291',
+          'secondary-100': '#EDFDFB',
+          'secondary-200': '#BFF9F2',
+          'secondary-300': '#71EFE1',
+          'secondary-400': '#00E6CC',
+          'secondary-500': '#00A896',
+          'secondary-600': '#008A7B',
+          'secondary-700': '#006C60',
+          'secondary-800': '#00564D',
+          'secondary-900': '#004039',
+        },
+      },
+      components: {
+        button: {
+          'medium-height': '48px',
+          'border-radius': '0',
+          primary: {
+            background: {
+              color: 'var(--c--theme--colors--primary-700)',
+              'color-hover': 'var(--c--theme--colors--primary-900)',
+              'color-active': 'var(--c--theme--colors--primary-900)',
+            },
+            color: '#ffffff',
+            'color-hover': '#ffffff',
+            'color-active': '#ffffff',
+          },
+          'primary-text': {
+            background: {
+              'color-hover': 'var(--c--theme--colors--primary-100)',
+              'color-active': 'var(--c--theme--colors--primary-100)',
+            },
+            'color-hover': 'var(--c--theme--colors--primary-text)',
+          },
+          secondary: {
+            background: {
+              'color-hover': '#F6F6F6',
+              'color-active': '#EDEDED',
+            },
+            border: {
+              color: 'var(--c--theme--colors--primary-600)',
+              'color-hover': 'var(--c--theme--colors--primary-600)',
+            },
+            color: 'var(--c--theme--colors--primary-600)',
+          },
+          'tertiary-text': {
+            background: {
+              'color-hover': 'var(--c--theme--colors--primary-100)',
+            },
+            'color-hover': 'var(--c--theme--colors--primary-text)',
+          },
+        },
+      },
+    },
   },
 };
 
