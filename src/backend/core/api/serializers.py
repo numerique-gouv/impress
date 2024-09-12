@@ -148,6 +148,7 @@ class DocumentSerializer(BaseResourceSerializer):
             "title",
             "accesses",
             "abilities",
+            "is_e2ee",
             "link_role",
             "link_reach",
             "created_at",
