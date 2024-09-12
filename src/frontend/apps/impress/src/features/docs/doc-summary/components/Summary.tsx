@@ -55,7 +55,11 @@ export const Summary = ({ doc }: SummaryProps) => {
           }}
           style={{ textAlign: 'left' }}
         >
-          <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
+          <Text
+            $theme="primary"
+            $variation="900"
+            $padding={{ vertical: 'xtiny' }}
+          >
             {heading.content?.[0]?.type === 'text' && heading.content?.[0]?.text
               ? `- ${heading.content[0].text}`
               : ''}
@@ -78,7 +82,11 @@ export const Summary = ({ doc }: SummaryProps) => {
           });
         }}
       >
-        <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
+        <Text
+          $theme="greyscale"
+          $variation="600"
+          $padding={{ vertical: 'xtiny' }}
+        >
           {t('Back to top')}
         </Text>
       </BoxButton>
@@ -95,7 +103,11 @@ export const Summary = ({ doc }: SummaryProps) => {
             });
         }}
       >
-        <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
+        <Text
+          $theme="greyscale"
+          $variation="600"
+          $padding={{ vertical: 'xtiny' }}
+        >
           {t('Go to bottom')}
         </Text>
       </BoxButton>

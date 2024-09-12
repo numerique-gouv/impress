@@ -90,7 +90,7 @@ export const Panel = ({
             }}
             $radius="2px"
           />
-          <Text $weight="bold" $size="l" $theme="primary">
+          <Text $weight="bold" $size="l" $theme="primary" $variation="900">
             {title}
           </Text>
         </Box>

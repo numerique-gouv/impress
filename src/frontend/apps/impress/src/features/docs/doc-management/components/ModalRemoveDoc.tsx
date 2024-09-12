@@ -117,7 +117,7 @@ export const ModalRemoveDoc = ({ onClose, doc }: ModalRemoveDocProps) => {
               border: `1px solid ${colorsTokens()['primary-300']}`,
             }}
           />
-          <Text $theme="primary" $weight="bold" $size="l">
+          <Text $theme="greyscale" $variation="900" $weight="bold" $size="l">
             {doc.title}
           </Text>
         </Text>
