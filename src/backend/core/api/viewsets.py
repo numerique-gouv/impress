@@ -367,6 +367,21 @@ class DocumentViewSet(
                 pass
 
         return drf_response.Response(serializer.data)
+    
+    @decorators.action(detail=True, methods=["post"], url_path="ai")
+    def ai(self, request, *args, **kwargs):
+        """
+        Return the document's versions but only those created after the user got access
+        to the document
+        """
+        if not request.user.is_authenticated:
+            raise exceptions.PermissionDenied("Authentication required.")
+
+        action = request.data.get("action")
+        text = request.data.get("text")
+
+        return drf_response.Response(text.upper())
+
 
     @decorators.action(detail=True, methods=["get"], url_path="versions")
     def versions_list(self, request, *args, **kwargs):
