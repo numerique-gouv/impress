@@ -20,11 +20,11 @@ const useSaveDoc = (
   });
   const e2eClient = useE2ESDKClient();
   const [initialDoc, setInitialDoc] = useState<string>(
-    toBase64(Y.encodeStateAsUpdate(doc)),
+    JSON.stringify(editor.document)
   );
 
   useEffect(() => {
-    setInitialDoc(toBase64(Y.encodeStateAsUpdate(doc)));
+    setInitialDoc(JSON.stringify(editor.document));
   }, [doc]);
 
   /**
@@ -40,7 +40,7 @@ const useSaveDoc = (
       transaction: Y.Transaction,
     ) => {
       if (!transaction.local) {
-        setInitialDoc(toBase64(Y.encodeStateAsUpdate(updatedDoc)));
+        setInitialDoc(JSON.stringify(editor.document));
       }
     };
 
@@ -55,11 +55,11 @@ const useSaveDoc = (
    * Check if the doc has been updated and can be saved.
    */
   const hasChanged = useCallback(() => {
-    const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
-    return initialDoc !== newDoc;
+    return initialDoc !== JSON.stringify(editor.document);
   }, [doc, initialDoc]);
 
   const shouldSave = useCallback(() => {
+    console.log('hasChanged', hasChanged(), 'canSave', canSave);
     return hasChanged() && canSave;
   }, [canSave, hasChanged]);
 
@@ -69,9 +69,9 @@ const useSaveDoc = (
 
     // TODO encode the content
 
-    const docId = 'uuid-du-doc';
-    const purpose = `doc:${docId}`;
+    const purpose = `docs:${docId}`;
     const key = e2eClient.findKeyByPurpose(purpose);
+    console.log("purpose", purpose, "key", key);
     if (!key) {
       alert('probleme de key');
       return;
@@ -87,7 +87,7 @@ const useSaveDoc = (
 
     updateDoc({
       id: docId,
-      content: newDoc,
+      content: encrypted,
     });
   }, [docId, editor?.document, updateDoc]);
 
@@ -100,10 +100,12 @@ const useSaveDoc = (
     }
 
     const onSave = (e?: Event) => {
+      console.log('entered onSave');
       if (!shouldSave()) {
         return;
       }
 
+      console.log('will save');
       saveDoc();
 
       /**
@@ -122,7 +124,7 @@ const useSaveDoc = (
     };
 
     // Save every minute
-    timeout.current = setInterval(onSave, 60000);
+    timeout.current = setInterval(onSave, 1000);
     // Save when the user leaves the page
     addEventListener('beforeunload', onSave);
     // Save when the user navigates to another page
