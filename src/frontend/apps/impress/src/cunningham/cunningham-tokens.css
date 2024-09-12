@@ -118,6 +118,13 @@
   --c--theme--breakpoints--xl: 1200px;
   --c--theme--breakpoints--xxl: 1400px;
   --c--components--card--box-shadow: none;
+  --c--components--card--title-color: var(--c--theme--colors--primary-600);
+  --c--components--pill--background: var(--c--theme--colors--primary-600);
+  --c--components--pill--color: var(--c--theme--colors--greyscale-000);
+  --c--components--pill--weight: bold;
+  --c--components--pill--radius: 3px;
+  --c--components--pill--padding-x: 4px;
+  --c--components--pill--padding-y: 0;
 }
 .cunningham-theme--dark {
   --c--theme--colors--greyscale-100: #182536;
@@ -285,6 +292,7 @@
   );
   --c--components--card--box-shadow: 2px 2px 5px
     var(--c--theme--colors--greyscale-300);
+  --c--components--card--title-color: var(--c--theme--colors--primary-600);
   --c--components--datagrid--header--color: var(
     --c--theme--colors--primary-600
   );
@@ -364,7 +372,7 @@
   --c--theme--colors--secondary-700: #006c60;
   --c--theme--colors--secondary-800: #00564d;
   --c--theme--colors--secondary-900: #004039;
-  --c--theme--colors--greyscale-000: #f6f6f6;
+  --c--theme--colors--greyscale-000: #ffffff;
   --c--theme--colors--greyscale-100: #eeeff2;
   --c--theme--colors--greyscale-200: #d3d7de;
   --c--theme--colors--greyscale-300: #b6bcc8;
@@ -425,12 +433,19 @@
   --c--components--button--tertiary-text--color-hover: var(
     --c--theme--colors--primary-text
   );
+  --c--components--card--title-color: var(--c--theme--colors--greyscale-900);
   --c--components--datagrid--header--color: var(
-    --c--theme--colors--primary-700
+    --c--theme--colors--greyscale-900
   );
   --c--components--datagrid--header--size: var(--c--theme--font--sizes--s);
   --c--components--datagrid--body--background-color: transparent;
   --c--components--datagrid--body--background-color-hover: #f4f4fd;
+  --c--components--pill--background: var(--c--theme--colors--primary-300);
+  --c--components--pill--color: var(--c--theme--colors--greyscale-900);
+  --c--components--pill--weight: 500;
+  --c--components--pill--radius: 8px;
+  --c--components--pill--padding-x: 16px;
+  --c--components--pill--padding-y: 2px;
 }
 .clr-secondary-text {
   color: var(--c--theme--colors--secondary-text);

@@ -40,7 +40,14 @@
 .c__datagrid__table__container > table {
   th:first-child,
   td:first-child {
-    padding-left: 24px;
+    padding-left: 3rem;
+  }
+}
+
+.c__datagrid__table__container > table {
+  th:last-child,
+  td:last-child {
+    padding-right: 3rem;
   }
 }
 

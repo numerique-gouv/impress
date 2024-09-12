@@ -24,6 +24,15 @@ const config = {
       components: {
         card: {
           'box-shadow': 'none',
+          'title-color': 'var(--c--theme--colors--primary-600)',
+        },
+        pill: {
+          background: 'var(--c--theme--colors--primary-600)',
+          color: 'var(--c--theme--colors--greyscale-000)',
+          weight: 'bold',
+          radius: '3px',
+          'padding-x': '4px',
+          'padding-y': '0',
         },
       },
     },
@@ -158,6 +167,7 @@ const config = {
         },
         card: {
           'box-shadow': '2px 2px 5px var(--c--theme--colors--greyscale-300)',
+          'title-color': 'var(--c--theme--colors--primary-600)',
         },
         datagrid: {
           header: {
@@ -238,7 +248,7 @@ const config = {
           'secondary-700': '#006C60',
           'secondary-800': '#00564D',
           'secondary-900': '#004039',
-          'greyscale-000': '#f6f6f6',
+          'greyscale-000': '#ffffff',
           'greyscale-100': '#EEEFF2',
           'greyscale-200': '#D3D7DE',
           'greyscale-300': '#B6BCC8',
@@ -306,15 +316,26 @@ const config = {
             'color-hover': 'var(--c--theme--colors--primary-text)',
           },
         },
+        card: {
+          'title-color': 'var(--c--theme--colors--greyscale-900)',
+        },
         datagrid: {
           header: {
-            color: 'var(--c--theme--colors--primary-700)',
+            color: 'var(--c--theme--colors--greyscale-900)',
             size: 'var(--c--theme--font--sizes--s)',
           },
           body: {
             'background-color': 'transparent',
             'background-color-hover': '#F4F4FD',
           },
+        },
+        pill: {
+          background: 'var(--c--theme--colors--primary-300)',
+          color: 'var(--c--theme--colors--greyscale-900)',
+          weight: '500',
+          radius: '8px',
+          'padding-x': '16px',
+          'padding-y': '2px',
         },
       },
     },

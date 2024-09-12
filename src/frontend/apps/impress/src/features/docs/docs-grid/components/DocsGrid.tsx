@@ -90,7 +90,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
       <DocsGridStyle />
       <Box
         style={{
-          padding: '1.5rem',
+          padding: '1.5rem 3rem',
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'row',
@@ -100,9 +100,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
         <Text
           $weight="bold"
           as="h2"
-          $theme="primary"
-          $margin="none"
-          $variation="700"
+          $color="var(--c--components--card--title-color)"
         >
           {t('Documents')}
         </Text>
@@ -134,11 +132,14 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
                 <StyledLink href={`/docs/${row.id}`}>
                   {row.is_public && (
                     <Text
-                      $weight="bold"
-                      $background={colorsTokens()['primary-600']}
-                      $color="white"
-                      $padding="xtiny"
-                      $radius="3px"
+                      $weight="var(--c--components--pill--bold)"
+                      $background="var(--c--components--pill--background)"
+                      $color="var(--c--components--pill--color)"
+                      $padding={{
+                        horizontal: 'var(--c--components--pill--padding-x)',
+                        vertical: 'var(--c--components--pill--padding-y)',
+                      }}
+                      $radius="var(--c--components--pill--radius)"
                     >
                       {row.is_public ? t('Public') : ''}
                     </Text>
@@ -200,7 +201,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
             },
           },
           {
-            id: 'column-actions',
+            id: 'actions',
             renderCell: ({ row }) => {
               return <DocsGridActions doc={row} />;
             },
