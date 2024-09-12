@@ -1,3 +1,4 @@
+import { BlockNoteEditor } from '@blocknote/core';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
@@ -7,7 +8,12 @@ import { KEY_LIST_DOC_VERSIONS } from '@/features/docs/doc-versioning';
 
 import { toBase64 } from '../utils';
 
-const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
+const useSaveDoc = (
+  docId: string,
+  doc: Y.Doc,
+  canSave: boolean,
+  editor: BlockNoteEditor,
+) => {
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
   });
@@ -56,14 +62,18 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
   }, [canSave, hasChanged]);
 
   const saveDoc = useCallback(() => {
-    const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
+    const newDoc = JSON.stringify(editor.document);
+    //const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
+
+    // TODO encode the content
+
     setInitialDoc(newDoc);
 
     updateDoc({
       id: docId,
       content: newDoc,
     });
-  }, [doc, docId, updateDoc]);
+  }, [docId, editor?.document, updateDoc]);
 
   const timeout = useRef<NodeJS.Timeout>();
   const router = useRouter();

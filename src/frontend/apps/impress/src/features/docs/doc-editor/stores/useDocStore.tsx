@@ -26,9 +26,9 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
       guid: storeId,
     });
 
-    if (initialDoc) {
-      Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
-    }
+    // if (initialDoc) {
+    //   Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
+    // }
 
     const provider = new HocuspocusProvider({
       url: providerUrl(storeId),
