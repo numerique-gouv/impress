@@ -388,7 +388,7 @@ class DocumentViewSet(
             api_key= settings.AI_API_KEY
         )
 
-        if action == "rephrase":
+        if action == "correct":
             try:
                 response = client.chat.completions.create(
                     model="meta-llama/Meta-Llama-3.1-70B-Instruct",
@@ -399,6 +399,71 @@ class DocumentViewSet(
                 )
                 corrected_response = json.loads(response.choices[0].message.content)
                 return drf_response.Response(corrected_response['phrase_corrigee'])
+            except (json.JSONDecodeError, KeyError) as e:
+                return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
+        elif action == "rephrase":
+            try:
+                response = client.chat.completions.create(
+                    model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+                    messages=[
+                        {"role": "system", "content": 'Tu es un ecrivain. Rephrase la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase_rephrase": "ta phrase rephrasé"}. Ne donne aucune autre information.'},
+                        {"role": "user", "content": f'{{"phrase": "{text}"}}'},
+                    ]
+                )
+                corrected_response = json.loads(response.choices[0].message.content)
+                return drf_response.Response(corrected_response['phrase_rephrase'])
+            except (json.JSONDecodeError, KeyError) as e:
+                return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
+        elif action == "summarize":
+            try:
+                response = client.chat.completions.create(
+                    model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+                    messages=[
+                        {"role": "system", "content": 'Tu es un ecrivain. Fait un sommaire de la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase_summary": "ton sommaire"}. Ne donne aucune autre information.'},
+                        {"role": "user", "content": f'{{"phrase": "{text}"}}'},
+                    ]
+                )
+                corrected_response = json.loads(response.choices[0].message.content)
+                return drf_response.Response(corrected_response['phrase_summary'])
+            except (json.JSONDecodeError, KeyError) as e:
+                return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
+        elif action == "translate_en":
+            try:
+                response = client.chat.completions.create(
+                    model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+                    messages=[
+                        {"role": "system", "content": 'Tu es un traducteur anglais. Traduit en anglais la phrase donnée. Renvoie uniquement un JSON au format suivant: {"sentence": "Your sentence"}. Ne donne aucune autre information.'},
+                        {"role": "user", "content": f'{{"phrase": "{text}"}}'},
+                    ]
+                )
+                corrected_response = json.loads(response.choices[0].message.content)
+                return drf_response.Response(corrected_response['phrase_summary'])
+            except (json.JSONDecodeError, KeyError) as e:
+                return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
+        elif action == "translate_de":
+            try:
+                response = client.chat.completions.create(
+                    model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+                    messages=[
+                        {"role": "system", "content": 'Tu es un traducteur allemand. Traduit en allemand la phrase donnée. Renvoie uniquement un JSON au format suivant: {"sentence": "Your sentence"}. Ne donne aucune autre information.'},
+                        {"role": "user", "content": f'{{"phrase": "{text}"}}'},
+                    ]
+                )
+                corrected_response = json.loads(response.choices[0].message.content)
+                return drf_response.Response(corrected_response['sentence'])
+            except (json.JSONDecodeError, KeyError) as e:
+                return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
+        elif action == "translate_fr":
+            try:
+                response = client.chat.completions.create(
+                    model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+                    messages=[
+                        {"role": "system", "content": 'Tu es un traducteur francais. Traduit en francais la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase": "Your sentence"}. Ne donne aucune autre information.'},
+                        {"role": "user", "content": f'{{"sentence": "{text}"}}'},
+                    ]
+                )
+                corrected_response = json.loads(response.choices[0].message.content)
+                return drf_response.Response(corrected_response['phrase'])
             except (json.JSONDecodeError, KeyError) as e:
                 return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
         else:

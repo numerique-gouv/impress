@@ -2,7 +2,14 @@ import { useMutation } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
-export type AIActions = 'rephrase' | 'summarize' | 'translate' | 'correct';
+export type AIActions =
+  | 'rephrase'
+  | 'summarize'
+  | 'translate'
+  | 'correct'
+  | 'translate_fr'
+  | 'translate_en'
+  | 'translate_de';
 
 export type DocAIParams = {
   docId: string;

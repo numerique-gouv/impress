@@ -1,8 +1,6 @@
 import {
   useBlockNoteEditor,
   useComponentsContext,
-  useEditorContentOrSelectionChange,
-  useEditorSelectionChange,
   useSelectedBlocks,
 } from '@blocknote/react';
 import { useMemo } from 'react';
@@ -20,12 +18,6 @@ export function AIButton({ doc }: AIButtonProps) {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
   const selectedBlocks = useSelectedBlocks(editor);
-  useEditorSelectionChange(() => {
-    console.log('Selection changed');
-  }, editor);
-  useEditorContentOrSelectionChange(() => {
-    console.log('Content or selection changed');
-  }, editor);
   const { mutateAsync: requestAI } = useAIRewrite();
 
   const handleRephraseAI = async (action: AIActions) => {
@@ -35,8 +27,6 @@ export function AIButton({ doc }: AIButtonProps) {
       text: textCursorPosition,
       action,
     });
-
-    console.log('AI response:', newText);
 
     editor.insertInlineContent([
       newText,
@@ -65,19 +55,44 @@ export function AIButton({ doc }: AIButtonProps) {
         </Components.FormattingToolbar.Button>
       </Components.Generic.Menu.Trigger>
       <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-color-picker-dropdown">
-        {['rephrase', 'summarize', 'correct'].map((action) => (
+        {[
+          {
+            label: 'Rephrase',
+            action: 'rephrase',
+          },
+          {
+            label: 'Summarize',
+            action: 'summarize',
+          },
+          {
+            label: 'Correct',
+            action: 'correct',
+          },
+          {
+            label: 'Translate to French',
+            action: 'translate_fr',
+          },
+          {
+            label: 'Translate to English',
+            action: 'translate_en',
+          },
+          {
+            label: 'Translate to German',
+            action: 'translate_de',
+          },
+        ].map(({ label, action }) => (
           <BoxButton
             key={`button-${action}`}
-            $padding={{ horizontal: 'small', vertical: 'tiny' }}
+            $padding={{ horizontal: 'tiny', vertical: 'tiny' }}
             $margin="auto"
-            onClick={() => void handleRephraseAI('rephrase')}
+            onClick={() => void handleRephraseAI(action as AIActions)}
             $hasTransition
             $radius="6px"
-            $width="98%"
+            $width="100%"
             $align="center"
             $css="&:hover{background-color: #f2f8ff;}text-transform: capitalize!important;"
           >
-            {action}
+            {label}
           </BoxButton>
         ))}
       </Components.Generic.Menu.Dropdown>
