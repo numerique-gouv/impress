@@ -7,16 +7,15 @@ import {
 } from '@blocknote/react';
 import { useMemo } from 'react';
 
+import { BoxButton } from '@/components';
+
 import { Doc } from '../../doc-management';
-import { useAIRewrite } from '../api/useAIRewrite';
+import { AIActions, useAIRewrite } from '../api/useAIRewrite';
 
 interface AIButtonProps {
   doc: Doc;
 }
 
-/**
- * Custom Formatting Toolbar Button to convert markdown to json.
- */
 export function AIButton({ doc }: AIButtonProps) {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
@@ -29,22 +28,18 @@ export function AIButton({ doc }: AIButtonProps) {
   }, editor);
   const { mutateAsync: requestAI } = useAIRewrite();
 
-  const handleRephraseAI = async () => {
+  const handleRephraseAI = async (action: AIActions) => {
     const textCursorPosition = editor.getSelectedText();
     const newText = await requestAI({
       docId: doc.id,
       text: textCursorPosition,
-      action: 'rephrase',
+      action,
     });
 
-    editor.replaceBlocks(
-      [selectedBlocks[0]],
-      [
-        {
-          content: newText,
-        },
-      ],
-    );
+    editor.insertInlineContent([
+      newText,
+      //{ type: 'text', text: 'World', styles: { bold: true } },
+    ]);
   };
 
   const show = useMemo(() => {
@@ -56,11 +51,34 @@ export function AIButton({ doc }: AIButtonProps) {
   }
 
   return (
-    <Components.FormattingToolbar.Button
-      mainTooltip="Rephrase with AI"
-      onClick={() => void handleRephraseAI()}
-    >
-      Rephrase
-    </Components.FormattingToolbar.Button>
+    <Components.Generic.Menu.Root>
+      <Components.Generic.Menu.Trigger>
+        <Components.FormattingToolbar.Button
+          className="bn-button"
+          data-test="colors"
+          label="AI"
+          mainTooltip="AI Actions"
+        >
+          AI
+        </Components.FormattingToolbar.Button>
+      </Components.Generic.Menu.Trigger>
+      <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-color-picker-dropdown">
+        {['rephrase', 'summarize', 'correct'].map((action) => (
+          <BoxButton
+            key={`button-${action}`}
+            $padding={{ horizontal: 'small', vertical: 'tiny' }}
+            $margin="auto"
+            onClick={() => void handleRephraseAI('rephrase')}
+            $hasTransition
+            $radius="6px"
+            $width="98%"
+            $align="center"
+            $css="&:hover{background-color: #f2f8ff;}text-transform: capitalize!important;"
+          >
+            {action}
+          </BoxButton>
+        ))}
+      </Components.Generic.Menu.Dropdown>
+    </Components.Generic.Menu.Root>
   );
 }

@@ -2,10 +2,12 @@ import { useMutation } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
+export type AIActions = 'rephrase' | 'summarize' | 'translate' | 'correct';
+
 export type DocAIParams = {
   docId: string;
   text: string;
-  action: 'rephrase' | 'summarize';
+  action: AIActions;
 };
 
 export type DocAIResponse = string;

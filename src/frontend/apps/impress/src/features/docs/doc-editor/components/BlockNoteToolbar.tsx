@@ -18,6 +18,7 @@ import React, { useMemo } from 'react';
 
 import { Doc } from '../../doc-management';
 
+// import { AIButton } from './AIButton';
 import { AIButton } from './AIButton';
 
 interface BlockNoteToolbarProps {
