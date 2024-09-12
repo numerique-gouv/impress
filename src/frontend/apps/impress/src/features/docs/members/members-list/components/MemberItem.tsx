@@ -104,7 +104,7 @@ export const MemberItem = ({
                 <Text
                   $isMaterialIcon
                   $theme={isNotAllowed ? 'greyscale' : 'primary'}
-                  $variation={isNotAllowed ? '500' : 'text'}
+                  $variation="500"
                 >
                   delete
                 </Text>

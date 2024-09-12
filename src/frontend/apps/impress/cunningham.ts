@@ -238,7 +238,7 @@ const config = {
           'secondary-700': '#006C60',
           'secondary-800': '#00564D',
           'secondary-900': '#004039',
-          'greyscale-000': '#ffffff',
+          'greyscale-000': '#f6f6f6',
           'greyscale-100': '#EEEFF2',
           'greyscale-200': '#D3D7DE',
           'greyscale-300': '#B6BCC8',

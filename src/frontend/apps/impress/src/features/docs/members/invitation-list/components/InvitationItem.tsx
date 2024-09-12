@@ -108,7 +108,7 @@ export const InvitationItem = ({
                 <Text
                   $isMaterialIcon
                   $theme={!canDelete ? 'greyscale' : 'primary'}
-                  $variation={!canDelete ? '500' : 'text'}
+                  $variation="500"
                 >
                   delete
                 </Text>
