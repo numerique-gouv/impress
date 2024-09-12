@@ -8,9 +8,7 @@ export type DocAIParams = {
   action: 'rephrase' | 'summarize';
 };
 
-export type DocAIResponse = {
-  textAI: string;
-};
+export type DocAIResponse = string;
 
 export const DocAI = async ({
   docId,

@@ -7,12 +7,17 @@ import {
 } from '@blocknote/react';
 import { useMemo } from 'react';
 
+import { Doc } from '../../doc-management';
 import { useAIRewrite } from '../api/useAIRewrite';
+
+interface AIButtonProps {
+  doc: Doc;
+}
 
 /**
  * Custom Formatting Toolbar Button to convert markdown to json.
  */
-export function AIButton() {
+export function AIButton({ doc }: AIButtonProps) {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
   const selectedBlocks = useSelectedBlocks(editor);
@@ -22,49 +27,24 @@ export function AIButton() {
   useEditorContentOrSelectionChange(() => {
     console.log('Content or selection changed');
   }, editor);
-  const { mutateAsync: requestAI, data } = useAIRewrite();
-
-  console.log('Data', data);
+  const { mutateAsync: requestAI } = useAIRewrite();
 
   const handleRephraseAI = async () => {
-    console.log('Rephrase with AI', editor.getSelection());
-    console.log('Rephrase with BLockkk', selectedBlocks);
-
-    await requestAI({
-      docId: '901ac9b3-97a4-4f37-adcf-1941746b3c61',
-      text: 'toto',
+    const textCursorPosition = editor.getSelectedText();
+    const newText = await requestAI({
+      docId: doc.id,
+      text: textCursorPosition,
       action: 'rephrase',
     });
-
-    // Call backend endpoint to rephrase the selected block
 
     editor.replaceBlocks(
       [selectedBlocks[0]],
       [
         {
-          content:
-            'This block was replaced at ' + new Date().toLocaleTimeString(),
+          content: newText,
         },
       ],
     );
-
-    // forEach(blocks, async (block) => {
-    //   if (!isBlock(block as unknown as Block)) {
-    //     return;
-    //   }
-
-    //   try {
-    //     const fullContent = recursiveContent(
-    //       block.content as unknown as Block[],
-    //     );
-
-    //     const blockMarkdown =
-    //       await editor.tryParseMarkdownToBlocks(fullContent);
-    //     editor.replaceBlocks([block.id], blockMarkdown);
-    //   } catch (error) {
-    //     console.error('Error parsing Markdown:', error);
-    //   }
-    // });
   };
 
   const show = useMemo(() => {

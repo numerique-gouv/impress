@@ -130,7 +130,7 @@ export const BlockNoteContent = ({
         editable={doc.abilities.partial_update && !isVersion}
         theme="light"
       >
-        <BlockNoteToolbar />
+        <BlockNoteToolbar doc={doc} />
       </BlockNoteView>
     </Box>
   );
