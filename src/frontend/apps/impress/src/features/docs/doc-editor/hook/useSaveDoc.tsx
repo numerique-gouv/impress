@@ -18,6 +18,7 @@ const useSaveDoc = (
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
   });
+  const e2eClient = useE2ESDKClient();
   const [initialDoc, setInitialDoc] = useState<string>(
     toBase64(Y.encodeStateAsUpdate(doc)),
   );
@@ -63,7 +64,6 @@ const useSaveDoc = (
   }, [canSave, hasChanged]);
 
   const saveDoc = useCallback(() => {
-    const e2eClient = useE2ESDKClient();
     const newDoc = JSON.stringify(editor.document);
     //const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
 
