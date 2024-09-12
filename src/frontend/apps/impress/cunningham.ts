@@ -2,13 +2,6 @@ const config = {
   themes: {
     default: {
       theme: {
-        colors: {
-          'card-border': '#ededed',
-          'primary-bg': '#FAFAFA',
-          'primary-100': '#EDF5FA',
-          'primary-150': '#E5EEFA',
-          'info-150': '#E5EEFA',
-        },
         font: {
           sizes: {
             ml: '0.938rem',
@@ -28,174 +21,11 @@ const config = {
             black: 900,
           },
         },
-        spacings: {
-          '0': '0',
-          none: '0',
-          auto: 'auto',
-          bx: '2.2rem',
-          full: '100%',
-        },
-        breakpoints: {
-          xxs: '320px',
-          xs: '480px',
-        },
-        logo: {
-          src: '',
-          widthHeader: '',
-          widthFooter: '',
-          alt: '',
-        },
-      },
-      components: {
-        datagrid: {
-          header: {
-            weight: 'var(--c--theme--font--weights--extrabold)',
-            size: 'var(--c--theme--font--sizes--ml)',
-          },
-          cell: {
-            color: 'var(--c--theme--colors--primary-500)',
-            size: 'var(--c--theme--font--sizes--ml)',
-          },
-        },
-        'forms-checkbox': {
-          'background-color': {
-            hover: '#055fd214',
-          },
-          color: 'var(--c--theme--colors--primary-500)',
-          'font-size': 'var(--c--theme--font--sizes--ml)',
-        },
-        'forms-datepicker': {
-          'border-color': 'var(--c--theme--colors--primary-500)',
-          'value-color': 'var(--c--theme--colors--primary-500)',
-          'border-radius': {
-            hover: 'var(--c--components--forms-datepicker--border-radius)',
-            focus: 'var(--c--components--forms-datepicker--border-radius)',
-          },
-        },
-        'forms-field': {
-          color: 'var(--c--theme--colors--primary-500)',
-          'value-color': 'var(--c--theme--colors--primary-500)',
-          width: 'auto',
-        },
-        'forms-input': {
-          'value-color': 'var(--c--theme--colors--primary-500)',
-          'border-color': 'var(--c--theme--colors--primary-500)',
-          color: {
-            error: 'var(--c--theme--colors--danger-500)',
-            'error-hover': 'var(--c--theme--colors--danger-500)',
-            'box-shadow-error-hover': 'var(--c--theme--colors--danger-500)',
-          },
-        },
-        'forms-labelledbox': {
-          'label-color': {
-            small: 'var(--c--theme--colors--primary-500)',
-            'small-disabled': 'var(--c--theme--colors--greyscale-400)',
-            big: {
-              disabled: 'var(--c--theme--colors--greyscale-400)',
-            },
-          },
-        },
-        'forms-select': {
-          'border-color': 'var(--c--theme--colors--primary-500)',
-          'border-color-disabled-hover':
-            'var(--c--theme--colors--greyscale-200)',
-          'border-radius': {
-            hover: 'var(--c--components--forms-select--border-radius)',
-            focus: 'var(--c--components--forms-select--border-radius)',
-          },
-          'font-size': 'var(--c--theme--font--sizes--ml)',
-          'menu-background-color': '#ffffff',
-          'item-background-color': {
-            hover: 'var(--c--theme--colors--primary-300)',
-          },
-        },
-        'forms-switch': {
-          'accent-color': 'var(--c--theme--colors--primary-400)',
-        },
-        'forms-textarea': {
-          'border-color': 'var(--c--components--forms-textarea--border-color)',
-          'border-color-hover':
-            'var(--c--components--forms-textarea--border-color)',
-          'border-radius': {
-            hover: 'var(--c--components--forms-textarea--border-radius)',
-            focus: 'var(--c--components--forms-textarea--border-radius)',
-          },
-          color: 'var(--c--theme--colors--primary-500)',
-          disabled: {
-            'border-color-hover': 'var(--c--theme--colors--greyscale-200)',
-          },
-        },
-        modal: {
-          'background-color': '#ffffff',
-        },
-        button: {
-          'border-radius': {
-            active: 'var(--c--components--button--border-radius)',
-          },
-          'medium-height': 'auto',
-          'small-height': 'auto',
-          success: {
-            color: 'white',
-            'color-disabled': 'white',
-            'color-hover': 'white',
-            background: {
-              color: 'var(--c--theme--colors--success-600)',
-              'color-disabled': 'var(--c--theme--colors--greyscale-300)',
-              'color-hover': 'var(--c--theme--colors--success-800)',
-            },
-          },
-          danger: {
-            'color-hover': 'white',
-            background: {
-              color: 'var(--c--theme--colors--danger-400)',
-              'color-hover': 'var(--c--theme--colors--danger-500)',
-              'color-disabled': 'var(--c--theme--colors--danger-100)',
-            },
-          },
-          primary: {
-            color: 'var(--c--theme--colors--primary-text)',
-            'color-active': 'var(--c--theme--colors--primary-text)',
-            background: {
-              color: 'var(--c--theme--colors--primary-400)',
-              'color-active': 'var(--c--theme--colors--primary-500)',
-            },
-            border: {
-              'color-active': 'transparent',
-            },
-          },
-          secondary: {
-            color: 'var(--c--theme--colors--primary-500)',
-            'color-hover': 'var(--c--theme--colors--primary-text)',
-            background: {
-              color: 'white',
-              'color-hover': 'var(--c--theme--colors--primary-700)',
-            },
-            border: {
-              color: 'var(--c--theme--colors--primary-200)',
-            },
-          },
-          tertiary: {
-            color: 'var(--c--theme--colors--primary-text)',
-            'color-disabled': 'var(--c--theme--colors--greyscale-600)',
-            background: {
-              'color-hover': 'var(--c--theme--colors--primary-100)',
-              'color-disabled': 'var(--c--theme--colors--greyscale-200)',
-            },
-          },
-          disabled: {
-            color: 'white',
-            background: {
-              color: '#b3cef0',
-            },
-          },
-        },
       },
     },
     dsfr: {
       theme: {
         colors: {
-          'card-border': '#ededed',
-          'primary-text': '#000091',
           'primary-100': '#f5f5fe',
           'primary-150': '#F4F4FD',
           'primary-200': '#ececfe',
@@ -206,7 +36,6 @@ const config = {
           'primary-700': '#272747',
           'primary-800': '#21213f',
           'primary-900': '#1c1a36',
-          'secondary-text': '#FFFFFF',
           'secondary-100': '#fee9ea',
           'secondary-200': '#fedfdf',
           'secondary-300': '#fdbfbf',
@@ -216,8 +45,7 @@ const config = {
           'secondary-700': '#3b2424',
           'secondary-800': '#341f1f',
           'secondary-900': '#2b1919',
-          'greyscale-text': '#303C4B',
-          'greyscale-000': '#f6f6f6',
+          'greyscale-000': '#ffffff',
           'greyscale-100': '#eeeeee',
           'greyscale-200': '#e5e5e5',
           'greyscale-300': '#e1e1e1',
@@ -274,23 +102,18 @@ const config = {
             base: 'Marianne',
           },
         },
-        logo: {
-          src: '/assets/logo-gouv.svg',
-          widthHeader: '110px',
-          widthFooter: '220px',
-          alt: 'Gouvernement Logo',
-        },
       },
       components: {
         alert: {
           'border-radius': '0',
+          'background-color': 'var(--c--theme--colors--greyscale-000)',
         },
         button: {
           'medium-height': '48px',
-          'border-radius': '4px',
+          'border-radius': '0',
           primary: {
             background: {
-              color: 'var(--c--theme--colors--primary-text)',
+              color: 'var(--c--theme--colors--primary-600)',
               'color-hover': '#1212ff',
               'color-active': '#2323ff',
             },
@@ -314,7 +137,7 @@ const config = {
               color: 'var(--c--theme--colors--primary-600)',
               'color-hover': 'var(--c--theme--colors--primary-600)',
             },
-            color: 'var(--c--theme--colors--primary-text)',
+            color: 'var(--c--theme--colors--primary-600)',
           },
           'tertiary-text': {
             background: {
@@ -325,7 +148,7 @@ const config = {
         },
         datagrid: {
           header: {
-            color: 'var(--c--theme--colors--primary-text)',
+            color: 'var(--c--theme--colors--primary-600)',
             size: 'var(--c--theme--font--sizes--s)',
           },
           body: {
@@ -337,98 +160,47 @@ const config = {
             'background-color-active': 'var(--c--theme--colors--primary-300)',
           },
         },
-        'forms-checkbox': {
-          'border-radius': '0',
-          color: 'var(--c--theme--colors--primary-text)',
-          text: {
-            color: 'var(--c--theme--colors--greyscale-text)',
-            size: 'var(--c--theme--font--sizes--t)',
-          },
-        },
         'forms-datepicker': {
           'border-radius': '0',
         },
         'forms-fileuploader': {
           'border-radius': '0',
         },
-        'forms-field': {
-          color: 'var(--c--theme--colors--primary-text)',
-        },
         'forms-input': {
-          'border-radius': '4px',
-          'background-color': '#ffffff',
-          'border-color': 'var(--c--theme--colors--primary-text)',
-          'box-shadow-color': 'var(--c--theme--colors--primary-text)',
-          'value-color': 'var(--c--theme--colors--primary-text)',
-          'font-size': '14px',
-        },
-        'forms-labelledbox': {
-          'label-color': {
-            big: 'var(--c--theme--colors--primary-text)',
-          },
-        },
-        'forms-select': {
-          'item-font-size': '14px',
-          'border-radius': '4px',
-          'border-radius-hover': '4px',
-          'background-color': '#ffffff',
-          'border-color': 'var(--c--theme--colors--primary-text)',
-          'border-color-hover': 'var(--c--theme--colors--primary-text)',
-          'box-shadow-color': 'var(--c--theme--colors--primary-text)',
-        },
-        'forms-switch': {
-          'handle-border-radius': '2px',
-          'rail-border-radius': '4px',
-          'accent-color': 'var(--c--theme--colors--primary-text)',
+          'background-color': 'var(--c--theme--colors--greyscale-100)',
+          'border-radius': '0',
+          'border-color': 'var(--c--theme--colors--greyscale-900)',
+          'border-width': '0 0 2px 0',
+          'border-color--focus': '#0974F6',
+          'border-color--hover': 'var(--c--theme--colors--greyscale-900)',
+          'label-color--focus':
+            'var(--c--components--forms-labelledbox--label-color--small)',
         },
         'forms-textarea': {
+          'background-color': 'var(--c--theme--colors--greyscale-100)',
           'border-radius': '0',
+          'border-color': 'var(--c--theme--colors--greyscale-900)',
+          'border-width': '0 0 2px 0',
+          'border-color--focus': '#0974F6',
+          'border-color--hover': 'var(--c--theme--colors--greyscale-900)',
+          'label-color--focus':
+            'var(--c--components--forms-labelledbox--label-color--small)',
         },
-      },
-    },
-    openDesk: {
-      theme: {
-        colors: {
-          'primary-text': '#4519C2',
-          'primary-100': '#F7F5FF',
-          'primary-200': '#ECE7FE',
-          'primary-300': '#DCD2FE',
-          'primary-400': '#C8B9FD',
-          'primary-500': '#8E75FA',
-          'primary-600': '#7051FA',
-          'primary-700': '#571EFA',
-          'primary-800': '#4519C2',
-          'primary-900': '#341291',
-
-          'secondary-text': '#008A7B',
-          'secondary-100': '#EDFDFB',
-          'secondary-200': '#BFF9F2',
-          'secondary-300': '#71EFE1',
-          'secondary-400': '#00E6CC',
-          'secondary-500': '#00A896',
-          'secondary-600': '#008A7B',
-          'secondary-700': '#006C60',
-          'secondary-800': '#00564D',
-          'secondary-900': '#004039',
-        },
-      },
-      components: {
-        alert: {
+        'forms-select': {
+          'background-color': 'var(--c--theme--colors--greyscale-100)',
           'border-radius': '0',
+          'border-color': 'var(--c--theme--colors--greyscale-900)',
+          'border-width': '0 0 2px 0',
+          'border-color--focus': '#0974F6',
+          'border-color--hover': 'var(--c--theme--colors--greyscale-900)',
+          'label-color--focus':
+            'var(--c--components--forms-labelledbox--label-color--big)',
         },
-        button: {
-          'medium-height': '48px',
-          'border-radius': '4px',
-          primary: {
-            background: {
-              color: 'var(--c--theme--colors--primary-text)',
-              'color-hover': '#1212ff',
-              'color-active': '#2323ff',
-            },
-            color: '#ffffff',
-            'color-hover': '#ffffff',
-            'color-active': '#ffffff',
-          },
+        'forms-switch': {
+          'accent-color': '#2323ff',
+        },
+        'forms-checkbox': {
+          'accent-color': '#2323ff',
         },
       },
     },

@@ -32,9 +32,10 @@
     "react-dom": "*",
     "react-i18next": "15.0.1",
     "react-select": "5.8.0",
+    "sass": "^1.78.0",
     "styled-components": "6.1.13",
-    "yjs": "*",
     "y-protocols": "1.0.6",
+    "yjs": "*",
     "zustand": "4.5.5"
   },
   "devDependencies": {
