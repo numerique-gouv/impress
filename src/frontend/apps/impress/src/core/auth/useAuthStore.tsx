@@ -5,13 +5,14 @@ import { baseApiUrl } from '@/core/conf';
 import { User, getMe } from './api';
 import { PATH_AUTH_LOCAL_STORAGE } from './conf';
 
-import { Client, PublicUserIdentity } from '@socialgouv/e2esdk-client';
+import { Client, PublicUserIdentity } from '@socialgouv/e2esdk-client';
+import { identity } from 'lodash';
 
 export const e2esdkClient = new Client({
   // Point it to where your server is listening
-  serverURL: "https://app-a5a1b445-32e0-4cf4-a478-821a48f86ccf.cleverapps.io",
+  serverURL: 'https://app-a5a1b445-32e0-4cf4-a478-821a48f86ccf.cleverapps.io',
   // Pass the signature public key you configured for the server
-  serverSignaturePublicKey: "ayfva9SUh0mfgmifUtxcdLp4HriHJiqefEKnvYgY4qM",
+  serverSignaturePublicKey: 'ayfva9SUh0mfgmifUtxcdLp4HriHJiqefEKnvYgY4qM',
 });
 
 interface AuthStore {
@@ -40,32 +41,47 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   initAuth: () => {
     getMe()
-      .then((data: User) => {
-        // If a path is stored in the local storage, we redirect to it
-        const path_auth = localStorage.getItem(PATH_AUTH_LOCAL_STORAGE);
-        if (path_auth) {
-          localStorage.removeItem(PATH_AUTH_LOCAL_STORAGE);
-          window.location.replace(path_auth);
-          return;
-        }
+      .then(
+        (data: User) => {
+          // If a path is stored in the local storage, we redirect to it
+          const path_auth = localStorage.getItem(PATH_AUTH_LOCAL_STORAGE);
+          if (path_auth) {
+            localStorage.removeItem(PATH_AUTH_LOCAL_STORAGE);
+            window.location.replace(path_auth);
+            return;
+          }
 
-        set({ authenticated: true, userData: data });
-        return e2esdkClient.signup(data.sub);
-      }, () => {})
-      .then(() => {
-        set({ readyForEncryption: true });
-        return Promise.resolve(() => {});
-      }, () => {
-        return e2esdkClient.login(userData.sub);
+          set({ authenticated: true, userData: data });
+          return e2esdkClient
+            .signup(data.sub)
+            .then(() => data)
+            .catch(() => data);
+        },
+        () => {},
+      )
+      .then(
+        (data) => {
+          set({ readyForEncryption: true });
+          if (data) {
+            return e2esdkClient.login(data.sub);
+          }
+        },
+        (e) => {
+          throw e;
+          //if (data) {
+          // return e2esdkClient.login(data.sub);
+          //}
+          //fail
+        },
+      )
+      .then((publicIdentity: PublicUserIdentity | null | undefined) => {
+        if (!publicIdentity) throw Error('exploding');
+        console.log('publicIdentity', publicIdentity);
+        set({ endToEndData: publicIdentity });
       })
-      .then((publicIdentity: PublicUserIdentity | null) => {
-        if (!publicIdentity) throw Error("exploding");
-
-        set({endToEndData: publicIdentity});
-      })
-      .catch(() => {
-      })
+      .catch(() => {})
       .finally(() => {
+        console.log('finally');
         set({ initiated: true });
       });
   },
