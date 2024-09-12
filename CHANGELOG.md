@@ -24,6 +24,7 @@ and this project adheres to
 ## Fixed
 
 - 🐛 Fix forcing ID when creating a document via API endpoint #234
+- 🐛 Rebuild frontend dev container from makefile #248
 
 
 ## [1.3.0] - 2024-09-05
