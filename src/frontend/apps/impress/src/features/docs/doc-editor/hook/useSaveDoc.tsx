@@ -7,6 +7,7 @@ import { useUpdateDoc } from '@/features/docs/doc-management/';
 import { KEY_LIST_DOC_VERSIONS } from '@/features/docs/doc-versioning';
 
 import { toBase64 } from '../utils';
+import { useE2ESDKClient } from '@socialgouv/e2esdk-react';
 
 const useSaveDoc = (
   docId: string,
@@ -62,10 +63,25 @@ const useSaveDoc = (
   }, [canSave, hasChanged]);
 
   const saveDoc = useCallback(() => {
+    const e2eClient = useE2ESDKClient();
     const newDoc = JSON.stringify(editor.document);
     //const newDoc = toBase64(Y.encodeStateAsUpdate(doc));
 
     // TODO encode the content
+
+    const docId = 'uuid-du-doc';
+    const purpose = `doc:${docId}`;
+    const key = e2eClient.findKeyByPurpose(purpose);
+    if (!key) {
+      alert('probleme de key');
+      return;
+    }
+
+    const encrypted = e2eClient.encrypt(newDoc, key.keychainFingerprint);
+
+    console.log('encrypted', encrypted);
+
+    // todo
 
     setInitialDoc(newDoc);
 

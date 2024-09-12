@@ -17,6 +17,7 @@ import { useDocStore } from '../stores';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
+import { useE2ESDKClient } from '@socialgouv/e2esdk-react';
 
 const cssEditor = `
   &, & > .bn-container, & .ProseMirror {
@@ -72,6 +73,7 @@ export const BlockNoteContent = ({
   const { setStore, docsStore } = useDocStore();
   const canSave = doc.abilities.partial_update && !isVersion;
 
+  const e2eClient = useE2ESDKClient();
   const storedEditor = docsStore?.[storeId]?.editor;
   const {
     mutateAsync: createDocAttachment,
@@ -101,6 +103,21 @@ export const BlockNoteContent = ({
 
     // TODO decrypt doc.content
     //localStorage.getItem('KEY');
+
+    const docId = 'uuid-du-doc';
+    const purpose = `doc:${docId}`;
+    const key = e2eClient.findKeyByPurpose(purpose);
+    if (!key) {
+      alert('probleme de key');
+      //  return;
+    } else {
+      const decryptedMessage = e2eClient.decrypt(
+        doc.content,
+        key.keychainFingerprint,
+      );
+
+      console.log('decryptedMessage', decryptedMessage);
+    }
 
     return BlockNoteEditorCore.create({
       // collaboration: {
