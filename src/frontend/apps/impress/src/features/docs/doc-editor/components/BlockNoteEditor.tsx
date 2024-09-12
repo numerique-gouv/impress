@@ -1,4 +1,4 @@
-import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
+import { Block, BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -71,7 +71,7 @@ export const BlockNoteContent = ({
   const { userData } = useAuthStore();
   const { setStore, docsStore } = useDocStore();
   const canSave = doc.abilities.partial_update && !isVersion;
-  useSaveDoc(doc.id, provider.document, canSave);
+
   const storedEditor = docsStore?.[storeId]?.editor;
   const {
     mutateAsync: createDocAttachment,
@@ -99,18 +99,24 @@ export const BlockNoteContent = ({
       return storedEditor;
     }
 
+    // TODO decrypt doc.content
+    //localStorage.getItem('KEY');
+
     return BlockNoteEditorCore.create({
-      collaboration: {
-        provider,
-        fragment: provider.document.getXmlFragment('document-store'),
-        user: {
-          name: userData?.email || 'Anonymous',
-          color: randomColor(),
-        },
-      },
+      // collaboration: {
+      //   provider,
+      //   fragment: provider.document.getXmlFragment('document-store'),
+      //   user: {
+      //     name: userData?.email || 'Anonymous',
+      //     color: randomColor(),
+      //   },
+      // },
       uploadFile,
+      initialContent: JSON.parse(doc.content),
     });
-  }, [provider, storedEditor, uploadFile, userData?.email]);
+  }, [doc.content, storedEditor, uploadFile]);
+
+  useSaveDoc(doc.id, provider.document, canSave, editor);
 
   useEffect(() => {
     setStore(storeId, { editor });
