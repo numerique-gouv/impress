@@ -1,5 +1,7 @@
 import { CunninghamProvider } from '@openfun/cunningham-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { E2ESDKClientProvider } from '@socialgouv/e2esdk-react';
+import { e2esdkClient } from './auth/useAuthStore';
 
 import { useCunninghamTheme } from '@/cunningham';
 import '@/i18n/initI18n';
@@ -27,7 +29,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <CunninghamProvider theme={theme}>
-        <Auth>{children}</Auth>
+        <E2ESDKClientProvider client={e2esdkClient}>
+          <Auth>{children}</Auth>
+        </E2ESDKClientProvider>
       </CunninghamProvider>
     </QueryClientProvider>
   );
