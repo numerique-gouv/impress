@@ -37,6 +37,7 @@ export interface Doc {
   accesses: Access[];
   created_at: string;
   updated_at: string;
+  is_e2ee: boolean;
   abilities: {
     destroy: boolean;
     link_configuration: boolean;
