@@ -16,12 +16,17 @@ import {
 import { forEach, isArray } from 'lodash';
 import React, { useMemo } from 'react';
 
+import { AIButton } from './AIButton';
+
 export const BlockNoteToolbar = () => {
   return (
     <FormattingToolbarController
       formattingToolbar={() => (
         <FormattingToolbar>
           <BlockTypeSelect key="blockTypeSelect" />
+
+          {/* Extra button to convert from markdown to json */}
+          <AIButton key="AIButton" />
 
           {/* Extra button to convert from markdown to json */}
           <MarkdownButton key="customButton" />
