@@ -58,7 +58,7 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
               $isMaterialIcon
               $size="48px"
               $theme="primary"
-              $variation="600"
+              $variation="700"
             >
               share
             </Text>

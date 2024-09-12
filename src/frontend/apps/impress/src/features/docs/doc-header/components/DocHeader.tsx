@@ -39,7 +39,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
             <Text
               $isMaterialIcon
               $theme="primary"
-              $variation="600"
+              $variation="700"
               $size="2rem"
               $css={`&:hover {background-color: ${colorsTokens()['primary-100']}; };`}
               $hasTransition

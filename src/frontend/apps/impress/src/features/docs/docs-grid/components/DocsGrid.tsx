@@ -102,7 +102,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
           as="h2"
           $theme="primary"
           $margin="none"
-          $variation="600"
+          $variation="700"
         >
           {t('Documents')}
         </Text>
