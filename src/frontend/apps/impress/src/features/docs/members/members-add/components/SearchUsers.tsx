@@ -1,3 +1,4 @@
+import { Button } from '@openfun/cunningham-react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputActionMeta, Options } from 'react-select';
@@ -116,16 +117,35 @@ export const SearchUsers = ({
 
   return (
     <AsyncSelect
+      className="search-users"
+      classNames={{
+        container: () => 'async-search-container',
+        control: () => 'async-search-control',
+        indicatorSeparator: () => 'async-search-separator',
+        valueContainer: () => 'async-search-value-container',
+        placeholder: () => 'async-search-placeholder',
+      }}
+      components={{
+        IndicatorsContainer: (c) => (
+          <Button
+            color="tertiary-text"
+            size="nano"
+            className="c__select__inner__actions__open"
+            icon={<span className="material-icons">arrow_drop_down</span>}
+            type="button"
+          />
+        ),
+      }}
       styles={{
         placeholder: (base) => ({
           ...base,
           fontSize: '14px',
-          color: colorsTokens()['primary-600'],
+          color: colorsTokens()['greyscale-900'],
         }),
         control: (base) => ({
           ...base,
           minHeight: '45px',
-          borderColor: colorsTokens()['primary-600'],
+          borderColor: colorsTokens()['greyscale-500'],
         }),
         input: (base) => ({
           ...base,

@@ -139,6 +139,7 @@ export const tokens = {
           xxl: '1400px',
         },
       },
+      components: { card: { 'box-shadow': 'none' } },
     },
     dark: {
       theme: {
@@ -313,6 +314,9 @@ export const tokens = {
             'color-hover': 'var(--c--theme--colors--primary-text)',
           },
         },
+        card: {
+          'box-shadow': '2px 2px 5px var(--c--theme--colors--greyscale-300)',
+        },
         datagrid: {
           header: {
             color: 'var(--c--theme--colors--primary-600)',
@@ -384,6 +388,16 @@ export const tokens = {
           'secondary-700': '#006C60',
           'secondary-800': '#00564D',
           'secondary-900': '#004039',
+          'greyscale-000': '#ffffff',
+          'greyscale-100': '#EEEFF2',
+          'greyscale-200': '#D3D7DE',
+          'greyscale-300': '#B6BCC8',
+          'greyscale-400': '#7C879C',
+          'greyscale-500': '#637089',
+          'greyscale-600': '#4D5B79',
+          'greyscale-700': '#364768',
+          'greyscale-800': '#203257',
+          'greyscale-900': '#1e1e1e',
         },
         font: { families: { accent: 'Open Sans', base: 'Open Sans' } },
         logo: {
@@ -394,6 +408,10 @@ export const tokens = {
         },
       },
       components: {
+        alert: {
+          'border-radius': '0',
+          'background-color': 'var(--c--theme--colors--greyscale-000)',
+        },
         button: {
           'medium-height': '48px',
           'border-radius': '8px',
@@ -432,8 +450,12 @@ export const tokens = {
         },
         datagrid: {
           header: {
-            color: 'var(--c--theme--colors--primary-600)',
+            color: 'var(--c--theme--colors--primary-700)',
             size: 'var(--c--theme--font--sizes--s)',
+          },
+          body: {
+            'background-color': 'transparent',
+            'background-color-hover': '#F4F4FD',
           },
         },
       },

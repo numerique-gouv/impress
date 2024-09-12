@@ -117,6 +117,7 @@
   --c--theme--breakpoints--lg: 992px;
   --c--theme--breakpoints--xl: 1200px;
   --c--theme--breakpoints--xxl: 1400px;
+  --c--components--card--box-shadow: none;
 }
 .cunningham-theme--dark {
   --c--theme--colors--greyscale-100: #182536;
@@ -282,6 +283,8 @@
   --c--components--button--tertiary-text--color-hover: var(
     --c--theme--colors--primary-text
   );
+  --c--components--card--box-shadow: 2px 2px 5px
+    var(--c--theme--colors--greyscale-300);
   --c--components--datagrid--header--color: var(
     --c--theme--colors--primary-600
   );
@@ -361,12 +364,26 @@
   --c--theme--colors--secondary-700: #006c60;
   --c--theme--colors--secondary-800: #00564d;
   --c--theme--colors--secondary-900: #004039;
+  --c--theme--colors--greyscale-000: #ffffff;
+  --c--theme--colors--greyscale-100: #eeeff2;
+  --c--theme--colors--greyscale-200: #d3d7de;
+  --c--theme--colors--greyscale-300: #b6bcc8;
+  --c--theme--colors--greyscale-400: #7c879c;
+  --c--theme--colors--greyscale-500: #637089;
+  --c--theme--colors--greyscale-600: #4d5b79;
+  --c--theme--colors--greyscale-700: #364768;
+  --c--theme--colors--greyscale-800: #203257;
+  --c--theme--colors--greyscale-900: #1e1e1e;
   --c--theme--font--families--accent: Open Sans;
   --c--theme--font--families--base: Open Sans;
   --c--theme--logo--src: /assets/logo-opendesk.svg;
   --c--theme--logo--widthHeader: 110px;
   --c--theme--logo--widthFooter: 220px;
   --c--theme--logo--alt: Gouvernement Logo;
+  --c--components--alert--border-radius: 0;
+  --c--components--alert--background-color: var(
+    --c--theme--colors--greyscale-000
+  );
   --c--components--button--medium-height: 48px;
   --c--components--button--border-radius: 8px;
   --c--components--button--font-weight: 600;
@@ -409,9 +426,11 @@
     --c--theme--colors--primary-text
   );
   --c--components--datagrid--header--color: var(
-    --c--theme--colors--primary-600
+    --c--theme--colors--primary-700
   );
   --c--components--datagrid--header--size: var(--c--theme--font--sizes--s);
+  --c--components--datagrid--body--background-color: transparent;
+  --c--components--datagrid--body--background-color-hover: #f4f4fd;
 }
 .clr-secondary-text {
   color: var(--c--theme--colors--secondary-text);

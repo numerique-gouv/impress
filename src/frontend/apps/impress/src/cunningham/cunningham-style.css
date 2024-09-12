@@ -279,6 +279,37 @@
   }
 
   /**
+   * React Select
+   */
+
+  .async-search-control {
+    border-radius: var(--c--components--forms-select--border-radius);
+    border-width: var(--c--components--forms-select--border-width);
+    border-color: var(--c--components--forms-select--border-color);
+    border-style: var(--c--components--forms-select--border-style);
+    background-color: var(--c--components--forms-select--background-color);
+    height: var(--c--components--forms-select--height);
+    padding: 0 12px;
+  }
+
+  .async-search-control:hover {
+    border-color: var(--c--components--forms-select--border-color);
+  }
+
+  .async-search-placeholder {
+    font-size: var(--c--components--forms-input--font-size);
+    font-weight: var(--c--components--forms-input--font-weight);
+  }
+
+  .async-search-separator {
+    display: none;
+  }
+
+  .async-search-value-container {
+    padding: 0;
+  }
+
+  /**
    * Alert
    */
 
@@ -290,5 +321,11 @@
   }
   .c__alert--error {
     border-color: var(--c--theme--colors--danger-600);
+  }
+}
+
+.cunningham-theme--openDesk {
+  .c__datagrid__table__container > table tbody tr {
+    border: 1px var(--c--theme--colors--greyscale-100) solid;
   }
 }
