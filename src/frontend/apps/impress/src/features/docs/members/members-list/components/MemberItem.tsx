@@ -120,18 +120,10 @@ export const MemberItem = ({
       )}
       {(isLastOwner || isOtherOwner) && (
         <Box $margin={{ top: 'tiny' }}>
-          <Alert
-            canClose={false}
-            type={VariantType.WARNING}
-            icon={
-              <Text className="material-icons" $theme="warning">
-                warning
-              </Text>
-            }
-          >
+          <Alert canClose={false} type={VariantType.WARNING}>
             {isLastOwner && (
               <Box $direction="column" $gap="0.2rem">
-                <Text $theme="warning">
+                <Text>
                   {t(
                     'You are the sole owner of this group, make another member the group owner before you can change your own role or be removed from your document.',
                   )}
