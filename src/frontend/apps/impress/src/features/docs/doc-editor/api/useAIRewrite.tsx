@@ -23,7 +23,6 @@ export const DocAI = async ({
   docId,
   ...params
 }: DocAIParams): Promise<DocAIResponse> => {
-  console.log('DocAI', docId, params);
   const response = await fetchAPI(`documents/${docId}/ai/`, {
     method: 'POST',
     body: JSON.stringify({

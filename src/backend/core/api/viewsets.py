@@ -437,7 +437,7 @@ class DocumentViewSet(
                     ]
                 )
                 corrected_response = json.loads(response.choices[0].message.content)
-                return drf_response.Response(corrected_response['phrase_summary'])
+                return drf_response.Response(corrected_response['sentence'])
             except (json.JSONDecodeError, KeyError) as e:
                 return drf_response.Response({"error": f"Error processing AI response: {str(e)}"}, status=500)
         elif action == "translate_de":
