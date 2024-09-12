@@ -4,7 +4,7 @@
 @import './cunningham-tokens';
 @import './cunningham-custom-tokens';
 @import '../assets/fonts/Marianne/Marianne-font';
-@import '../assets/fonts/Open_Sans/Open_Sans-font.css';
+@import '../assets/fonts/OpenSans/OpenSans-font.css';
 
 .c__button--primary {
   background-color: var(--c--components--button--primary--background--color);

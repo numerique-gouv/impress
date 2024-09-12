@@ -1,7 +1,0 @@
-@font-face {
-  font-family: 'Open Sans';
-  font-stretch: PERCENTAGE_RANGE_LOW_TO_HIGH; /* Note that font-stretch is a % of normal width */
-  font-style: NORMAL_OR_ITALIC; /* See note below */
-  font-weight: NUMERIC_RANGE_LOW_TO_HIGH;
-  src: url('OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
-}
