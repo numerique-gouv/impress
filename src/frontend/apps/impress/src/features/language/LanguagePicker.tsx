@@ -17,7 +17,7 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
     height: auto;
     border-color: #ddd;
     padding: 0 0.15rem 0 0.45rem;
-    border-radius: 1px;
+    border-radius: var(--c--components--button--border-radius);
 
     .labelled-box .labelled-box__children {
       padding-right: 2rem;

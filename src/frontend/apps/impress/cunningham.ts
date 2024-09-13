@@ -286,6 +286,7 @@ const config = {
         button: {
           'medium-height': '48px',
           'border-radius': '8px',
+          'border-radius--active': '8px',
           'font-weight': '600',
           primary: {
             background: {

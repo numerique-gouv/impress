@@ -396,6 +396,7 @@
   );
   --c--components--button--medium-height: 48px;
   --c--components--button--border-radius: 8px;
+  --c--components--button--border-radius--active: 8px;
   --c--components--button--font-weight: 600;
   --c--components--button--primary--background--color: var(
     --c--theme--colors--primary-700
