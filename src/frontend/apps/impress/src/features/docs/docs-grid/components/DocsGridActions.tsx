@@ -46,7 +46,7 @@ export const DocsGridActions = ({ doc }: DocsGridActionsProps) => {
               icon={<span className="material-icons">edit</span>}
               size="small"
             >
-              <Text $theme="primary">{t('Update document')}</Text>
+              <Text>{t('Update document')}</Text>
             </Button>
           )}
           {doc.abilities.destroy && (
@@ -59,7 +59,7 @@ export const DocsGridActions = ({ doc }: DocsGridActionsProps) => {
               icon={<span className="material-icons">delete</span>}
               size="small"
             >
-              <Text $theme="primary">{t('Delete document')}</Text>
+              <Text>{t('Delete document')}</Text>
             </Button>
           )}
         </Box>
