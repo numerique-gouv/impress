@@ -91,7 +91,7 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
                 <Text $isMaterialIcon $size="m">
                   translate
                 </Text>{' '}
-                FR
+                French
               </>
             ),
             action: 'translate_fr',
@@ -102,7 +102,7 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
                 <Text $isMaterialIcon $size="m">
                   translate
                 </Text>{' '}
-                EN
+                English
               </>
             ),
             action: 'translate_en',
@@ -113,7 +113,7 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
                 <Text $isMaterialIcon $size="m">
                   translate
                 </Text>{' '}
-                DE
+                German
               </>
             ),
             action: 'translate_de',

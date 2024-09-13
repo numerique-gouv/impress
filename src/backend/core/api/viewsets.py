@@ -389,29 +389,33 @@ class DocumentViewSet(
         )
 
         action_configs = {
+            "prompt": {
+                "system_content": 'Answer to the prompt. Send the data back in this json format: {"answer_prompt": "Your answer"}. Do not give any other information.',
+                "response_key": 'answer_prompt'
+            },
             "correct": {
-                "system_content": 'Tu es un correcteur de texte. Corrige uniquement la grammaire et l\'orthographe de la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase_corrigee": "ta phrase corrigée"}. Ne donne aucune autre information.',
-                "response_key": 'phrase_corrigee'
+                "system_content": 'You are a text corrector. Only correct the grammar and spelling of the given sentence. Keep the language in which the sentence was originally written. Return only a JSON in the following format: {"corrected_sentence": "your corrected sentence"}. Do not provide any other information.',
+                "response_key": 'corrected_sentence'
             },
             "rephrase": {
-                "system_content": 'Tu es un ecrivain. Rephrase la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase_rephrase": "ta phrase rephrasé"}. Ne donne aucune autre information.',
-                "response_key": 'phrase_rephrase'
+                "system_content": 'You are a writer. Rephrase the given sentence. Keep the language in which the sentence was originally written. Return only a JSON in the following format: {"rephrased_sentence": "your rephrased sentence"}. Do not provide any other information.',
+                "response_key": 'rephrased_sentence'
             },
             "summarize": {
-                "system_content": 'Tu es un ecrivain. Fait un sommaire de la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase_summary": "ton sommaire"}. Ne donne aucune autre information.',
-                "response_key": 'phrase_summary'
+                "system_content": 'You are a writer. Summarize the given sentence. Keep the language in which the sentence was originally written. Return only a JSON in the following format: {"summary": "your summary"}. Do not provide any other information.',
+                "response_key": 'summary'
             },
             "translate_en": {
-                "system_content": 'Tu es un traducteur anglais. Traduit en anglais la phrase donnée. Renvoie uniquement un JSON au format suivant: {"sentence": "Your sentence"}. Ne donne aucune autre information.',
+                "system_content": 'You are an English translator. Translate the given sentence to English. Return only a JSON in the following format: {"sentence": "Your translated sentence"}. Do not provide any other information.',
                 "response_key": 'sentence'
             },
             "translate_de": {
-                "system_content": 'Tu es un traducteur allemand. Traduit en allemand la phrase donnée. Renvoie uniquement un JSON au format suivant: {"sentence": "Your sentence"}. Ne donne aucune autre information.',
+                "system_content": 'You are a German translator. Translate the given sentence to German. Return only a JSON in the following format: {"sentence": "Your translated sentence"}. Do not provide any other information.',
                 "response_key": 'sentence'
             },
             "translate_fr": {
-                "system_content": 'Tu es un traducteur francais. Traduit en francais la phrase donnée. Renvoie uniquement un JSON au format suivant: {"phrase": "Your sentence"}. Ne donne aucune autre information.',
-                "response_key": 'phrase'
+                "system_content": 'You are a French translator. Translate the given sentence to French. Return only a JSON in the following format: {"sentence": "Your translated sentence"}. Do not provide any other information.',
+                "response_key": 'sentence'
             }
         }
 
