@@ -3,9 +3,9 @@ import {
   useComponentsContext,
   useSelectedBlocks,
 } from '@blocknote/react';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 
-import { Box, BoxButton } from '@/components';
+import { Box, BoxButton, Text } from '@/components';
 
 import { Doc } from '../../doc-management';
 import { AIActions, useAIRewrite } from '../api/useAIRewrite';
@@ -42,27 +42,80 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
       <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-color-picker-dropdown">
         {[
           {
-            label: 'Rephrase',
+            label: (
+              <>
+                <Text $isMaterialIcon $size="m">
+                  text_fields
+                </Text>{' '}
+                Use as prompt
+              </>
+            ),
+            action: 'prompt',
+          },
+          {
+            label: (
+              <>
+                <Text $isMaterialIcon $size="m">
+                  refresh
+                </Text>{' '}
+                Rephrase
+              </>
+            ),
             action: 'rephrase',
           },
           {
-            label: 'Summarize',
+            label: (
+              <>
+                <Text $isMaterialIcon $size="m">
+                  summarize
+                </Text>{' '}
+                Summarize
+              </>
+            ),
             action: 'summarize',
           },
           {
-            label: 'Correct',
+            label: (
+              <>
+                <Text $isMaterialIcon $size="m">
+                  check
+                </Text>{' '}
+                Correct
+              </>
+            ),
             action: 'correct',
           },
           {
-            label: 'Translate to French',
+            label: (
+              <>
+                <Text $isMaterialIcon $size="m">
+                  translate
+                </Text>{' '}
+                FR
+              </>
+            ),
             action: 'translate_fr',
           },
           {
-            label: 'Translate to English',
+            label: (
+              <>
+                <Text $isMaterialIcon $size="m">
+                  translate
+                </Text>{' '}
+                EN
+              </>
+            ),
             action: 'translate_en',
           },
           {
-            label: 'Translate to German',
+            label: (
+              <>
+                <Text $isMaterialIcon $size="m">
+                  translate
+                </Text>{' '}
+                DE
+              </>
+            ),
             action: 'translate_de',
           },
         ].map(({ label, action }) => (
@@ -80,7 +133,7 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
 
 interface AIButtonProps {
   action: AIActions;
-  label: string;
+  label: ReactNode;
   docId: Doc['id'];
 }
 
@@ -112,7 +165,7 @@ const AIButton = ({ action, label, docId }: AIButtonProps) => {
       $hasTransition
       $radius="6px"
       $width="100%"
-      $justify="center"
+      $justify="flex-start"
       $align="center"
       $gap="1rem"
       $css="&:hover{background-color: #f2f8ff;}text-transform: capitalize!important;"

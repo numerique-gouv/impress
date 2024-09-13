@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { APIError, errorCauses, fetchAPI } from '@/api';
 
 export type AIActions =
+  | 'prompt'
   | 'rephrase'
   | 'summarize'
   | 'translate'
