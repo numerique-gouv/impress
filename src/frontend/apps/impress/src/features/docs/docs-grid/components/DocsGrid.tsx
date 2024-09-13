@@ -129,7 +129,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
           {
             headerName: '',
             id: 'visibility',
-            size: 95,
+            size: 120,
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>

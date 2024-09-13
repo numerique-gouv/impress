@@ -145,8 +145,8 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
       $wrap="wrap"
     >
       <IconBG iconName="group_add" />
-      <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 70%;">
-        <Box $gap="1rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
+      <Box $gap="0.7rem" $direction="row" $css="flex: 70%;">
+        <Box $gap="1rem" $direction="row" $css="flex: 80%;">
           <Box $css="flex-shrink: 0;" $width="15rem">
             <SearchUsers
               key={resetKey + 1}

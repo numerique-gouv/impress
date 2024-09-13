@@ -24,7 +24,7 @@ const RedStripe = styled.div`
 
 export const Header = () => {
   const { t } = useTranslation();
-  const { themeTokens } = useCunninghamTheme();
+  const { themeTokens, theme } = useCunninghamTheme();
   const logo = themeTokens().logo;
 
   return (
@@ -93,7 +93,7 @@ export const Header = () => {
         <Box $align="center" $gap="1.5rem" $direction="row">
           <AccountDropdown />
           <LanguagePicker />
-          <LaGaufre />
+          {theme === 'dsfr' && <LaGaufre />}
         </Box>
       </Box>
     </Box>
