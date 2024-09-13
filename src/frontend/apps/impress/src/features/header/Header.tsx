@@ -35,6 +35,7 @@ export const Header = () => {
       $height={HEADER_HEIGHT}
       $zIndex="100"
       $css="box-shadow: 0 1px 4px #00000040;"
+      $background="var(--c--components--header--background)"
     >
       <RedStripe />
       <Box
@@ -81,8 +82,7 @@ export const Header = () => {
               <Text
                 $margin="none"
                 as="h2"
-                $theme="primary"
-                $variation="800"
+                $color="var(--c--components--header--title-color)"
                 $zIndex={1}
               >
                 {t('Docs')}

@@ -22,7 +22,11 @@ export const Footer = () => {
   const logo = themeTokens().logo;
 
   return (
-    <Box $position="relative" as="footer">
+    <Box
+      $position="relative"
+      as="footer"
+      $background="var(--c--components--footer--background)"
+    >
       <BlueStripe />
       <Box $padding={{ top: 'large', horizontal: 'big', bottom: 'small' }}>
         <Box

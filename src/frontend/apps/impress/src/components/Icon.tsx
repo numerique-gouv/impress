@@ -40,6 +40,7 @@ export const IconOptions = ({ isOpen, ...props }: IconOptionsProps) => {
         transition: all 0.3s ease-in-out;
         transform: rotate(${isOpen ? '90' : '0'}deg);
       `}
+      $color="var(--c--theme--colors--primary-600)"
     >
       more_vert
     </Text>

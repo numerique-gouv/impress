@@ -13,7 +13,7 @@ export const Card = ({
 
   return (
     <Box
-      $background="white"
+      $background="var(--c--components--header--background)"
       $radius="4px"
       $css={`
         box-shadow: 2px 2px 5px ${componentTokens()['card']['box-shadow']};

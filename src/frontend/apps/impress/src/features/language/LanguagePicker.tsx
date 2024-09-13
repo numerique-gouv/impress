@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
+import { useCunninghamTheme } from '@/cunningham';
 
 import IconLanguage from './assets/icon-language.svg?url';
 
@@ -15,7 +16,7 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
   .c__select__wrapper {
     min-height: 2rem;
     height: auto;
-    border-color: #ddd;
+    border-color: var(--c--components--forms-select--border-color);
     padding: 0 0.15rem 0 0.45rem;
     border-radius: var(--c--components--button--border-radius);
 
@@ -36,6 +37,8 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
 export const LanguagePicker = () => {
   const { t, i18n } = useTranslation();
   const { preload: languages } = i18n.options;
+  const { componentTokens } = useCunninghamTheme();
+  const picker = componentTokens().languagePicker;
 
   const optionsPicker = useMemo(() => {
     return (languages || []).map((lang) => ({
@@ -48,7 +51,13 @@ export const LanguagePicker = () => {
           $gap="0.7rem"
           $align="center"
         >
-          <Image priority src={IconLanguage} alt={t('Language Icon')} />
+          <Image
+            priority
+            src={picker.image}
+            width={16}
+            height={16}
+            alt={t('Language Icon')}
+          />
           <Text $theme="greyscale" $variation="900">
             {lang.toUpperCase()}
           </Text>

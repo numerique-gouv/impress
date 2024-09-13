@@ -15,7 +15,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             as="main"
             $minHeight={`calc(100vh - ${HEADER_HEIGHT})`}
             $width="100%"
-            $background={colorsTokens()['greyscale-100']}
+            $background="var(--c--components--main--background)"
           >
             {children}
           </Box>
