@@ -125,6 +125,8 @@
   --c--components--pill--radius: 3px;
   --c--components--pill--padding-x: 4px;
   --c--components--pill--padding-y: 0;
+  --c--components--strip--color: var(--c--theme--colors--danger-500);
+  --c--components--grid--color: var(--c--theme--colors--danger-900);
 }
 .cunningham-theme--dark {
   --c--theme--colors--greyscale-100: #182536;
@@ -446,6 +448,8 @@
   --c--components--pill--radius: 8px;
   --c--components--pill--padding-x: 16px;
   --c--components--pill--padding-y: 2px;
+  --c--components--strip--color: var(--c--theme--colors--primary-300);
+  --c--components--grid--color: var(--c--theme--colors--greyscale-500);
 }
 .clr-secondary-text {
   color: var(--c--theme--colors--secondary-text);

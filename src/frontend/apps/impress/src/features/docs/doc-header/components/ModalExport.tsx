@@ -152,10 +152,21 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
       size={ModalSize.MEDIUM}
       title={
         <Box $align="center" $gap="1rem">
-          <Text className="material-icons" $size="3.5rem" $theme="primary">
+          <Text
+            className="material-icons"
+            $size="3.5rem"
+            $theme="greyscale"
+            $variation="900"
+          >
             picture_as_pdf
           </Text>
-          <Text as="h2" $size="h3" $margin="none" $theme="primary">
+          <Text
+            as="h2"
+            $size="h3"
+            $margin="none"
+            $theme="greyscale"
+            $variation="900"
+          >
             {t('Export')}
           </Text>
         </Box>

@@ -152,6 +152,8 @@ export const tokens = {
           'padding-x': '4px',
           'padding-y': '0',
         },
+        strip: { color: 'var(--c--theme--colors--danger-500)' },
+        grid: { color: 'var(--c--theme--colors--danger-900)' },
       },
     },
     dark: {
@@ -481,6 +483,8 @@ export const tokens = {
           'padding-x': '16px',
           'padding-y': '2px',
         },
+        strip: { color: 'var(--c--theme--colors--primary-300)' },
+        grid: { color: 'var(--c--theme--colors--greyscale-500)' },
       },
     },
   },

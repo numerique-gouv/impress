@@ -34,6 +34,12 @@ const config = {
           'padding-x': '4px',
           'padding-y': '0',
         },
+        strip: {
+          color: 'var(--c--theme--colors--danger-500)',
+        },
+        grid: {
+          color: 'var(--c--theme--colors--danger-900)',
+        },
       },
     },
     dsfr: {
@@ -336,6 +342,12 @@ const config = {
           radius: '8px',
           'padding-x': '16px',
           'padding-y': '2px',
+        },
+        strip: {
+          color: 'var(--c--theme--colors--primary-300)',
+        },
+        grid: {
+          color: 'var(--c--theme--colors--greyscale-500)',
         },
       },
     },

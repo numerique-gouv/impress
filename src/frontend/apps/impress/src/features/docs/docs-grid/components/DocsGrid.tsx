@@ -116,7 +116,10 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $weight="bold" $theme="greyscale" $variation="900">
+                  <Text
+                    $weight="bold"
+                    $color="var(--c--components--grid--color)"
+                  >
                     {row.title}
                   </Text>
                 </StyledLink>
@@ -154,7 +157,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $theme="greyscale" $variation="900">
+                  <Text $color="var(--c--components--grid--color)">
                     {formatDate(row.created_at)}
                   </Text>
                 </StyledLink>
@@ -167,7 +170,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $theme="greyscale" $variation="900">
+                  <Text $color="var(--c--components--grid--color)">
                     {formatDate(row.updated_at)}
                   </Text>
                 </StyledLink>
@@ -180,7 +183,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $theme="greyscale" $variation="900">
+                  <Text $color="var(--c--components--grid--color)">
                     {transRole(currentDocRole(row.abilities))}
                   </Text>
                 </StyledLink>
@@ -193,7 +196,7 @@ export const DocsGrid = ({ topSlot }: { topSlot?: ReactNode }) => {
             renderCell: ({ row }) => {
               return (
                 <StyledLink href={`/docs/${row.id}`}>
-                  <Text $theme="greyscale" $variation="900">
+                  <Text $color="var(--c--components--grid--color)">
                     {row.accesses.length}
                   </Text>
                 </StyledLink>

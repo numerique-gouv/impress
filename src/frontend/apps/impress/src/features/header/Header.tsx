@@ -18,7 +18,7 @@ const RedStripe = styled.div`
   position: absolute;
   height: 5px;
   width: 100%;
-  background: var(--c--theme--colors--danger-500);
+  background: var(--c--components--strip--color);
   top: 0;
 `;
 
