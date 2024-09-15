@@ -2,10 +2,17 @@ import {
   useBlockNoteEditor,
   useComponentsContext,
   useSelectedBlocks,
+  ComponentProps,
 } from '@blocknote/react';
-import { ReactNode, useMemo } from 'react';
+import { mergeRefs } from "@mantine/hooks";
 
-import { Box, BoxButton, Text } from '@/components';
+import { ReactNode, useMemo, forwardRef, useRef, useCallback, useState, createContext } from 'react';
+
+import {
+  Menu as MantineMenu,
+} from "@mantine/core";
+
+import {Box, Text } from '@/components';
 
 import { Doc } from '../../doc-management';
 import { AIActions, useAIRewrite } from '../api/useAIRewrite';
@@ -32,116 +39,45 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
       <Components.Generic.Menu.Trigger>
         <Components.FormattingToolbar.Button
           className="bn-button"
-          data-test="colors"
+          data-test="ai-actions"
           label="AI"
           mainTooltip="AI Actions"
         >
           AI
         </Components.FormattingToolbar.Button>
       </Components.Generic.Menu.Trigger>
-      <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-color-picker-dropdown">
-        {[
-          {
-            label: (
-              <>
-                <Text $isMaterialIcon $size="m">
-                  text_fields
-                </Text>{' '}
-                Use as prompt
-              </>
-            ),
-            action: 'prompt',
-          },
-          {
-            label: (
-              <>
-                <Text $isMaterialIcon $size="m">
-                  refresh
-                </Text>{' '}
-                Rephrase
-              </>
-            ),
-            action: 'rephrase',
-          },
-          {
-            label: (
-              <>
-                <Text $isMaterialIcon $size="m">
-                  summarize
-                </Text>{' '}
-                Summarize
-              </>
-            ),
-            action: 'summarize',
-          },
-          {
-            label: (
-              <>
-                <Text $isMaterialIcon $size="m">
-                  check
-                </Text>{' '}
-                Correct
-              </>
-            ),
-            action: 'correct',
-          },
-          {
-            label: (
-              <>
-                <Text $isMaterialIcon $size="m">
-                  translate
-                </Text>{' '}
-                French
-              </>
-            ),
-            action: 'translate_fr',
-          },
-          {
-            label: (
-              <>
-                <Text $isMaterialIcon $size="m">
-                  translate
-                </Text>{' '}
-                English
-              </>
-            ),
-            action: 'translate_en',
-          },
-          {
-            label: (
-              <>
-                <Text $isMaterialIcon $size="m">
-                  translate
-                </Text>{' '}
-                German
-              </>
-            ),
-            action: 'translate_de',
-          },
-        ].map(({ label, action }) => (
-          <AIButton
-            key={`button-${action}`}
-            action={action as AIActions}
-            label={label}
-            docId={doc.id}
-          />
-        ))}
+      <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-drag-handle-menu">
+        <AIMenuItem action="prompt" docId={doc.id} icon={<Text $isMaterialIcon $size="s">text_fields</Text>}>
+          Use as prompt
+        </AIMenuItem>
+        <AIMenuItem action="rephrase" docId={doc.id} icon={<Text $isMaterialIcon $size="s">refresh</Text>}>
+          Rephrase
+        </AIMenuItem>
+        <AIMenuItem action="summarize" docId={doc.id} icon={<Text $isMaterialIcon $size="s">summarize</Text>}>
+          Summarize
+        </AIMenuItem>
+        <AIMenuItem action="correct" docId={doc.id} icon={<Text $isMaterialIcon $size="s">check</Text>}>
+          Correct
+        </AIMenuItem>
+        <TranslateMenu docId={doc.id} />
       </Components.Generic.Menu.Dropdown>
     </Components.Generic.Menu.Root>
   );
 }
 
-interface AIButtonProps {
+interface AIMenuItemProps {
   action: AIActions;
-  label: ReactNode;
   docId: Doc['id'];
+  children: ReactNode;
+  icon: ReactNode;
 }
 
-const AIButton = ({ action, label, docId }: AIButtonProps) => {
+const AIMenuItem = ({ action, docId, children, icon }: AIMenuItemProps) => {
   const editor = useBlockNoteEditor();
+  const Components = useComponentsContext()!;
   const { mutateAsync: requestAI, isPending } = useAIRewrite();
 
-  const handleRephraseAI = async (action: AIActions) => {
+  const handleAIAction = useCallback(async () => {
     const textCursorPosition = editor.getSelectedText();
 
     const newText = await requestAI({
@@ -152,27 +88,122 @@ const AIButton = ({ action, label, docId }: AIButtonProps) => {
 
     editor.insertInlineContent([
       newText,
-      //{ type: 'text', text: 'World', styles: { bold: true } },
     ]);
-  };
+  }, [editor, requestAI, docId, action]);
 
   return (
-    <BoxButton
-      key={`button-${action}`}
-      $padding={{ horizontal: 'tiny', vertical: 'tiny' }}
-      $margin="auto"
-      onClick={() => void handleRephraseAI(action)}
-      $hasTransition
-      $radius="6px"
-      $width="100%"
-      $justify="flex-start"
-      $align="center"
-      $gap="1rem"
-      $css="&:hover{background-color: #f2f8ff;}text-transform: capitalize!important;"
-      $direction="row"
+    <Components.Generic.Menu.Item
+      closeMenuOnClick={false}
+      icon={icon}
+      onClick={handleAIAction}
+      rightSection={isPending && <Box className="loader" />}
     >
-      {label}
-      {isPending && <Box className="loader" />}
-    </BoxButton>
+      {children}
+    </Components.Generic.Menu.Item>
   );
 };
+
+interface TranslateMenuProps {
+  docId: Doc['id'];
+}
+
+const TranslateMenu = ({ docId }: TranslateMenuProps) => {
+  const Components = useComponentsContext()!;
+
+  return (
+    <SubMenu position="right" sub={true} icon={<Text $isMaterialIcon $size="s">translate</Text>} close>
+      <Components.Generic.Menu.Trigger sub={true}>
+        <Components.Generic.Menu.Item subTrigger={true}>
+          Translate
+        </Components.Generic.Menu.Item>
+      </Components.Generic.Menu.Trigger>
+      <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-color-picker-dropdown">
+        <AIMenuItem action="translate_en" docId={docId}>
+          English
+        </AIMenuItem>
+        <AIMenuItem action="translate_fr" docId={docId}>
+          French
+        </AIMenuItem>
+        <AIMenuItem action="translate_de" docId={docId}>
+          German
+        </AIMenuItem>
+      </Components.Generic.Menu.Dropdown>
+    </SubMenu>
+  );
+};
+
+const SubMenuContext = createContext<
+  | {
+      onMenuMouseOver: () => void;
+      onMenuMouseLeave: () => void;
+    }
+  | undefined
+>(undefined);
+
+
+const SubMenu = forwardRef<
+  HTMLButtonElement,
+  ComponentProps["Generic"]["Menu"]["Root"]
+>((props, ref) => {
+  const {
+    children,
+    onOpenChange,
+    position,
+    icon,
+    sub, // not used
+    ...rest
+  } = props;
+
+  const [opened, setOpened] = useState(false);
+
+  const itemRef = useRef<HTMLButtonElement | null>(null);
+
+  const menuCloseTimer = useRef<ReturnType<typeof setTimeout> | undefined>();
+
+  const mouseLeave = useCallback(() => {
+    if (menuCloseTimer.current) {
+      clearTimeout(menuCloseTimer.current);
+    }
+    menuCloseTimer.current = setTimeout(() => {
+      setOpened(false);
+    }, 250);
+  }, []);
+
+  const mouseOver = useCallback(() => {
+    if (menuCloseTimer.current) {
+      clearTimeout(menuCloseTimer.current);
+    }
+    setOpened(true);
+  }, []);
+
+  return (
+    <SubMenuContext.Provider
+      value={{
+        onMenuMouseOver: mouseOver,
+        onMenuMouseLeave: mouseLeave,
+      }}>
+      <MantineMenu.Item
+        className="bn-menu-item bn-mt-sub-menu-item"
+        closeMenuOnClick={false}
+        ref={mergeRefs(ref, itemRef)}
+        onMouseOver={mouseOver}
+        onMouseLeave={mouseLeave}
+        leftSection={icon}>
+        <MantineMenu
+          portalProps={{
+            target: itemRef.current
+              ? itemRef.current.parentElement!
+              : undefined,
+          }}
+          middlewares={{ flip: true, shift: true, inline: false, size: true }}
+          trigger={"hover"}
+          opened={opened}
+          onClose={() => onOpenChange?.(false)}
+          onOpen={() => onOpenChange?.(true)}
+          position={position}>
+          {children}
+        </MantineMenu>
+      </MantineMenu.Item>
+    </SubMenuContext.Provider>
+  );
+});
