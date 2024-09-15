@@ -78,17 +78,21 @@ const AIMenuItem = ({ action, docId, children, icon }: AIMenuItemProps) => {
   const { mutateAsync: requestAI, isPending } = useAIRewrite();
 
   const handleAIAction = useCallback(async () => {
-    const textCursorPosition = editor.getSelectedText();
+    const selectedBlocks = editor.getSelection()?.blocks;
 
+    if (!selectedBlocks || selectedBlocks.length === 0) {
+      return;
+    }
+
+    const markdown = await editor.blocksToMarkdownLossy(selectedBlocks);
     const newText = await requestAI({
       docId,
-      text: textCursorPosition,
+      text: markdown,
       action,
     });
 
-    editor.insertInlineContent([
-      newText,
-    ]);
+    const blockMarkdown = await editor.tryParseMarkdownToBlocks(newText);
+    editor.replaceBlocks(selectedBlocks, blockMarkdown);
   }, [editor, requestAI, docId, action]);
 
   return (

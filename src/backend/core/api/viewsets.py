@@ -390,32 +390,32 @@ class DocumentViewSet(
 
         action_configs = {
             "prompt": {
-                "system_content": 'Answer to the prompt. Send the data back in this json format: {"answer_prompt": "Your answer"}. Do not give any other information.',
+                "system_content": 'Answer to the prompt. The output should be in markdown format. Send the data back in this json format: {"answer_prompt": "Your markdown answer"}. Do not give any other information.',
                 "response_key": 'answer_prompt'
             },
             "correct": {
-                "system_content": 'You are a text corrector. Only correct the grammar and spelling of the given sentence. Keep the language in which the sentence was originally written. Return only a JSON in the following format: {"corrected_sentence": "your corrected sentence"}. Do not provide any other information.',
-                "response_key": 'corrected_sentence'
+                "system_content": 'You are a text corrector. Only correct the grammar and spelling of the given markdown text. Keep the language and markdown formatting in which the text was originally written. Return only a JSON in the following format: {"corrected_text": "your corrected markdown text"}. Do not provide any other information.',
+                "response_key": 'corrected_text'
             },
             "rephrase": {
-                "system_content": 'You are a writer. Rephrase the given sentence. Keep the language in which the sentence was originally written. Return only a JSON in the following format: {"rephrased_sentence": "your rephrased sentence"}. Do not provide any other information.',
-                "response_key": 'rephrased_sentence'
+                "system_content": 'You are a writer. Rephrase the given markdown text. Keep the language and markdown formatting in which the text was originally written. Return only a JSON in the following format: {"rephrased_text": "your rephrased markdown text"}. Do not provide any other information.',
+                "response_key": 'rephrased_text'
             },
             "summarize": {
-                "system_content": 'You are a writer. Summarize the given sentence. Keep the language in which the sentence was originally written. Return only a JSON in the following format: {"summary": "your summary"}. Do not provide any other information.',
+                "system_content": 'You are a writer. Summarize the given markdown text. Keep the language in which the text was originally written and use appropriate markdown formatting. Return only a JSON in the following format: {"summary": "your markdown summary"}. Do not provide any other information.',
                 "response_key": 'summary'
             },
             "translate_en": {
-                "system_content": 'You are an English translator. Translate the given sentence to English. Return only a JSON in the following format: {"sentence": "Your translated sentence"}. Do not provide any other information.',
-                "response_key": 'sentence'
+                "system_content": 'You are an English translator. Translate the given markdown text to English, preserving the markdown formatting. Return only a JSON in the following format: {"text": "Your translated markdown text in English"}. Do not provide any other information.',
+                "response_key": 'text'
             },
             "translate_de": {
-                "system_content": 'You are a German translator. Translate the given sentence to German. Return only a JSON in the following format: {"sentence": "Your translated sentence"}. Do not provide any other information.',
-                "response_key": 'sentence'
+                "system_content": 'You are a German translator. Translate the given markdown text to German, preserving the markdown formatting. Return only a JSON in the following format: {"text": "Your translated markdown text in German"}. Do not provide any other information.',
+                "response_key": 'text'
             },
             "translate_fr": {
-                "system_content": 'You are a French translator. Translate the given sentence to French. Return only a JSON in the following format: {"sentence": "Your translated sentence"}. Do not provide any other information.',
-                "response_key": 'sentence'
+                "system_content": 'You are a French translator. Translate the given markdown text to French, preserving the markdown formatting. Return only a JSON in the following format: {"text": "Your translated markdown text in French"}. Do not provide any other information.',
+                "response_key": 'text'
             }
         }
 
@@ -426,9 +426,10 @@ class DocumentViewSet(
         try:
             response = client.chat.completions.create(
                 model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+                response_format={ "type": "json_object"},
                 messages=[
                     {"role": "system", "content": config["system_content"]},
-                    {"role": "user", "content": f'{{"phrase": "{text}"}}'},
+                    {"role": "user", "content": json.dumps({"mardown_input": text})},
                 ]
             )
             corrected_response = json.loads(response.choices[0].message.content)
