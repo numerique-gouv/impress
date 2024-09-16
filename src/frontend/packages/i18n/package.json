@@ -11,7 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@types/jest": "29.5.12",
+    "@types/jest": "29.5.13",
     "@types/node": "*",
     "eslint-config-impress": "*",
     "eslint-plugin-import": "2.30.0",
