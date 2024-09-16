@@ -140,7 +140,16 @@
       "accessibility-dinum-services": "<strong>DINUM</strong> s'engage à rendre accessibles ses services numériques, conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005.",
       "accessibility-form-defenseurdesdroits": "Écrire un message au<1>Défenseur des droits</1>",
       "accessibility-not-audit": "<strong>docs.numerique.gouv.fr</strong> n'est pas en conformité avec le RGAA 4.1. Le site n'a <strong>pas encore été audité.</strong>",
-      "you have reported to the website manager a lack of accessibility that prevents you from accessing content or one of the services of the portal and you have not received a satisfactory response.": "vous avez signalé au responsable du site internet un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des services du portail et vous n'avez pas obtenu de réponse satisfaisante."
+      "you have reported to the website manager a lack of accessibility that prevents you from accessing content or one of the services of the portal and you have not received a satisfactory response.": "vous avez signalé au responsable du site internet un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des services du portail et vous n'avez pas obtenu de réponse satisfaisante.",
+      "AI Actions": "Actions IA",
+      "Use as prompt": "Utiliser comme prompt",
+      "Rephrase": "Reformuler",
+      "Summarize": "Résumer",
+      "Correct": "Corriger",
+      "Translate": "Traduire",
+      "English": "Anglais",
+      "French": "Français",
+      "German": "Allemand"
     }
   }
 }

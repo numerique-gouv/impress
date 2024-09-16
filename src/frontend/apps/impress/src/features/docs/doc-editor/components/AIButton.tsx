@@ -17,6 +17,8 @@ import {Box, Text } from '@/components';
 import { Doc } from '../../doc-management';
 import { AIActions, useAIRewrite } from '../api/useAIRewrite';
 
+import { useTranslation } from 'react-i18next';
+
 interface AIGroupButtonProps {
   doc: Doc;
 }
@@ -25,6 +27,7 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
   const selectedBlocks = useSelectedBlocks(editor);
+  const { t } = useTranslation();
 
   const show = useMemo(() => {
     return !!selectedBlocks.find((block) => block.content !== undefined);
@@ -41,23 +44,23 @@ export function AIGroupButton({ doc }: AIGroupButtonProps) {
           className="bn-button"
           data-test="ai-actions"
           label="AI"
-          mainTooltip="AI Actions"
+          mainTooltip={t('AI Actions')}
         >
           AI
         </Components.FormattingToolbar.Button>
       </Components.Generic.Menu.Trigger>
       <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-drag-handle-menu">
         <AIMenuItem action="prompt" docId={doc.id} icon={<Text $isMaterialIcon $size="s">text_fields</Text>}>
-          Use as prompt
+          {t('Use as prompt')}
         </AIMenuItem>
         <AIMenuItem action="rephrase" docId={doc.id} icon={<Text $isMaterialIcon $size="s">refresh</Text>}>
-          Rephrase
+          {t('Rephrase')}
         </AIMenuItem>
         <AIMenuItem action="summarize" docId={doc.id} icon={<Text $isMaterialIcon $size="s">summarize</Text>}>
-          Summarize
+          {t('Summarize')}
         </AIMenuItem>
         <AIMenuItem action="correct" docId={doc.id} icon={<Text $isMaterialIcon $size="s">check</Text>}>
-          Correct
+          {t('Correct')}
         </AIMenuItem>
         <TranslateMenu docId={doc.id} />
       </Components.Generic.Menu.Dropdown>
@@ -113,23 +116,24 @@ interface TranslateMenuProps {
 
 const TranslateMenu = ({ docId }: TranslateMenuProps) => {
   const Components = useComponentsContext()!;
+  const { t } = useTranslation();
 
   return (
     <SubMenu position="right" sub={true} icon={<Text $isMaterialIcon $size="s">translate</Text>} close>
       <Components.Generic.Menu.Trigger sub={true}>
         <Components.Generic.Menu.Item subTrigger={true}>
-          Translate
+          {t('Translate')}
         </Components.Generic.Menu.Item>
       </Components.Generic.Menu.Trigger>
       <Components.Generic.Menu.Dropdown className="bn-menu-dropdown bn-color-picker-dropdown">
         <AIMenuItem action="translate_en" docId={docId}>
-          English
+          {t('English')}
         </AIMenuItem>
         <AIMenuItem action="translate_fr" docId={docId}>
-          French
+          {t('French')}
         </AIMenuItem>
         <AIMenuItem action="translate_de" docId={docId}>
-          German
+          {t('German')}
         </AIMenuItem>
       </Components.Generic.Menu.Dropdown>
     </SubMenu>
