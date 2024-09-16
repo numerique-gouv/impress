@@ -416,73 +416,62 @@ class Document(BaseModel):
             Bucket=default_storage.bucket_name, Key=self.file_key, VersionId=version_id
         )
 
-    def get_versions_slice(
-        self, from_version_id="", from_datetime=None, page_size=None
-    ):
+    def get_versions_slice(self, from_version_id="", min_datetime=None, page_size=None):
         """Get document versions from object storage with pagination and starting conditions"""
         # /!\ Trick here /!\
         # The "KeyMarker" and "VersionIdMarker" fields must either be both set or both not set.
         # The error we get otherwise is not helpful at all.
-        token = {}
+        markers = {}
         if from_version_id:
-            token.update(
+            markers.update(
                 {"KeyMarker": self.file_key, "VersionIdMarker": from_version_id}
             )
 
-        if from_datetime:
-            response = default_storage.connection.meta.client.list_object_versions(
-                Bucket=default_storage.bucket_name,
-                Prefix=self.file_key,
-                MaxKeys=settings.DOCUMENT_VERSIONS_PAGE_SIZE,
-                **token,
-            )
-
-            # Find the first version after the given datetime
-            version = None
-            for version in response.get("Versions", []):
-                if version["LastModified"] >= from_datetime:
-                    token = {
-                        "KeyMarker": self.file_key,
-                        "VersionIdMarker": version["VersionId"],
-                    }
-                    break
-            else:
-                if version is None or version["LastModified"] < from_datetime:
-                    if response["NextVersionIdMarker"]:
-                        return self.get_versions_slice(
-                            from_version_id=response["NextVersionIdMarker"],
-                            page_size=settings.DOCUMENT_VERSIONS_PAGE_SIZE,
-                            from_datetime=from_datetime,
-                        )
-                    return {
-                        "next_version_id_marker": "",
-                        "is_truncated": False,
-                        "versions": [],
-                    }
+        real_page_size = (
+            min(page_size, settings.DOCUMENT_VERSIONS_PAGE_SIZE)
+            if page_size
+            else settings.DOCUMENT_VERSIONS_PAGE_SIZE
+        )
 
         response = default_storage.connection.meta.client.list_object_versions(
             Bucket=default_storage.bucket_name,
             Prefix=self.file_key,
-            MaxKeys=min(page_size, settings.DOCUMENT_VERSIONS_PAGE_SIZE)
-            if page_size
-            else settings.DOCUMENT_VERSIONS_PAGE_SIZE,
-            **token,
+            # compensate the latest version that we exclude below and get one more to
+            # know if there are more pages
+            MaxKeys=real_page_size + 2,
+            **markers,
         )
+
+        min_last_modified = min_datetime or self.created_at
+        versions = [
+            {
+                key_snake: version[key_camel]
+                for key_snake, key_camel in [
+                    ("etag", "ETag"),
+                    ("is_latest", "IsLatest"),
+                    ("last_modified", "LastModified"),
+                    ("version_id", "VersionId"),
+                ]
+            }
+            for version in response.get("Versions", [])
+            if version["LastModified"] >= min_last_modified
+            and version["IsLatest"] is False
+        ]
+        results = versions[:real_page_size]
+
+        count = len(results)
+        if count == len(versions):
+            is_truncated = False
+            next_version_id_marker = ""
+        else:
+            is_truncated = True
+            next_version_id_marker = versions[count - 1]["version_id"]
+
         return {
-            "next_version_id_marker": response["NextVersionIdMarker"],
-            "is_truncated": response["IsTruncated"],
-            "versions": [
-                {
-                    key_snake: version[key_camel]
-                    for key_camel, key_snake in [
-                        ("ETag", "etag"),
-                        ("IsLatest", "is_latest"),
-                        ("LastModified", "last_modified"),
-                        ("VersionId", "version_id"),
-                    ]
-                }
-                for version in response.get("Versions", [])
-            ],
+            "next_version_id_marker": next_version_id_marker,
+            "is_truncated": is_truncated,
+            "versions": results,
+            "count": count,
         }
 
     def delete_version(self, version_id):
