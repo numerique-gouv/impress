@@ -343,10 +343,10 @@ class InvitationSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class DocumentVersionSerializer(serializers.Serializer):
-    """Serialize Versions."""
+class VersionFilterSerializer(serializers.Serializer):
+    """Validate version filters applied to the list endpoint."""
 
-    etag = serializers.CharField()
-    is_latest = serializers.BooleanField()
-    last_modified = serializers.DateTimeField()
-    version_id = serializers.CharField()
+    version_id = serializers.CharField(required=False, allow_blank=True)
+    page_size = serializers.IntegerField(
+        required=False, min_value=1, max_value=50, default=20
+    )

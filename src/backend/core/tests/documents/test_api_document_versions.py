@@ -60,7 +60,7 @@ def test_api_document_versions_list_authenticated_unrelated(reach):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_versions_list_authenticated_related(via, mock_user_teams):
+def test_api_document_versions_list_authenticated_related_success(via, mock_user_teams):
     """
     Authenticated users should be able to list document versions for a document
     to which they are directly related, whatever their role in the document.
@@ -95,12 +95,12 @@ def test_api_document_versions_list_authenticated_related(via, mock_user_teams):
 
     assert response.status_code == 200
     content = response.json()
-    assert len(content["results"]) == 0
     assert content["count"] == 0
 
     # Add a new version to the document
-    document.content = "new content"
-    document.save()
+    for i in range(3):
+        document.content = f"new content {i:d}"
+        document.save()
 
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/versions/",
@@ -108,8 +108,100 @@ def test_api_document_versions_list_authenticated_related(via, mock_user_teams):
 
     assert response.status_code == 200
     content = response.json()
-    assert len(content["results"]) == 1
+    # The current version is not listed
+    assert content["count"] == 2
+
+
+@pytest.mark.parametrize("via", VIA)
+def test_api_document_versions_list_authenticated_related_pagination(
+    via, mock_user_teams
+):
+    """
+    The list of versions should be paginated and exclude versions that were created prior to the
+    user gaining access to the document.
+    """
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    document = factories.DocumentFactory()
+    for i in range(3):
+        document.content = f"before {i:d}"
+        document.save()
+
+    if via == USER:
+        models.DocumentAccess.objects.create(
+            document=document,
+            user=user,
+            role=random.choice(models.RoleChoices.choices)[0],
+        )
+    elif via == TEAM:
+        mock_user_teams.return_value = ["lasuite", "unknown"]
+        models.DocumentAccess.objects.create(
+            document=document,
+            team="lasuite",
+            role=random.choice(models.RoleChoices.choices)[0],
+        )
+
+    for i in range(4):
+        document.content = f"after {i:d}"
+        document.save()
+
+    response = client.get(
+        f"/api/v1.0/documents/{document.id!s}/versions/",
+    )
+
+    content = response.json()
+    assert content["is_truncated"] is False
+    # The current version is not listed
+    assert content["count"] == 3
+    assert content["next_version_id_marker"] == ""
+    all_version_ids = [version["version_id"] for version in content["versions"]]
+
+    # - set page size
+    response = client.get(
+        f"/api/v1.0/documents/{document.id!s}/versions/?page_size=2",
+    )
+
+    content = response.json()
+    assert content["count"] == 2
+    assert content["is_truncated"] is True
+    marker = content["next_version_id_marker"]
+    assert marker == all_version_ids[1]
+    assert [
+        version["version_id"] for version in content["versions"]
+    ] == all_version_ids[:2]
+
+    # - get page 2
+    response = client.get(
+        f"/api/v1.0/documents/{document.id!s}/versions/?page_size=2&version_id={marker:s}",
+    )
+
+    content = response.json()
     assert content["count"] == 1
+    assert content["is_truncated"] is False
+    assert content["next_version_id_marker"] == ""
+    assert content["versions"][0]["version_id"] == all_version_ids[2]
+
+
+def test_api_document_versions_list_exceeds_max_page_size():
+    """Page size should not exceed the limit set on the serializer"""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    document = factories.DocumentFactory(users=[user])
+    document.content = "version 2"
+    document.save()
+
+    response = client.get(f"/api/v1.0/documents/{document.id!s}/versions/?page_size=51")
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "page_size": ["Ensure this value is less than or equal to 50."]
+    }
 
 
 @pytest.mark.parametrize("reach", models.LinkReachChoices.values)
@@ -119,6 +211,9 @@ def test_api_document_versions_retrieve_anonymous(reach):
     restricted or authenticated link reach.
     """
     document = factories.DocumentFactory(link_reach=reach)
+    document.content = "new content"
+    document.save()
+
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     url = f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/"
@@ -142,6 +237,9 @@ def test_api_document_versions_retrieve_authenticated_unrelated(reach):
     client.force_login(user)
 
     document = factories.DocumentFactory(link_reach=reach)
+    document.content = "new content"
+    document.save()
+
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = client.get(
@@ -157,7 +255,7 @@ def test_api_document_versions_retrieve_authenticated_unrelated(reach):
 def test_api_document_versions_retrieve_authenticated_related(via, mock_user_teams):
     """
     A user who is related to a document should be allowed to retrieve the
-    associated document user accesses.
+    associated document versions.
     """
     user = factories.UserFactory()
 
@@ -165,6 +263,10 @@ def test_api_document_versions_retrieve_authenticated_related(via, mock_user_tea
     client.force_login(user)
 
     document = factories.DocumentFactory()
+    document.content = "new content"
+    document.save()
+
+    assert len(document.get_versions_slice()["versions"]) == 1
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     if via == USER:
@@ -173,6 +275,8 @@ def test_api_document_versions_retrieve_authenticated_related(via, mock_user_tea
         mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(document=document, team="lasuite")
 
+    time.sleep(1)  # minio stores datetimes with the precision of a second
+
     # Versions created before the document was shared should not be seen by the user
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
@@ -180,11 +284,26 @@ def test_api_document_versions_retrieve_authenticated_related(via, mock_user_tea
 
     assert response.status_code == 404
 
-    # Create a new version should make it available to the user
-    time.sleep(1)  # minio stores datetimes with the precision of a second
-    document.content = "new content"
+    # Create a new version should not make it available to the user because
+    # only the current version is available to the user but it is excluded
+    # from the list
+    document.content = "new content 1"
     document.save()
 
+    assert len(document.get_versions_slice()["versions"]) == 2
+    version_id = document.get_versions_slice()["versions"][0]["version_id"]
+
+    response = client.get(
+        f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
+    )
+
+    assert response.status_code == 404
+
+    # Adding one more version should make the previous version available to the user
+    document.content = "new content 2"
+    document.save()
+
+    assert len(document.get_versions_slice()["versions"]) == 3
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = client.get(
@@ -192,7 +311,7 @@ def test_api_document_versions_retrieve_authenticated_related(via, mock_user_tea
     )
 
     assert response.status_code == 200
-    assert response.json()["content"] == "new content"
+    assert response.json()["content"] == "new content 1"
 
 
 def test_api_document_versions_create_anonymous():
@@ -260,10 +379,15 @@ def test_api_document_versions_create_authenticated_related(via, mock_user_teams
 def test_api_document_versions_update_anonymous():
     """Anonymous users should not be allowed to update a document version."""
     access = factories.UserDocumentAccessFactory()
-    version_id = access.document.get_versions_slice()["versions"][0]["version_id"]
+    document = access.document
+    document.content = "new content"
+    document.save()
+
+    assert len(document.get_versions_slice()["versions"]) == 1
+    version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = APIClient().put(
-        f"/api/v1.0/documents/{access.document_id!s}/versions/{version_id:s}/",
+        f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
         {"foo": "bar"},
         format="json",
     )
@@ -281,7 +405,12 @@ def test_api_document_versions_update_authenticated_unrelated():
     client.force_login(user)
 
     access = factories.UserDocumentAccessFactory()
-    version_id = access.document.get_versions_slice()["versions"][0]["version_id"]
+    document = access.document
+    document.content = "new content"
+    document.save()
+
+    assert len(document.get_versions_slice()["versions"]) == 1
+    version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = client.put(
         f"/api/v1.0/documents/{access.document_id!s}/versions/{version_id:s}/",
@@ -303,13 +432,20 @@ def test_api_document_versions_update_authenticated_related(via, mock_user_teams
     client.force_login(user)
 
     document = factories.DocumentFactory()
-    version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user)
     elif via == TEAM:
         mock_user_teams.return_value = ["lasuite", "unknown"]
         factories.TeamDocumentAccessFactory(document=document, team="lasuite")
+
+    time.sleep(1)  # minio stores datetimes with the precision of a second
+
+    document.content = "new content"
+    document.save()
+
+    assert len(document.get_versions_slice()["versions"]) == 1
+    version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = client.put(
         f"/api/v1.0/documents/{document.id!s}/versions/{version_id!s}/",
@@ -345,6 +481,9 @@ def test_api_document_versions_delete_authenticated(reach):
     client.force_login(user)
 
     document = factories.DocumentFactory(link_reach=reach)
+    document.content = "new content"
+    document.save()
+
     version_id = document.get_versions_slice()["versions"][0]["version_id"]
 
     response = client.delete(
@@ -381,13 +520,7 @@ def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_team
     document.save()
 
     versions = document.get_versions_slice()["versions"]
-    assert len(versions) == 2
-
-    version_id = versions[1]["version_id"]
-    response = client.delete(
-        f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
-    )
-    assert response.status_code == 403
+    assert len(versions) == 1
 
     version_id = versions[0]["version_id"]
     response = client.delete(
@@ -396,7 +529,7 @@ def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_team
     assert response.status_code == 403
 
     versions = document.get_versions_slice()["versions"]
-    assert len(versions) == 2
+    assert len(versions) == 1
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -421,18 +554,24 @@ def test_api_document_versions_delete_administrator_or_owner(via, mock_user_team
 
     # Create a new version should make it available to the user
     time.sleep(1)  # minio stores datetimes with the precision of a second
-    document.content = "new content"
+    document.content = "new content 1"
     document.save()
 
     versions = document.get_versions_slice()["versions"]
-    assert len(versions) == 2
+    assert len(versions) == 1
 
-    version_id = versions[1]["version_id"]
+    version_id = versions[0]["version_id"]
     response = client.delete(
         f"/api/v1.0/documents/{document.id!s}/versions/{version_id:s}/",
     )
     # 404 because the version was created before the user was given access to the document
     assert response.status_code == 404
+
+    document.content = "new content 2"
+    document.save()
+
+    versions = document.get_versions_slice()["versions"]
+    assert len(versions) == 2
 
     version_id = versions[0]["version_id"]
     response = client.delete(

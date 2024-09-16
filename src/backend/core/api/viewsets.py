@@ -10,6 +10,7 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db.models import (
+    Min,
     OuterRef,
     Q,
     Subquery,
@@ -373,28 +374,36 @@ class DocumentViewSet(
         Return the document's versions but only those created after the user got access
         to the document
         """
-        if not request.user.is_authenticated:
+        user = request.user
+        if not user.is_authenticated:
             raise exceptions.PermissionDenied("Authentication required.")
 
+        # Validate query parameters using dedicated serializer
+        serializer = serializers.VersionFilterSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         document = self.get_object()
-        user = request.user
-        from_datetime = min(
-            access.created_at
-            for access in document.accesses.filter(
-                Q(user=user) | Q(team__in=user.teams),
+
+        # Users should not see version history dating from before they gained access to the
+        # document. Filter to get the minimum access date for the logged-in user
+        access_queryset = document.accesses.filter(
+            Q(user=user) | Q(team__in=user.teams)
+        ).aggregate(min_date=Min("created_at"))
+
+        # Handle the case where the user has no accesses
+        min_datetime = access_queryset["min_date"]
+        if not min_datetime:
+            return exceptions.PermissionDenied(
+                "Only users with specific access can see version history"
             )
+
+        versions_data = document.get_versions_slice(
+            from_version_id=serializer.validated_data.get("version_id"),
+            min_datetime=min_datetime,
+            page_size=serializer.validated_data.get("page_size"),
         )
 
-        versions_data = document.get_versions_slice(from_datetime=from_datetime)[
-            "versions"
-        ]
-        paginator = pagination.PageNumberPagination()
-        paginated_versions = paginator.paginate_queryset(versions_data, request)
-        serialized_versions = serializers.DocumentVersionSerializer(
-            paginated_versions, many=True
-        )
-
-        return paginator.get_paginated_response(serialized_versions.data)
+        return drf_response.Response(versions_data)
 
     @decorators.action(
         detail=True,
@@ -414,13 +423,13 @@ class DocumentViewSet(
         # Don't let users access versions that were created before they were given access
         # to the document
         user = request.user
-        from_datetime = min(
+        min_datetime = min(
             access.created_at
             for access in document.accesses.filter(
                 Q(user=user) | Q(team__in=user.teams),
             )
         )
-        if response["LastModified"] < from_datetime:
+        if response["LastModified"] < min_datetime:
             raise Http404
 
         if request.method == "DELETE":
