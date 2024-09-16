@@ -11,7 +11,8 @@ and this project adheres to
 
 ## Changed
 
-♻️(frontend) More multi theme friendly #325
+- ♻️(frontend) More multi theme friendly #325
+- ♻️ Bootstrap frontend #257
 
 ## Fixed
 

@@ -119,13 +119,20 @@ services:
     depends_on:
       - keycloak
 
-  nginx-front:
-    image: nginx:1.25
+  frontend-dev:
+    user: "${DOCKER_USER:-1000}"
+    build: 
+      context: .
+      dockerfile: ./src/frontend/Dockerfile
+      target: frontend-production
+      args:
+        API_ORIGIN: "http://localhost:8071"
+        Y_PROVIDER_URL: "ws://localhost:4444"
+        MEDIA_URL: "http://localhost:8083"
+        SW_DEACTIVATED: "true"
+    image: impress:frontend-development
     ports:
       - "3000:3000"
-    volumes:
-      - ./src/frontend/apps/impress/conf/default.conf:/etc/nginx/conf.d/default.conf
-      - ./src/frontend/apps/impress/out:/usr/share/nginx/html
 
   dockerize:
     image: jwilder/dockerize
@@ -160,21 +167,6 @@ services:
       - ./src/frontend/servers/y-provider:/home/frontend/servers/y-provider
       - /home/frontend/servers/y-provider/node_modules/
       - /home/frontend/servers/y-provider/dist/
-
-  frontend-dev:
-    user: "${DOCKER_USER:-1000}"
-    build: 
-      context: .
-      dockerfile: ./src/frontend/Dockerfile
-      target: impress-dev
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./src/frontend/apps/impress:/home/frontend/apps/impress
-      - /home/frontend/node_modules/
-    depends_on:
-      - y-provider
-      - celery-dev
 
   kc_postgresql:
     image: postgres:14.3
