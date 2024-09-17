@@ -125,7 +125,7 @@
       "Validate the modification": "Valider les modifications",
       "Version restored successfully": "Version restaurée avec succès",
       "We didn't find a mail matching, try to be more accurate": "Nous n'avons pas trouvé de correspondance par mail, essayez d'être plus précis",
-      "We simply comply with the law, which states that certain audience measurement tools, properly configured to respect privacy, are exempt from prior authorization.": "Nous nous conformons simplement à la loi, qui stipule que certains outils de mesure d’audience, correctement configurés pour respecter la vie privée, sont exemptés de toute autorisation préalable.",
+      "We simply comply with the law, which states that certain audience measurement tools, properly configured to respect privacy, are exempt from prior authorization.": "Nous nous conformons simplement à la loi, qui stipule que certains outils de mesure d'audience, correctement configurés pour respecter la vie privée, sont exemptés de toute autorisation préalable.",
       "We try to respond within 2 working days.": "Nous essayons de répondre dans les 2 jours ouvrables.",
       "You are the sole owner of this group, make another member the group owner before you can change your own role or be removed from your document.": "Vous êtes le seul propriétaire de ce groupe, faites d'un autre membre le propriétaire du groupe, avant de pouvoir modifier votre propre rôle ou vous supprimer du document.",
       "You can oppose the tracking of your browsing on this website.": "Vous pouvez vous opposer au suivi de votre navigation sur ce site.",
@@ -140,7 +140,8 @@
       "accessibility-dinum-services": "<strong>DINUM</strong> s'engage à rendre accessibles ses services numériques, conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005.",
       "accessibility-form-defenseurdesdroits": "Écrire un message au<1>Défenseur des droits</1>",
       "accessibility-not-audit": "<strong>docs.numerique.gouv.fr</strong> n'est pas en conformité avec le RGAA 4.1. Le site n'a <strong>pas encore été audité.</strong>",
-      "you have reported to the website manager a lack of accessibility that prevents you from accessing content or one of the services of the portal and you have not received a satisfactory response.": "vous avez signalé au responsable du site internet un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des services du portail et vous n'avez pas obtenu de réponse satisfaisante."
+      "you have reported to the website manager a lack of accessibility that prevents you from accessing content or one of the services of the portal and you have not received a satisfactory response.": "vous avez signalé au responsable du site internet un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des services du portail et vous n'avez pas obtenu de réponse satisfaisante.",
+      "Convert Markdown": "Convertir Markdown"
     }
   }
 }

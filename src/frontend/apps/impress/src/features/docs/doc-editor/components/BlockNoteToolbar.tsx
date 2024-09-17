@@ -15,6 +15,7 @@ import {
 } from '@blocknote/react';
 import { forEach, isArray } from 'lodash';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const BlockNoteToolbar = () => {
   return (
@@ -93,6 +94,7 @@ export function MarkdownButton() {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
   const selectedBlocks = useSelectedBlocks(editor);
+  const { t } = useTranslation();
 
   const handleConvertMarkdown = () => {
     const blocks = editor.getSelection()?.blocks;
@@ -126,7 +128,7 @@ export function MarkdownButton() {
 
   return (
     <Components.FormattingToolbar.Button
-      mainTooltip="Convert Markdown"
+      mainTooltip={t('Convert Markdown')}
       onClick={handleConvertMarkdown}
     >
       M
