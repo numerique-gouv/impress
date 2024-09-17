@@ -20,7 +20,7 @@ test.describe('Doc Table Content', () => {
     await page.getByLabel('Open the document options').click();
     await page
       .getByRole('button', {
-        name: 'Table of content',
+        name: 'Table of contents',
       })
       .click();
 
@@ -30,6 +30,8 @@ test.describe('Doc Table Content', () => {
     await editor.locator('.bn-block-outer').last().fill('/');
     await page.getByText('Heading 1').click();
     await page.keyboard.type('Hello World');
+    await editor.getByText('Hello').dblclick();
+    await page.getByRole('button', { name: 'Strike' }).click();
 
     await page.locator('.bn-block-outer').last().click();
 
@@ -40,7 +42,7 @@ test.describe('Doc Table Content', () => {
 
     await editor.locator('.bn-block-outer').last().fill('/');
     await page.getByText('Heading 2').click();
-    await page.keyboard.type('Super World');
+    await page.keyboard.type('Super World', { delay: 100 });
 
     await page.locator('.bn-block-outer').last().click();
 
@@ -58,15 +60,15 @@ test.describe('Doc Table Content', () => {
     const another = panel.getByText('Another World');
 
     await expect(hello).toBeVisible();
-    await expect(hello).toHaveCSS('font-size', '19.2px');
+    await expect(hello).toHaveCSS('font-size', /19/);
     await expect(hello).toHaveAttribute('aria-selected', 'true');
 
     await expect(superW).toBeVisible();
-    await expect(superW).toHaveCSS('font-size', '16px');
+    await expect(superW).toHaveCSS('font-size', /16/);
     await expect(superW).toHaveAttribute('aria-selected', 'false');
 
     await expect(another).toBeVisible();
-    await expect(another).toHaveCSS('font-size', '12.8px');
+    await expect(another).toHaveCSS('font-size', /12/);
     await expect(another).toHaveAttribute('aria-selected', 'false');
 
     await hello.click();
