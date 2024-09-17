@@ -9,6 +9,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+
+## [1.4.0] - 2024-09-17
+
 ## Added
 
 - ✨Add link public/authenticated/restricted access with read/editor roles #234
@@ -17,14 +20,14 @@ and this project adheres to
 
 ## Changed
 
-- ♻️ Allow null titles on documents for easier creation #234
+- ♻️(backend) Allow null titles on documents for easier creation #234
 - 🛂(backend) stop to list public doc to everyone #234
 - 🚚(frontend) change visibility in share modal #235
 - ⚡️(frontend) Improve summary #244
 
 ## Fixed
 
-- 🐛 Fix forcing ID when creating a document via API endpoint #234
+- 🐛(backend) Fix forcing ID when creating a document via API endpoint #234
 - 🐛 Rebuild frontend dev container from makefile #248
 
 
@@ -150,7 +153,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.3.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.4.0...main
+[1.4.0]: https://github.com/numerique-gouv/impress/releases/v1.4.0
 [1.3.0]: https://github.com/numerique-gouv/impress/releases/v1.3.0
 [1.2.1]: https://github.com/numerique-gouv/impress/releases/v1.2.1
 [1.2.0]: https://github.com/numerique-gouv/impress/releases/v1.2.0
