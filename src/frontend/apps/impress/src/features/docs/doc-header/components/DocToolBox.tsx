@@ -9,7 +9,7 @@ import {
   ModalShare,
   ModalUpdateDoc,
 } from '@/features/docs/doc-management';
-import { useDocSummaryStore } from '@/features/docs/doc-summary';
+import { useDocTableContentStore } from '@/features/docs/doc-table-content';
 import { useDocVersionStore } from '@/features/docs/doc-versioning';
 
 import { ModalPDF } from './ModalExport';
@@ -26,7 +26,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
   const { setIsPanelVersionOpen } = useDocVersionStore();
-  const { setIsPanelSummaryOpen } = useDocSummaryStore();
+  const { setIsPanelTableContentOpen } = useDocTableContentStore();
 
   return (
     <Box
@@ -83,7 +83,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
           )}
           <Button
             onClick={() => {
-              setIsPanelSummaryOpen(true);
+              setIsPanelTableContentOpen(true);
               setIsPanelVersionOpen(false);
               setIsDropOpen(false);
             }}

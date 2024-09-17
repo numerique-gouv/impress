@@ -9,7 +9,7 @@ import { Panel } from '@/components/Panel';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
-import { Summary } from '@/features/docs/doc-summary';
+import { TableContent } from '@/features/docs/doc-table-content';
 import {
   VersionList,
   Versions,
@@ -70,7 +70,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
             <VersionList doc={doc} />
           </Panel>
         )}
-        <Summary doc={doc} />
+        <TableContent doc={doc} />
       </Box>
     </>
   );

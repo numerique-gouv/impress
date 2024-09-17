@@ -6,7 +6,7 @@ import { Panel } from '@/components/Panel';
 import { useDocStore } from '@/features/docs/doc-editor';
 import { Doc } from '@/features/docs/doc-management';
 
-import { useDocSummaryStore } from '../stores';
+import { useDocTableContentStore } from '../stores';
 
 import { Heading } from './Heading';
 
@@ -20,11 +20,11 @@ type HeadingBlock = {
   };
 };
 
-interface SummaryProps {
+interface TableContentProps {
   doc: Doc;
 }
 
-export const Summary = ({ doc }: SummaryProps) => {
+export const TableContent = ({ doc }: TableContentProps) => {
   const { docsStore } = useDocStore();
   const { t } = useTranslation();
 
@@ -38,11 +38,12 @@ export const Summary = ({ doc }: SummaryProps) => {
   );
 
   const [headings, setHeadings] = useState<HeadingBlock[]>();
-  const { setIsPanelSummaryOpen, isPanelSummaryOpen } = useDocSummaryStore();
+  const { setIsPanelTableContentOpen, isPanelTableContentOpen } =
+    useDocTableContentStore();
   const [hasBeenClose, setHasBeenClose] = useState(false);
   const setClosePanel = () => {
     setHasBeenClose(true);
-    setIsPanelSummaryOpen(false);
+    setIsPanelTableContentOpen(false);
   };
 
   const [headingIdHighlight, setHeadingIdHighlight] = useState<string>();
@@ -50,16 +51,16 @@ export const Summary = ({ doc }: SummaryProps) => {
   // Open the panel if there are more than 1 heading
   useEffect(() => {
     if (headings?.length && headings.length > 1 && !hasBeenClose) {
-      setIsPanelSummaryOpen(true);
+      setIsPanelTableContentOpen(true);
     }
-  }, [setIsPanelSummaryOpen, headings, hasBeenClose]);
+  }, [setIsPanelTableContentOpen, headings, hasBeenClose]);
 
   // Close the panel unmount
   useEffect(() => {
     return () => {
-      setIsPanelSummaryOpen(false);
+      setIsPanelTableContentOpen(false);
     };
-  }, [setIsPanelSummaryOpen]);
+  }, [setIsPanelTableContentOpen]);
 
   // To highlight the first heading in the viewport
   useEffect(() => {
@@ -112,7 +113,7 @@ export const Summary = ({ doc }: SummaryProps) => {
     setHeadings(headingFiltering());
   });
 
-  if (!isPanelSummaryOpen) {
+  if (!isPanelTableContentOpen) {
     return null;
   }
 
