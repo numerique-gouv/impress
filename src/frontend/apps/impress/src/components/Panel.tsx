@@ -5,7 +5,7 @@ import { Box, Card, IconBG, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
 interface PanelProps {
-  title: string;
+  title?: string;
   setIsPanelOpen: (isOpen: boolean) => void;
 }
 
@@ -53,11 +53,14 @@ export const Panel = ({
       {...closedOverridingStyles}
     >
       <Box
-        $overflow="hidden"
+        $overflow="inherit"
+        $position="sticky"
         $css={`
+          top: 0;
           opacity: ${isOpen ? '1' : '0'};
           transition: ${transition};
         `}
+        $maxHeight="100%"
       >
         <Box
           $padding={{ all: 'small' }}
@@ -90,9 +93,11 @@ export const Panel = ({
             }}
             $radius="2px"
           />
-          <Text $weight="bold" $size="l" $theme="primary">
-            {title}
-          </Text>
+          {title && (
+            <Text $weight="bold" $size="l" $theme="primary">
+              {title}
+            </Text>
+          )}
         </Box>
         {children}
       </Box>

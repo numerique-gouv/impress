@@ -9,7 +9,7 @@ import { Panel } from '@/components/Panel';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
-import { Summary, useDocSummaryStore } from '@/features/docs/doc-summary';
+import { Summary } from '@/features/docs/doc-summary';
 import {
   VersionList,
   Versions,
@@ -28,8 +28,6 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
     query: { versionId },
   } = useRouter();
   const { isPanelVersionOpen, setIsPanelVersionOpen } = useDocVersionStore();
-  const { isPanelSummaryOpen, setIsPanelSummaryOpen } = useDocSummaryStore();
-
   const { t } = useTranslation();
 
   const isVersion = versionId && typeof versionId === 'string';
@@ -72,11 +70,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
             <VersionList doc={doc} />
           </Panel>
         )}
-        {isPanelSummaryOpen && (
-          <Panel title={t('SUMMARY')} setIsPanelOpen={setIsPanelSummaryOpen}>
-            <Summary doc={doc} />
-          </Panel>
-        )}
+        <Summary doc={doc} />
       </Box>
     </>
   );

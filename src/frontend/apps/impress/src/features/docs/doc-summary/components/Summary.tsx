@@ -2,10 +2,23 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
+import { Panel } from '@/components/Panel';
+import { useDocStore } from '@/features/docs/doc-editor';
+import { Doc } from '@/features/docs/doc-management';
 
-import { useDocStore } from '../../doc-editor';
-import { Doc } from '../../doc-management';
 import { useDocSummaryStore } from '../stores';
+
+import { Heading } from './Heading';
+
+type HeadingBlock = {
+  id: string;
+  type: string;
+  text: string;
+  content: HeadingBlock[];
+  props: {
+    level: number;
+  };
+};
 
 interface SummaryProps {
   doc: Doc;
@@ -17,88 +30,150 @@ export const Summary = ({ doc }: SummaryProps) => {
 
   const editor = docsStore?.[doc.id]?.editor;
   const headingFiltering = useCallback(
-    () => editor?.document.filter((block) => block.type === 'heading'),
+    () =>
+      editor?.document.filter(
+        (block) => block.type === 'heading',
+      ) as unknown as HeadingBlock[],
     [editor?.document],
   );
 
-  const [headings, setHeadings] = useState(headingFiltering());
-  const { setIsPanelSummaryOpen } = useDocSummaryStore();
+  const [headings, setHeadings] = useState<HeadingBlock[]>();
+  const { setIsPanelSummaryOpen, isPanelSummaryOpen } = useDocSummaryStore();
+  const [hasBeenClose, setHasBeenClose] = useState(false);
+  const setClosePanel = () => {
+    setHasBeenClose(true);
+    setIsPanelSummaryOpen(false);
+  };
 
+  const [headingIdHighlight, setHeadingIdHighlight] = useState<string>();
+
+  // Open the panel if there are more than 1 heading
+  useEffect(() => {
+    if (headings?.length && headings.length > 1 && !hasBeenClose) {
+      setIsPanelSummaryOpen(true);
+    }
+  }, [setIsPanelSummaryOpen, headings, hasBeenClose]);
+
+  // Close the panel unmount
   useEffect(() => {
     return () => {
       setIsPanelSummaryOpen(false);
     };
   }, [setIsPanelSummaryOpen]);
 
+  // To highlight the first heading in the viewport
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!headings) {
+        return;
+      }
+
+      for (const heading of headings) {
+        const elHeading = document.body.querySelector(
+          `.bn-block-outer[data-id="${heading.id}"]`,
+        );
+
+        if (!elHeading) {
+          return;
+        }
+
+        const rect = elHeading.getBoundingClientRect();
+        const isVisible =
+          rect.top + rect.height >= 1 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight);
+
+        if (isVisible) {
+          setHeadingIdHighlight(heading.id);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', () => {
+      setTimeout(() => {
+        handleScroll();
+      }, 300);
+    });
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [headings, setHeadingIdHighlight]);
+
   if (!editor) {
     return null;
   }
 
-  editor.onEditorContentChange(() => {
+  // Update the headings when the editor content changes
+  editor?.onEditorContentChange(() => {
     setHeadings(headingFiltering());
   });
 
+  if (!isPanelSummaryOpen) {
+    return null;
+  }
+
   return (
-    <Box $overflow="auto" $padding="small">
-      {headings?.map((heading) => (
+    <Panel setIsPanelOpen={setClosePanel}>
+      <Box $padding="small" $maxHeight="95%">
+        <Box $overflow="auto">
+          {headings?.map((heading) => {
+            const content = heading.content?.[0];
+            const text = content?.type === 'text' ? content.text : '';
+
+            return (
+              <Heading
+                editor={editor}
+                headingId={heading.id}
+                level={heading.props.level}
+                text={text}
+                key={heading.id}
+                isHighlight={headingIdHighlight === heading.id}
+              />
+            );
+          })}
+        </Box>
+        <Box
+          $height="1px"
+          $width="auto"
+          $background="#e5e5e5"
+          $margin={{ vertical: 'small' }}
+          $css="flex: none;"
+        />
         <BoxButton
-          key={heading.id}
           onClick={() => {
             editor.focus();
-            editor?.setTextCursorPosition(heading.id, 'end');
+            document.querySelector(`.bn-editor`)?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }}
+        >
+          <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
+            {t('Back to top')}
+          </Text>
+        </BoxButton>
+        <BoxButton
+          onClick={() => {
+            editor.focus();
             document
-              .querySelector(`[data-id="${heading.id}"]`)
+              .querySelector(
+                `.bn-editor > .bn-block-group > .bn-block-outer:last-child`,
+              )
               ?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start',
               });
           }}
-          style={{ textAlign: 'left' }}
         >
           <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
-            {heading.content?.[0]?.type === 'text' && heading.content?.[0]?.text
-              ? `- ${heading.content[0].text}`
-              : ''}
+            {t('Go to bottom')}
           </Text>
         </BoxButton>
-      ))}
-      <Box
-        $height="1px"
-        $width="auto"
-        $background="#e5e5e5"
-        $margin={{ vertical: 'small' }}
-        $css="flex: none;"
-      />
-      <BoxButton
-        onClick={() => {
-          editor.focus();
-          document.querySelector(`.bn-editor`)?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
-        }}
-      >
-        <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
-          {t('Back to top')}
-        </Text>
-      </BoxButton>
-      <BoxButton
-        onClick={() => {
-          editor.focus();
-          document
-            .querySelector(
-              `.bn-editor > .bn-block-group > .bn-block-outer:last-child`,
-            )
-            ?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start',
-            });
-        }}
-      >
-        <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
-          {t('Go to bottom')}
-        </Text>
-      </BoxButton>
-    </Box>
+      </Box>
+    </Panel>
   );
 };
