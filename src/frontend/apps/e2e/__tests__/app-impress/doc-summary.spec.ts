@@ -15,7 +15,7 @@ test.describe('Doc Summary', () => {
     await page.getByLabel('Open the document options').click();
     await page
       .getByRole('button', {
-        name: 'Summary',
+        name: 'Table of content',
       })
       .click();
 
@@ -29,7 +29,7 @@ test.describe('Doc Summary', () => {
     await page.locator('.bn-block-outer').last().click();
 
     // Create space to fill the viewport
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       await page.keyboard.press('Enter');
     }
 
@@ -40,7 +40,7 @@ test.describe('Doc Summary', () => {
     await page.locator('.bn-block-outer').last().click();
 
     // Create space to fill the viewport
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       await page.keyboard.press('Enter');
     }
 
@@ -48,17 +48,41 @@ test.describe('Doc Summary', () => {
     await page.getByText('Heading 3').click();
     await page.keyboard.type('Another World');
 
-    await expect(panel.getByText('Hello World')).toBeVisible();
-    await expect(panel.getByText('Super World')).toBeVisible();
+    const hello = panel.getByText('Hello World');
+    const superW = panel.getByText('Super World');
+    const another = panel.getByText('Another World');
 
-    await panel.getByText('Another World').click();
+    await expect(hello).toBeVisible();
+    await expect(hello).toHaveCSS('font-size', '19.2px');
+    await expect(hello).toHaveAttribute('aria-selected', 'true');
+
+    await expect(superW).toBeVisible();
+    await expect(superW).toHaveCSS('font-size', '16px');
+    await expect(superW).toHaveAttribute('aria-selected', 'false');
+
+    await expect(another).toBeVisible();
+    await expect(another).toHaveCSS('font-size', '12.8px');
+    await expect(another).toHaveAttribute('aria-selected', 'false');
+
+    await hello.click();
+
+    await expect(editor.getByText('Hello World')).toBeInViewport();
+    await expect(hello).toHaveAttribute('aria-selected', 'true');
+    await expect(superW).toHaveAttribute('aria-selected', 'false');
+
+    await another.click();
 
     await expect(editor.getByText('Hello World')).not.toBeInViewport();
+    await expect(hello).toHaveAttribute('aria-selected', 'false');
+    await expect(superW).toHaveAttribute('aria-selected', 'true');
 
     await panel.getByText('Back to top').click();
     await expect(editor.getByText('Hello World')).toBeInViewport();
+    await expect(hello).toHaveAttribute('aria-selected', 'true');
+    await expect(superW).toHaveAttribute('aria-selected', 'false');
 
     await panel.getByText('Go to bottom').click();
     await expect(editor.getByText('Hello World')).not.toBeInViewport();
+    await expect(superW).toHaveAttribute('aria-selected', 'true');
   });
 });

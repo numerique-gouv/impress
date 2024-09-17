@@ -91,7 +91,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
             icon={<span className="material-icons">summarize</span>}
             size="small"
           >
-            <Text $theme="primary">{t('Summary')}</Text>
+            <Text $theme="primary">{t('Table of content')}</Text>
           </Button>
           <Button
             onClick={() => {
