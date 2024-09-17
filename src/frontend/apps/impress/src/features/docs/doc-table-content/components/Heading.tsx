@@ -46,6 +46,7 @@ export const Heading = ({
           block: 'start',
         });
       }}
+      $css="text-align: left;"
     >
       <Text
         $theme="primary"

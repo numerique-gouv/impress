@@ -36,10 +36,10 @@ export const Panel = ({
       $width="100%"
       $maxWidth="20rem"
       $position="sticky"
-      $maxHeight="96vh"
+      $maxHeight="99vh"
       $height="100%"
       $css={`
-        top: 2vh;
+        top: 0vh;
         transition: ${transition};
         ${
           !isOpen &&

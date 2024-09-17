@@ -10,11 +10,28 @@ import { useDocTableContentStore } from '../stores';
 
 import { Heading } from './Heading';
 
+const recursiveTextContent = (content: HeadingBlock['content']): string => {
+  if (!content) {
+    return '';
+  }
+
+  return content.reduce((acc, content) => {
+    if (content.type === 'text') {
+      return acc + content.text;
+    } else if (content.type === 'link') {
+      return acc + recursiveTextContent(content.content);
+    }
+
+    return acc;
+  }, '');
+};
+
 type HeadingBlock = {
   id: string;
   type: string;
   text: string;
   content: HeadingBlock[];
+  contentText: string;
   props: {
     level: number;
   };
@@ -31,9 +48,14 @@ export const TableContent = ({ doc }: TableContentProps) => {
   const editor = docsStore?.[doc.id]?.editor;
   const headingFiltering = useCallback(
     () =>
-      editor?.document.filter(
-        (block) => block.type === 'heading',
-      ) as unknown as HeadingBlock[],
+      editor?.document
+        .filter((block) => block.type === 'heading')
+        .map((block) => ({
+          ...block,
+          contentText: recursiveTextContent(
+            block.content as unknown as HeadingBlock['content'],
+          ),
+        })) as unknown as HeadingBlock[],
     [editor?.document],
   );
 
@@ -71,7 +93,7 @@ export const TableContent = ({ doc }: TableContentProps) => {
 
       for (const heading of headings) {
         const elHeading = document.body.querySelector(
-          `.bn-block-outer[data-id="${heading.id}"]`,
+          `.bn-block-outer[data-id="${heading.id}"] [data-content-type="heading"]:first-child`,
         );
 
         if (!elHeading) {
@@ -121,21 +143,16 @@ export const TableContent = ({ doc }: TableContentProps) => {
     <Panel setIsPanelOpen={setClosePanel}>
       <Box $padding="small" $maxHeight="95%">
         <Box $overflow="auto">
-          {headings?.map((heading) => {
-            const content = heading.content?.[0];
-            const text = content?.type === 'text' ? content.text : '';
-
-            return (
-              <Heading
-                editor={editor}
-                headingId={heading.id}
-                level={heading.props.level}
-                text={text}
-                key={heading.id}
-                isHighlight={headingIdHighlight === heading.id}
-              />
-            );
-          })}
+          {headings?.map((heading) => (
+            <Heading
+              editor={editor}
+              headingId={heading.id}
+              level={heading.props.level}
+              text={heading.contentText}
+              key={heading.id}
+              isHighlight={headingIdHighlight === heading.id}
+            />
+          ))}
         </Box>
         <Box
           $height="1px"
