@@ -6,9 +6,14 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 
-test.describe('Doc Summary', () => {
-  test('it checks the doc summary', async ({ page, browserName }) => {
-    const [randomDoc] = await createDoc(page, 'doc-summary', browserName, 1);
+test.describe('Doc Table Content', () => {
+  test('it checks the doc table content', async ({ page, browserName }) => {
+    const [randomDoc] = await createDoc(
+      page,
+      'doc-table-content',
+      browserName,
+      1,
+    );
 
     await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
 
