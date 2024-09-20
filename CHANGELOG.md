@@ -11,6 +11,8 @@ and this project adheres to
 
 ## Added
 
+- ✨AI to doc editor #250
+- ✨(backend) allow uploading more types of attachments #309
 - ✨(frontend) add buttons to copy document to clipboard as HTML/Markdown #300
 
 ## Changed
@@ -22,9 +24,6 @@ and this project adheres to
 ## Fixed
 
 - 🐛(frontend) invalidate queries after removing user #336
-
-## Fixed
-
 - 🐛(backend) Fix dysfunctional permissions on document create #329
 
 ## [1.5.1] - 2024-10-10
@@ -37,7 +36,6 @@ and this project adheres to
 
 ## Added
 
-- ✨(backend) allow uploading more types of attachments #309
 - ✨(backend) add name fields to the user synchronized with OIDC #301
 - ✨(ci) add security scan #291
 - ♻️(frontend) Add versions #277

@@ -51,6 +51,7 @@ export const createDoc = async (
 
       await page.locator('.c__modal__backdrop').click({
         position: { x: 0, y: 0 },
+        force: true,
       });
 
       await expect(

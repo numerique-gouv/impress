@@ -18,3 +18,7 @@ export class APIError<T = unknown> extends Error implements IAPIError<T> {
     this.data = data;
   }
 }
+
+export const isAPIError = (error: unknown): error is APIError => {
+  return error instanceof APIError;
+};
