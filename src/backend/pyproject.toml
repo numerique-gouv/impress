@@ -25,6 +25,7 @@ license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "beautifulsoup4==4.12.3",
     "boto3==1.35.10",
     "Brotli==1.1.0",
     "celery[redis]==5.4.0",
@@ -57,6 +58,7 @@ dependencies = [
     "WeasyPrint>=60.2",
     "whitenoise==6.7.0",
     "mozilla-django-oidc==4.0.1",
+    "y-py==0.5.5",
 ]
 
 [project.urls]

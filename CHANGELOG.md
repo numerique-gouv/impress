@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- ⚗️(backend) Extract text from base64 yjs document #270
+
 
 ## [1.4.0] - 2024-09-17
 

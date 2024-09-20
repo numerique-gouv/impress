@@ -2,6 +2,7 @@
 Utilities for the core app.
 """
 
+import base64
 import smtplib
 from logging import getLogger
 
@@ -11,6 +12,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import override
+
+import y_py as Y
+from bs4 import BeautifulSoup
 
 logger = getLogger(__name__)
 
@@ -38,3 +42,17 @@ def email_invitation(language, email, document_id):
 
     except smtplib.SMTPException as exception:
         logger.error("invitation to %s was not sent: %s", email, exception)
+
+
+def yjs_base64_to_text(base64_string):
+    """Extract text from base64 yjs document"""
+
+    decoded_bytes = base64.b64decode(base64_string)
+    uint8_array = bytearray(decoded_bytes)
+
+    doc = Y.YDoc()  # pylint: disable=E1101
+    Y.apply_update(doc, uint8_array)  # pylint: disable=E1101
+    blocknote_structure = str(doc.get_xml_element("document-store"))
+
+    soup = BeautifulSoup(blocknote_structure, "html.parser")
+    return soup.get_text(separator=" ").strip()
