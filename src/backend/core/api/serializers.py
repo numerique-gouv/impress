@@ -9,7 +9,8 @@ from django.utils.translation import gettext_lazy as _
 import magic
 from rest_framework import exceptions, serializers
 
-from core import models
+from core import enums, models
+from core.services.ai_services import AI_ACTIONS
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -378,3 +379,33 @@ class VersionFilterSerializer(serializers.Serializer):
     page_size = serializers.IntegerField(
         required=False, min_value=1, max_value=50, default=20
     )
+
+
+class AITransformSerializer(serializers.Serializer):
+    """Serializer for AI transform requests."""
+
+    action = serializers.ChoiceField(choices=AI_ACTIONS, required=True)
+    text = serializers.CharField(required=True)
+
+    def validate_text(self, value):
+        """Ensure the text field is not empty."""
+
+        if len(value.strip()) == 0:
+            raise serializers.ValidationError("Text field cannot be empty.")
+        return value
+
+
+class AITranslateSerializer(serializers.Serializer):
+    """Serializer for AI translate requests."""
+
+    language = serializers.ChoiceField(
+        choices=tuple(enums.ALL_LANGUAGES.items()), required=True
+    )
+    text = serializers.CharField(required=True)
+
+    def validate_text(self, value):
+        """Ensure the text field is not empty."""
+
+        if len(value.strip()) == 0:
+            raise serializers.ValidationError("Text field cannot be empty.")
+        return value

@@ -21,6 +21,7 @@ from rest_framework import (
     decorators,
     exceptions,
     filters,
+    metadata,
     mixins,
     pagination,
     status,
@@ -30,7 +31,8 @@ from rest_framework import (
     response as drf_response,
 )
 
-from core import models
+from core import enums, models
+from core.services.ai_services import AIService
 
 from . import permissions, serializers, utils
 
@@ -302,6 +304,23 @@ class ResourceAccessViewsetMixin:
         serializer.save()
 
 
+class DocumentMetadata(metadata.SimpleMetadata):
+    """Custom metadata class to add information"""
+
+    def determine_metadata(self, request, view):
+        """Add language choices only for the list endpoint."""
+        simple_metadata = super().determine_metadata(request, view)
+
+        if request.path.endswith("/documents/"):
+            simple_metadata["actions"]["POST"]["language"] = {
+                "choices": [
+                    {"value": code, "display_name": name}
+                    for code, name in enums.ALL_LANGUAGES.items()
+                ]
+            }
+        return simple_metadata
+
+
 class DocumentViewSet(
     ResourceViewsetMixin,
     mixins.CreateModelMixin,
@@ -319,6 +338,7 @@ class DocumentViewSet(
     resource_field_name = "document"
     queryset = models.Document.objects.all()
     ordering = ["-updated_at"]
+    metadata_class = DocumentMetadata
 
     def list(self, request, *args, **kwargs):
         """Restrict resources returned by the list endpoint"""
@@ -455,10 +475,7 @@ class DocumentViewSet(
         serializer = serializers.LinkDocumentSerializer(
             document, data=request.data, partial=True
         )
-        if not serializer.is_valid():
-            return drf_response.Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.is_valid(raise_exception=True)
 
         serializer.save()
         return drf_response.Response(serializer.data, status=status.HTTP_200_OK)
@@ -471,10 +488,7 @@ class DocumentViewSet(
 
         # Validate metadata in payload
         serializer = serializers.FileUploadSerializer(data=request.data)
-        if not serializer.is_valid():
-            return drf_response.Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.is_valid(raise_exception=True)
 
         # Generate a generic yet unique filename to store the image in object storage
         file_id = uuid.uuid4()
@@ -482,13 +496,13 @@ class DocumentViewSet(
         key = f"{document.key_base}/{ATTACHMENTS_FOLDER:s}/{file_id!s}.{extension:s}"
 
         # Prepare metadata for storage
-        metadata = {"Metadata": {"owner": str(request.user.id)}}
+        extra_args = {"Metadata": {"owner": str(request.user.id)}}
         if serializer.validated_data["is_unsafe"]:
-            metadata["Metadata"]["is_unsafe"] = "true"
+            extra_args["Metadata"]["is_unsafe"] = "true"
 
         file = serializer.validated_data["file"]
         default_storage.connection.meta.client.upload_fileobj(
-            file, default_storage.bucket_name, key, ExtraArgs=metadata
+            file, default_storage.bucket_name, key, ExtraArgs=extra_args
         )
 
         return drf_response.Response(
@@ -536,6 +550,63 @@ class DocumentViewSet(
         # Generate authorization headers and return an authorization to proceed with the request
         request = utils.generate_s3_authorization_headers(f"{pk:s}/{attachment_key:s}")
         return drf_response.Response("authorized", headers=request.headers, status=200)
+
+    @decorators.action(
+        detail=True,
+        methods=["post"],
+        name="Apply a transformation action on a piece of text with AI",
+        url_path="ai-transform",
+        throttle_classes=[utils.AIDocumentRateThrottle, utils.AIUserRateThrottle],
+    )
+    def ai_transform(self, request, *args, **kwargs):
+        """
+        POST /api/v1.0/documents/<resource_id>/ai-transform
+        with expected data:
+        - text: str
+        - action: str [prompt, correct, rephrase, summarize]
+        Return JSON response with the processed text.
+        """
+        # Check permissions first
+        self.get_object()
+
+        serializer = serializers.AITransformSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        text = serializer.validated_data["text"]
+        action = serializer.validated_data["action"]
+
+        response = AIService().transform(text, action)
+
+        return drf_response.Response(response, status=status.HTTP_200_OK)
+
+    @decorators.action(
+        detail=True,
+        methods=["post"],
+        name="Translate a piece of text with AI",
+        serializer_class=serializers.AITranslateSerializer,
+        url_path="ai-translate",
+        throttle_classes=[utils.AIDocumentRateThrottle, utils.AIUserRateThrottle],
+    )
+    def ai_translate(self, request, *args, **kwargs):
+        """
+        POST /api/v1.0/documents/<resource_id>/ai-translate
+        with expected data:
+        - text: str
+        - language: str [settings.LANGUAGES]
+        Return JSON response with the translated text.
+        """
+        # Check permissions first
+        self.get_object()
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        text = serializer.validated_data["text"]
+        language = serializer.validated_data["language"]
+
+        response = AIService().translate(text, language)
+
+        return drf_response.Response(response, status=status.HTTP_200_OK)
 
 
 class DocumentAccessViewSet(

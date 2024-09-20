@@ -508,6 +508,8 @@ class Document(BaseModel):
         can_get = bool(roles)
 
         return {
+            "ai_transform": is_owner_or_admin or is_editor,
+            "ai_translate": is_owner_or_admin or is_editor,
             "attachment_upload": is_owner_or_admin or is_editor,
             "destroy": RoleChoices.OWNER in roles,
             "link_configuration": is_owner_or_admin,

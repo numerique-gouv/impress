@@ -21,6 +21,8 @@ def test_api_documents_retrieve_anonymous_public():
     assert response.json() == {
         "id": str(document.id),
         "abilities": {
+            "ai_transform": document.link_role == "editor",
+            "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
             "destroy": False,
             "link_configuration": False,
@@ -75,6 +77,8 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
     assert response.json() == {
         "id": str(document.id),
         "abilities": {
+            "ai_transform": document.link_role == "editor",
+            "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
             "link_configuration": False,
             "destroy": False,
