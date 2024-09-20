@@ -181,4 +181,57 @@ test.describe('Doc Editor', () => {
       /http:\/\/localhost:8083\/media\/.*\/attachments\/.*.png/,
     );
   });
+
+  test('it checks the AI buttons', async ({ page, browserName }) => {
+    await page.route(/.*\/ai-translate\//, async (route) => {
+      const request = route.request();
+      if (request.method().includes('POST')) {
+        await route.fulfill({
+          json: {
+            answer: 'Bonjour le monde',
+          },
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await createDoc(page, 'doc-ai', browserName, 1);
+
+    await page.locator('.bn-block-outer').last().fill('Hello World');
+
+    const editor = page.locator('.ProseMirror');
+    await editor.getByText('Hello').dblclick();
+
+    await page.getByRole('button', { name: 'AI' }).click();
+
+    await expect(
+      page.getByRole('menuitem', { name: 'Use as prompt' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('menuitem', { name: 'Rephrase' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('menuitem', { name: 'Summarize' }),
+    ).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'Correct' })).toBeVisible();
+    await expect(
+      page.getByRole('menuitem', { name: 'Language' }),
+    ).toBeVisible();
+
+    await page.getByRole('menuitem', { name: 'Language' }).hover();
+    await expect(
+      page.getByRole('menuitem', { name: 'English', exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('menuitem', { name: 'French', exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('menuitem', { name: 'German', exact: true }),
+    ).toBeVisible();
+
+    await page.getByRole('menuitem', { name: 'English', exact: true }).click();
+
+    await expect(editor.getByText('Bonjour le monde')).toBeVisible();
+  });
 });
