@@ -15,13 +15,13 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@hocuspocus/server": "2.13.5",
+    "@hocuspocus/server": "2.13.6",
     "y-protocols": "1.0.6"
   },
   "devDependencies": {
     "@types/node": "*",
     "eslint-config-impress": "*",
-    "nodemon": "3.1.4",
+    "nodemon": "3.1.7",
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
     "typescript": "*"

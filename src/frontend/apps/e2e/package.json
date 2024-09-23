@@ -12,7 +12,7 @@
     "test:ui::chromium": "yarn test:ui --project=chromium"
   },
   "devDependencies": {
-    "@playwright/test": "1.47.1",
+    "@playwright/test": "1.47.2",
     "@types/node": "*",
     "@types/pdf-parse": "1.1.4",
     "eslint-config-impress": "*",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "convert-stream": "1.0.2",
-    "jsdom": "25.0.0",
+    "jsdom": "25.0.1",
     "pdf-parse": "1.1.1"
   }
 }
