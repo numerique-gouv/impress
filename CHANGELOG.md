@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Fixed
+
+- 🐛 (backend) gitlab oicd userinfo endpoint #232
+
 
 ## [1.4.0] - 2024-09-17
 
