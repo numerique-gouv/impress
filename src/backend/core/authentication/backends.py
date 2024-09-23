@@ -45,7 +45,17 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
             proxies=self.get_settings("OIDC_PROXY", None),
         )
         user_response.raise_for_status()
-        userinfo = self.verify_token(user_response.text)
+
+        try:
+            userinfo = user_response.json()
+        except ValueError:
+            try:
+                userinfo = self.verify_token(user_response.text)
+            except Exception as e:
+                raise SuspiciousOperation(
+                    _("Invalid response format or token verification failed")
+                ) from e
+
         return userinfo
 
     def get_or_create_user(self, access_token, id_token, payload):
