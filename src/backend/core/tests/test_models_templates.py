@@ -3,6 +3,7 @@ Unit tests for the Template model
 """
 
 import os
+import time
 from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
@@ -203,7 +204,7 @@ def test_models_templates__generate_word():
     "pypandoc.convert_text",
     side_effect=RuntimeError("Conversion failed"),
 )
-def test_models_templates__generate_word__raise_error(_mock_send_mail):
+def test_models_templates__generate_word__raise_error(_mock_pypandoc):
     """
     Generate word document and assert no tmp files are left in /tmp folder
     even when the conversion fails.
@@ -214,4 +215,5 @@ def test_models_templates__generate_word__raise_error(_mock_send_mail):
         template.generate_word("<p>Test body</p>", {})
     except RuntimeError as e:
         assert str(e) == "Conversion failed"
+        time.sleep(0.5)
         assert len([f for f in os.listdir("/tmp") if f.startswith("docx_")]) == 0
