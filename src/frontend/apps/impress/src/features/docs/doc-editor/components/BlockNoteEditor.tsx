@@ -120,7 +120,11 @@ export const BlockNoteContent = ({
     <Box $css={cssEditor}>
       {isErrorAttachment && (
         <Box $margin={{ bottom: 'big' }}>
-          <TextErrors causes={errorAttachment.cause} />
+          <TextErrors
+            causes={errorAttachment.cause}
+            canClose
+            $textAlign="left"
+          />
         </Box>
       )}
 
