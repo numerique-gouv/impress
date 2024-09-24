@@ -168,7 +168,7 @@ jobs:
           path: "src/backend/core/templates/mail"
           key: mail-templates-${{ hashFiles('src/mail/mjml') }}
 
-      - name: Start Minio
+      - name: Start MinIO
         run: |
           docker pull minio/minio
           docker run -d --name minio \
@@ -177,6 +177,15 @@ jobs:
             -e "MINIO_SECRET_KEY=password" \
             -v /data/media:/data \
             minio/minio server --console-address :9001 /data
+
+      # Tool to wait for a service to be ready
+      - name: Install Dockerize
+        run: |
+          curl -sSL https://github.com/jwilder/dockerize/releases/download/v0.8.0/dockerize-linux-amd64-v0.8.0.tar.gz | sudo tar -C /usr/local/bin -xzv
+
+      - name: Wait for MinIO to be ready
+        run: |
+          dockerize -wait tcp://localhost:9000 -timeout 10s
 
       - name: Configure MinIO
         run: |
