@@ -13,6 +13,7 @@ on:
 
 env:
   DOCKER_USER: 1001:127
+  CRISP_WEBSITE_ID: ""
 
 jobs:
   build-and-push-backend:
@@ -99,7 +100,9 @@ jobs:
           context: .
           file: ./src/frontend/Dockerfile
           target: frontend-production
-          build-args: DOCKER_USER=${{ env.DOCKER_USER }}:-1000
+          build-args: |
+            DOCKER_USER=${{ env.DOCKER_USER }}:-1000
+            CRISP_WEBSITE_ID=${{ env.CRISP_WEBSITE_ID }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

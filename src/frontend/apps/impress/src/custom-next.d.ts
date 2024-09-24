@@ -24,5 +24,6 @@ namespace NodeJS {
     NEXT_PUBLIC_Y_PROVIDER_URL?: string;
     NEXT_PUBLIC_SW_DEACTIVATED?: string;
     NEXT_PUBLIC_THEME?: string;
+    NEXT_PUBLIC_CRISP_WEBSITE_ID?: string;
   }
 }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AppProvider } from '@/core/';
 import { useSWRegister } from '@/features/service-worker/';
+import { useSupport } from '@/hook/useSupport';
 import { NextPageWithLayout } from '@/types/next';
 
 import './globals.css';
@@ -16,6 +17,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   useSWRegister();
   const getLayout = Component.getLayout ?? ((page) => page);
   const { t } = useTranslation();
+
+  // Initialize Crisp, the support chat used among all La Suite products
+  useSupport();
 
   return (
     <>

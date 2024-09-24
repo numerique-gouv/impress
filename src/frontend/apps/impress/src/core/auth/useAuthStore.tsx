@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 
 import { baseApiUrl } from '@/core/conf';
+import {
+  initializeSupportSession,
+  terminateSupportSession,
+} from '@/hook/useSupport';
 
 import { User, getMe } from './api';
 import { PATH_AUTH_LOCAL_STORAGE } from './conf';
@@ -36,6 +40,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
           return;
         }
 
+        initializeSupportSession(data);
         set({ authenticated: true, userData: data });
       })
       .catch(() => {})
@@ -53,6 +58,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     window.location.replace(`${baseApiUrl()}authenticate/`);
   },
   logout: () => {
+    terminateSupportSession();
     window.location.replace(`${baseApiUrl()}logout/`);
   },
 }));
