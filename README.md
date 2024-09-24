@@ -1,9 +1,15 @@
 # Impress
 
-Impress prints your markdown to pdf from predefined templates with user and role based access rights.
+Impress is a web application for real-time collaborative text editing with user and role based access rights.
+Features include : 
+- User authentication through OIDC
+- BlocNote.js text editing experience (markdown support, dynamic conversion, block structure, slash commands for block creation) 
+- Document export to pdf and docx from predefined templates
+- Granular document permissions
+- Public link sharing
+- Offline mode
 
-Impress is built on top of [Django Rest
-Framework](https://www.django-rest-framework.org/) and [Next.js](https://nextjs.org/).
+Impress is built on top of [Django Rest Framework](https://www.django-rest-framework.org/), [Next.js](https://nextjs.org/) and [BlocNote.js](https://www.blocknotejs.org/)
 
 ## Getting started
 
