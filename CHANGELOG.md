@@ -9,9 +9,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Changed
+
+- 💄(frontend) error alert closeable on editor #284
+
 ## Fixed
 
-- 🐛 (backend) gitlab oicd userinfo endpoint #232
+- 🐛(backend) gitlab oicd userinfo endpoint #232
 
 
 ## [1.4.0] - 2024-09-17
