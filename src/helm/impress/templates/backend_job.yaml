@@ -6,8 +6,9 @@ kind: Job
 metadata:
   name: {{ $fullName }}-migrate
   namespace: {{ .Release.Namespace | quote }}
-  {{- with .Values.backend.migrateJobAnnotations }}
   annotations:
+    argocd.argoproj.io/sync-options: Replace=true,Force=true
+  {{- with .Values.backend.migrateJobAnnotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
