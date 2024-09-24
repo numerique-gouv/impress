@@ -1,6 +1,5 @@
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Footer } from '@/features/footer/Footer';
 import { HEADER_HEIGHT, Header } from '@/features/header';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
@@ -21,7 +20,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </Box>
         </Box>
       </Box>
-      <Footer />
     </Box>
   );
 }
