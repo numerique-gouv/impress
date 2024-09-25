@@ -40,6 +40,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
           onClick={() => {
             setIsModalShareOpen(true);
           }}
+          color="primary-text"
         >
           {t('Share')}
         </Button>

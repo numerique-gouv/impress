@@ -493,6 +493,23 @@ input:-webkit-autofill:focus {
   overflow-y: auto;
 }
 
+@media screen and (width <= 420px) {
+  .c__modal__scroller {
+    padding: 0.7rem;
+  }
+
+  .c__modal__title h2 {
+    font-size: 1rem;
+  }
+}
+
+@media (width <= 576px) {
+  .c__modal__footer--sided {
+    gap: 0.5rem;
+    flex-direction: column-reverse;
+  }
+}
+
 /**
  * Toast
 */

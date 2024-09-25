@@ -6,6 +6,7 @@ import { Box, Card, SideModal, Text } from '@/components';
 import { InvitationList } from '@/features/docs/members/invitation-list';
 import { AddMembers } from '@/features/docs/members/members-add';
 import { MemberList } from '@/features/docs/members/members-list';
+import { useResponsiveStore } from '@/stores';
 
 import { Doc } from '../types';
 import { currentDocRole } from '../utils';
@@ -21,6 +22,16 @@ const ModalShareStyle = createGlobalStyle`
       padding: 0;
       margin: 0;
     }
+
+
+    .c__modal__close{
+      margin-right: 1rem;
+
+      button{
+        border-bottom: 1px solid #E0E0E0;
+        border-left: 1px solid #E0E0E0;
+      }
+    }
   }
 `;
 
@@ -30,11 +41,20 @@ interface ModalShareProps {
 }
 
 export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
+  const { screenSize } = useResponsiveStore();
+
   useEffect(() => {
     if (!doc.abilities.manage_accesses) {
       onClose();
     }
   }, [doc.abilities.manage_accesses, onClose]);
+
+  const width =
+    screenSize === 'mobile'
+      ? '90vw'
+      : screenSize === 'small-mobile'
+        ? '100vw'
+        : '70vw';
 
   return (
     <>
@@ -42,9 +62,9 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
       <SideModal
         isOpen
         closeOnClickOutside
-        hideCloseButton
+        hideCloseButton={screenSize !== 'small-mobile'}
         onClose={onClose}
-        width="70vw"
+        width={width}
         $css="min-width: 320px;max-width: 777px;"
       >
         <Card
