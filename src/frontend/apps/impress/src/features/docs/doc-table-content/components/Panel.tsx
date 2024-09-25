@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, IconBG, Text } from '@/components';
-import { useCunninghamTheme } from '@/cunningham';
+import { useResponsiveStore } from '@/stores';
 
 interface PanelProps {
   title?: string;
@@ -14,60 +14,48 @@ export const Panel = ({
   title,
   setIsPanelOpen,
 }: PropsWithChildren<PanelProps>) => {
+  const { isMobile } = useResponsiveStore();
   const { t } = useTranslation();
-  const { colorsTokens } = useCunninghamTheme();
-
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setIsOpen(true);
   }, []);
 
-  const closedOverridingStyles = !isOpen && {
-    $width: '0',
-    $maxWidth: '0',
-    $minWidth: '0',
-  };
-
-  const transition = 'all 0.5s ease-in-out';
-
   return (
     <Card
-      $width="100%"
-      $maxWidth="20rem"
-      $position="sticky"
-      $maxHeight="99vh"
+      $maxWidth="18rem"
+      $minWidth="10rem"
+      $position="absolute"
       $height="100%"
       $css={`
-        top: 0vh;
-        transition: ${transition};
+        right: 0;
+        transition: all 0.5s ease-in-out;
+        transform: translateX(0%);
+        border: none;
         ${
-          !isOpen &&
-          `
-            box-shadow: none;
-            border: none;
-          `
+          !isOpen
+            ? `
+              transform: translateX(100%);
+              opacity: 0;
+            `
+            : ''
         }
+        ${!isMobile ? `box-shadow: none;` : 'box-shadow: -1px 8px 8px #e1e1e1;'}
       `}
       aria-label={t('Document panel')}
-      {...closedOverridingStyles}
     >
       <Box
         $overflow="inherit"
         $position="sticky"
-        $css={`
-          top: 0;
-          opacity: ${isOpen ? '1' : '0'};
-          transition: ${transition};
-        `}
-        $maxHeight="100%"
+        $maxHeight="80vh"
+        $css="top: 5px;"
       >
         <Box
-          $padding={{ all: 'small' }}
+          $padding={{ vertical: 'small' }}
           $direction="row"
           $align="center"
           $justify="center"
-          $css={`border-top: 2px solid ${colorsTokens()['primary-600']};`}
         >
           <IconBG
             iconName="menu_open"
@@ -77,11 +65,8 @@ export const Panel = ({
             $zIndex={1}
             $css={`
               cursor: pointer;
-              left: 0rem;
-              top: 0.1rem;
-              transition: ${transition};
+              right: 0rem;
               transform: rotate(180deg);
-              opacity: ${isOpen ? '1' : '0'};
               user-select: none;
             `}
             $position="absolute"

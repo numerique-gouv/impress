@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
-import { Panel } from '@/components/Panel';
 import { useDocStore } from '@/features/docs/doc-editor';
 import { Doc } from '@/features/docs/doc-management';
+import { useResponsiveStore } from '@/stores';
 
 import { useDocTableContentStore } from '../stores';
 
 import { Heading } from './Heading';
+import { Panel } from './Panel';
 
 const recursiveTextContent = (content: HeadingBlock['content']): string => {
   if (!content) {
@@ -39,9 +40,14 @@ type HeadingBlock = {
 
 interface TableContentProps {
   doc: Doc;
+  setIsTableContentOpen?: (isOpen: boolean) => void;
 }
 
-export const TableContent = ({ doc }: TableContentProps) => {
+export const TableContent = ({
+  doc,
+  setIsTableContentOpen,
+}: TableContentProps) => {
+  const { screenSize } = useResponsiveStore();
   const { docsStore } = useDocStore();
   const { t } = useTranslation();
 
@@ -72,10 +78,20 @@ export const TableContent = ({ doc }: TableContentProps) => {
 
   // Open the panel if there are more than 1 heading
   useEffect(() => {
-    if (headings?.length && headings.length > 1 && !hasBeenClose) {
+    if (
+      headings?.length &&
+      headings.length > 1 &&
+      !hasBeenClose &&
+      screenSize === 'desktop'
+    ) {
       setIsPanelTableContentOpen(true);
     }
-  }, [setIsPanelTableContentOpen, headings, hasBeenClose]);
+  }, [setIsPanelTableContentOpen, headings, hasBeenClose, screenSize]);
+
+  // Inform the parent component if the panel is open
+  useEffect(() => {
+    setIsTableContentOpen?.(isPanelTableContentOpen);
+  }, [isPanelTableContentOpen, setIsTableContentOpen]);
 
   // Close the panel unmount
   useEffect(() => {
@@ -86,6 +102,10 @@ export const TableContent = ({ doc }: TableContentProps) => {
 
   // To highlight the first heading in the viewport
   useEffect(() => {
+    if (!isPanelTableContentOpen) {
+      return;
+    }
+
     const handleScroll = () => {
       if (!headings) {
         return;
@@ -124,7 +144,7 @@ export const TableContent = ({ doc }: TableContentProps) => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [headings, setHeadingIdHighlight]);
+  }, [headings, setHeadingIdHighlight, isPanelTableContentOpen]);
 
   if (!editor) {
     return null;
@@ -141,8 +161,8 @@ export const TableContent = ({ doc }: TableContentProps) => {
 
   return (
     <Panel setIsPanelOpen={setClosePanel}>
-      <Box $padding="small" $maxHeight="95%">
-        <Box $overflow="auto">
+      <Box $maxHeight="100%">
+        <Box $overflow="auto" $padding={{ right: 'small' }}>
           {headings?.map((heading) => (
             <Heading
               editor={editor}
@@ -169,6 +189,7 @@ export const TableContent = ({ doc }: TableContentProps) => {
               block: 'start',
             });
           }}
+          $align="flex-start"
         >
           <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
             {t('Back to top')}
@@ -186,6 +207,7 @@ export const TableContent = ({ doc }: TableContentProps) => {
                 block: 'start',
               });
           }}
+          $align="flex-start"
         >
           <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
             {t('Go to bottom')}
