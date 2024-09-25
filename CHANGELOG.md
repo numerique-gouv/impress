@@ -12,6 +12,7 @@ and this project adheres to
 ## Changed
 
 - 💄(frontend) error alert closeable on editor #284
+- ♻️(backend) Change email content #283
 
 ## Fixed
 

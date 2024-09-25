@@ -118,7 +118,10 @@ def test_api_document_invitations__create__privileged_members(
         email = mail.outbox[0]
         assert email.to == ["guest@example.com"]
         email_content = " ".join(email.body.split())
-        assert "Invitation to join Docs!" in email_content
+        assert (
+            f"{user.email} shared a document with you: {document.title}"
+            in email_content
+        )
     else:
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert models.Invitation.objects.exists() is False
@@ -158,7 +161,10 @@ def test_api_document_invitations__create__email_from_content_language():
     assert email.to == ["guest@example.com"]
 
     email_content = " ".join(email.body.split())
-    assert "Invitation à rejoindre Docs !" in email_content
+    assert (
+        f"{user.email} a partagé un document avec vous: {document.title}"
+        in email_content
+    )
 
 
 def test_api_document_invitations__create__email_from_content_language_not_supported():
@@ -196,7 +202,7 @@ def test_api_document_invitations__create__email_from_content_language_not_suppo
     assert email.to == ["guest@example.com"]
 
     email_content = " ".join(email.body.split())
-    assert "Invitation to join Docs!" in email_content
+    assert f"{user.email} shared a document with you: {document.title}" in email_content
 
 
 def test_api_document_invitations__create__issuer_and_document_override():

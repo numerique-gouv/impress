@@ -3,6 +3,7 @@ Declare and configure the models for the impress core application
 """
 
 import hashlib
+import smtplib
 import tempfile
 import textwrap
 import uuid
@@ -13,16 +14,20 @@ from logging import getLogger
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.sites.models import Site
 from django.core import exceptions, mail, validators
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.core.mail import send_mail
 from django.db import models
 from django.http import FileResponse
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
+from django.template.loader import render_to_string
 from django.utils import html, timezone
 from django.utils.functional import cached_property, lazy
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import override
 
 import frontmatter
 import markdown
@@ -521,6 +526,39 @@ class Document(BaseModel):
             "versions_list": can_get_versions,
             "versions_retrieve": can_get_versions,
         }
+
+    def email_invitation(self, language, email, role, username_sender):
+        """Send email invitation."""
+
+        domain = Site.objects.get_current().domain
+
+        try:
+            with override(language):
+                title = _("%(username)s shared a document with you: %(document)s") % {
+                    "username": username_sender,
+                    "document": self.title,
+                }
+                template_vars = {
+                    "title": title,
+                    "domain": domain,
+                    "document": self,
+                    "link": f"{domain}/docs/{self.id}/",
+                    "username": username_sender,
+                    "role": RoleChoices(role).label.lower(),
+                }
+                msg_html = render_to_string("mail/html/invitation.html", template_vars)
+                msg_plain = render_to_string("mail/text/invitation.txt", template_vars)
+                send_mail(
+                    title,
+                    msg_plain,
+                    settings.EMAIL_FROM,
+                    [email],
+                    html_message=msg_html,
+                    fail_silently=False,
+                )
+
+        except smtplib.SMTPException as exception:
+            logger.error("invitation to %s was not sent: %s", email, exception)
 
 
 class LinkTrace(BaseModel):

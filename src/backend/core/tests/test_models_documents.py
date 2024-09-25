@@ -2,7 +2,12 @@
 Unit tests for the Document model
 """
 
+import smtplib
+from logging import Logger
+from unittest import mock
+
 from django.contrib.auth.models import AnonymousUser
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 
@@ -322,3 +327,94 @@ def test_models_documents_version_duplicate():
         Bucket=default_storage.bucket_name, Prefix=file_key
     )
     assert len(response["Versions"]) == 2
+
+
+def test_models_documents__email_invitation__success():
+    """
+    The email invitation is sent successfully.
+    """
+    document = factories.DocumentFactory()
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    document.email_invitation(
+        "en", "guest@example.com", models.RoleChoices.EDITOR, "sender@example.com"
+    )
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 1
+
+    # pylint: disable-next=no-member
+    email = mail.outbox[0]
+
+    assert email.to == ["guest@example.com"]
+    email_content = " ".join(email.body.split())
+
+    assert (
+        f"sender@example.com invited you as an editor on the following document : {document.title}"
+        in email_content
+    )
+    assert f"docs/{document.id}/" in email_content
+
+
+def test_models_documents__email_invitation__success_fr():
+    """
+    The email invitation is sent successfully in french.
+    """
+    document = factories.DocumentFactory()
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    document.email_invitation(
+        "fr-fr", "guest2@example.com", models.RoleChoices.OWNER, "sender2@example.com"
+    )
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 1
+
+    # pylint: disable-next=no-member
+    email = mail.outbox[0]
+
+    assert email.to == ["guest2@example.com"]
+    email_content = " ".join(email.body.split())
+
+    assert (
+        f"sender2@example.com vous a invité en tant que propriétaire "
+        f"sur le document suivant : {document.title}" in email_content
+    )
+    assert f"docs/{document.id}/" in email_content
+
+
+@mock.patch(
+    "core.models.send_mail",
+    side_effect=smtplib.SMTPException("Error SMTPException"),
+)
+@mock.patch.object(Logger, "error")
+def test_models_documents__email_invitation__failed(mock_logger, _mock_send_mail):
+    """Check mail behavior when an SMTP error occurs when sent an email invitation."""
+    document = factories.DocumentFactory()
+
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    document.email_invitation(
+        "en", "guest3@example.com", models.RoleChoices.ADMIN, "sender3@example.com"
+    )
+
+    # No email has been sent
+    # pylint: disable-next=no-member
+    assert len(mail.outbox) == 0
+
+    # Logger should be called
+    mock_logger.assert_called_once()
+
+    (
+        _,
+        email,
+        exception,
+    ) = mock_logger.call_args.args
+
+    assert email == "guest3@example.com"
+    assert isinstance(exception, smtplib.SMTPException)

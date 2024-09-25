@@ -171,7 +171,7 @@ def test_api_document_accesses_create_authenticated_administrator(via, mock_user
     email = mail.outbox[0]
     assert email.to == [other_user["email"]]
     email_content = " ".join(email.body.split())
-    assert "Invitation to join Docs!" in email_content
+    assert f"{user.email} shared a document with you: {document.title}" in email_content
     assert "docs/" + str(document.id) + "/" in email_content
 
 
@@ -225,5 +225,5 @@ def test_api_document_accesses_create_authenticated_owner(via, mock_user_teams):
     email = mail.outbox[0]
     assert email.to == [other_user["email"]]
     email_content = " ".join(email.body.split())
-    assert "Invitation to join Docs!" in email_content
+    assert f"{user.email} shared a document with you: {document.title}" in email_content
     assert "docs/" + str(document.id) + "/" in email_content
