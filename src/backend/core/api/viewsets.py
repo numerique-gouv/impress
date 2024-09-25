@@ -31,7 +31,6 @@ from rest_framework import (
 )
 
 from core import models
-from core.utils import email_invitation
 
 from . import permissions, serializers, utils
 
@@ -567,9 +566,10 @@ class DocumentAccessViewSet(
     def perform_create(self, serializer):
         """Add a new access to the document and send an email to the new added user."""
         access = serializer.save()
-
         language = self.request.headers.get("Content-Language", "en-us")
-        email_invitation(language, access.user.email, access.document.id)
+        access.document.email_invitation(
+            language, access.user.email, access.role, self.request.user.email
+        )
 
 
 class TemplateViewSet(
@@ -769,4 +769,6 @@ class InvitationViewset(
         invitation = serializer.save()
 
         language = self.request.headers.get("Content-Language", "en-us")
-        email_invitation(language, invitation.email, invitation.document.id)
+        invitation.document.email_invitation(
+            language, invitation.email, invitation.role, self.request.user.email
+        )

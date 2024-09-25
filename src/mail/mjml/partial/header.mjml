@@ -25,14 +25,14 @@
         }
 
         a {
-            color: inherit;
+            color: #000091;
         }
     </mj-style>
     <mj-style>
         /* Global styles */
         h1 {
             color: #161616;
-            font-size: 2rem;
+            font-size: 1.5rem;
             line-height: 1em;
             font-weight: 700;
         }

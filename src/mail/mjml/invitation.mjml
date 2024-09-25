@@ -3,48 +3,64 @@
 
   <mj-body mj-class="bg--blue-100">
     <mj-wrapper css-class="wrapper" padding="0 25px 0px 25px">
-      <mj-section background-url="{{site.domain}}/assets/mail-header-background.png" background-size="cover" background-repeat="no-repeat" background-position="0 -30px">
+      <mj-section
+        background-url="{{domain}}/assets/mail-header-background.png"
+        background-size="cover"
+        background-repeat="no-repeat"
+        background-position="0 -30px"
+      >
         <mj-column>
-            <mj-image align="center" src="{{site.domain}}/assets/logo-suite-numerique.png" width="250px" align="left" alt="{%trans 'La Suite Numérique' %}" />
+          <mj-image
+            align="center"
+            src="{{domain}}/assets/logo-suite-numerique.png"
+            width="250px"
+            align="left"
+            alt="{%trans 'La Suite Numérique' %}"
+          />
         </mj-column>
       </mj-section>
       <mj-section mj-class="bg--white-100" padding="30px 20px 60px 20px">
         <mj-column>
-          <mj-text font-size="16px">
-            <p>{% trans "Invitation to join a document !" %}</p>
+          <mj-text align="center">
+            <h1>
+              {% blocktrans %}
+                {{username}} shared a document with you !
+              {% endblocktrans %}
+            </h1>
           </mj-text>
-
-          <!-- Welcome Message -->
-          <mj-text>
-            <h1> {% blocktrans %}Welcome to <strong>Docs!</strong>{% endblocktrans %}</h1>
-          </mj-text>
-          <mj-divider border-width="1px" border-style="solid" border-color="#DDDDDD" width="30%" align="left"/>
           <!-- Main Message -->
-          <mj-text>{% trans "We are delighted to welcome you to our community on Docs, your new companion to collaborate on documents efficiently, intuitively, and securely." %}</mj-text>
-          <mj-text>{% trans "Our application is designed to help you organize, collaborate, and manage permissions." %}</mj-text>
           <mj-text>
-            {% trans "With Docs, you will be able to:" %}
-            <ul>
-              <li>{% trans "Create documents."%}</li>
-              <li>{% trans "Work offline."%}</li>
-              <li>{% trans "Invite members of your community to your document in just a few clicks."%}</li>
-            </ul>
+            {% blocktrans %}
+              {{username}} invited you as an {{role}} on the following document : 
+            {% endblocktrans %}
+            <a href="{{link}}">{{document.title}}</a>
           </mj-text>
-          <mj-button href="{{site.domain}}/docs/{{document_id}}/" background-color="#000091" color="white" padding-bottom="30px">
-            {% trans "Visit Docs"%}
+          <mj-button
+            href="{{link}}"
+            background-color="#000091"
+            color="white"
+            padding-bottom="30px"
+          >
+            {% trans "Open"%}
           </mj-button>
-          <mj-text>{% trans "We are confident that Docs will help you increase efficiency and productivity while strengthening the bond among members." %}</mj-text>
-          <mj-text>{% trans "Feel free to explore all the features of the application and share your feedback and suggestions with us. Your feedback is valuable to us and will enable us to continually improve our service." %}</mj-text>
-          <mj-text>{% trans "Once again, welcome aboard! We are eager to accompany you on your collaboration adventure." %}</mj-text>
-
+          <mj-divider
+            border-width="1px"
+            border-style="solid"
+            border-color="#DDDDDD"
+            width="30%"
+            align="center"
+          />
+          <mj-text>
+            {% blocktrans %}
+              Docs, your new essential tool for organizing, sharing and collaborate on your documents as a team.
+            {% endblocktrans %}
+          </mj-text>
           <!-- Signature -->
           <mj-text>
-            <p>{% trans "Sincerely," %}</p>
-            <p>{% trans "The La Suite Numérique Team" %}</p>
+            <p>{% trans "Brought to you by La Suite Numérique" %}</p>
           </mj-text>
         </mj-column>
       </mj-section>
     </mj-wrapper>
   </mj-body>
 </mjml>
-
