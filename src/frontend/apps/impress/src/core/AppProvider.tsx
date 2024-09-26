@@ -1,8 +1,10 @@
 import { CunninghamProvider } from '@openfun/cunningham-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import { useCunninghamTheme } from '@/cunningham';
 import '@/i18n/initI18n';
+import { useResponsiveStore } from '@/stores/';
 
 import { Auth } from './auth/';
 
@@ -24,6 +26,15 @@ const queryClient = new QueryClient({
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { theme } = useCunninghamTheme();
+
+  const initializeResizeListener = useResponsiveStore(
+    (state) => state.initializeResizeListener,
+  );
+
+  useEffect(() => {
+    const cleanupResizeListener = initializeResizeListener();
+    return cleanupResizeListener;
+  }, [initializeResizeListener]);
 
   return (
     <QueryClientProvider client={queryClient}>
