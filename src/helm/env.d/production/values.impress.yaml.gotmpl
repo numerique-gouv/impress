@@ -8,6 +8,15 @@ backend:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
   envVars:
+    AI_API_KEY:
+      secretKeyRef:
+        name: backend
+        key: AI_API_KEY
+    AI_BASE_URL:
+      secretKeyRef:
+        name: backend
+        key: AI_BASE_URL
+    AI_MODEL: meta-llama/Meta-Llama-3.1-70B-Instruct
     DJANGO_CSRF_TRUSTED_ORIGINS: https://docs.numerique.gouv.fr
     DJANGO_CONFIGURATION: Production
     DJANGO_ALLOWED_HOSTS: "*"
