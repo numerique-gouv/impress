@@ -3,15 +3,18 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, StyledLink, Text } from '@/components/';
-import { AccountDropdown } from '@/core/auth';
+import { ButtonLogin } from '@/core/auth';
+import { LanguagePicker } from '@/features/language';
+import { useResponsiveStore } from '@/stores';
 
-import { LanguagePicker } from '../language/';
+import { default as IconDocs } from '../assets/icon-docs.svg?url';
 
+import { DropdownMenu } from './DropdownMenu';
 import { LaGaufre } from './LaGaufre';
-import { default as IconDocs } from './assets/icon-docs.svg?url';
 
 export const Header = () => {
   const { t } = useTranslation();
+  const { screenSize } = useResponsiveStore();
 
   return (
     <Box
@@ -23,7 +26,10 @@ export const Header = () => {
       $css="box-shadow: 0 1px 4px #00000040;"
     >
       <Box
-        $margin={{ horizontal: 'big' }}
+        $margin={{
+          left: 'big',
+          right: screenSize === 'small-mobile' ? 'none' : 'big',
+        }}
         $align="center"
         $justify="space-between"
         $direction="row"
@@ -65,11 +71,18 @@ export const Header = () => {
             </Box>
           </StyledLink>
         </Box>
-        <Box $align="center" $gap="1.5rem" $direction="row">
-          <AccountDropdown />
-          <LanguagePicker />
-          <LaGaufre />
-        </Box>
+        {screenSize === 'small-mobile' ? (
+          <Box $direction="row" $gap="2rem">
+            <LaGaufre />
+            <DropdownMenu />
+          </Box>
+        ) : (
+          <Box $align="center" $gap="1.5rem" $direction="row">
+            <ButtonLogin />
+            <LanguagePicker />
+            <LaGaufre />
+          </Box>
+        )}
       </Box>
     </Box>
   );
