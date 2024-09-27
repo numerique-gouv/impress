@@ -32,17 +32,17 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   return (
     <>
       <DocHeader doc={doc} versionId={versionId as Versions['version_id']} />
-      {!doc.abilities.partial_update && (
-        <Box $margin={{ all: 'small', top: 'none' }}>
+      {(!doc.abilities.partial_update || isVersion) && (
+        <Box
+          $margin={{ all: 'small', top: 'none', horizontal: 'auto' }}
+          $padding={{ horizontal: 'small' }}
+          $maxWidth="820px"
+          $width="100%"
+        >
           <Alert type={VariantType.WARNING}>
-            {t(`Read only, you cannot edit this document.`)}
-          </Alert>
-        </Box>
-      )}
-      {isVersion && (
-        <Box $margin={{ all: 'small', top: 'none' }}>
-          <Alert type={VariantType.WARNING}>
-            {t(`Read only, you cannot edit document versions.`)}
+            {!doc.abilities.partial_update
+              ? t(`Read only, you cannot edit this document.`)
+              : t(`Read only, you cannot edit document versions.`)}
           </Alert>
         </Box>
       )}
