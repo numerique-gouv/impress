@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
+import { useAuthStore } from '@/core/auth';
 import { DocEditor } from '@/features/docs';
 import { useDoc } from '@/features/docs/doc-management';
 import { MainLayout } from '@/layouts';
@@ -31,6 +32,7 @@ interface DocProps {
 }
 
 const DocPage = ({ id }: DocProps) => {
+  const { authenticated, login } = useAuthStore();
   const { data: docQuery, isError, error } = useDoc({ id });
   const [doc, setDoc] = useState(docQuery);
 
@@ -55,6 +57,11 @@ const DocPage = ({ id }: DocProps) => {
   if (isError && error) {
     if (error.status === 404) {
       navigate.replace(`/404`);
+      return null;
+    }
+
+    if (error.status === 401 && !authenticated) {
+      login();
       return null;
     }
 
