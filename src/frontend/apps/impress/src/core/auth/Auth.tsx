@@ -17,8 +17,9 @@ import { useAuthStore } from './useAuthStore';
 const regexpUrlsAuth = [/\/docs\/$/g, /^\/$/g];
 
 export const Auth = ({ children }: PropsWithChildren) => {
-  const { initAuth, initiated, authenticated, login } = useAuthStore();
-  const { asPath } = useRouter();
+  const { initAuth, initiated, authenticated, login, getAuthUrl } =
+    useAuthStore();
+  const { asPath, replace } = useRouter();
 
   const [pathAllowed, setPathAllowed] = useState<boolean>(
     !regexpUrlsAuth.some((regexp) => !!asPath.match(regexp)),
@@ -40,6 +41,18 @@ export const Auth = ({ children }: PropsWithChildren) => {
 
     login();
   }, [authenticated, pathAllowed, login, initiated]);
+
+  // Redirect to the path before login
+  useEffect(() => {
+    if (!authenticated) {
+      return;
+    }
+
+    const authUrl = getAuthUrl();
+    if (authUrl) {
+      void replace(authUrl);
+    }
+  }, [authenticated, getAuthUrl, replace]);
 
   if ((!initiated && pathAllowed) || (!authenticated && !pathAllowed)) {
     return (
