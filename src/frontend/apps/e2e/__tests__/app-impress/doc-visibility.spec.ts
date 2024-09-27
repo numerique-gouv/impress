@@ -93,4 +93,31 @@ test.describe('Doc Visibility: Not loggued', () => {
 
     await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
   });
+
+  test('A private doc redirect to the OIDC when not authentified.', async ({
+    page,
+    browserName,
+  }) => {
+    test.slow();
+    await page.goto('/');
+    await keyCloakSignIn(page, browserName);
+
+    const [docTitle] = await createDoc(page, 'My private doc', browserName, 1);
+
+    await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
+
+    const urlDoc = page.url();
+
+    await page
+      .getByRole('button', {
+        name: 'Logout',
+      })
+      .click();
+
+    await expect(page.getByRole('textbox', { name: 'password' })).toBeVisible();
+
+    await page.goto(urlDoc);
+
+    await expect(page.getByRole('textbox', { name: 'password' })).toBeVisible();
+  });
 });

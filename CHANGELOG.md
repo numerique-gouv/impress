@@ -16,8 +16,9 @@ and this project adheres to
 
 ## Fixed
 
-- 🐛 (backend) gitlab oicd userinfo endpoint #232
-- ♻️ (backend) getting list of document versions available for a user #258
+- 🐛(backend) gitlab oicd userinfo endpoint #232
+- 🛂(frontend) redirect to the OIDC when private doc and unauthentified #292
+- ♻️(backend) getting list of document versions available for a user #258
 
 ## [1.4.0] - 2024-09-17
 
