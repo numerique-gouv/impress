@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { keyCloakSignIn } from './common';
+import { keyCloakSignIn, mockedDocument } from './common';
 
 test.describe('Doc Routing', () => {
   test.beforeEach(async ({ page }) => {
@@ -43,9 +43,12 @@ test.describe('Doc Routing: Not loggued', () => {
     page,
     browserName,
   }) => {
+    await mockedDocument(page, { link_reach: 'public' });
     await page.goto('/docs/mocked-document-id/');
+    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+    await page.getByRole('button', { name: 'Login' }).click();
     await keyCloakSignIn(page, browserName);
-    await expect(page).toHaveURL(/\/docs\/mocked-document-id\/$/);
+    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
   });
 
   test('The homepage redirects to login.', async ({ page }) => {
