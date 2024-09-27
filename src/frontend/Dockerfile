@@ -73,7 +73,7 @@ ENV NEXT_PUBLIC_API_ORIGIN=${API_ORIGIN}
 RUN yarn build
 
 # ---- Front-end image ----
-FROM nginxinc/nginx-unprivileged:1.25 as frontend-production
+FROM nginxinc/nginx-unprivileged:1.26-alpine as frontend-production
 
 # Un-privileged user running the application
 ARG DOCKER_USER
