@@ -24,6 +24,8 @@ const BoxButton = forwardRef<HTMLDivElement, BoxType>(
         ref={ref}
         as="button"
         $background="none"
+        $margin="none"
+        $padding="none"
         $css={`
           cursor: pointer;
           border: none;

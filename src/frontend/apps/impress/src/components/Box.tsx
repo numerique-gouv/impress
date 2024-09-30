@@ -21,7 +21,7 @@ export interface BoxProps {
   $effect?: 'show' | 'hide';
   $flex?: boolean;
   $gap?: CSSProperties['gap'];
-  $hasTransition?: boolean;
+  $hasTransition?: boolean | 'slow';
   $height?: CSSProperties['height'];
   $justify?: CSSProperties['justifyContent'];
   $overflow?: CSSProperties['overflow'];
@@ -53,7 +53,11 @@ export const Box = styled('div')<BoxProps>`
   ${({ $gap }) => $gap && `gap: ${$gap};`}
   ${({ $height }) => $height && `height: ${$height};`}
   ${({ $hasTransition }) =>
-    $hasTransition && `transition: all 0.3s ease-in-out;`}
+    $hasTransition && $hasTransition === 'slow'
+      ? `transition: all 0.5s ease-in-out;`
+      : $hasTransition
+        ? `transition: all 0.3s ease-in-out;`
+        : ''}
   ${({ $justify }) => $justify && `justify-content: ${$justify};`}
   ${({ $margin }) => $margin && stylesMargin($margin)}
   ${({ $maxHeight }) => $maxHeight && `max-height: ${$maxHeight};`}
