@@ -90,6 +90,8 @@ export const ModalVersion = ({
               id: docId,
               content: newDoc,
             });
+
+            onClose();
           }}
         >
           {t('Restore')}

@@ -5,19 +5,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors } from '@/components';
-import { Panel } from '@/components/Panel';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
-import { TableContent } from '@/features/docs/doc-table-content';
-import {
-  VersionList,
-  Versions,
-  useDocVersion,
-  useDocVersionStore,
-} from '@/features/docs/doc-versioning/';
+import { useHeading } from '@/features/docs/doc-table-content';
+import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
+import { IconOpenPanelEditor, PanelEditor } from './PanelEditor';
 
 interface DocEditorProps {
   doc: Doc;
@@ -27,8 +22,8 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   const {
     query: { versionId },
   } = useRouter();
-  const { isPanelVersionOpen, setIsPanelVersionOpen } = useDocVersionStore();
   const { t } = useTranslation();
+  const headings = useHeading(doc.id);
 
   const isVersion = versionId && typeof versionId === 'string';
 
@@ -56,21 +51,22 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
         $height="100%"
         $direction="row"
         $margin={{ all: 'small', top: 'none' }}
-        $gap="1rem"
+        $css="overflow-x: clip;"
       >
-        <Card $padding="big" $css="flex:1;" $overflow="auto">
+        <Card
+          $padding="big"
+          $css="flex:1;"
+          $overflow="auto"
+          $position="relative"
+        >
           {isVersion ? (
             <DocVersionEditor doc={doc} versionId={versionId} />
           ) : (
             <BlockNoteEditor doc={doc} />
           )}
+          <IconOpenPanelEditor headings={headings} />
         </Card>
-        {doc.abilities.versions_list && isPanelVersionOpen && (
-          <Panel title={t('VERSIONS')} setIsPanelOpen={setIsPanelVersionOpen}>
-            <VersionList doc={doc} />
-          </Panel>
-        )}
-        <TableContent doc={doc} />
+        <PanelEditor doc={doc} headings={headings} />
       </Box>
     </>
   );

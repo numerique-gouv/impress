@@ -12,6 +12,7 @@ and this project adheres to
 ## Added
 
 - ✨(ci) add security scan #291
+- ✨(frontend) Activate versions feature #240
 
 ## Changed
 

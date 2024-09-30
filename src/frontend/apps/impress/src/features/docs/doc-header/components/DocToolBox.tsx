@@ -3,14 +3,13 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
+import { usePanelEditorStore } from '@/features/docs/doc-editor/';
 import {
   Doc,
   ModalRemoveDoc,
   ModalShare,
   ModalUpdateDoc,
 } from '@/features/docs/doc-management';
-import { useDocTableContentStore } from '@/features/docs/doc-table-content';
-import { useDocVersionStore } from '@/features/docs/doc-versioning';
 
 import { ModalPDF } from './ModalExport';
 
@@ -25,8 +24,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
-  const { setIsPanelVersionOpen } = useDocVersionStore();
-  const { setIsPanelTableContentOpen } = useDocTableContentStore();
+  const { setIsPanelOpen, setIsPanelTableContentOpen } = usePanelEditorStore();
 
   return (
     <Box
@@ -81,10 +79,24 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
               <Text $theme="primary">{t('Delete document')}</Text>
             </Button>
           )}
+          {doc.abilities.versions_list && (
+            <Button
+              onClick={() => {
+                setIsPanelOpen(true);
+                setIsPanelTableContentOpen(false);
+                setIsDropOpen(false);
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">history</span>}
+              size="small"
+            >
+              <Text $theme="primary">{t('Version history')}</Text>
+            </Button>
+          )}
           <Button
             onClick={() => {
+              setIsPanelOpen(true);
               setIsPanelTableContentOpen(true);
-              setIsPanelVersionOpen(false);
               setIsDropOpen(false);
             }}
             color="primary-text"
