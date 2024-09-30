@@ -25,14 +25,14 @@ license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "boto3==1.35.24",
+    "boto3==1.35.29",
     "Brotli==1.1.0",
     "celery[redis]==5.4.0",
     "django-configurations==2.5.1",
     "django-cors-headers==4.4.0",
     "django-countries==7.6.1",
     "django-parler==2.3",
-    "redis==5.0.8",
+    "redis==5.1.0",
     "django-redis==5.4.0",
     "django-storages[s3]==1.14.4",
     "django-timezone-field>=5.1",
@@ -47,7 +47,7 @@ dependencies = [
     "jsonschema==4.23.0",
     "markdown==3.7",
     "nested-multipart-parser==1.5.0",
-    "psycopg[binary]==3.2.2",
+    "psycopg[binary]==3.2.3",
     "PyJWT==2.9.0",
     "pypandoc==1.13",
     "python-frontmatter==1.1.0",
@@ -73,14 +73,14 @@ dev = [
     "ipython==8.27.0",
     "pyfakefs==5.6.0",
     "pylint-django==2.5.5",
-    "pylint==3.3.0",
+    "pylint==3.3.1",
     "pytest-cov==5.0.0",
     "pytest-django==4.9.0",
     "pytest==8.3.3",
     "pytest-icdiff==0.9",
     "pytest-xdist==3.6.1",
     "responses==0.25.3",
-    "ruff==0.6.7",
+    "ruff==0.6.8",
     "types-requests==2.32.0.20240914",
 ]
 
