@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- ✨(ci) add security scan #291
+
 ## Changed
 
 - 💄(frontend) error alert closeable on editor #284

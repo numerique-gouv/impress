@@ -1,15 +1,14 @@
 # Django impress
 
 # ---- base image to inherit from ----
-FROM python:3.10-slim-bullseye as base
+FROM python:3.12.6-alpine3.20 as base
 
 # Upgrade pip to its latest release to speed up dependencies installation
-RUN python -m pip install --upgrade pip
+RUN python -m pip install --upgrade pip setuptools
 
 # Upgrade system packages to install security updates
-RUN apt-get update && \
-  apt-get -y upgrade && \
-  rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+  apk upgrade
 
 # ---- Back-end builder image ----
 FROM base as back-builder
@@ -38,12 +37,10 @@ RUN yarn install --frozen-lockfile && \
 FROM base as link-collector
 ARG IMPRESS_STATIC_ROOT=/data/static
 
-# Install libpangocairo & rdfind
-RUN apt-get update && \
-    apt-get install -y \
-      libpangocairo-1.0-0 \
-      rdfind && \
-    rm -rf /var/lib/apt/lists/*
+# Install pango & rdfind
+RUN apk add \
+  pango \
+  rdfind
 
 # Copy installed python dependencies
 COPY --from=back-builder /install /usr/local
@@ -67,18 +64,16 @@ FROM base as core
 ENV PYTHONUNBUFFERED=1
 
 # Install required system libs
-RUN apt-get update && \
-    apt-get install -y \
-      gettext \
-      libcairo2 \
-      libffi-dev \
-      libgdk-pixbuf2.0-0 \
-      libpango-1.0-0 \
-      libpangocairo-1.0-0 \
-      pandoc \
-      fonts-noto-color-emoji \
-      shared-mime-info && \
-  rm -rf /var/lib/apt/lists/*
+RUN apk add \
+  gettext \
+  cairo \
+  libffi-dev \
+  gdk-pixbuf \
+  pango \
+  pandoc \
+  font-noto-emoji \
+  font-noto \
+  shared-mime-info
 
 # Copy entrypoint
 COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
@@ -108,9 +103,7 @@ FROM core as backend-development
 USER root:root
 
 # Install psql
-RUN apt-get update && \
-    apt-get install -y postgresql-client && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add postgresql-client
 
 # Uninstall impress and re-install it in editable mode along with development
 # dependencies
