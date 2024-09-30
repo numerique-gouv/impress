@@ -39,16 +39,16 @@
   },
   "devDependencies": {
     "@svgr/webpack": "8.1.0",
-    "@tanstack/react-query-devtools": "5.56.2",
+    "@tanstack/react-query-devtools": "5.58.0",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.5.0",
     "@testing-library/react": "16.0.1",
     "@testing-library/user-event": "14.5.2",
     "@types/jest": "29.5.13",
-    "@types/lodash": "4.17.7",
+    "@types/lodash": "4.17.9",
     "@types/luxon": "3.4.2",
     "@types/node": "*",
-    "@types/react": "18.3.8",
+    "@types/react": "18.3.10",
     "@types/react-dom": "*",
     "cross-env": "*",
     "dotenv": "16.4.5",
@@ -62,7 +62,7 @@
     "stylelint-config-standard": "36.0.1",
     "stylelint-prettier": "5.0.2",
     "typescript": "*",
-    "webpack": "5.94.0",
+    "webpack": "5.95.0",
     "workbox-webpack-plugin": "7.1.0"
   }
 }
