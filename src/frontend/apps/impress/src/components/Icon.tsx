@@ -14,7 +14,10 @@ export const IconBG = ({ iconName, ...textProps }: IconBGProps) => {
       $size="36px"
       $theme="primary"
       $background={colorsTokens()['primary-bg']}
-      $css={`border: 1px solid ${colorsTokens()['primary-200']}`}
+      $css={`
+        border: 1px solid ${colorsTokens()['primary-200']}; 
+        user-select: none;
+      `}
       $radius="12px"
       $padding="4px"
       $margin="auto"
@@ -38,6 +41,7 @@ export const IconOptions = ({ isOpen, ...props }: IconOptionsProps) => {
       $css={`
         transition: all 0.3s ease-in-out;
         transform: rotate(${isOpen ? '90' : '0'}deg);
+        user-select: none;
       `}
     >
       more_vert
