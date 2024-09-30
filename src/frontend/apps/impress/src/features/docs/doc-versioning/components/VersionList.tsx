@@ -1,6 +1,6 @@
 import { Loader } from '@openfun/cunningham-react';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { APIError } from '@/api';
@@ -9,7 +9,6 @@ import { Doc } from '@/features/docs/doc-management';
 import { useDate } from '@/hook';
 
 import { useDocVersionsInfiniteQuery } from '../api/useDocVersions';
-import { useDocVersionStore } from '../stores';
 import { Versions } from '../types';
 
 import { VersionItem } from './VersionItem';
@@ -102,16 +101,9 @@ export const VersionList = ({ doc }: VersionListProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const versions = useMemo(() => {
     return data?.pages.reduce((acc, page) => {
-      return acc.concat(page.results);
+      return acc.concat(page.versions);
     }, [] as Versions[]);
   }, [data?.pages]);
-  const { setIsPanelVersionOpen } = useDocVersionStore();
-
-  useEffect(() => {
-    return () => {
-      setIsPanelVersionOpen(false);
-    };
-  }, [setIsPanelVersionOpen]);
 
   return (
     <Box $css="overflow-y: auto; overflow-x: hidden;" ref={containerRef}>

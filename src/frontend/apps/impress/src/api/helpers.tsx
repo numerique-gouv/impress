@@ -10,14 +10,16 @@ import { APIError } from './APIError';
 import { APIList } from './types';
 
 export type UseQueryOptionsAPI<Q> = UseQueryOptions<Q, APIError, Q>;
-export type DefinedInitialDataInfiniteOptionsAPI<Q> =
-  DefinedInitialDataInfiniteOptions<
-    Q,
-    APIError,
-    InfiniteData<Q>,
-    QueryKey,
-    number
-  >;
+export type DefinedInitialDataInfiniteOptionsAPI<
+  Q,
+  TPageParam = number,
+> = DefinedInitialDataInfiniteOptions<
+  Q,
+  APIError,
+  InfiniteData<Q>,
+  QueryKey,
+  TPageParam
+>;
 
 /**
  * @param param Used for infinite scroll pagination

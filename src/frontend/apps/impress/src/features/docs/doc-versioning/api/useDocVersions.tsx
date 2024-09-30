@@ -1,32 +1,35 @@
-import { useQuery } from '@tanstack/react-query';
+import {
+  InfiniteData,
+  QueryKey,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query';
 
 import {
   APIError,
-  APIList,
   DefinedInitialDataInfiniteOptionsAPI,
   UseQueryOptionsAPI,
   errorCauses,
   fetchAPI,
-  useAPIInfiniteQuery,
 } from '@/api';
 
-import { Versions } from '../types';
+import { APIListVersions } from '../types';
 
 export type DocVersionsParam = {
   docId: string;
 };
 
 export type DocVersionsAPIParams = DocVersionsParam & {
-  page: number;
+  versionId: string;
 };
 
-type VersionsResponse = APIList<Versions>;
+type VersionsResponse = APIListVersions;
 
 const getDocVersions = async ({
-  page,
+  versionId,
   docId,
 }: DocVersionsAPIParams): Promise<VersionsResponse> => {
-  const url = `documents/${docId}/versions/?page=${page}`;
+  const url = `documents/${docId}/versions/?version_id=${versionId}`;
 
   const response = await fetchAPI(url);
 
@@ -55,12 +58,25 @@ export function useDocVersions(
 
 export function useDocVersionsInfiniteQuery(
   param: DocVersionsParam,
-  queryConfig?: DefinedInitialDataInfiniteOptionsAPI<VersionsResponse>,
+  queryConfig?: DefinedInitialDataInfiniteOptionsAPI<VersionsResponse, string>,
 ) {
-  return useAPIInfiniteQuery<DocVersionsParam, VersionsResponse>(
-    KEY_LIST_DOC_VERSIONS,
-    getDocVersions,
-    param,
-    queryConfig,
-  );
+  return useInfiniteQuery<
+    VersionsResponse,
+    APIError,
+    InfiniteData<VersionsResponse>,
+    QueryKey,
+    string
+  >({
+    initialPageParam: '',
+    queryKey: [KEY_LIST_DOC_VERSIONS, param],
+    queryFn: ({ pageParam }) =>
+      getDocVersions({
+        ...param,
+        versionId: pageParam,
+      }),
+    getNextPageParam(lastPage) {
+      return lastPage.next_version_id_marker || undefined;
+    },
+    ...queryConfig,
+  });
 }
