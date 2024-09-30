@@ -88,13 +88,14 @@ export const DocsGrid = () => {
       $margin={{ all: 'big', top: 'none' }}
       $overflow="auto"
       aria-label={t(`Datagrid of the documents page {{page}}`, { page })}
+      $height="100%"
     >
       <DocsGridStyle />
       <Text
         $weight="bold"
         as="h2"
         $theme="primary"
-        $margin={{ bottom: 'none' }}
+        $margin={{ bottom: 'small' }}
       >
         {t('Documents')}
       </Text>

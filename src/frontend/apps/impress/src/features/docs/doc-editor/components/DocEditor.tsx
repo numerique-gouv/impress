@@ -1,21 +1,15 @@
 import { Alert, Loader, VariantType } from '@openfun/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Card, Text, TextErrors } from '@/components';
-import { Panel } from '@/components/Panel';
-import { useCunninghamTheme } from '@/cunningham';
+import { Box, Text, TextErrors } from '@/components';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
 import { TableContent } from '@/features/docs/doc-table-content';
-import {
-  VersionList,
-  Versions,
-  useDocVersion,
-  useDocVersionStore,
-} from '@/features/docs/doc-versioning/';
+import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
+import { useResponsiveStore } from '@/stores';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
 
@@ -27,50 +21,49 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   const {
     query: { versionId },
   } = useRouter();
-  const { isPanelVersionOpen, setIsPanelVersionOpen } = useDocVersionStore();
   const { t } = useTranslation();
 
   const isVersion = versionId && typeof versionId === 'string';
+  const [isTableContentOpen, setIsTableContentOpen] = useState(false);
 
-  const { colorsTokens } = useCunninghamTheme();
+  const { screenWidth, isMobile } = useResponsiveStore();
+  const isOverlapping = screenWidth < 1420 && isTableContentOpen;
 
   return (
     <>
       <DocHeader doc={doc} versionId={versionId as Versions['version_id']} />
-      {!doc.abilities.partial_update && (
-        <Box $margin={{ all: 'small', top: 'none' }}>
+      {(!doc.abilities.partial_update || isVersion) && (
+        <Box
+          $margin={{ all: 'small', top: 'none', horizontal: 'auto' }}
+          $padding={{ horizontal: 'small' }}
+          $maxWidth="820px"
+          $width="100%"
+        >
           <Alert type={VariantType.WARNING}>
-            {t(`Read only, you cannot edit this document.`)}
-          </Alert>
-        </Box>
-      )}
-      {isVersion && (
-        <Box $margin={{ all: 'small', top: 'none' }}>
-          <Alert type={VariantType.WARNING}>
-            {t(`Read only, you cannot edit document versions.`)}
+            {!doc.abilities.partial_update
+              ? t(`Read only, you cannot edit this document.`)
+              : t(`Read only, you cannot edit document versions.`)}
           </Alert>
         </Box>
       )}
       <Box
-        $background={colorsTokens()['primary-bg']}
         $height="100%"
         $direction="row"
-        $margin={{ all: 'small', top: 'none' }}
+        $width="100%"
+        $justify="center"
+        $position="relative"
         $gap="1rem"
+        $hasTransition
+        $padding={{ right: isOverlapping && !isMobile ? '18rem' : 'none' }}
       >
-        <Card $padding="big" $css="flex:1;" $overflow="auto">
+        <Box $maxWidth="888px" $width="100%">
           {isVersion ? (
             <DocVersionEditor doc={doc} versionId={versionId} />
           ) : (
             <BlockNoteEditor doc={doc} />
           )}
-        </Card>
-        {doc.abilities.versions_list && isPanelVersionOpen && (
-          <Panel title={t('VERSIONS')} setIsPanelOpen={setIsPanelVersionOpen}>
-            <VersionList doc={doc} />
-          </Panel>
-        )}
-        <TableContent doc={doc} />
+        </Box>
+        <TableContent doc={doc} setIsTableContentOpen={setIsTableContentOpen} />
       </Box>
     </>
   );

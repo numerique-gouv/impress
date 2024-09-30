@@ -39,6 +39,7 @@ export const IconOptions = ({ isOpen, ...props }: IconOptionsProps) => {
         transition: all 0.3s ease-in-out;
         transform: rotate(${isOpen ? '90' : '0'}deg);
       `}
+      $theme="primary"
     >
       more_vert
     </Text>

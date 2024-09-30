@@ -33,6 +33,10 @@ export const Heading = ({
   const [isHover, setIsHover] = useState(isHighlight);
   const { colorsTokens } = useCunninghamTheme();
 
+  const color = isHighlight
+    ? colorsTokens()['primary-600']
+    : `${colorsTokens()['primary-600']}77`;
+
   return (
     <BoxButton
       key={headingId}
@@ -49,16 +53,16 @@ export const Heading = ({
       $css="text-align: left;"
     >
       <Text
-        $theme="primary"
+        $color={color}
         $padding={{ vertical: 'xtiny', left: 'tiny' }}
         $size={sizeMap[level]}
         $hasTransition
-        $css={
-          isHover || isHighlight
-            ? `box-shadow: -2px 0px 0px ${colorsTokens()[isHighlight ? 'primary-500' : 'primary-400']};`
-            : ''
-        }
+        $css={`
+          ${isHover || isHighlight ? `box-shadow: -2px 0px 0px ${color};` : ''}
+          overflow-wrap: anywhere;
+        `}
         aria-selected={isHighlight}
+        $weight={isHighlight ? 'bold' : 'normal'}
       >
         {text}
       </Text>

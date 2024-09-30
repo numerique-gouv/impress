@@ -10,6 +10,7 @@ import { mediaUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
 import { Doc } from '@/features/docs/doc-management';
 import { Version } from '@/features/docs/doc-versioning/';
+import { useResponsiveStore } from '@/stores';
 
 import { useCreateDocAttachment } from '../api/useCreateDocUpload';
 import useSaveDoc from '../hook/useSaveDoc';
@@ -18,9 +19,12 @@ import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
 
-const cssEditor = `
+const cssEditor = (isMobile: boolean) => `
   &, & > .bn-container, & .ProseMirror {
     height:100%
+  };
+  & .bn-editor {
+    padding-right: 24px;
   };
   & .collaboration-cursor__caret.ProseMirror-widget{
     word-wrap: initial;
@@ -30,6 +34,30 @@ const cssEditor = `
     padding: 2px;
     border-radius: 4px;
   }
+    ${
+      isMobile
+        ? `
+          & .bn-editor h1 {
+            font-size: 1.5rem;
+          }
+          & .bn-editor h2 {
+            font-size: 1.25rem;
+          }
+          & .bn-editor h3 {
+            font-size: 1.125rem;
+          }
+          & .bn-editor h4 {
+            font-size: 1rem;
+          }
+          & .bn-editor h5 {
+            font-size: 0.875rem;
+          }
+          & .bn-editor h6 {
+            font-size: 0.75rem;
+          }
+        `
+        : ``
+    }
 `;
 
 interface BlockNoteEditorProps {
@@ -67,6 +95,7 @@ export const BlockNoteContent = ({
   provider,
   storeId,
 }: BlockNoteContentProps) => {
+  const { isMobile } = useResponsiveStore();
   const isVersion = doc.id !== storeId;
   const { userData } = useAuthStore();
   const { setStore, docsStore } = useDocStore();
@@ -117,7 +146,7 @@ export const BlockNoteContent = ({
   }, [setStore, storeId, editor]);
 
   return (
-    <Box $css={cssEditor}>
+    <Box $css={cssEditor(isMobile)}>
       {isErrorAttachment && (
         <Box $margin={{ bottom: 'big' }}>
           <TextErrors

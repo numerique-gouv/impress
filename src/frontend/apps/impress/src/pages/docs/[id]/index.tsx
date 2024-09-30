@@ -22,7 +22,9 @@ export function DocLayout() {
 
   return (
     <MainLayout>
-      <DocPage id={id} />
+      <Box $minHeight="100%">
+        <DocPage id={id} />
+      </Box>
     </MainLayout>
   );
 }
