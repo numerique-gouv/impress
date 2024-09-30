@@ -1,5 +1,12 @@
 import { Doc } from '../doc-management';
 
+export interface APIListVersions {
+  count: number;
+  is_truncated: boolean;
+  next_version_id_marker: string | null;
+  versions: Versions[];
+}
+
 export interface Versions {
   etag: string;
   is_latest: boolean;
