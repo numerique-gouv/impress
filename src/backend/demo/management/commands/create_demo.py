@@ -2,6 +2,7 @@
 """create_demo management command"""
 
 import logging
+import math
 import random
 import time
 from collections import defaultdict
@@ -111,7 +112,11 @@ def create_demo(stdout):
     queue = BulkQueue(stdout)
 
     with Timeit(stdout, "Creating users"):
+        name_size = int(math.sqrt(defaults.NB_OBJECTS["users"]))
+        first_names = [fake.first_name() for _ in range(name_size)]
+        last_names = [fake.last_name() for _ in range(name_size)]
         for i in range(defaults.NB_OBJECTS["users"]):
+            first_name = random.choice(first_names)
             queue.push(
                 models.User(
                     admin_email=f"user{i:d}@example.com",
@@ -120,6 +125,8 @@ def create_demo(stdout):
                     is_superuser=False,
                     is_active=True,
                     is_staff=False,
+                    short_name=first_name,
+                    full_name=f"{first_name:s} {random.choice(last_names):s}",
                     language=random.choice(settings.LANGUAGES)[0],
                 )
             )

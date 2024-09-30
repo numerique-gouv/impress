@@ -1,5 +1,6 @@
 """Authentication Backends for the Impress core app."""
 
+from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.utils.translation import gettext_lazy as _
 
@@ -74,37 +75,42 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
         """
 
         user_info = self.get_userinfo(access_token, id_token, payload)
-        sub = user_info.get("sub")
 
+        # Compute user full name from OIDC name fields as defined in settings
+        names_list = [
+            user_info[field]
+            for field in settings.USER_OIDC_FIELDS_TO_FULLNAME
+            if user_info.get(field)
+        ]
+        claims = {
+            "email": user_info.get("email"),
+            "full_name": " ".join(names_list) or None,
+            "short_name": user_info.get(settings.USER_OIDC_FIELD_TO_SHORTNAME),
+        }
+
+        sub = user_info.get("sub")
         if sub is None:
             raise SuspiciousOperation(
                 _("User info contained no recognizable user identification")
             )
 
         try:
-            user = User.objects.get(sub=sub)
+            user = User.objects.get(sub=sub, is_active=True)
         except User.DoesNotExist:
             if self.get_settings("OIDC_CREATE_USER", True):
-                user = self.create_user(user_info)
+                user = User.objects.create(
+                    sub=sub,
+                    password="!",  # noqa: S106
+                    **claims,
+                )
             else:
                 user = None
-
-        return user
-
-    def create_user(self, claims):
-        """Return a newly created User instance."""
-
-        sub = claims.get("sub")
-
-        if sub is None:
-            raise SuspiciousOperation(
-                _("Claims contained no recognizable user identification")
+        else:
+            has_changed = any(
+                value and value != getattr(user, key) for key, value in claims.items()
             )
-
-        user = User.objects.create(
-            sub=sub,
-            email=claims.get("email"),
-            password="!",  # noqa: S106
-        )
+            if has_changed:
+                updated_claims = {key: value for key, value in claims.items() if value}
+                self.UserModel.objects.filter(sub=sub).update(**updated_claims)
 
         return user

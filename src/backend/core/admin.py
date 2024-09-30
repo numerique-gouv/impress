@@ -29,7 +29,19 @@ class UserAdmin(auth_admin.UserAdmin):
                 )
             },
         ),
-        (_("Personal info"), {"fields": ("sub", "email", "language", "timezone")}),
+        (
+            _("Personal info"),
+            {
+                "fields": (
+                    "sub",
+                    "email",
+                    "full_name",
+                    "short_name",
+                    "language",
+                    "timezone",
+                )
+            },
+        ),
         (
             _("Permissions"),
             {
@@ -58,6 +70,7 @@ class UserAdmin(auth_admin.UserAdmin):
     list_display = (
         "id",
         "sub",
+        "full_name",
         "admin_email",
         "email",
         "is_active",
@@ -68,9 +81,24 @@ class UserAdmin(auth_admin.UserAdmin):
         "updated_at",
     )
     list_filter = ("is_staff", "is_superuser", "is_device", "is_active")
-    ordering = ("is_active", "-is_superuser", "-is_staff", "-is_device", "-updated_at")
-    readonly_fields = ("id", "sub", "email", "created_at", "updated_at")
-    search_fields = ("id", "sub", "admin_email", "email")
+    ordering = (
+        "is_active",
+        "-is_superuser",
+        "-is_staff",
+        "-is_device",
+        "-updated_at",
+        "full_name",
+    )
+    readonly_fields = (
+        "id",
+        "sub",
+        "email",
+        "full_name",
+        "short_name",
+        "created_at",
+        "updated_at",
+    )
+    search_fields = ("id", "sub", "admin_email", "email", "full_name")
 
 
 @admin.register(models.Template)
