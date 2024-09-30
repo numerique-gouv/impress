@@ -24,6 +24,8 @@ and this project adheres to
 - 🐛(backend) gitlab oicd userinfo endpoint #232
 - 🛂(frontend) redirect to the OIDC when private doc and unauthentified #292
 - ♻️(backend) getting list of document versions available for a user #258
+- 🔧(backend) fix configuration to avoid different ssl warning #297
+
 
 ## [1.4.0] - 2024-09-17
 
