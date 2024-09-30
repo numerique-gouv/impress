@@ -38,6 +38,77 @@ def test_authentication_getter_existing_user_no_email(
     assert user == db_user
 
 
+def test_authentication_getter_existing_user_with_email(
+    django_assert_num_queries, monkeypatch
+):
+    """
+    When the user's info contains an email and targets an existing user,
+    """
+    klass = OIDCAuthenticationBackend()
+    user = UserFactory(full_name="John Doe", short_name="John")
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": user.sub,
+            "email": user.email,
+            "first_name": "John",
+            "last_name": "Doe",
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    # Only 1 query because email and names have not changed
+    with django_assert_num_queries(1):
+        authenticated_user = klass.get_or_create_user(
+            access_token="test-token", id_token=None, payload=None
+        )
+
+    assert user == authenticated_user
+
+
+@pytest.mark.parametrize(
+    "first_name, last_name, email",
+    [
+        ("Jack", "Doe", "john.doe@example.com"),
+        ("John", "Duy", "john.doe@example.com"),
+        ("John", "Doe", "jack.duy@example.com"),
+        ("Jack", "Duy", "jack.duy@example.com"),
+    ],
+)
+def test_authentication_getter_existing_user_change_fields(
+    first_name, last_name, email, django_assert_num_queries, monkeypatch
+):
+    """
+    It should update the email or name fields on the user when they change.
+    """
+    klass = OIDCAuthenticationBackend()
+    user = UserFactory(
+        full_name="John Doe", short_name="John", email="john.doe@example.com"
+    )
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": user.sub,
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    # One and only one additional update query when a field has changed
+    with django_assert_num_queries(2):
+        authenticated_user = klass.get_or_create_user(
+            access_token="test-token", id_token=None, payload=None
+        )
+
+    assert user == authenticated_user
+    user.refresh_from_db()
+    assert user.email == email
+    assert user.full_name == f"{first_name:s} {last_name:s}"
+    assert user.short_name == first_name
+
+
 def test_authentication_getter_new_user_no_email(monkeypatch):
     """
     If no user matches the user's info sub, a user should be created.
@@ -56,6 +127,8 @@ def test_authentication_getter_new_user_no_email(monkeypatch):
 
     assert user.sub == "123"
     assert user.email is None
+    assert user.full_name is None
+    assert user.short_name is None
     assert user.password == "!"
     assert models.User.objects.count() == 1
 
@@ -81,6 +154,8 @@ def test_authentication_getter_new_user_with_email(monkeypatch):
 
     assert user.sub == "123"
     assert user.email == email
+    assert user.full_name == "John Doe"
+    assert user.short_name == "John"
     assert user.password == "!"
     assert models.User.objects.count() == 1
 
@@ -116,14 +191,19 @@ def test_authentication_get_userinfo_json_response():
     responses.add(
         responses.GET,
         re.compile(r".*/userinfo"),
-        json={"name": "John Doe", "email": "john.doe@example.com"},
+        json={
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john.doe@example.com",
+        },
         status=200,
     )
 
     oidc_backend = OIDCAuthenticationBackend()
     result = oidc_backend.get_userinfo("fake_access_token", None, None)
 
-    assert result["name"] == "John Doe"
+    assert result["first_name"] == "John"
+    assert result["last_name"] == "Doe"
     assert result["email"] == "john.doe@example.com"
 
 
@@ -137,14 +217,19 @@ def test_authentication_get_userinfo_token_response(monkeypatch):
     )
 
     def mock_verify_token(self, token):  # pylint: disable=unused-argument
-        return {"name": "Jane Doe", "email": "jane.doe@example.com"}
+        return {
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "email": "jane.doe@example.com",
+        }
 
     monkeypatch.setattr(OIDCAuthenticationBackend, "verify_token", mock_verify_token)
 
     oidc_backend = OIDCAuthenticationBackend()
     result = oidc_backend.get_userinfo("fake_access_token", None, None)
 
-    assert result["name"] == "Jane Doe"
+    assert result["first_name"] == "Jane"
+    assert result["last_name"] == "Doe"
     assert result["email"] == "jane.doe@example.com"
 
 

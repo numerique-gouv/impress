@@ -11,6 +11,7 @@ and this project adheres to
 
 ## Added
 
+- ✨(backend) add name fields to the user synchronized with OIDC #301
 - ✨(ci) add security scan #291
 - ✨(frontend) Activate versions feature #240
 - ✨(frontend) one-click document creation #275

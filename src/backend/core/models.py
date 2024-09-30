@@ -145,6 +145,10 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         blank=True,
         null=True,
     )
+
+    full_name = models.CharField(_("full name"), max_length=100, null=True, blank=True)
+    short_name = models.CharField(_("short name"), max_length=20, null=True, blank=True)
+
     email = models.EmailField(_("identity email address"), blank=True, null=True)
 
     # Unlike the "email" field which stores the email coming from the OIDC token, this field

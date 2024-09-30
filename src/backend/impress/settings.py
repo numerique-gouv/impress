@@ -388,6 +388,17 @@ class Base(Configuration):
         default=True, environ_name="ALLOW_LOGOUT_GET_METHOD", environ_prefix=None
     )
 
+    USER_OIDC_FIELDS_TO_FULLNAME = values.ListValue(
+        default=["first_name", "last_name"],
+        environ_name="USER_OIDC_FIELDS_TO_FULLNAME",
+        environ_prefix=None,
+    )
+    USER_OIDC_FIELD_TO_SHORTNAME = values.Value(
+        default="first_name",
+        environ_name="USER_OIDC_FIELD_TO_SHORTNAME",
+        environ_prefix=None,
+    )
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):

@@ -120,6 +120,8 @@ def test_api_users_retrieve_me_authenticated():
     assert response.json() == {
         "id": str(user.id),
         "email": user.email,
+        "full_name": user.full_name,
+        "short_name": user.short_name,
     }
 
 

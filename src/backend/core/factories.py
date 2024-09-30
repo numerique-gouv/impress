@@ -22,6 +22,8 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     sub = factory.Sequence(lambda n: f"user{n!s}")
     email = factory.Faker("email")
+    full_name = factory.Faker("name")
+    short_name = factory.Faker("first_name")
     language = factory.fuzzy.FuzzyChoice([lang[0] for lang in settings.LANGUAGES])
     password = make_password("password")
 
