@@ -1,33 +1,34 @@
 import { Button } from '@openfun/cunningham-react';
-import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Card } from '@/components';
-import { ModalCreateDoc } from '@/features/docs/doc-management';
+import { Box } from '@/components';
+import { useCreateDoc, useTrans } from '@/features/docs/doc-management/';
 
 import { DocsGrid } from './DocsGrid';
 
 export const DocsGridContainer = () => {
   const { t } = useTranslation();
-  const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
+  const { untitledDocument } = useTrans();
+  const router = useRouter();
+
+  const { mutate: createDoc } = useCreateDoc({
+    onSuccess: (doc) => {
+      router.push(`/docs/${doc.id}`);
+    },
+  });
+
+  const handleCreateDoc = () => {
+    createDoc({ title: untitledDocument });
+  };
 
   return (
     <Box $overflow="auto">
-      <Card $margin="big" $padding="tiny">
-        <Box $align="flex-end" $justify="center">
-          <Button
-            onClick={() => {
-              setIsModalCreateOpen(true);
-            }}
-          >
-            {t('Create a new document')}
-          </Button>
-        </Box>
-      </Card>
+      <Box $align="flex-end" $justify="center" $margin="big">
+        <Button onClick={handleCreateDoc}>{t('Create a new document')}</Button>
+      </Box>
       <DocsGrid />
-      {isModalCreateOpen && (
-        <ModalCreateDoc onClose={() => setIsModalCreateOpen(false)} />
-      )}
     </Box>
   );
 };
