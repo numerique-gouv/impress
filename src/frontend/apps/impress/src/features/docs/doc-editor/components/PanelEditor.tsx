@@ -35,7 +35,6 @@ export const PanelEditor = ({
       $css={`
         top: 0vh;
         transform: translateX(0%);
-        overflow: hidden;
         flex: 1;
         margin-left: 1rem;
         ${
