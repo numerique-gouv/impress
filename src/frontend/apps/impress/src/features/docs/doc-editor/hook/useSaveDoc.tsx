@@ -4,6 +4,7 @@ import * as Y from 'yjs';
 
 import { useUpdateDoc } from '@/features/docs/doc-management/';
 import { KEY_LIST_DOC_VERSIONS } from '@/features/docs/doc-versioning';
+import { isFirefox } from '@/utils/userAgent';
 
 import { toBase64 } from '../utils';
 
@@ -87,10 +88,7 @@ const useSaveDoc = (docId: string, doc: Y.Doc, canSave: boolean) => {
        * if he wants to leave the page, by adding the popup, we let the time to the
        * request to be sent, and intercepted by the service worker (for the offline part).
        */
-      const isFirefox =
-        navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-
-      if (typeof e !== 'undefined' && e.preventDefault && isFirefox) {
+      if (typeof e !== 'undefined' && e.preventDefault && isFirefox()) {
         e.preventDefault();
       }
     };
