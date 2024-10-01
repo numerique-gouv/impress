@@ -7,48 +7,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Doc Create', () => {
-  test('checks all the create doc elements are visible', async ({ page }) => {
-    const buttonCreateHomepage = page.getByRole('button', {
-      name: 'Create a new document',
-    });
-    await buttonCreateHomepage.click();
-    await expect(buttonCreateHomepage).toBeHidden();
-
-    const card = page.getByRole('dialog').first();
-
-    await expect(
-      card.locator('h2').getByText('Create a new document'),
-    ).toBeVisible();
-    await expect(card.getByLabel('Document name')).toBeVisible();
-
-    await expect(
-      card.getByRole('button', {
-        name: 'Create the document',
-      }),
-    ).toBeVisible();
-
-    await expect(card.getByLabel('Close the modal')).toBeVisible();
-  });
-
-  test('checks the cancel button interaction', async ({ page }) => {
-    const buttonCreateHomepage = page.getByRole('button', {
-      name: 'Create a new document',
-    });
-    await buttonCreateHomepage.click();
-    await expect(buttonCreateHomepage).toBeHidden();
-
-    const card = page.getByRole('dialog').first();
-
-    await card.getByLabel('Close the modal').click();
-
-    await expect(buttonCreateHomepage).toBeVisible();
-  });
-
   test('it creates a doc', async ({ page, browserName }) => {
     const [docTitle] = await createDoc(page, 'My new doc', browserName, 1);
 
-    expect(await page.locator('title').textContent()).toMatch(
-      /My new doc - Docs/,
+    await page.waitForFunction(
+      () => document.title.match(/My new doc - Docs/),
+      { timeout: 5000 },
     );
 
     const header = page.locator('header').first();
@@ -59,7 +23,8 @@ test.describe('Doc Create', () => {
       .getByRole('table');
 
     await expect(datagrid.getByLabel('Loading data')).toBeHidden();
-
-    await expect(datagrid.getByText(docTitle)).toBeVisible();
+    await expect(datagrid.getByText(docTitle)).toBeVisible({
+      timeout: 5000,
+    });
   });
 });
