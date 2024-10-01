@@ -32,7 +32,7 @@ interface DocProps {
 }
 
 const DocPage = ({ id }: DocProps) => {
-  const { authenticated, login } = useAuthStore();
+  const { login } = useAuthStore();
   const { data: docQuery, isError, error } = useDoc({ id });
   const [doc, setDoc] = useState(docQuery);
 
@@ -60,7 +60,7 @@ const DocPage = ({ id }: DocProps) => {
       return null;
     }
 
-    if (error.status === 401 && !authenticated) {
+    if (error.status === 401) {
       login();
       return null;
     }
