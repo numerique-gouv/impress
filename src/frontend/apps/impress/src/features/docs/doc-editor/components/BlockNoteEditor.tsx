@@ -1,4 +1,4 @@
-import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
+import { BlockNoteEditor as BlockNoteEditorCore, locales } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -17,6 +17,8 @@ import { useDocStore } from '../stores';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
+
+import { useTranslation } from 'react-i18next';
 
 const cssEditor = `
   &, & > .bn-container, & .ProseMirror {
@@ -93,6 +95,14 @@ export const BlockNoteContent = ({
     },
     [createDocAttachment, doc.id],
   );
+  
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+
+    // Invalidate the stored editor when the language changes
+    useEffect(() => {
+      setStore(storeId, { editor: null });
+    }, [setStore, storeId, lang]);
 
   const editor = useMemo(() => {
     if (storedEditor) {
@@ -108,7 +118,8 @@ export const BlockNoteContent = ({
           color: randomColor(),
         },
       },
-      uploadFile,
+      dictionary: locales[lang as keyof typeof locales],
+      uploadFile
     });
   }, [provider, storedEditor, uploadFile, userData?.email]);
 
