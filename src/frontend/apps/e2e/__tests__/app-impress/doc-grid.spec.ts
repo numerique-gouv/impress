@@ -212,26 +212,6 @@ test.describe('Documents Grid', () => {
     ).toHaveText(/.*/);
   });
 
-  test('it updates document', async ({ page }) => {
-    const datagrid = page
-      .getByLabel('Datagrid of the documents page 1')
-      .getByRole('table');
-
-    const docRow = datagrid.getByRole('row').nth(1).getByRole('cell');
-
-    const docName = await docRow.nth(1).textContent();
-
-    await docRow.getByLabel('Open the document options').click();
-
-    await page.getByText('Update document').click();
-
-    await page.getByLabel('Document name').fill(`${docName} updated`);
-
-    await page.getByText('Validate the modification').click();
-
-    await expect(datagrid.getByText(`${docName} updated`)).toBeVisible();
-  });
-
   test('it deletes the document', async ({ page }) => {
     const datagrid = page
       .getByLabel('Datagrid of the documents page 1')
@@ -241,11 +221,9 @@ test.describe('Documents Grid', () => {
 
     const docName = await docRow.nth(1).textContent();
 
-    await docRow.getByLabel('Open the document options').click();
-
-    await page
+    await docRow
       .getByRole('button', {
-        name: 'Delete document',
+        name: 'Delete the document',
       })
       .click();
 
