@@ -12,7 +12,7 @@ import {
   currentDocRole,
   isDocsOrdering,
   useDocs,
-  useTransRole,
+  useTrans,
 } from '@/features/docs/doc-management';
 import { useDate } from '@/hook/';
 
@@ -48,7 +48,7 @@ function formatSortModel(sortModel: SortModelItem): DocsOrdering | undefined {
 
 export const DocsGrid = () => {
   const { colorsTokens } = useCunninghamTheme();
-  const transRole = useTransRole();
+  const { transRole } = useTrans();
   const { t } = useTranslation();
   const { formatDate } = useDate();
   const pagination = usePagination({
