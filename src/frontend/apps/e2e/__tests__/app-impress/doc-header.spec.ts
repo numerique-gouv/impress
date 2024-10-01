@@ -65,49 +65,15 @@ test.describe('Doc Header', () => {
     await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
   });
 
-  test('it updates the doc', async ({ page, browserName }) => {
+  test('it updates the title doc', async ({ page, browserName }) => {
     const [randomDoc] = await createDoc(page, 'doc-update', browserName, 1);
-    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
 
-    await page.getByLabel('Open the document options').click();
-    await page
-      .getByRole('button', {
-        name: 'Update document',
-      })
-      .click();
+    await page.getByRole('heading', { name: randomDoc }).fill(' ');
+    await page.getByText('Created at ').click();
 
     await expect(
-      page.locator('h2').getByText(`Update document "${randomDoc}"`),
+      page.getByRole('heading', { name: 'Untitled document' }),
     ).toBeVisible();
-
-    await page.getByText('Document name').fill(`${randomDoc}-updated`);
-
-    await page
-      .getByRole('button', {
-        name: 'Validate the modification',
-      })
-      .click();
-
-    await expect(
-      page.getByText('The document has been updated.'),
-    ).toBeVisible();
-
-    const docTitle = await goToGridDoc(page, {
-      title: `${randomDoc}-updated`,
-    });
-
-    await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
-
-    await page.getByLabel('Open the document options').click();
-    await page
-      .getByRole('button', {
-        name: 'Update document',
-      })
-      .click();
-
-    await expect(
-      page.getByRole('textbox', { name: 'Document name' }),
-    ).toHaveValue(`${randomDoc}-updated`);
   });
 
   test('it deletes the doc', async ({ page, browserName }) => {
@@ -167,16 +133,15 @@ test.describe('Doc Header', () => {
 
     await goToGridDoc(page);
 
-    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+    await expect(
+      page.locator('h2').getByText('Mocked document'),
+    ).toHaveAttribute('contenteditable');
 
     await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
 
     await page.getByLabel('Open the document options').click();
 
     await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: 'Update document' }),
-    ).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Delete document' }),
     ).toBeHidden();
@@ -199,16 +164,15 @@ test.describe('Doc Header', () => {
 
     await goToGridDoc(page);
 
-    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+    await expect(
+      page.locator('h2').getByText('Mocked document'),
+    ).toHaveAttribute('contenteditable');
 
     await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
 
     await page.getByLabel('Open the document options').click();
 
     await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: 'Update document' }),
-    ).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Delete document' }),
     ).toBeHidden();
@@ -231,7 +195,9 @@ test.describe('Doc Header', () => {
 
     await goToGridDoc(page);
 
-    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+    await expect(
+      page.locator('h2').getByText('Mocked document'),
+    ).not.toHaveAttribute('contenteditable');
 
     await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
 
@@ -239,9 +205,6 @@ test.describe('Doc Header', () => {
 
     await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
     await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: 'Update document' }),
-    ).toBeHidden();
     await expect(
       page.getByRole('button', { name: 'Delete document' }),
     ).toBeHidden();

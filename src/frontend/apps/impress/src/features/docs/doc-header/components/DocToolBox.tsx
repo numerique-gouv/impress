@@ -8,7 +8,6 @@ import {
   Doc,
   ModalRemoveDoc,
   ModalShare,
-  ModalUpdateDoc,
 } from '@/features/docs/doc-management';
 
 import { ModalPDF } from './ModalExport';
@@ -20,7 +19,6 @@ interface DocToolBoxProps {
 export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const { t } = useTranslation();
   const [isModalShareOpen, setIsModalShareOpen] = useState(false);
-  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const [isDropOpen, setIsDropOpen] = useState(false);
@@ -53,32 +51,6 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
         isOpen={isDropOpen}
       >
         <Box>
-          {doc.abilities.partial_update && (
-            <Button
-              onClick={() => {
-                setIsModalUpdateOpen(true);
-                setIsDropOpen(false);
-              }}
-              color="primary-text"
-              icon={<span className="material-icons">edit</span>}
-              size="small"
-            >
-              <Text $theme="primary">{t('Update document')}</Text>
-            </Button>
-          )}
-          {doc.abilities.destroy && (
-            <Button
-              onClick={() => {
-                setIsModalRemoveOpen(true);
-                setIsDropOpen(false);
-              }}
-              color="primary-text"
-              icon={<span className="material-icons">delete</span>}
-              size="small"
-            >
-              <Text $theme="primary">{t('Delete document')}</Text>
-            </Button>
-          )}
           {doc.abilities.versions_list && (
             <Button
               onClick={() => {
@@ -116,6 +88,19 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
           >
             <Text $theme="primary">{t('Export')}</Text>
           </Button>
+          {doc.abilities.destroy && (
+            <Button
+              onClick={() => {
+                setIsModalRemoveOpen(true);
+                setIsDropOpen(false);
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">delete</span>}
+              size="small"
+            >
+              <Text $theme="primary">{t('Delete document')}</Text>
+            </Button>
+          )}
         </Box>
       </DropButton>
       {isModalShareOpen && (
@@ -123,9 +108,6 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
       )}
       {isModalPDFOpen && (
         <ModalPDF onClose={() => setIsModalPDFOpen(false)} doc={doc} />
-      )}
-      {isModalUpdateOpen && (
-        <ModalUpdateDoc onClose={() => setIsModalUpdateOpen(false)} doc={doc} />
       )}
       {isModalRemoveOpen && (
         <ModalRemoveDoc onClose={() => setIsModalRemoveOpen(false)} doc={doc} />
