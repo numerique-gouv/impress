@@ -8,12 +8,13 @@ import {
   Doc,
   Role,
   currentDocRole,
-  useTransRole,
+  useTrans,
 } from '@/features/docs/doc-management';
 import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
 import { useDate } from '@/hook';
 
 import { DocTagPublic } from './DocTagPublic';
+import { DocTitle } from './DocTitle';
 import { DocToolBox } from './DocToolBox';
 
 interface DocHeaderProps {
@@ -25,7 +26,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const { formatDate } = useDate();
-  const transRole = useTransRole();
+  const { transRole } = useTrans();
   const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);
 
   return (
@@ -54,14 +55,8 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
             $background={colorsTokens()['greyscale-100']}
             $margin={{ horizontal: 'small' }}
           />
-          <Box $gap="1rem" $direction="row">
-            <Text
-              as="h2"
-              $align="center"
-              $margin={{ all: 'none', left: 'tiny' }}
-            >
-              {doc.title}
-            </Text>
+          <Box $gap="1rem" $direction="row" $align="center">
+            <DocTitle doc={doc} />
             {versionId && (
               <Button
                 onClick={() => {
