@@ -29,32 +29,21 @@ export const createDoc = async (
   length: number,
   isPublic: boolean = false,
 ) => {
-  const buttonCreate = page.getByRole('button', {
-    name: 'Create the document',
-  });
-
   const randomDocs = randomName(docName, browserName, length);
 
   for (let i = 0; i < randomDocs.length; i++) {
     const header = page.locator('header').first();
     await header.locator('h2').getByText('Docs').click();
 
-    const buttonCreateHomepage = page.getByRole('button', {
-      name: 'Create a new document',
-    });
-    await buttonCreateHomepage.click();
-
-    // Fill input
     await page
-      .getByRole('textbox', {
-        name: 'Document name',
+      .getByRole('button', {
+        name: 'Create a new document',
       })
-      .fill(randomDocs[i]);
+      .click();
 
-    await expect(buttonCreate).toBeEnabled();
-    await buttonCreate.click();
-
-    await expect(page.locator('h2').getByText(randomDocs[i])).toBeVisible();
+    await page.getByRole('heading', { name: 'Untitled document' }).click();
+    await page.keyboard.type(randomDocs[i]);
+    await page.getByText('Created at ').click();
 
     if (isPublic) {
       await page.getByRole('button', { name: 'Share' }).click();

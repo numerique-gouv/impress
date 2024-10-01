@@ -14,6 +14,7 @@ and this project adheres to
 - ✨(ci) add security scan #291
 - ✨(frontend) Activate versions feature #240
 - ✨(frontend) one-click document creation #275
+- ✨(frontend) edit title inline #275
 
 ## Changed
 
