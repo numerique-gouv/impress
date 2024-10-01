@@ -1,7 +1,7 @@
 import { Select } from '@openfun/cunningham-react';
 import { useTranslation } from 'react-i18next';
 
-import { Role, useTransRole } from '@/features/docs/doc-management';
+import { Role, useTrans } from '@/features/docs/doc-management';
 
 interface ChooseRoleProps {
   currentRole: Role;
@@ -19,7 +19,7 @@ export const ChooseRole = ({
   label,
 }: ChooseRoleProps) => {
   const { t } = useTranslation();
-  const transRole = useTransRole();
+  const { transRole } = useTrans();
 
   return (
     <Select

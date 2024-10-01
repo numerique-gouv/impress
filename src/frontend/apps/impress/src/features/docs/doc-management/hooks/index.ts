@@ -1,1 +1,1 @@
-export * from './useTransRole';
+export * from './useTrans';

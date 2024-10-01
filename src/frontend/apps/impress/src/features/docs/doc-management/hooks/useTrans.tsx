@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Role } from '../types';
 
-export const useTransRole = () => {
+export const useTrans = () => {
   const { t } = useTranslation();
 
   const translatedRoles = {
@@ -12,9 +12,10 @@ export const useTransRole = () => {
     [Role.EDITOR]: t('Editor'),
   };
 
-  const transRole = (role: Role) => {
-    return translatedRoles[role];
+  return {
+    transRole: (role: Role) => {
+      return translatedRoles[role];
+    },
+    untitledDocument: t('Untitled document'),
   };
-
-  return transRole;
 };
