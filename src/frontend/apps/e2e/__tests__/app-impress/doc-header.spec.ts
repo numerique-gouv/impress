@@ -69,10 +69,61 @@ test.describe('Doc Header', () => {
     const [randomDoc] = await createDoc(page, 'doc-update', browserName, 1);
 
     await page.getByRole('heading', { name: randomDoc }).fill(' ');
-    await page.getByText('Created at ').click();
+    await page.getByText('Created at').click();
 
     await expect(
       page.getByRole('heading', { name: 'Untitled document' }),
+    ).toBeVisible();
+  });
+
+  test('it updates the title doc from editor heading', async ({ page }) => {
+    await page
+      .getByRole('button', {
+        name: 'Create a new document',
+      })
+      .click();
+
+    const docHeader = page.getByLabel(
+      'It is the card information about the document.',
+    );
+
+    await expect(
+      docHeader.getByRole('heading', { name: 'Untitled document', level: 2 }),
+    ).toBeVisible();
+
+    const editor = page.locator('.ProseMirror');
+
+    await editor.locator('h1').click();
+    await page.keyboard.type('Hello World', { delay: 100 });
+
+    await expect(
+      docHeader.getByRole('heading', { name: 'Hello World', level: 2 }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByText('Document title updated successfully'),
+    ).toBeVisible();
+
+    await docHeader
+      .getByRole('heading', { name: 'Hello World', level: 2 })
+      .fill('Top World');
+
+    await editor.locator('h1').fill('Super World');
+
+    await expect(
+      docHeader.getByRole('heading', { name: 'Top World', level: 2 }),
+    ).toBeVisible();
+
+    await editor.locator('h1').fill('');
+
+    await docHeader
+      .getByRole('heading', { name: 'Top World', level: 2 })
+      .fill(' ');
+
+    await page.getByText('Created at').click();
+
+    await expect(
+      docHeader.getByRole('heading', { name: 'Untitled  document', level: 2 }),
     ).toBeVisible();
   });
 

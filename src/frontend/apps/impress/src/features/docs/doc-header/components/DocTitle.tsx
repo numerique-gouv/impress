@@ -5,12 +5,13 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 
 import { Box, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { useHeadingStore } from '@/features/docs/doc-editor';
 import {
   Doc,
   KEY_DOC,
@@ -49,38 +50,41 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
   const { toast } = useToastProvider();
   const { untitledDocument } = useTrans();
   const isUntitled = titleDisplay === untitledDocument;
+  const { headings } = useHeadingStore();
+  const headingText = headings?.[0]?.contentText;
+  const debounceRef = useRef<NodeJS.Timeout>();
 
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_DOC, KEY_LIST_DOC],
+    onSuccess(data) {
+      if (data.title !== untitledDocument) {
+        toast(t('Document title updated successfully'), VariantType.SUCCESS);
+      }
+    },
   });
 
-  const handleTitleSubmit = (inputText: string) => {
-    let sanitizedTitle = inputText.trim();
-    sanitizedTitle = sanitizedTitle.replace(/(\r\n|\n|\r)/gm, '');
+  const handleTitleSubmit = useCallback(
+    (inputText: string) => {
+      let sanitizedTitle = inputText.trim();
+      sanitizedTitle = sanitizedTitle.replace(/(\r\n|\n|\r)/gm, '');
 
-    // When blank we set to untitled
-    if (!sanitizedTitle) {
-      sanitizedTitle = untitledDocument;
-      setTitleDisplay(sanitizedTitle);
-    }
+      // When blank we set to untitled
+      if (!sanitizedTitle) {
+        sanitizedTitle = untitledDocument;
+        setTitleDisplay(sanitizedTitle);
+      }
 
-    // If mutation we update
-    if (sanitizedTitle !== doc.title) {
-      updateDoc(
-        { id: doc.id, title: sanitizedTitle },
-        {
-          onSuccess: () => {
-            if (sanitizedTitle !== untitledDocument) {
-              toast(
-                t('Document title updated successfully'),
-                VariantType.SUCCESS,
-              );
-            }
-          },
-        },
-      );
-    }
-  };
+      // If mutation we update
+      if (sanitizedTitle !== doc.title) {
+        if (debounceRef.current) {
+          clearTimeout(debounceRef.current);
+          debounceRef.current = undefined;
+        }
+        updateDoc({ id: doc.id, title: sanitizedTitle });
+      }
+    },
+    [doc.id, doc.title, untitledDocument, updateDoc],
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -94,6 +98,23 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
       setTitleDisplay('');
     }
   };
+
+  useEffect(() => {
+    if ((!debounceRef.current && !isUntitled) || !headingText) {
+      return;
+    }
+
+    setTitleDisplay(headingText);
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      handleTitleSubmit(headingText);
+      debounceRef.current = undefined;
+    }, 3000);
+  }, [isUntitled, handleTitleSubmit, headingText]);
 
   return (
     <>

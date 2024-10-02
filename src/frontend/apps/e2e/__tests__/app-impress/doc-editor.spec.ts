@@ -40,19 +40,18 @@ test.describe('Doc Editor', () => {
 
     await expect(page.locator('h2').getByText(randomDoc[0])).toBeVisible();
 
-    await page.locator('.ProseMirror.bn-editor').click();
-    await page
-      .locator('.ProseMirror.bn-editor')
-      .fill('[test markdown](http://test-markdown.html)');
+    const editor = page.locator('.ProseMirror');
+    await editor.click();
+    await editor.fill('[test markdown](http://test-markdown.html)');
 
-    await expect(page.getByText('[test markdown]')).toBeVisible();
+    await expect(editor.getByText('[test markdown]')).toBeVisible();
 
-    await page.getByText('[test markdown]').dblclick();
+    await editor.getByText('[test markdown]').dblclick();
     await page.locator('button[data-test="convertMarkdown"]').click();
 
-    await expect(page.getByText('[test markdown]')).toBeHidden();
+    await expect(editor.getByText('[test markdown]')).toBeHidden();
     await expect(
-      page.getByRole('link', {
+      editor.getByRole('link', {
         name: 'test markdown',
       }),
     ).toHaveAttribute('href', 'http://test-markdown.html');
@@ -64,38 +63,40 @@ test.describe('Doc Editor', () => {
     // Check the first doc
     const firstDoc = await goToGridDoc(page);
     await expect(page.locator('h2').getByText(firstDoc)).toBeVisible();
-    await page.locator('.ProseMirror.bn-editor').click();
-    await page.locator('.ProseMirror.bn-editor').fill('Hello World Doc 1');
-    await expect(page.getByText('Hello World Doc 1')).toBeVisible();
+
+    const editor = page.locator('.ProseMirror');
+    await editor.click();
+    await editor.fill('Hello World Doc 1');
+    await expect(editor.getByText('Hello World Doc 1')).toBeVisible();
 
     // Check the second doc
     const secondDoc = await goToGridDoc(page, {
       nthRow: 2,
     });
     await expect(page.locator('h2').getByText(secondDoc)).toBeVisible();
-    await expect(page.getByText('Hello World Doc 1')).toBeHidden();
-    await page.locator('.ProseMirror.bn-editor').click();
-    await page.locator('.ProseMirror.bn-editor').fill('Hello World Doc 2');
-    await expect(page.getByText('Hello World Doc 2')).toBeVisible();
+    await expect(editor.getByText('Hello World Doc 1')).toBeHidden();
+    await editor.click();
+    await editor.fill('Hello World Doc 2');
+    await expect(editor.getByText('Hello World Doc 2')).toBeVisible();
 
     // Check the first doc again
     await goToGridDoc(page, {
       title: firstDoc,
     });
     await expect(page.locator('h2').getByText(firstDoc)).toBeVisible();
-    await expect(page.getByText('Hello World Doc 2')).toBeHidden();
-    await expect(page.getByText('Hello World Doc 1')).toBeVisible();
+    await expect(editor.getByText('Hello World Doc 2')).toBeHidden();
+    await expect(editor.getByText('Hello World Doc 1')).toBeVisible();
   });
 
   test('it saves the doc when we change pages', async ({ page }) => {
     // Check the first doc
     const doc = await goToGridDoc(page);
     await expect(page.locator('h2').getByText(doc)).toBeVisible();
-    await page.locator('.ProseMirror.bn-editor').click();
-    await page
-      .locator('.ProseMirror.bn-editor')
-      .fill('Hello World Doc persisted 1');
-    await expect(page.getByText('Hello World Doc persisted 1')).toBeVisible();
+
+    const editor = page.locator('.ProseMirror');
+    await editor.click();
+    await editor.fill('Hello World Doc persisted 1');
+    await expect(editor.getByText('Hello World Doc persisted 1')).toBeVisible();
 
     const secondDoc = await goToGridDoc(page, {
       nthRow: 2,
@@ -107,7 +108,7 @@ test.describe('Doc Editor', () => {
       title: doc,
     });
 
-    await expect(page.getByText('Hello World Doc persisted 1')).toBeVisible();
+    await expect(editor.getByText('Hello World Doc persisted 1')).toBeVisible();
   });
 
   test('it saves the doc when we quit pages', async ({ page, browserName }) => {
@@ -117,11 +118,11 @@ test.describe('Doc Editor', () => {
     // Check the first doc
     const doc = await goToGridDoc(page);
     await expect(page.locator('h2').getByText(doc)).toBeVisible();
-    await page.locator('.ProseMirror.bn-editor').click();
-    await page
-      .locator('.ProseMirror.bn-editor')
-      .fill('Hello World Doc persisted 2');
-    await expect(page.getByText('Hello World Doc persisted 2')).toBeVisible();
+
+    const editor = page.locator('.ProseMirror');
+    await editor.click();
+    await editor.fill('Hello World Doc persisted 2');
+    await expect(editor.getByText('Hello World Doc persisted 2')).toBeVisible();
 
     await page.goto('/');
 
@@ -129,7 +130,7 @@ test.describe('Doc Editor', () => {
       title: doc,
     });
 
-    await expect(page.getByText('Hello World Doc persisted 2')).toBeVisible();
+    await expect(editor.getByText('Hello World Doc persisted 2')).toBeVisible();
   });
 
   test('it cannot edit if viewer', async ({ page }) => {
