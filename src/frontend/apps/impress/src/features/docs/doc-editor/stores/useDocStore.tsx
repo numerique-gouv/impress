@@ -6,6 +6,8 @@ import { create } from 'zustand';
 import { providerUrl } from '@/core';
 import { Base64 } from '@/features/docs/doc-management';
 
+import { blocksToYDoc } from '../utils';
+
 interface DocStore {
   provider: HocuspocusProvider;
   editor?: BlockNoteEditor;
@@ -28,6 +30,15 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
 
     if (initialDoc) {
       Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
+    } else {
+      const initialDocContent = [
+        {
+          type: 'heading',
+          content: '',
+        },
+      ];
+
+      blocksToYDoc(initialDocContent, doc);
     }
 
     const provider = new HocuspocusProvider({

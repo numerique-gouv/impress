@@ -1,3 +1,5 @@
+import * as Y from 'yjs';
+
 export const randomColor = () => {
   const randomInt = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -26,3 +28,20 @@ function hslToHex(h: number, s: number, l: number) {
 export const toBase64 = (
   str: WithImplicitCoercion<ArrayBuffer | SharedArrayBuffer>,
 ) => Buffer.from(str).toString('base64');
+
+type BasicBlock = {
+  type: string;
+  content: string;
+};
+export const blocksToYDoc = (blocks: BasicBlock[], doc: Y.Doc) => {
+  const xmlFragment = doc.getXmlFragment('document-store');
+
+  blocks.forEach((block) => {
+    const xmlElement = new Y.XmlElement(block.type);
+    if (block.content) {
+      xmlElement.insert(0, [new Y.XmlText(block.content)]);
+    }
+
+    xmlFragment.push([xmlElement]);
+  });
+};
