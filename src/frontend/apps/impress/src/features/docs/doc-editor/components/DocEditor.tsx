@@ -8,8 +8,9 @@ import { Box, Card, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
-import { useHeading } from '@/features/docs/doc-table-content';
 import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
+
+import { useHeadingStore } from '../stores';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
 import { IconOpenPanelEditor, PanelEditor } from './PanelEditor';
@@ -23,7 +24,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
     query: { versionId },
   } = useRouter();
   const { t } = useTranslation();
-  const headings = useHeading(doc.id);
+  const { headings } = useHeadingStore();
 
   const isVersion = versionId && typeof versionId === 'string';
 

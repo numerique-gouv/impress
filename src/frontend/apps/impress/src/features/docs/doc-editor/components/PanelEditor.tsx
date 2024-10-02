@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Card, IconBG, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Doc } from '@/features/docs//doc-management';
-import { HeadingBlock, TableContent } from '@/features/docs/doc-table-content';
+import { Doc } from '@/features/docs/doc-management';
+import { TableContent } from '@/features/docs/doc-table-content';
 import { VersionList } from '@/features/docs/doc-versioning';
 
-import { usePanelEditorStore } from '../stores/usePanelEditorStore';
+import { usePanelEditorStore } from '../stores';
+import { HeadingBlock } from '../types';
 
 interface PanelProps {
   doc: Doc;

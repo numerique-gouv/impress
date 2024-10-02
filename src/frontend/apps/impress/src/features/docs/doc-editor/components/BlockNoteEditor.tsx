@@ -13,7 +13,7 @@ import { Version } from '@/features/docs/doc-versioning/';
 
 import { useCreateDocAttachment } from '../api/useCreateDocUpload';
 import useSaveDoc from '../hook/useSaveDoc';
-import { useDocStore } from '../stores';
+import { useDocStore, useHeadingStore } from '../stores';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
@@ -78,6 +78,7 @@ export const BlockNoteContent = ({
     isError: isErrorAttachment,
     error: errorAttachment,
   } = useCreateDocAttachment();
+  const { setHeadings, resetHeadings } = useHeadingStore();
 
   const uploadFile = useCallback(
     async (file: File) => {
@@ -115,6 +116,18 @@ export const BlockNoteContent = ({
   useEffect(() => {
     setStore(storeId, { editor });
   }, [setStore, storeId, editor]);
+
+  useEffect(() => {
+    setHeadings(editor);
+
+    editor?.onEditorContentChange(() => {
+      setHeadings(editor);
+    });
+
+    return () => {
+      resetHeadings();
+    };
+  }, [editor, resetHeadings, setHeadings]);
 
   return (
     <Box $css={cssEditor}>
