@@ -105,7 +105,8 @@ test.describe('Doc Version', () => {
       title: randomDoc,
     });
 
-    await expect(page.getByText('Hello')).toBeVisible();
+    const editor = page.locator('.ProseMirror');
+    await expect(editor.getByText('Hello')).toBeVisible();
     await page.locator('.bn-block-outer').last().click();
     await page.keyboard.press('Enter');
     await page.locator('.bn-block-outer').last().fill('World');
@@ -153,23 +154,24 @@ test.describe('Doc Version', () => {
 
     await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
 
-    await page.locator('.bn-block-outer').last().click();
-    await page.locator('.bn-block-outer').last().fill('Hello');
+    const editor = page.locator('.ProseMirror');
+    await editor.locator('.bn-block-outer').last().click();
+    await editor.locator('.bn-block-outer').last().fill('Hello');
 
     await goToGridDoc(page, {
       title: randomDoc,
     });
 
-    await expect(page.getByText('Hello')).toBeVisible();
-    await page.locator('.bn-block-outer').last().click();
+    await expect(editor.getByText('Hello')).toBeVisible();
+    await editor.locator('.bn-block-outer').last().click();
     await page.keyboard.press('Enter');
-    await page.locator('.bn-block-outer').last().fill('World');
+    await editor.locator('.bn-block-outer').last().fill('World');
 
     await goToGridDoc(page, {
       title: randomDoc,
     });
 
-    await expect(page.getByText('World')).toBeVisible();
+    await expect(editor.getByText('World')).toBeVisible();
 
     await page.getByLabel('Open the document options').click();
     await page
@@ -180,7 +182,7 @@ test.describe('Doc Version', () => {
 
     const panel = page.getByLabel('Document panel');
     await panel.locator('li').nth(1).click();
-    await expect(page.getByText('World')).toBeHidden();
+    await expect(editor.getByText('World')).toBeHidden();
 
     await page
       .getByRole('button', {
@@ -199,7 +201,7 @@ test.describe('Doc Version', () => {
     await expect(panel.locator('li')).toHaveCount(3);
 
     await panel.getByText('Current version').click();
-    await expect(page.getByText('Hello')).toBeVisible();
-    await expect(page.getByText('World')).toBeHidden();
+    await expect(editor.getByText('Hello')).toBeVisible();
+    await expect(editor.getByText('World')).toBeHidden();
   });
 });
