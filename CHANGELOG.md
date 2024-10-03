@@ -25,6 +25,7 @@ and this project adheres to
 
 ## Fixed
 
+- 🛂(frontend) match email if no existing user matches the sub
 - 🐛(backend) gitlab oicd userinfo endpoint #232
 - 🛂(frontend) redirect to the OIDC when private doc and unauthentified #292
 - ♻️(backend) getting list of document versions available for a user #258
