@@ -57,7 +57,7 @@ const MemberListState = ({
         <MemberItem
           access={access}
           role={access.role}
-          docId={doc.id}
+          doc={doc}
           currentRole={currentDocRole(doc.abilities)}
         />
       </Box>
@@ -92,9 +92,9 @@ export const MemberList = ({ doc }: MemberListProps) => {
   return (
     <Card
       $margin="tiny"
-      $padding="tiny"
-      $maxHeight="69%"
       $overflow="auto"
+      $maxHeight="80vh"
+      $padding="tiny"
       aria-label={t('List members card')}
     >
       <Box ref={containerRef} $overflow="auto">
@@ -106,7 +106,8 @@ export const MemberList = ({ doc }: MemberListProps) => {
           }}
           scrollContainer={containerRef.current}
           as="ul"
-          className="p-0 mt-0"
+          $padding="none"
+          $margin="none"
           role="listbox"
         >
           <MemberListState

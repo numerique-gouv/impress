@@ -44,7 +44,7 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
       $align="center"
       $justify="space-between"
     >
-      <Box $direction="row" $gap="1rem">
+      <Box $direction="row" $gap="1rem" $align="center">
         <IconBG iconName="public" $margin="none" />
         <Switch
           label={t(docPublic ? 'Doc public' : 'Doc private')}

@@ -58,7 +58,7 @@ const InvitationListState = ({
         <InvitationItem
           invitation={invitation}
           role={invitation.role}
-          docId={doc.id}
+          doc={doc}
           currentRole={currentDocRole(doc.abilities)}
         />
       </Box>
@@ -97,9 +97,9 @@ export const InvitationList = ({ doc }: InvitationListProps) => {
   return (
     <Card
       $margin="tiny"
-      $padding="tiny"
-      $maxHeight="40%"
       $overflow="auto"
+      $maxHeight="50vh"
+      $padding="tiny"
       aria-label={t('List invitation card')}
     >
       <Box ref={containerRef} $overflow="auto">
@@ -111,8 +111,9 @@ export const InvitationList = ({ doc }: InvitationListProps) => {
           }}
           scrollContainer={containerRef.current}
           as="ul"
-          className="p-0 mt-0"
           role="listbox"
+          $padding="none"
+          $margin="none"
         >
           <InvitationListState
             isLoading={isLoading}

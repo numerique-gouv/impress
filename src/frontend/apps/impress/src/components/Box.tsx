@@ -33,6 +33,7 @@ export interface BoxProps {
   $padding?: MarginPadding;
   $position?: CSSProperties['position'];
   $radius?: CSSProperties['borderRadius'];
+  $shrink?: CSSProperties['flexShrink'];
   $transition?: CSSProperties['transition'];
   $width?: CSSProperties['width'];
   $wrap?: CSSProperties['flexWrap'];
@@ -68,6 +69,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $padding }) => $padding && stylesPadding($padding)}
   ${({ $position }) => $position && `position: ${$position};`}
   ${({ $radius }) => $radius && `border-radius: ${$radius};`}
+  ${({ $shrink }) => $shrink && `flex-shrink: ${$shrink};`}
   ${({ $transition }) => $transition && `transition: ${$transition};`}
   ${({ $width }) => $width && `width: ${$width};`}
   ${({ $wrap }) => $wrap && `flex-wrap: ${$wrap};`}

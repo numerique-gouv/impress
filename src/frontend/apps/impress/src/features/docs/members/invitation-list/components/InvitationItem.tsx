@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, IconBG, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Role } from '@/features/docs/doc-management';
+import { Doc, Role } from '@/features/docs/doc-management';
 import { ChooseRole } from '@/features/docs/members/members-add/';
 
 import { useDeleteDocInvitation, useUpdateDocInvitation } from '../api';
@@ -19,11 +19,11 @@ interface InvitationItemProps {
   role: Role;
   currentRole: Role;
   invitation: Invitation;
-  docId: string;
+  doc: Doc;
 }
 
 export const InvitationItem = ({
-  docId,
+  doc,
   role,
   invitation,
   currentRole,
@@ -95,29 +95,34 @@ export const InvitationItem = ({
                 setRole={(role) => {
                   setLocalRole(role);
                   updateDocInvitation({
-                    docId,
+                    docId: doc.id,
                     invitationId: invitation.id,
                     role,
                   });
                 }}
               />
             </Box>
-            <Button
-              color="tertiary-text"
-              icon={
-                <Text
-                  $isMaterialIcon
-                  $theme={!canDelete ? 'greyscale' : 'primary'}
-                  $variation={!canDelete ? '500' : 'text'}
-                >
-                  delete
-                </Text>
-              }
-              disabled={!canDelete}
-              onClick={() =>
-                removeDocInvitation({ docId, invitationId: invitation.id })
-              }
-            />
+            {doc.abilities.manage_accesses && (
+              <Button
+                color="tertiary-text"
+                icon={
+                  <Text
+                    $isMaterialIcon
+                    $theme={!canDelete ? 'greyscale' : 'primary'}
+                    $variation={!canDelete ? '500' : 'text'}
+                  >
+                    delete
+                  </Text>
+                }
+                disabled={!canDelete}
+                onClick={() =>
+                  removeDocInvitation({
+                    docId: doc.id,
+                    invitationId: invitation.id,
+                  })
+                }
+              />
+            )}
           </Box>
         </Box>
       </Box>

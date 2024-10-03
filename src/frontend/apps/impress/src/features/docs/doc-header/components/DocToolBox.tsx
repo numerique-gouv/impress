@@ -31,15 +31,13 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
       $align="center"
       $gap="1rem"
     >
-      {doc.abilities.manage_accesses && (
-        <Button
-          onClick={() => {
-            setIsModalShareOpen(true);
-          }}
-        >
-          {t('Share')}
-        </Button>
-      )}
+      <Button
+        onClick={() => {
+          setIsModalShareOpen(true);
+        }}
+      >
+        {t('Share')}
+      </Button>
       <DropButton
         button={
           <IconOptions

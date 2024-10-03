@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, IconBG, Text, TextErrors } from '@/components';
-import { Access, Role } from '@/features/docs/doc-management';
+import { Access, Doc, Role } from '@/features/docs/doc-management';
 import { ChooseRole } from '@/features/docs/members/members-add/';
 
 import { useDeleteDocAccess, useUpdateDocAccess } from '../api';
@@ -20,11 +20,11 @@ interface MemberItemProps {
   role: Role;
   currentRole: Role;
   access: Access;
-  docId: string;
+  doc: Doc;
 }
 
 export const MemberItem = ({
-  docId,
+  doc,
   role,
   access,
   currentRole,
@@ -58,7 +58,8 @@ export const MemberItem = ({
     },
   });
 
-  const isNotAllowed = isOtherOwner || isLastOwner;
+  const isNotAllowed =
+    isOtherOwner || isLastOwner || !doc.abilities.manage_accesses;
 
   if (!access.user) {
     return (
@@ -91,34 +92,40 @@ export const MemberItem = ({
                 setRole={(role) => {
                   setLocalRole(role);
                   updateDocAccess({
-                    docId,
+                    docId: doc.id,
                     accessId: access.id,
                     role,
                   });
                 }}
               />
             </Box>
-            <Button
-              color="tertiary-text"
-              icon={
-                <Text
-                  $isMaterialIcon
-                  $theme={isNotAllowed ? 'greyscale' : 'primary'}
-                  $variation={isNotAllowed ? '500' : 'text'}
-                >
-                  delete
-                </Text>
-              }
-              disabled={isNotAllowed}
-              onClick={() => removeDocAccess({ docId, accessId: access.id })}
-            />
+            {doc.abilities.manage_accesses && (
+              <Button
+                color="tertiary-text"
+                icon={
+                  <Text
+                    $isMaterialIcon
+                    $theme={isNotAllowed ? 'greyscale' : 'primary'}
+                    $variation={isNotAllowed ? '500' : 'text'}
+                  >
+                    delete
+                  </Text>
+                }
+                disabled={isNotAllowed}
+                onClick={() =>
+                  removeDocAccess({ docId: doc.id, accessId: access.id })
+                }
+              />
+            )}
           </Box>
         </Box>
       </Box>
       {(errorUpdate || errorDelete) && (
-        <TextErrors causes={errorUpdate?.cause || errorDelete?.cause} />
+        <Box $margin={{ top: 'tiny' }}>
+          <TextErrors causes={errorUpdate?.cause || errorDelete?.cause} />
+        </Box>
       )}
-      {(isLastOwner || isOtherOwner) && (
+      {(isLastOwner || isOtherOwner) && doc.abilities.manage_accesses && (
         <Box $margin={{ top: 'tiny' }}>
           <Alert
             canClose={false}

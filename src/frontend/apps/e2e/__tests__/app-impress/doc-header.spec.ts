@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-import { createDoc, goToGridDoc, mockedDocument } from './common';
+import {
+  createDoc,
+  goToGridDoc,
+  mockedAccesses,
+  mockedDocument,
+  mockedInvitations,
+} from './common';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -182,13 +188,14 @@ test.describe('Doc Header', () => {
       },
     });
 
+    await mockedInvitations(page);
+    await mockedAccesses(page);
+
     await goToGridDoc(page);
 
     await expect(
       page.locator('h2').getByText('Mocked document'),
     ).toHaveAttribute('contenteditable');
-
-    await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
 
     await page.getByLabel('Open the document options').click();
 
@@ -196,6 +203,40 @@ test.describe('Doc Header', () => {
     await expect(
       page.getByRole('button', { name: 'Delete document' }),
     ).toBeHidden();
+
+    // Click somewhere else to close the options
+    await page.click('body', { position: { x: 0, y: 0 } });
+
+    await page.getByRole('button', { name: 'Share' }).click();
+
+    const shareModal = page.getByLabel('Share modal');
+
+    await expect(shareModal.getByLabel('Doc private')).toBeEnabled();
+    await expect(shareModal.getByText('Search by email')).toBeVisible();
+
+    const invitationCard = shareModal.getByLabel('List invitation card');
+    await expect(
+      invitationCard.getByText('test@invitation.test'),
+    ).toBeVisible();
+    await expect(
+      invitationCard.getByRole('combobox', { name: 'Role' }),
+    ).toBeEnabled();
+    await expect(
+      invitationCard.getByRole('button', {
+        name: 'delete',
+      }),
+    ).toBeEnabled();
+
+    const memberCard = shareModal.getByLabel('List members card');
+    await expect(memberCard.getByText('test@accesses.test')).toBeVisible();
+    await expect(
+      memberCard.getByRole('combobox', { name: 'Role' }),
+    ).toBeEnabled();
+    await expect(
+      memberCard.getByRole('button', {
+        name: 'delete',
+      }),
+    ).toBeEnabled();
   });
 
   test('it checks the options available if editor', async ({ page }) => {
@@ -213,19 +254,61 @@ test.describe('Doc Header', () => {
       },
     });
 
+    await mockedInvitations(page, {
+      abilities: {
+        destroy: false,
+        update: false,
+        partial_update: false,
+        retrieve: true,
+      },
+    });
+    await mockedAccesses(page);
+
     await goToGridDoc(page);
 
     await expect(
       page.locator('h2').getByText('Mocked document'),
     ).toHaveAttribute('contenteditable');
 
-    await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
-
     await page.getByLabel('Open the document options').click();
 
     await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Delete document' }),
+    ).toBeHidden();
+
+    // Click somewhere else to close the options
+    await page.click('body', { position: { x: 0, y: 0 } });
+
+    await page.getByRole('button', { name: 'Share' }).click();
+
+    const shareModal = page.getByLabel('Share modal');
+
+    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(shareModal.getByText('Search by email')).toBeHidden();
+
+    const invitationCard = shareModal.getByLabel('List invitation card');
+    await expect(
+      invitationCard.getByText('test@invitation.test'),
+    ).toBeVisible();
+    await expect(
+      invitationCard.getByRole('combobox', { name: 'Role' }),
+    ).toHaveAttribute('disabled');
+    await expect(
+      invitationCard.getByRole('button', {
+        name: 'delete',
+      }),
+    ).toBeHidden();
+
+    const memberCard = shareModal.getByLabel('List members card');
+    await expect(memberCard.getByText('test@accesses.test')).toBeVisible();
+    await expect(
+      memberCard.getByRole('combobox', { name: 'Role' }),
+    ).toHaveAttribute('disabled');
+    await expect(
+      memberCard.getByRole('button', {
+        name: 'delete',
+      }),
     ).toBeHidden();
   });
 
@@ -244,20 +327,61 @@ test.describe('Doc Header', () => {
       },
     });
 
+    await mockedInvitations(page, {
+      abilities: {
+        destroy: false,
+        update: false,
+        partial_update: false,
+        retrieve: true,
+      },
+    });
+    await mockedAccesses(page);
+
     await goToGridDoc(page);
 
     await expect(
       page.locator('h2').getByText('Mocked document'),
     ).not.toHaveAttribute('contenteditable');
 
-    await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
-
     await page.getByLabel('Open the document options').click();
 
-    await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
     await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Delete document' }),
+    ).toBeHidden();
+
+    // Click somewhere else to close the options
+    await page.click('body', { position: { x: 0, y: 0 } });
+
+    await page.getByRole('button', { name: 'Share' }).click();
+
+    const shareModal = page.getByLabel('Share modal');
+
+    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(shareModal.getByText('Search by email')).toBeHidden();
+
+    const invitationCard = shareModal.getByLabel('List invitation card');
+    await expect(
+      invitationCard.getByText('test@invitation.test'),
+    ).toBeVisible();
+    await expect(
+      invitationCard.getByRole('combobox', { name: 'Role' }),
+    ).toHaveAttribute('disabled');
+    await expect(
+      invitationCard.getByRole('button', {
+        name: 'delete',
+      }),
+    ).toBeHidden();
+
+    const memberCard = shareModal.getByLabel('List members card');
+    await expect(memberCard.getByText('test@accesses.test')).toBeVisible();
+    await expect(
+      memberCard.getByRole('combobox', { name: 'Role' }),
+    ).toHaveAttribute('disabled');
+    await expect(
+      memberCard.getByRole('button', {
+        name: 'delete',
+      }),
     ).toBeHidden();
   });
 });
