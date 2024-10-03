@@ -140,7 +140,13 @@ export const goToGridDoc = async (
 export const mockedDocument = async (page: Page, json: object) => {
   await page.route('**/documents/**/', async (route) => {
     const request = route.request();
-    if (request.method().includes('GET') && !request.url().includes('page=')) {
+    if (
+      request.method().includes('GET') &&
+      !request.url().includes('page=') &&
+      !request.url().includes('versions') &&
+      !request.url().includes('accesses') &&
+      !request.url().includes('invitations')
+    ) {
       await route.fulfill({
         json: {
           id: 'mocked-document-id',
@@ -161,6 +167,85 @@ export const mockedDocument = async (page: Page, json: object) => {
           link_reach: 'restricted',
           created_at: '2021-09-01T09:00:00Z',
           ...json,
+        },
+      });
+    } else {
+      await route.continue();
+    }
+  });
+};
+
+export const mockedInvitations = async (page: Page, json?: object) => {
+  await page.route('**/invitations/**/', async (route) => {
+    const request = route.request();
+    if (
+      request.method().includes('GET') &&
+      request.url().includes('invitations') &&
+      request.url().includes('page=')
+    ) {
+      await route.fulfill({
+        json: {
+          count: 1,
+          next: null,
+          previous: null,
+          results: [
+            {
+              id: '120ec765-43af-4602-83eb-7f4e1224548a',
+              abilities: {
+                destroy: true,
+                update: true,
+                partial_update: true,
+                retrieve: true,
+              },
+              created_at: '2024-10-03T12:19:26.107687Z',
+              email: 'test@invitation.test',
+              document: '4888c328-8406-4412-9b0b-c0ba5b9e5fb6',
+              role: 'editor',
+              issuer: '7380f42f-02eb-4ad5-b8f0-037a0e66066d',
+              is_expired: false,
+              ...json,
+            },
+          ],
+        },
+      });
+    } else {
+      await route.continue();
+    }
+  });
+};
+
+export const mockedAccesses = async (page: Page, json?: object) => {
+  await page.route('**/accesses/**/', async (route) => {
+    const request = route.request();
+    if (
+      request.method().includes('GET') &&
+      request.url().includes('accesses') &&
+      request.url().includes('page=')
+    ) {
+      await route.fulfill({
+        json: {
+          count: 1,
+          next: null,
+          previous: null,
+          results: [
+            {
+              id: 'bc8bbbc5-a635-4f65-9817-fd1e9ec8ef87',
+              user: {
+                id: 'b4a21bb3-722e-426c-9f78-9d190eda641c',
+                email: 'test@accesses.test',
+              },
+              team: '',
+              role: 'reader',
+              abilities: {
+                destroy: true,
+                update: true,
+                partial_update: true,
+                retrieve: true,
+                set_role_to: ['administrator', 'editor'],
+              },
+              ...json,
+            },
+          ],
         },
       });
     } else {

@@ -1,5 +1,4 @@
 import { t } from 'i18next';
-import { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
 import { Box, Card, SideModal, Text } from '@/components';
@@ -30,12 +29,6 @@ interface ModalShareProps {
 }
 
 export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
-  useEffect(() => {
-    if (!doc.abilities.manage_accesses) {
-      onClose();
-    }
-  }, [doc.abilities.manage_accesses, onClose]);
-
   return (
     <>
       <ModalShareStyle />
@@ -47,29 +40,40 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
         width="70vw"
         $css="min-width: 320px;max-width: 777px;"
       >
-        <Card
-          $direction="row"
-          $align="center"
-          $margin={{ horizontal: 'tiny', top: 'none', bottom: 'big' }}
-          $padding="tiny"
-          $gap="1rem"
-        >
-          <Text $isMaterialIcon $size="48px" $theme="primary">
-            share
-          </Text>
-          <Box $align="flex-start">
-            <Text as="h3" $size="26px" $margin="none">
-              {t('Share')}
-            </Text>
-            <Text $size="small" $weight="normal" $textAlign="left">
-              {doc.title}
-            </Text>
+        <Box aria-label={t('Share modal')}>
+          <Box $shrink="0">
+            <Card
+              $direction="row"
+              $align="center"
+              $margin={{ horizontal: 'tiny', top: 'none', bottom: 'big' }}
+              $padding="tiny"
+              $gap="1rem"
+            >
+              <Text $isMaterialIcon $size="48px" $theme="primary">
+                share
+              </Text>
+              <Box $align="flex-start">
+                <Text as="h3" $size="26px" $margin="none">
+                  {t('Share')}
+                </Text>
+                <Text $size="small" $weight="normal" $textAlign="left">
+                  {doc.title}
+                </Text>
+              </Box>
+            </Card>
+            <DocVisibility doc={doc} />
+            {doc.abilities.manage_accesses && (
+              <AddMembers
+                doc={doc}
+                currentRole={currentDocRole(doc.abilities)}
+              />
+            )}
           </Box>
-        </Card>
-        <DocVisibility doc={doc} />
-        <AddMembers doc={doc} currentRole={currentDocRole(doc.abilities)} />
-        <InvitationList doc={doc} />
-        <MemberList doc={doc} />
+          <Box $minHeight="0">
+            <InvitationList doc={doc} />
+            <MemberList doc={doc} />
+          </Box>
+        </Box>
       </SideModal>
     </>
   );

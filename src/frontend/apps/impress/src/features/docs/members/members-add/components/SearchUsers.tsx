@@ -120,12 +120,17 @@ export const SearchUsers = ({
         placeholder: (base) => ({
           ...base,
           fontSize: '14px',
-          color: colorsTokens()['primary-600'],
+          color: disabled
+            ? colorsTokens()['greyscale-300']
+            : colorsTokens()['primary-600'],
         }),
         control: (base) => ({
           ...base,
           minHeight: '45px',
-          borderColor: colorsTokens()['primary-600'],
+          borderColor: disabled
+            ? colorsTokens()['greyscale-300']
+            : colorsTokens()['primary-600'],
+          backgroundColor: 'white',
         }),
         input: (base) => ({
           ...base,

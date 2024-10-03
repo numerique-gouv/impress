@@ -93,6 +93,7 @@ export const TableContent = ({ doc, headings }: TableContentProps) => {
             block: 'start',
           });
         }}
+        $align="start"
       >
         <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
           {t('Back to top')}
@@ -110,6 +111,7 @@ export const TableContent = ({ doc, headings }: TableContentProps) => {
               block: 'start',
             });
         }}
+        $align="start"
       >
         <Text $theme="primary" $padding={{ vertical: 'xtiny' }}>
           {t('Go to bottom')}
