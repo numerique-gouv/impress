@@ -60,57 +60,61 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
         return userinfo
 
     def get_or_create_user(self, access_token, id_token, payload):
-        """Return a User based on userinfo. Get or create a new user if no user matches the Sub.
-
-        Parameters:
-        - access_token (str): The access token.
-        - id_token (str): The ID token.
-        - payload (dict): The user payload.
-
-        Returns:
-        - User: An existing or newly created User instance.
-
-        Raises:
-        - Exception: Raised when user creation is not allowed and no existing user is found.
-        """
+        """Return a User based on userinfo. Create a new user if no match is found."""
 
         user_info = self.get_userinfo(access_token, id_token, payload)
+        email = user_info.get("email")
 
-        # Compute user full name from OIDC name fields as defined in settings
-        names_list = [
-            user_info[field]
-            for field in settings.USER_OIDC_FIELDS_TO_FULLNAME
-            if user_info.get(field)
-        ]
+        # Get user's full name from OIDC fields defined in settings
+        full_name = self.compute_full_name(user_info)
+        short_name = user_info.get(settings.USER_OIDC_FIELD_TO_SHORTNAME)
+
         claims = {
-            "email": user_info.get("email"),
-            "full_name": " ".join(names_list) or None,
-            "short_name": user_info.get(settings.USER_OIDC_FIELD_TO_SHORTNAME),
+            "email": email,
+            "full_name": full_name,
+            "short_name": short_name,
         }
 
         sub = user_info.get("sub")
-        if sub is None:
+        if not sub:
             raise SuspiciousOperation(
                 _("User info contained no recognizable user identification")
             )
 
-        try:
-            user = User.objects.get(sub=sub, is_active=True)
-        except User.DoesNotExist:
-            if self.get_settings("OIDC_CREATE_USER", True):
-                user = User.objects.create(
-                    sub=sub,
-                    password="!",  # noqa: S106
-                    **claims,
-                )
-            else:
-                user = None
-        else:
-            has_changed = any(
-                value and value != getattr(user, key) for key, value in claims.items()
-            )
-            if has_changed:
-                updated_claims = {key: value for key, value in claims.items() if value}
-                self.UserModel.objects.filter(sub=sub).update(**updated_claims)
+        user = self.get_existing_user(sub, email)
+
+        if user:
+            self.update_user_if_needed(user, claims)
+        elif self.get_settings("OIDC_CREATE_USER", True):
+            user = User.objects.create(sub=sub, password="!", **claims)  # noqa: S106
 
         return user
+
+    def compute_full_name(self, user_info):
+        """Compute user's full name based on OIDC fields in settings."""
+        name_fields = settings.USER_OIDC_FIELDS_TO_FULLNAME
+        full_name = " ".join(
+            user_info[field] for field in name_fields if user_info.get(field)
+        )
+        return full_name or None
+
+    def get_existing_user(self, sub, email):
+        """Fetch existing user by sub or email."""
+        try:
+            return User.objects.get(sub=sub, is_active=True)
+        except User.DoesNotExist:
+            if email and settings.OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION:
+                try:
+                    return User.objects.get(email=email, is_active=True)
+                except User.DoesNotExist:
+                    pass
+        return None
+
+    def update_user_if_needed(self, user, claims):
+        """Update user claims if they have changed."""
+        has_changed = any(
+            value and value != getattr(user, key) for key, value in claims.items()
+        )
+        if has_changed:
+            updated_claims = {key: value for key, value in claims.items() if value}
+            self.UserModel.objects.filter(sub=user.sub).update(**updated_claims)
