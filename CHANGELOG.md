@@ -29,6 +29,7 @@ and this project adheres to
 - 🛂(frontend) redirect to the OIDC when private doc and unauthentified #292
 - ♻️(backend) getting list of document versions available for a user #258
 - 🔧(backend) fix configuration to avoid different ssl warning #297
+- 🐛(frontend) fix editor break line not working #302
 
 
 ## [1.4.0] - 2024-09-17
