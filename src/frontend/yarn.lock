@@ -1053,10 +1053,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blocknote/core@*", "@blocknote/core@0.15.10", "@blocknote/core@^0.15.10":
-  version "0.15.10"
-  resolved "https://registry.yarnpkg.com/@blocknote/core/-/core-0.15.10.tgz#c62db00d6dec3938f64fefd4d95db015cc767e34"
-  integrity sha512-ZgAoh2e+IDa+nQwi2k1QiEFOQlQaF8gFYDkLaB+jbQTYqNKyM2bj4UkjMTQVJVkD+hiUz8gdwO5GrrD27DYp+A==
+"@blocknote/core@*", "@blocknote/core@0.16.0", "@blocknote/core@^0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@blocknote/core/-/core-0.16.0.tgz#3904da086c4241d1bce41c3c1bdb910e68fe9eff"
+  integrity sha512-egX+GjlAB8r/zaox278zNTTUMNVRHVQ2qVlPHQZgGOXSDq2Z+Lm7i4xKYMz/UT/IdrL7iGxnHrAsbc0H/kqc9A==
   dependencies:
     "@emoji-mart/data" "^1.2.1"
     "@tiptap/core" "^2.7.1"
@@ -1100,13 +1100,13 @@
     y-protocols "^1.0.6"
     yjs "^13.6.15"
 
-"@blocknote/mantine@*", "@blocknote/mantine@0.15.10":
-  version "0.15.10"
-  resolved "https://registry.yarnpkg.com/@blocknote/mantine/-/mantine-0.15.10.tgz#66ad765a664fa81e6f99a044a8a1e03afc501cbd"
-  integrity sha512-oYmYFNSfZ9m7IywKj29zDCrd9RrfinfiyMmiK0jJfe8vg3ibOIyq/WaDaJkfPpXBu0VIKw5eeKPh3vRnetbDgQ==
+"@blocknote/mantine@*", "@blocknote/mantine@0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@blocknote/mantine/-/mantine-0.16.0.tgz#513dadfe0c2891319ee684e1084a91b7ea983699"
+  integrity sha512-5jLXuKWz6xoba8odYv8+SalLSSE5YdYEvtuQyEO605VTtm37VELyjI5Tswwv/mcTd3th2AR3g4GY0Zj/T07lZw==
   dependencies:
-    "@blocknote/core" "^0.15.10"
-    "@blocknote/react" "^0.15.10"
+    "@blocknote/core" "^0.16.0"
+    "@blocknote/react" "^0.16.0"
     "@mantine/core" "^7.10.1"
     "@mantine/hooks" "^7.10.1"
     "@mantine/utils" "^6.0.21"
@@ -1114,12 +1114,12 @@
     react-dom "^18"
     react-icons "^5.2.1"
 
-"@blocknote/react@*", "@blocknote/react@0.15.10", "@blocknote/react@^0.15.10":
-  version "0.15.10"
-  resolved "https://registry.yarnpkg.com/@blocknote/react/-/react-0.15.10.tgz#8076210f6c5737fac7480e0aaa5afbbf10822efb"
-  integrity sha512-gRobsw4n+LBNUH/teaDxTxIsJsycK4q4TWPcDKRNBEvTAJAXYzUIAeXA9X2GzRkBYWlRPIyCn1r4ve2xD5lrXQ==
+"@blocknote/react@*", "@blocknote/react@0.16.0", "@blocknote/react@^0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@blocknote/react/-/react-0.16.0.tgz#a5d7de21914aab467b2e849e34a4d00dc1732542"
+  integrity sha512-vEwAp4z1FBqcH75OEbEW/yd4nj8XcSKAzCElV7aL6nVhPiKgYzrzG/WVckTq1h9lMaGeAuYqLErww4IIsbiawg==
   dependencies:
-    "@blocknote/core" "^0.15.10"
+    "@blocknote/core" "^0.16.0"
     "@floating-ui/react" "^0.26.4"
     "@tiptap/core" "^2.7.1"
     "@tiptap/react" "^2.7.1"
