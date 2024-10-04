@@ -13,7 +13,7 @@ i18n
     interpolation: {
       escapeValue: false,
     },
-    preload: LANGUAGES_ALLOWED,
+    preload: Object.keys(LANGUAGES_ALLOWED),
     nsSeparator: '||',
   })
   .catch(() => {

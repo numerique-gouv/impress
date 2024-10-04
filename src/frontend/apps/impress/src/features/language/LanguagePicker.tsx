@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
+import { LANGUAGES_ALLOWED } from '@/i18n/conf';
 
 import IconLanguage from './assets/icon-language.svg?url';
 
@@ -49,7 +50,7 @@ export const LanguagePicker = () => {
           $align="center"
         >
           <Image priority src={IconLanguage} alt={t('Language Icon')} />
-          <Text $theme="primary">{lang.toUpperCase()}</Text>
+          <Text $theme="primary">{LANGUAGES_ALLOWED[lang]}</Text>
         </Box>
       ),
     }));

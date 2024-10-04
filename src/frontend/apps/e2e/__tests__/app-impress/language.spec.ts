@@ -13,9 +13,11 @@ test.describe('Language', () => {
     ).toBeVisible();
 
     const header = page.locator('header').first();
-    await header.getByRole('combobox').getByText('EN').click();
-    await header.getByRole('option', { name: 'FR' }).click();
-    await expect(header.getByRole('combobox').getByText('FR')).toBeVisible();
+    await header.getByRole('combobox').getByText('English').click();
+    await header.getByRole('option', { name: 'Français' }).click();
+    await expect(
+      header.getByRole('combobox').getByText('Français'),
+    ).toBeVisible();
 
     await expect(
       page.getByRole('button', {
