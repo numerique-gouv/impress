@@ -66,6 +66,61 @@ test.describe('Document list members', () => {
     ).toBeVisible();
   });
 
+  test('it checks a big list of invitations', async ({ page }) => {
+    await page.route(
+      /.*\/documents\/.*\/invitations\/\?page=.*/,
+      async (route) => {
+        const request = route.request();
+        const url = new URL(request.url());
+        const pageId = url.searchParams.get('page');
+        const accesses = {
+          count: 100,
+          next: 'http://anything/?page=2',
+          previous: null,
+          results: Array.from({ length: 20 }, (_, i) => ({
+            id: `2ff1ec07-86c1-4534-a643-f41824a6c53a-${pageId}-${i}`,
+            email: `impress@impress.world-page-${pageId}-${i}`,
+            team: '',
+            role: 'editor',
+            abilities: {
+              destroy: true,
+              update: true,
+              partial_update: true,
+              retrieve: true,
+            },
+          })),
+        };
+
+        if (request.method().includes('GET')) {
+          await route.fulfill({
+            json: accesses,
+          });
+        } else {
+          await route.continue();
+        }
+      },
+    );
+
+    await goToGridDoc(page);
+
+    await page.getByRole('button', { name: 'Share' }).click();
+
+    const list = page.getByLabel('List invitation card').locator('ul');
+    await expect(list.locator('li')).toHaveCount(20);
+    await list.getByText(`impress@impress.world-page-${1}-18`).hover();
+    await page.mouse.wheel(0, 10);
+
+    await waitForElementCount(list.locator('li'), 21, 10000);
+
+    expect(await list.locator('li').count()).toBeGreaterThan(20);
+    await expect(
+      list.getByText(`impress@impress.world-page-1-16`),
+    ).toBeVisible();
+    await expect(
+      list.getByText(`impress@impress.world-page-2-15`),
+    ).toBeVisible();
+  });
+
   test('it checks the role rules', async ({ page, browserName }) => {
     const [docTitle] = await createDoc(page, 'Doc role rules', browserName, 1);
 
