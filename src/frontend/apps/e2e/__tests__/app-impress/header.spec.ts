@@ -10,8 +10,6 @@ test.describe('Header', () => {
   test('checks all the elements are visible', async ({ page }) => {
     const header = page.locator('header').first();
 
-    await expect(header.getByAltText('Gouvernement Logo')).toBeVisible();
-
     await expect(header.getByAltText('Docs Logo')).toBeVisible();
     await expect(header.locator('h2').getByText('Docs')).toHaveCSS(
       'color',
@@ -64,6 +62,42 @@ test.describe('Header', () => {
     ).toBeVisible();
 
     await expect(page.getByRole('link', { name: 'Grist' })).toBeVisible();
+  });
+});
+
+test.describe('Header mobile', () => {
+  test.use({ viewport: { width: 500, height: 1200 } });
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  test('it checks the header when mobile', async ({ page }) => {
+    const header = page.locator('header').first();
+
+    await expect(
+      header.getByRole('button', {
+        name: 'Les services de La Suite numérique',
+      }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('button', {
+        name: 'Logout',
+      }),
+    ).toBeHidden();
+
+    await expect(page.getByAltText('Language Icon')).toBeHidden();
+
+    await header.getByLabel('Open the header menu').click();
+
+    await expect(
+      page.getByRole('button', {
+        name: 'Logout',
+      }),
+    ).toBeVisible();
+
+    await expect(page.getByAltText('Language Icon')).toBeVisible();
   });
 });
 

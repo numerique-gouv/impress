@@ -1,6 +1,6 @@
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { HEADER_HEIGHT, Header } from '@/features/header';
+import { Header } from '@/features/header';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const { colorsTokens } = useCunninghamTheme();
@@ -12,7 +12,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <Box $css="flex: 1;" $direction="row">
           <Box
             as="main"
-            $minHeight={`calc(100vh - ${HEADER_HEIGHT})`}
+            $minHeight="100vh"
             $width="100%"
             $background={colorsTokens()['primary-bg']}
           >
