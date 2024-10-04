@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAuthStore } from '@/core/auth';
 
-export const AccountDropdown = () => {
+export const ButtonLogin = () => {
   const { t } = useTranslation();
   const { logout, authenticated, login } = useAuthStore();
 

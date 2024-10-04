@@ -10,12 +10,12 @@ import IconLanguage from './assets/icon-language.svg?url';
 
 const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
   flex-shrink: 0;
-  width: 5.5rem;
+  width: auto;
 
   .c__select__wrapper {
     min-height: 2rem;
     height: auto;
-    border-color: #ddd;
+    border-color: transparent;
     padding: 0 0.15rem 0 0.45rem;
     border-radius: 1px;
 
@@ -28,7 +28,7 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
     }
 
     &:hover {
-      border-color: var(--c--theme--colors--primary-500);
+      box-shadow: var(--c--theme--colors--primary-100) 0 0 0 2px !important;
     }
   }
 `;
