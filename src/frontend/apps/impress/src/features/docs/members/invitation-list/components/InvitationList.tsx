@@ -1,5 +1,5 @@
 import { Loader } from '@openfun/cunningham-react';
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { APIError } from '@/api';
@@ -73,6 +73,7 @@ interface InvitationListProps {
 export const InvitationList = ({ doc }: InvitationListProps) => {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [, setRefInitialized] = useState(false);
   const {
     data,
     isLoading,
@@ -89,6 +90,17 @@ export const InvitationList = ({ doc }: InvitationListProps) => {
       return acc.concat(page.results);
     }, [] as Invitation[]);
   }, [data?.pages]);
+
+  /**
+   *  The "return null;" statement below blocks a necessary rerender
+   *  for the InfiniteScroll component to work properly.
+   *  This useEffect is a workaround to force the rerender.
+   */
+  useEffect(() => {
+    if (containerRef.current) {
+      setRefInitialized(true);
+    }
+  }, [invitations?.length]);
 
   if (!invitations?.length) {
     return null;
