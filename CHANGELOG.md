@@ -16,6 +16,7 @@ and this project adheres to
 - ✨(frontend) Activate versions feature #240
 - ✨(frontend) one-click document creation #275
 - ✨(frontend) edit title inline #275
+- 🌐(frontend) Update translation #308
 
 ## Changed
 
