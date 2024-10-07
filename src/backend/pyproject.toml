@@ -50,6 +50,7 @@ dependencies = [
     "PyJWT==2.9.0",
     "pypandoc==1.14",
     "python-frontmatter==1.1.0",
+    "python-magic==0.4.27",
     "requests==2.32.3",
     "sentry-sdk==2.16.0",
     "url-normalize==1.4.3",

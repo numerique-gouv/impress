@@ -1,6 +1,5 @@
 """API endpoints"""
 
-import os
 import re
 import uuid
 from urllib.parse import urlparse
@@ -476,15 +475,22 @@ class DocumentViewSet(
             return drf_response.Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
-        # Extract the file extension from the original filename
-        file = serializer.validated_data["file"]
-        extension = os.path.splitext(file.name)[1]
 
         # Generate a generic yet unique filename to store the image in object storage
         file_id = uuid.uuid4()
-        key = f"{document.key_base}/{ATTACHMENTS_FOLDER:s}/{file_id!s}{extension:s}"
+        extension = serializer.validated_data["expected_extension"]
+        key = f"{document.key_base}/{ATTACHMENTS_FOLDER:s}/{file_id!s}.{extension:s}"
 
-        default_storage.save(key, file)
+        # Prepare metadata for storage
+        metadata = {"Metadata": {"owner": str(request.user.id)}}
+        if serializer.validated_data["is_unsafe"]:
+            metadata["Metadata"]["is_unsafe"] = "true"
+
+        file = serializer.validated_data["file"]
+        default_storage.connection.meta.client.upload_fileobj(
+            file, default_storage.bucket_name, key, ExtraArgs=metadata
+        )
+
         return drf_response.Response(
             {"file": f"{settings.MEDIA_URL:s}{key:s}"}, status=status.HTTP_201_CREATED
         )
