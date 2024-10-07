@@ -58,11 +58,11 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
             setDocPublic(!docPublic);
           }}
           disabled={!doc.abilities.link_configuration}
-          text={t(
+          text={
             docPublic
-              ? 'Anyone on the internet with the link can view'
-              : 'Only for people with access',
-          )}
+              ? t('Anyone on the internet with the link can view')
+              : t('Only for people with access')
+          }
         />
       </Box>
       <Button
