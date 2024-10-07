@@ -5,7 +5,7 @@ Test file uploads API endpoint for users in impress's core app.
 import re
 import uuid
 
-from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 import pytest
@@ -15,6 +15,12 @@ from core import factories
 from core.tests.conftest import TEAM, USER, VIA
 
 pytestmark = pytest.mark.django_db
+
+PIXEL = (
+    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00"
+    b"\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\xf8\xff\xff?\x00\x05\xfe\x02\xfe"
+    b"\xa7V\xbd\xfa\x00\x00\x00\x00IEND\xaeB`\x82"
+)
 
 
 @pytest.mark.parametrize(
@@ -33,7 +39,7 @@ def test_api_documents_attachment_upload_anonymous_forbidden(reach, role):
     and role don't allow it.
     """
     document = factories.DocumentFactory(link_reach=reach, link_role=role)
-    file = SimpleUploadedFile("test_file.jpg", b"Dummy content")
+    file = SimpleUploadedFile(name="test.png", content=PIXEL, content_type="image/png")
 
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
     response = APIClient().post(url, {"file": file}, format="multipart")
@@ -50,14 +56,14 @@ def test_api_documents_attachment_upload_anonymous_success():
     if the link reach and role permit it.
     """
     document = factories.DocumentFactory(link_reach="public", link_role="editor")
-    file = SimpleUploadedFile("test_file.jpg", b"Dummy content")
+    file = SimpleUploadedFile(name="test.png", content=PIXEL, content_type="image/png")
 
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
     response = APIClient().post(url, {"file": file}, format="multipart")
 
     assert response.status_code == 201
 
-    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.jpg")
+    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.png")
     match = pattern.search(response.json()["file"])
     file_id = match.group(1)
 
@@ -85,7 +91,7 @@ def test_api_documents_attachment_upload_authenticated_forbidden(reach, role):
     client.force_login(user)
 
     document = factories.DocumentFactory(link_reach=reach, link_role=role)
-    file = SimpleUploadedFile("test_file.jpg", b"Dummy content")
+    file = SimpleUploadedFile(name="test.png", content=PIXEL, content_type="image/png")
 
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
     response = client.post(url, {"file": file}, format="multipart")
@@ -114,14 +120,14 @@ def test_api_documents_attachment_upload_authenticated_success(reach, role):
     client.force_login(user)
 
     document = factories.DocumentFactory(link_reach=reach, link_role=role)
-    file = SimpleUploadedFile("test_file.jpg", b"Dummy content")
+    file = SimpleUploadedFile(name="test.png", content=PIXEL, content_type="image/png")
 
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
     response = client.post(url, {"file": file}, format="multipart")
 
     assert response.status_code == 201
 
-    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.jpg")
+    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.png")
     match = pattern.search(response.json()["file"])
     file_id = match.group(1)
 
@@ -148,7 +154,7 @@ def test_api_documents_attachment_upload_reader(via, mock_user_teams):
             document=document, team="lasuite", role="reader"
         )
 
-    file = SimpleUploadedFile("test_file.jpg", b"Dummy content")
+    file = SimpleUploadedFile(name="test.png", content=PIXEL, content_type="image/png")
 
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
     response = client.post(url, {"file": file}, format="multipart")
@@ -179,19 +185,27 @@ def test_api_documents_attachment_upload_success(via, role, mock_user_teams):
             document=document, team="lasuite", role=role
         )
 
-    file = SimpleUploadedFile("test_file.jpg", b"Dummy content")
+    file = SimpleUploadedFile(name="test.png", content=PIXEL, content_type="image/png")
 
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
     response = client.post(url, {"file": file}, format="multipart")
 
     assert response.status_code == 201
 
-    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.jpg")
-    match = pattern.search(response.json()["file"])
+    file_path = response.json()["file"]
+    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.png")
+    match = pattern.search(file_path)
     file_id = match.group(1)
 
     # Validate that file_id is a valid UUID
     uuid.UUID(file_id)
+
+    # Now, check the metadata of the uploaded file
+    key = file_path.replace("/media", "")
+    file_head = default_storage.connection.meta.client.head_object(
+        Bucket=default_storage.bucket_name, Key=key
+    )
+    assert file_head["Metadata"] == {"owner": str(user.id)}
 
 
 def test_api_documents_attachment_upload_invalid(client):
@@ -222,8 +236,9 @@ def test_api_documents_attachment_upload_size_limit_exceeded(settings):
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
 
     # Create a temporary file larger than the allowed size
-    content = b"a" * (1048576 + 1)
-    file = ContentFile(content, name="test.jpg")
+    file = SimpleUploadedFile(
+        name="test.txt", content=b"a" * (1048576 + 1), content_type="text/plain"
+    )
 
     response = client.post(url, {"file": file}, format="multipart")
 
@@ -231,10 +246,21 @@ def test_api_documents_attachment_upload_size_limit_exceeded(settings):
     assert response.json() == {"file": ["File size exceeds the maximum limit of 1 MB."]}
 
 
-def test_api_documents_attachment_upload_type_not_allowed(settings):
-    """The uploaded file should be of a whitelisted type."""
-    settings.DOCUMENT_IMAGE_ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"]
-
+@pytest.mark.parametrize(
+    "name,content,extension",
+    [
+        ("test.exe", b"text", "exe"),
+        ("test", b"text", "txt"),
+        ("test.aaaaaa", b"test", "txt"),
+        ("test.txt", PIXEL, "txt"),
+        ("test.py", b"#!/usr/bin/python", "py"),
+    ],
+)
+def test_api_documents_attachment_upload_fix_extension(name, content, extension):
+    """
+    A file with no extension or a wrong extension is accepted and the extension
+    is corrected in storage.
+    """
     user = factories.UserFactory()
     client = APIClient()
     client.force_login(user)
@@ -242,14 +268,70 @@ def test_api_documents_attachment_upload_type_not_allowed(settings):
     document = factories.DocumentFactory(users=[(user, "owner")])
     url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
 
-    # Create a temporary file with a not allowed type (e.g., text file)
-    file = ContentFile(b"a" * 1048576, name="test.txt")
+    file = SimpleUploadedFile(name=name, content=content)
+    response = client.post(url, {"file": file}, format="multipart")
 
+    assert response.status_code == 201
+
+    file_path = response.json()["file"]
+    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.{extension:s}")
+    match = pattern.search(file_path)
+    file_id = match.group(1)
+
+    # Validate that file_id is a valid UUID
+    uuid.UUID(file_id)
+
+    # Now, check the metadata of the uploaded file
+    key = file_path.replace("/media", "")
+    file_head = default_storage.connection.meta.client.head_object(
+        Bucket=default_storage.bucket_name, Key=key
+    )
+    assert file_head["Metadata"] == {"owner": str(user.id), "is_unsafe": "true"}
+
+
+def test_api_documents_attachment_upload_empty_file():
+    """An empty file should be rejected."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    document = factories.DocumentFactory(users=[(user, "owner")])
+    url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
+
+    file = SimpleUploadedFile(name="test.png", content=b"")
     response = client.post(url, {"file": file}, format="multipart")
 
     assert response.status_code == 400
-    assert response.json() == {
-        "file": [
-            "File type 'text/plain' is not allowed. Allowed types are: image/jpeg, image/png"
-        ]
-    }
+    assert response.json() == {"file": ["The submitted file is empty."]}
+
+
+def test_api_documents_attachment_upload_unsafe():
+    """A file with an unsafe mime type should be tagged as such."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    document = factories.DocumentFactory(users=[(user, "owner")])
+    url = f"/api/v1.0/documents/{document.id!s}/attachment-upload/"
+
+    file = SimpleUploadedFile(
+        name="script.exe", content=b"\x4d\x5a\x90\x00\x03\x00\x00\x00"
+    )
+    response = client.post(url, {"file": file}, format="multipart")
+
+    assert response.status_code == 201
+
+    file_path = response.json()["file"]
+    pattern = re.compile(rf"^/media/{document.id!s}/attachments/(.*)\.exe")
+    match = pattern.search(file_path)
+    file_id = match.group(1)
+
+    # Validate that file_id is a valid UUID
+    uuid.UUID(file_id)
+
+    # Now, check the metadata of the uploaded file
+    key = file_path.replace("/media", "")
+    file_head = default_storage.connection.meta.client.head_object(
+        Bucket=default_storage.bucket_name, Key=key
+    )
+    assert file_head["Metadata"] == {"owner": str(user.id), "is_unsafe": "true"}

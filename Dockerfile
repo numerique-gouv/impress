@@ -65,14 +65,15 @@ ENV PYTHONUNBUFFERED=1
 
 # Install required system libs
 RUN apk add \
-  gettext \
   cairo \
-  libffi-dev \
-  gdk-pixbuf \
-  pango \
-  pandoc \
-  font-noto-emoji \
+  file \
   font-noto \
+  font-noto-emoji \
+  gettext \
+  gdk-pixbuf \
+  libffi-dev \
+  pandoc \
+  pango \
   shared-mime-info
 
 # Copy entrypoint
