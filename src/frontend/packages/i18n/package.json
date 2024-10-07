@@ -7,6 +7,7 @@
     "extract-translation:impress": "yarn i18next ../../apps/impress/**/*.{ts,tsx} -c ./i18next-parser.config.mjs -o ./locales/impress/translations-crowdin.json",
     "format-deploy": "yarn format-deploy:impress",
     "format-deploy:impress": "node ./format-deploy.mjs --app=impress --output=../../apps/impress/src/i18n/translations.json",
+    "format-rebuild-fr:impress": "node ./rebuild-translations.mjs --language=fr --app=impress --output=../../apps/impress/src/i18n/translations.json",
     "lint": "eslint --ext .js,.ts,.mjs .",
     "test": "jest"
   },
