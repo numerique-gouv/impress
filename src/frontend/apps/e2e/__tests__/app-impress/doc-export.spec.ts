@@ -85,7 +85,7 @@ test.describe('Doc Export', () => {
     page,
     browserName,
   }) => {
-    test.slow();
+    test.setTimeout(60000);
 
     const [randomDoc] = await createDoc(page, 'doc-editor', browserName, 1);
     let body = '';

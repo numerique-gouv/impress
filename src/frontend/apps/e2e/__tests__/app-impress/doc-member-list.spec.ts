@@ -216,6 +216,8 @@ test.describe('Document list members', () => {
       page.getByText('The member has been removed from the document').first(),
     ).toBeVisible();
 
-    await expect(page.getByText('Share')).toBeHidden();
+    await expect(
+      page.getByRole('heading', { name: 'Share', level: 3 }),
+    ).toBeHidden();
   });
 });
