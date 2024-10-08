@@ -63,6 +63,7 @@ and this project adheres to
 - ✨(frontend) Upload image to a document #211
 - ✨(frontend) Summary #223
 - ✨(frontend) update meta title for docs page #231
+- 🌐(frontend) Add German translation #255
 
 ## Changed
 
