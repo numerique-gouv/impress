@@ -1,6 +1,11 @@
 import { WorkboxPlugin } from 'workbox-core';
 
-import { Doc, DocsResponse } from '@/features/docs';
+import {
+  Doc,
+  DocsResponse,
+  LinkReach,
+  Role,
+} from '@/features/docs/doc-management';
 
 import { DBRequest, DocsDB } from './DocsDB';
 import { RequestSerializer } from './RequestSerializer';
@@ -181,7 +186,8 @@ export class ApiPlugin implements WorkboxPlugin {
       .clone()
       .json()) as Partial<Doc>;
 
-    const newResponse = {
+    const newResponse: Doc = {
+      title: '',
       ...bodyMutate,
       id: uuid,
       content: '',
@@ -197,13 +203,29 @@ export class ApiPlugin implements WorkboxPlugin {
         update: true,
         partial_update: true,
         retrieve: true,
+        attachment_upload: true,
       },
       accesses: [
         {
           id: 'dummy-id',
+          role: Role.OWNER,
+          team: '',
+          user: {
+            id: 'dummy-id',
+            email: 'dummy-email',
+          },
+          abilities: {
+            destroy: false,
+            partial_update: false,
+            retrieve: true,
+            set_role_to: [],
+            update: false,
+          },
         },
       ],
-    } as Doc;
+      link_reach: LinkReach.RESTRICTED,
+      link_role: 'reader',
+    };
 
     await DocsDB.cacheResponse(
       `${request.url}${uuid}/`,
