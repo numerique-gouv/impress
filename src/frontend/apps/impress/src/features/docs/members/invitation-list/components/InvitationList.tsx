@@ -6,6 +6,7 @@ import { APIError } from '@/api';
 import { Box, Card, InfiniteScroll, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { Doc, currentDocRole } from '@/features/docs/doc-management';
+import { useResponsiveStore } from '@/stores';
 
 import { useDocInvitationsInfinite } from '../api';
 import { Invitation } from '../types';
@@ -26,6 +27,7 @@ const InvitationListState = ({
   doc,
 }: InvitationListStateProps) => {
   const { colorsTokens } = useCunninghamTheme();
+  const { isSmallMobile } = useResponsiveStore();
 
   if (error) {
     return <TextErrors causes={error.cause} />;
@@ -49,7 +51,7 @@ const InvitationListState = ({
         key={`${invitation.id}-${index}`}
         $background={!(index % 2) ? 'white' : colorsTokens()['greyscale-000']}
         $direction="row"
-        $padding="small"
+        $padding={isSmallMobile ? 'tiny' : 'small'}
         $align="center"
         $gap="1rem"
         $radius="4px"

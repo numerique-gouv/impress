@@ -3,10 +3,11 @@ import { useState } from 'react';
 
 import { BoxButton, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { useResponsiveStore } from '@/stores';
 
 const sizeMap: { [key: number]: string } = {
-  1: '1.2rem',
-  2: '1rem',
+  1: '1.1rem',
+  2: '0.9rem',
   3: '0.8rem',
 };
 
@@ -32,6 +33,7 @@ export const Heading = ({
 }: HeadingProps) => {
   const [isHover, setIsHover] = useState(isHighlight);
   const { colorsTokens } = useCunninghamTheme();
+  const { isMobile } = useResponsiveStore();
 
   return (
     <BoxButton
@@ -39,7 +41,11 @@ export const Heading = ({
       onMouseOver={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onClick={() => {
-        editor.focus();
+        // With mobile the focus open the keyboard and the scroll is not working
+        if (!isMobile) {
+          editor.focus();
+        }
+
         editor.setTextCursorPosition(headingId, 'end');
         document.querySelector(`[data-id="${headingId}"]`)?.scrollIntoView({
           behavior: 'smooth',

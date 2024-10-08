@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, IconBG, Text, TextErrors } from '@/components';
 import { Access, Doc, Role } from '@/features/docs/doc-management';
 import { ChooseRole } from '@/features/docs/members/members-add/';
+import { useResponsiveStore } from '@/stores';
 
 import { useDeleteDocAccess, useUpdateDocAccess } from '../api';
 import { useWhoAmI } from '../hooks/useWhoAmI';
@@ -31,6 +32,7 @@ export const MemberItem = ({
 }: MemberItemProps) => {
   const { isMyself, isLastOwner, isOtherOwner } = useWhoAmI(access);
   const { t } = useTranslation();
+  const { isSmallMobile, screenWidth } = useResponsiveStore();
   const [localRole, setLocalRole] = useState(role);
   const { toast } = useToastProvider();
   const router = useRouter();
@@ -71,8 +73,7 @@ export const MemberItem = ({
 
   return (
     <Box $width="100%">
-      <Box $direction="row" $gap="1rem">
-        <IconBG iconName="account_circle" $size="2rem" />
+      <Box $direction="row" $gap="1rem" $wrap="wrap">
         <Box
           $align="center"
           $direction="row"
@@ -80,10 +81,21 @@ export const MemberItem = ({
           $justify="space-between"
           $width="100%"
           $wrap="wrap"
+          $css={`flex: ${isSmallMobile ? '100%' : '70%'};`}
         >
-          <Text $justify="center">{access.user.email}</Text>
-          <Box $direction="row" $gap="1rem" $align="center">
-            <Box $minWidth="13rem">
+          <IconBG iconName="account_circle" $size="2rem" />
+          <Text $justify="center" $css="flex:1;">
+            {access.user.email}
+          </Text>
+          <Box
+            $direction="row"
+            $gap="1rem"
+            $align="center"
+            $justify="space-between"
+            $css="flex:1;"
+            $wrap={screenWidth < 400 ? 'wrap' : 'nowrap'}
+          >
+            <Box $minWidth="13rem" $css={isSmallMobile ? 'flex:1;' : ''}>
               <ChooseRole
                 label={t('Role')}
                 defaultRole={localRole}
@@ -100,22 +112,24 @@ export const MemberItem = ({
               />
             </Box>
             {doc.abilities.manage_accesses && (
-              <Button
-                color="tertiary-text"
-                icon={
-                  <Text
-                    $isMaterialIcon
-                    $theme={isNotAllowed ? 'greyscale' : 'primary'}
-                    $variation={isNotAllowed ? '500' : 'text'}
-                  >
-                    delete
-                  </Text>
-                }
-                disabled={isNotAllowed}
-                onClick={() =>
-                  removeDocAccess({ docId: doc.id, accessId: access.id })
-                }
-              />
+              <Box $margin={isSmallMobile ? 'auto' : ''}>
+                <Button
+                  color="tertiary-text"
+                  icon={
+                    <Text
+                      $isMaterialIcon
+                      $theme={isNotAllowed ? 'greyscale' : 'primary'}
+                      $variation={isNotAllowed ? '500' : 'text'}
+                    >
+                      delete
+                    </Text>
+                  }
+                  disabled={isNotAllowed}
+                  onClick={() =>
+                    removeDocAccess({ docId: doc.id, accessId: access.id })
+                  }
+                />
+              </Box>
             )}
           </Box>
         </Box>

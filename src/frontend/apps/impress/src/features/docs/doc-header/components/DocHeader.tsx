@@ -1,5 +1,4 @@
-import { Button } from '@openfun/cunningham-react';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, StyledLink, Text } from '@/components';
@@ -10,8 +9,9 @@ import {
   currentDocRole,
   useTrans,
 } from '@/features/docs/doc-management';
-import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
+import { Versions } from '@/features/docs/doc-versioning';
 import { useDate } from '@/hook';
+import { useResponsiveStore } from '@/stores';
 
 import { DocTagPublic } from './DocTagPublic';
 import { DocTitle } from './DocTitle';
@@ -27,15 +27,19 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
   const { t } = useTranslation();
   const { formatDate } = useDate();
   const { transRole } = useTrans();
-  const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);
+  const { isMobile, isSmallMobile } = useResponsiveStore();
 
   return (
     <>
       <Card
-        $margin="small"
+        $margin={isMobile ? 'tiny' : 'small'}
         aria-label={t('It is the card information about the document.')}
       >
-        <Box $padding="small" $direction="row" $align="center">
+        <Box
+          $padding={isMobile ? 'tiny' : 'small'}
+          $direction="row"
+          $align="center"
+        >
           <StyledLink href="/">
             <Text
               $isMaterialIcon
@@ -53,33 +57,39 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
             $width="1px"
             $height="70%"
             $background={colorsTokens()['greyscale-100']}
-            $margin={{ horizontal: 'small' }}
+            $margin={{ horizontal: 'tiny' }}
           />
-          <Box $gap="1rem" $direction="row" $align="center">
+          <Box
+            $direction="row"
+            $justify="space-between"
+            $css="flex:1;"
+            $gap="0.5rem 1rem"
+            $wrap="wrap"
+            $align="center"
+          >
             <DocTitle doc={doc} />
-            {versionId && (
-              <Button
-                onClick={() => {
-                  setIsModalVersionOpen(true);
-                }}
-                size="small"
-              >
-                {t('Restore this version')}
-              </Button>
-            )}
+            <DocToolBox doc={doc} versionId={versionId} />
           </Box>
-          <DocToolBox doc={doc} />
         </Box>
         <Box
-          $direction="row"
-          $align="center"
+          $direction={isSmallMobile ? 'column' : 'row'}
+          $align={isSmallMobile ? 'start' : 'center'}
           $css="border-top:1px solid #eee"
-          $padding={{ horizontal: 'big', vertical: 'tiny' }}
+          $padding={{
+            horizontal: isMobile ? 'tiny' : 'big',
+            vertical: 'tiny',
+          }}
           $gap="0.5rem 2rem"
           $justify="space-between"
           $wrap="wrap"
+          $position="relative"
         >
-          <Box $direction="row" $align="center" $gap="0.5rem 2rem" $wrap="wrap">
+          <Box
+            $direction={isSmallMobile ? 'column' : 'row'}
+            $align={isSmallMobile ? 'start' : 'center'}
+            $gap="0.5rem 2rem"
+            $wrap="wrap"
+          >
             <DocTagPublic doc={doc} />
             <Text $size="s" $display="inline">
               {t('Created at')} <strong>{formatDate(doc.created_at)}</strong>
@@ -106,13 +116,6 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
           </Text>
         </Box>
       </Card>
-      {isModalVersionOpen && versionId && (
-        <ModalVersion
-          onClose={() => setIsModalVersionOpen(false)}
-          docId={doc.id}
-          versionId={versionId}
-        />
-      )}
     </>
   );
 };

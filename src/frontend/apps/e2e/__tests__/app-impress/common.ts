@@ -113,13 +113,14 @@ export const goToGridDoc = async (
   const header = page.locator('header').first();
   await header.locator('h2').getByText('Docs').click();
 
-  const datagrid = page
-    .getByLabel('Datagrid of the documents page 1')
-    .getByRole('table');
+  const datagrid = page.getByLabel('Datagrid of the documents page 1');
+  const datagridTable = datagrid.getByRole('table');
 
-  await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+  await expect(datagrid.getByLabel('Loading data')).toBeHidden({
+    timeout: 10000,
+  });
 
-  const rows = datagrid.getByRole('row');
+  const rows = datagridTable.getByRole('row');
   const row = title
     ? rows.filter({
         hasText: title,
@@ -132,7 +133,7 @@ export const goToGridDoc = async (
 
   expect(docTitle).toBeDefined();
 
-  await docTitleCell.click();
+  await row.getByRole('link').first().click();
 
   return docTitle as string;
 };

@@ -11,6 +11,7 @@ import { Box, Card, IconBG } from '@/components';
 import { Doc, Role } from '@/features/docs/doc-management';
 import { useCreateDocInvitation } from '@/features/docs/members/invitation-list/';
 import { useLanguage } from '@/i18n/hooks/useLanguage';
+import { useResponsiveStore } from '@/stores';
 
 import { useCreateDocAccess } from '../api';
 import {
@@ -37,6 +38,7 @@ interface ModalAddMembersProps {
 export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
   const { contentLanguage } = useLanguage();
   const { t } = useTranslation();
+  const { isSmallMobile } = useResponsiveStore();
   const [selectedUsers, setSelectedUsers] = useState<OptionsSelect>([]);
   const [selectedRole, setSelectedRole] = useState<Role>();
   const { toast } = useToastProvider();
@@ -145,7 +147,12 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
       $wrap="wrap"
     >
       <IconBG iconName="group_add" />
-      <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 70%;">
+      <Box
+        $gap="0.7rem"
+        $direction="row"
+        $wrap={isSmallMobile ? 'wrap' : 'nowrap'}
+        $css="flex: 70%;"
+      >
         <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
           <Box $css="flex: auto;" $width="15rem">
             <SearchUsers

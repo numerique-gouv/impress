@@ -23,7 +23,9 @@ test.describe('Doc Visibility', () => {
       .getByLabel('Datagrid of the documents page 1')
       .getByRole('table');
 
-    await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+    await expect(datagrid.getByLabel('Loading data')).toBeHidden({
+      timeout: 10000,
+    });
 
     await expect(datagrid.getByText(docTitle)).toBeVisible();
 

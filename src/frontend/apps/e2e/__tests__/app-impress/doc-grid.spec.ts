@@ -117,7 +117,9 @@ test.describe('Documents Grid', () => {
           .getByRole('cell')
           .nth(cellNumber);
 
-        await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+        await expect(datagrid.getByLabel('Loading data')).toBeHidden({
+          timeout: 10000,
+        });
 
         // Initial state
         await expect(docNameRow1).toHaveText(/.*/);
@@ -134,7 +136,9 @@ test.describe('Documents Grid', () => {
         const responseOrderingAsc = await responsePromiseOrderingAsc;
         expect(responseOrderingAsc.ok()).toBeTruthy();
 
-        await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+        await expect(datagrid.getByLabel('Loading data')).toBeHidden({
+          timeout: 10000,
+        });
 
         await expect(docNameRow1).toHaveText(/.*/);
         await expect(docNameRow2).toHaveText(/.*/);
@@ -155,7 +159,9 @@ test.describe('Documents Grid', () => {
         const responseOrderingDesc = await responsePromiseOrderingDesc;
         expect(responseOrderingDesc.ok()).toBeTruthy();
 
-        await expect(datagrid.getByLabel('Loading data')).toBeHidden();
+        await expect(datagrid.getByLabel('Loading data')).toBeHidden({
+          timeout: 10000,
+        });
 
         await expect(docNameRow1).toHaveText(/.*/);
         await expect(docNameRow2).toHaveText(/.*/);
@@ -242,5 +248,89 @@ test.describe('Documents Grid', () => {
     ).toBeVisible();
 
     await expect(datagrid.getByText(docName!)).toBeHidden();
+  });
+});
+
+test.describe('Documents Grid mobile', () => {
+  test.use({ viewport: { width: 500, height: 1200 } });
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  test('it checks the grid when mobile', async ({ page }) => {
+    await page.route('**/documents/**', async (route) => {
+      const request = route.request();
+      if (request.method().includes('GET') && request.url().includes('page=')) {
+        await route.fulfill({
+          json: {
+            count: 1,
+            next: null,
+            previous: null,
+            results: [
+              {
+                id: 'b7fd9d9b-0642-4b4f-8617-ce50f69519ed',
+                title: 'My mocked document',
+                accesses: [
+                  {
+                    id: '8c1e047a-24e7-4a80-942b-8e9c7ab43e1f',
+                    user: {
+                      id: '7380f42f-02eb-4ad5-b8f0-037a0e66066d',
+                      email: 'test@test.test',
+                      full_name: 'John Doe',
+                      short_name: 'John',
+                    },
+                    team: '',
+                    role: 'owner',
+                    abilities: {
+                      destroy: false,
+                      update: false,
+                      partial_update: false,
+                      retrieve: true,
+                      set_role_to: [],
+                    },
+                  },
+                ],
+                abilities: {
+                  attachment_upload: true,
+                  destroy: true,
+                  link_configuration: true,
+                  manage_accesses: true,
+                  partial_update: true,
+                  retrieve: true,
+                  update: true,
+                  versions_destroy: true,
+                  versions_list: true,
+                  versions_retrieve: true,
+                },
+                link_role: 'reader',
+                link_reach: 'public',
+                created_at: '2024-10-07T13:02:41.085298Z',
+                updated_at: '2024-10-07T13:30:21.829690Z',
+              },
+            ],
+          },
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.goto('/');
+
+    const datagrid = page.getByLabel('Datagrid of the documents page 1');
+    const tableDatagrid = datagrid.getByRole('table');
+
+    await expect(datagrid.getByLabel('Loading data')).toBeHidden({
+      timeout: 10000,
+    });
+
+    const rows = tableDatagrid.getByRole('row');
+    const row = rows.filter({
+      hasText: 'My mocked document',
+    });
+
+    await expect(row.getByRole('cell').nth(0)).toHaveText('My mocked document');
+    await expect(row.getByRole('cell').nth(1)).toHaveText('Public');
   });
 });

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, BoxButton, Text } from '@/components';
 import { HeadingBlock, useDocStore } from '@/features/docs/doc-editor';
 import { Doc } from '@/features/docs/doc-management';
+import { useResponsiveStore } from '@/stores';
 
 import { Heading } from './Heading';
 
@@ -14,6 +15,7 @@ interface TableContentProps {
 
 export const TableContent = ({ doc, headings }: TableContentProps) => {
   const { docsStore } = useDocStore();
+  const { isMobile } = useResponsiveStore();
   const { t } = useTranslation();
   const editor = docsStore?.[doc.id]?.editor;
   const [headingIdHighlight, setHeadingIdHighlight] = useState<string>();
@@ -66,17 +68,20 @@ export const TableContent = ({ doc, headings }: TableContentProps) => {
 
   return (
     <Box $padding={{ all: 'small', right: 'none' }} $maxHeight="95%">
-      <Box $overflow="auto">
-        {headings?.map((heading) => (
-          <Heading
-            editor={editor}
-            headingId={heading.id}
-            level={heading.props.level}
-            text={heading.contentText}
-            key={heading.id}
-            isHighlight={headingIdHighlight === heading.id}
-          />
-        ))}
+      <Box $overflow="auto" $padding={{ left: '2px' }}>
+        {headings?.map(
+          (heading) =>
+            heading.contentText && (
+              <Heading
+                editor={editor}
+                headingId={heading.id}
+                level={heading.props.level}
+                text={heading.contentText}
+                key={heading.id}
+                isHighlight={headingIdHighlight === heading.id}
+              />
+            ),
+        )}
       </Box>
       <Box
         $height="1px"
@@ -87,7 +92,11 @@ export const TableContent = ({ doc, headings }: TableContentProps) => {
       />
       <BoxButton
         onClick={() => {
-          editor.focus();
+          // With mobile the focus open the keyboard and the scroll is not working
+          if (!isMobile) {
+            editor.focus();
+          }
+
           document.querySelector(`.bn-editor`)?.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
@@ -101,7 +110,11 @@ export const TableContent = ({ doc, headings }: TableContentProps) => {
       </BoxButton>
       <BoxButton
         onClick={() => {
-          editor.focus();
+          // With mobile the focus open the keyboard and the scroll is not working
+          if (!isMobile) {
+            editor.focus();
+          }
+
           document
             .querySelector(
               `.bn-editor > .bn-block-group > .bn-block-outer:last-child`,

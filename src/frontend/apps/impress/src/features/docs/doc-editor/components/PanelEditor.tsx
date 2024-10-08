@@ -6,6 +6,7 @@ import { useCunninghamTheme } from '@/cunningham';
 import { Doc } from '@/features/docs/doc-management';
 import { TableContent } from '@/features/docs/doc-table-content';
 import { VersionList } from '@/features/docs/doc-versioning';
+import { useResponsiveStore } from '@/stores';
 
 import { usePanelEditorStore } from '../stores';
 import { HeadingBlock } from '../types';
@@ -21,7 +22,7 @@ export const PanelEditor = ({
 }: PropsWithChildren<PanelProps>) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
-
+  const { isMobile } = useResponsiveStore();
   const { isPanelTableContentOpen, setIsPanelTableContentOpen, isPanelOpen } =
     usePanelEditorStore();
 
@@ -29,12 +30,12 @@ export const PanelEditor = ({
     <Card
       $width="100%"
       $maxWidth="20rem"
-      $position="sticky"
-      $maxHeight="99vh"
+      $position={isMobile ? 'absolute' : 'sticky'}
       $height="100%"
       $hasTransition="slow"
       $css={`
         top: 0vh;
+        right: 0;
         transform: translateX(0%);
         flex: 1;
         margin-left: 1rem;
@@ -60,8 +61,9 @@ export const PanelEditor = ({
           top: 0;
           opacity: ${isPanelOpen ? '1' : '0'};
         `}
-        $maxHeight="100%"
+        $maxHeight="99vh"
       >
+        {isMobile && <IconOpenPanelEditor headings={headings} />}
         <Box
           $direction="row"
           $justify="space-between"
@@ -69,6 +71,7 @@ export const PanelEditor = ({
           $position="relative"
           $background={colorsTokens()['primary-400']}
           $margin={{ bottom: 'tiny' }}
+          $radius="4px 4px 0 0"
         >
           <Box
             $background="white"
@@ -78,7 +81,15 @@ export const PanelEditor = ({
             $hasTransition="slow"
             $css={`
                 border-top: 2px solid ${colorsTokens()['primary-600']};
-                ${isPanelTableContentOpen ? 'transform: translateX(0);' : 'transform: translateX(100%);'}
+                border-radius: 0 4px 0 0;
+                ${
+                  isPanelTableContentOpen
+                    ? `
+                      transform: translateX(0);
+                      border-radius: 4px 0 0 0;
+                    `
+                    : `transform: translateX(100%);`
+                }
               `}
           />
           <BoxButton
@@ -134,6 +145,7 @@ export const IconOpenPanelEditor = ({ headings }: IconOpenPanelEditorProps) => {
   const { setIsPanelOpen, isPanelOpen, setIsPanelTableContentOpen } =
     usePanelEditorStore();
   const [hasBeenOpen, setHasBeenOpen] = useState(isPanelOpen);
+  const { isMobile } = useResponsiveStore();
 
   const setClosePanel = () => {
     setHasBeenOpen(true);
@@ -142,12 +154,18 @@ export const IconOpenPanelEditor = ({ headings }: IconOpenPanelEditorProps) => {
 
   // Open the panel if there are more than 1 heading
   useEffect(() => {
-    if (headings?.length && headings.length > 1 && !hasBeenOpen) {
+    if (headings?.length && headings.length > 1 && !hasBeenOpen && !isMobile) {
       setIsPanelTableContentOpen(true);
       setIsPanelOpen(true);
       setHasBeenOpen(true);
     }
-  }, [headings, setIsPanelTableContentOpen, setIsPanelOpen, hasBeenOpen]);
+  }, [
+    headings,
+    setIsPanelTableContentOpen,
+    setIsPanelOpen,
+    hasBeenOpen,
+    isMobile,
+  ]);
 
   // If open from the doc header we set the state as well
   useEffect(() => {
@@ -169,7 +187,7 @@ export const IconOpenPanelEditor = ({ headings }: IconOpenPanelEditorProps) => {
       aria-label={isPanelOpen ? t('Close the panel') : t('Open the panel')}
       $background="transparent"
       $size="h2"
-      $zIndex={1}
+      $zIndex={10}
       $hasTransition="slow"
       $css={`
         cursor: pointer;
