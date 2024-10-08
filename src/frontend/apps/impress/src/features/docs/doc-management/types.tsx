@@ -7,6 +7,7 @@ export interface Access {
   user: User;
   abilities: {
     destroy: boolean;
+    partial_update: boolean;
     retrieve: boolean;
     set_role_to: Role[];
     update: boolean;
@@ -38,6 +39,7 @@ export interface Doc {
   created_at: string;
   updated_at: string;
   abilities: {
+    attachment_upload: true;
     destroy: boolean;
     link_configuration: boolean;
     manage_accesses: boolean;
