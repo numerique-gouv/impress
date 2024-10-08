@@ -18,9 +18,13 @@ import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
 
-const cssEditor = `
+const cssEditor = (readonly: boolean) => `
   &, & > .bn-container, & .ProseMirror {
     height:100%
+  };
+  & .bn-editor {
+    padding-right: 30px;
+    ${readonly && `padding-left: 30px;`}
   };
   & .collaboration-cursor__caret.ProseMirror-widget{
     word-wrap: initial;
@@ -29,6 +33,35 @@ const cssEditor = `
     background-color: gainsboro;
     padding: 2px;
     border-radius: 4px;
+  }
+  @media screen and (width <= 560px) {
+    & .bn-editor {
+      padding-left: 40px;
+      padding-right: 10px;
+      ${readonly && `padding-left: 10px;`}
+    };
+    .bn-side-menu[data-block-type=heading][data-level="1"] {
+        height: 46px;
+    }
+    .bn-side-menu[data-block-type=heading][data-level="2"] {
+      height: 40px;
+    }
+    .bn-side-menu[data-block-type=heading][data-level="3"] {
+      height: 40px;
+    }
+    & .bn-editor h1 {
+      font-size: 1.6rem;
+    }
+    & .bn-editor h2 {
+      font-size: 1.35rem;
+    }
+    & .bn-editor h3 {
+      font-size: 1.2rem;
+    }
+    .bn-block-content[data-is-empty-and-focused][data-content-type="paragraph"] 
+      .bn-inline-content:has(> .ProseMirror-trailingBreak:only-child)::before {
+      font-size: 14px;
+    }
   }
 `;
 
@@ -70,8 +103,9 @@ export const BlockNoteContent = ({
   const isVersion = doc.id !== storeId;
   const { userData } = useAuthStore();
   const { setStore, docsStore } = useDocStore();
-  const canSave = doc.abilities.partial_update && !isVersion;
-  useSaveDoc(doc.id, provider.document, canSave);
+
+  const readOnly = !doc.abilities.partial_update || isVersion;
+  useSaveDoc(doc.id, provider.document, !readOnly);
   const storedEditor = docsStore?.[storeId]?.editor;
   const {
     mutateAsync: createDocAttachment,
@@ -130,7 +164,7 @@ export const BlockNoteContent = ({
   }, [editor, resetHeadings, setHeadings]);
 
   return (
-    <Box $css={cssEditor}>
+    <Box $css={cssEditor(readOnly)}>
       {isErrorAttachment && (
         <Box $margin={{ bottom: 'big' }}>
           <TextErrors
@@ -144,7 +178,7 @@ export const BlockNoteContent = ({
       <BlockNoteView
         editor={editor}
         formattingToolbar={false}
-        editable={doc.abilities.partial_update && !isVersion}
+        editable={!readOnly}
         theme="light"
       >
         <BlockNoteToolbar />

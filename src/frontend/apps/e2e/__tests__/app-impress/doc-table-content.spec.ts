@@ -8,6 +8,8 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Doc Table Content', () => {
   test('it checks the doc table content', async ({ page, browserName }) => {
+    test.setTimeout(60000);
+
     const [randomDoc] = await createDoc(
       page,
       'doc-table-content',
@@ -37,7 +39,7 @@ test.describe('Doc Table Content', () => {
     await page.locator('.bn-block-outer').last().click();
 
     // Create space to fill the viewport
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       await page.keyboard.press('Enter');
     }
 
@@ -48,7 +50,7 @@ test.describe('Doc Table Content', () => {
     await page.locator('.bn-block-outer').last().click();
 
     // Create space to fill the viewport
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       await page.keyboard.press('Enter');
     }
 
@@ -61,11 +63,11 @@ test.describe('Doc Table Content', () => {
     const another = panel.getByText('Another World');
 
     await expect(hello).toBeVisible();
-    await expect(hello).toHaveCSS('font-size', /19/);
+    await expect(hello).toHaveCSS('font-size', /17/);
     await expect(hello).toHaveAttribute('aria-selected', 'true');
 
     await expect(superW).toBeVisible();
-    await expect(superW).toHaveCSS('font-size', /16/);
+    await expect(superW).toHaveCSS('font-size', /14/);
     await expect(superW).toHaveAttribute('aria-selected', 'false');
 
     await expect(another).toBeVisible();

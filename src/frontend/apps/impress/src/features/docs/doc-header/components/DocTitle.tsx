@@ -19,6 +19,7 @@ import {
   useTrans,
   useUpdateDoc,
 } from '@/features/docs/doc-management';
+import { useResponsiveStore } from '@/stores';
 import { isFirefox } from '@/utils/userAgent';
 
 const DocTitleStyle = createGlobalStyle`
@@ -32,9 +33,15 @@ interface DocTitleProps {
 }
 
 export const DocTitle = ({ doc }: DocTitleProps) => {
+  const { isMobile } = useResponsiveStore();
+
   if (!doc.abilities.partial_update) {
     return (
-      <Text as="h2" $align="center" $margin={{ all: 'none', left: 'tiny' }}>
+      <Text
+        as="h2"
+        $margin={{ all: 'none', left: 'tiny' }}
+        $size={isMobile ? 'h4' : 'h2'}
+      >
         {doc.title}
       </Text>
     );
@@ -53,6 +60,7 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
   const { headings } = useHeadingStore();
   const headingText = headings?.[0]?.contentText;
   const debounceRef = useRef<NodeJS.Timeout>();
+  const { isMobile } = useResponsiveStore();
 
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_DOC, KEY_LIST_DOC],
@@ -124,7 +132,6 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
           as="h2"
           $radius="4px"
           $padding={{ horizontal: 'tiny', vertical: '4px' }}
-          $align="center"
           $margin="none"
           contentEditable={isFirefox() ? 'true' : 'plaintext-only'}
           onClick={handleOnClick}
@@ -141,7 +148,7 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
           $css={`
             ${isUntitled && 'font-style: italic;'}
             cursor: text;
-            font-size: 1.5rem;
+            font-size: ${isMobile ? '1.2rem' : '1.5rem'};
             transition: box-shadow 0.5s, border-color 0.5s;
             border: 1px dashed transparent;
             

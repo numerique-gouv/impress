@@ -6,6 +6,7 @@ import { APIError } from '@/api';
 import { Box, Card, InfiniteScroll, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { Access, Doc, currentDocRole } from '@/features/docs/doc-management';
+import { useResponsiveStore } from '@/stores';
 
 import { useDocAccessesInfinite } from '../api';
 
@@ -25,6 +26,7 @@ const MemberListState = ({
   doc,
 }: MemberListStateProps) => {
   const { colorsTokens } = useCunninghamTheme();
+  const { isSmallMobile } = useResponsiveStore();
 
   if (error) {
     return <TextErrors causes={error.cause} />;
@@ -48,7 +50,7 @@ const MemberListState = ({
         key={`${access.id}-${index}`}
         $background={!(index % 2) ? 'white' : colorsTokens()['greyscale-000']}
         $direction="row"
-        $padding="small"
+        $padding={isSmallMobile ? 'tiny' : 'small'}
         $align="center"
         $gap="1rem"
         $radius="4px"

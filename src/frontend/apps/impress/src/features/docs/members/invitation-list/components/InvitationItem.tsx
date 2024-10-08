@@ -11,6 +11,7 @@ import { Box, IconBG, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { Doc, Role } from '@/features/docs/doc-management';
 import { ChooseRole } from '@/features/docs/members/members-add/';
+import { useResponsiveStore } from '@/stores';
 
 import { useDeleteDocInvitation, useUpdateDocInvitation } from '../api';
 import { Invitation } from '../types';
@@ -31,6 +32,7 @@ export const InvitationItem = ({
   const canDelete = invitation.abilities.destroy;
   const canUpdate = invitation.abilities.partial_update;
   const { t } = useTranslation();
+  const { isSmallMobile, screenWidth } = useResponsiveStore();
   const [localRole, setLocalRole] = useState(role);
   const { colorsTokens } = useCunninghamTheme();
   const { toast } = useToastProvider();
@@ -62,8 +64,7 @@ export const InvitationItem = ({
 
   return (
     <Box $width="100%" $gap="0.7rem">
-      <Box $direction="row" $gap="1rem">
-        <IconBG iconName="account_circle" $size="2rem" />
+      <Box $direction="row" $gap="1rem" $wrap="wrap">
         <Box
           $align="center"
           $direction="row"
@@ -71,8 +72,10 @@ export const InvitationItem = ({
           $justify="space-between"
           $width="100%"
           $wrap="wrap"
+          $css={`flex: ${isSmallMobile ? '100%' : '70%'};`}
         >
-          <Box>
+          <IconBG iconName="account_circle" $size="2rem" />
+          <Box $css="flex:1;">
             <Text
               $size="t"
               $background={colorsTokens()['info-600']}
@@ -85,8 +88,15 @@ export const InvitationItem = ({
             </Text>
             <Text $justify="center">{invitation.email}</Text>
           </Box>
-          <Box $direction="row" $gap="1rem" $align="center">
-            <Box $minWidth="13rem">
+          <Box
+            $direction="row"
+            $gap="1rem"
+            $align="center"
+            $justify="space-between"
+            $css="flex:1;"
+            $wrap={screenWidth < 400 ? 'wrap' : 'nowrap'}
+          >
+            <Box $minWidth="13rem" $css={isSmallMobile ? 'flex:1;' : ''}>
               <ChooseRole
                 label={t('Role')}
                 defaultRole={localRole}
@@ -103,25 +113,27 @@ export const InvitationItem = ({
               />
             </Box>
             {doc.abilities.manage_accesses && (
-              <Button
-                color="tertiary-text"
-                icon={
-                  <Text
-                    $isMaterialIcon
-                    $theme={!canDelete ? 'greyscale' : 'primary'}
-                    $variation={!canDelete ? '500' : 'text'}
-                  >
-                    delete
-                  </Text>
-                }
-                disabled={!canDelete}
-                onClick={() =>
-                  removeDocInvitation({
-                    docId: doc.id,
-                    invitationId: invitation.id,
-                  })
-                }
-              />
+              <Box $margin={isSmallMobile ? 'auto' : ''}>
+                <Button
+                  color="tertiary-text"
+                  icon={
+                    <Text
+                      $isMaterialIcon
+                      $theme={!canDelete ? 'greyscale' : 'primary'}
+                      $variation={!canDelete ? '500' : 'text'}
+                    >
+                      delete
+                    </Text>
+                  }
+                  disabled={!canDelete}
+                  onClick={() =>
+                    removeDocInvitation({
+                      docId: doc.id,
+                      invitationId: invitation.id,
+                    })
+                  }
+                />
+              </Box>
             )}
           </Box>
         </Box>

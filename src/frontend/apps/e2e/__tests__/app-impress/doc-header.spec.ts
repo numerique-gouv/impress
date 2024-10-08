@@ -385,3 +385,35 @@ test.describe('Doc Header', () => {
     ).toBeHidden();
   });
 });
+
+test.describe('Documents Header mobile', () => {
+  test.use({ viewport: { width: 500, height: 1200 } });
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  test('it checks the close button on Share modal', async ({ page }) => {
+    await mockedDocument(page, {
+      abilities: {
+        destroy: true, // Means owner
+        link_configuration: true,
+        versions_destroy: true,
+        versions_list: true,
+        versions_retrieve: true,
+        manage_accesses: true,
+        update: true,
+        partial_update: true,
+        retrieve: true,
+      },
+    });
+
+    await goToGridDoc(page);
+
+    await page.getByRole('button', { name: 'Share' }).click();
+
+    await expect(page.getByLabel('Share modal')).toBeVisible();
+    await page.getByRole('button', { name: 'close' }).click();
+    await expect(page.getByLabel('Share modal')).toBeHidden();
+  });
+});

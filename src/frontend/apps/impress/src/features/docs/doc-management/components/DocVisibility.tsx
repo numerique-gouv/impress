@@ -43,48 +43,57 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
       $direction="row"
       $align="center"
       $justify="space-between"
+      $gap="1rem"
     >
-      <Box $direction="row" $gap="1rem" $align="center">
-        <IconBG iconName="public" $margin="none" />
-        <Switch
-          label={t(docPublic ? 'Doc public' : 'Doc private')}
-          defaultChecked={docPublic}
-          onChange={() => {
-            api.mutate({
-              id: doc.id,
-              link_reach: docPublic ? LinkReach.RESTRICTED : LinkReach.PUBLIC,
-              link_role: 'reader',
-            });
-            setDocPublic(!docPublic);
-          }}
-          disabled={!doc.abilities.link_configuration}
-          text={
-            docPublic
-              ? t('Anyone on the internet with the link can view')
-              : t('Only for people with access')
-          }
-        />
-      </Box>
-      <Button
-        onClick={() => {
-          navigator.clipboard
-            .writeText(window.location.href)
-            .then(() => {
-              toast(t('Link Copied !'), VariantType.SUCCESS, {
-                duration: 3000,
-              });
-            })
-            .catch(() => {
-              toast(t('Failed to copy link'), VariantType.ERROR, {
-                duration: 3000,
-              });
-            });
-        }}
-        color="primary"
-        icon={<span className="material-icons">copy</span>}
+      <IconBG iconName="public" $margin="none" />
+      <Box
+        $width="100%"
+        $wrap="wrap"
+        $gap="1rem"
+        $justify="space-between"
+        $direction="row"
       >
-        {t('Copy link')}
-      </Button>
+        <Box $direction="row" $gap="1rem" $align="center">
+          <Switch
+            label={t(docPublic ? 'Doc public' : 'Doc private')}
+            defaultChecked={docPublic}
+            onChange={() => {
+              api.mutate({
+                id: doc.id,
+                link_reach: docPublic ? LinkReach.RESTRICTED : LinkReach.PUBLIC,
+                link_role: 'reader',
+              });
+              setDocPublic(!docPublic);
+            }}
+            disabled={!doc.abilities.link_configuration}
+            text={
+              docPublic
+                ? t('Anyone on the internet with the link can view')
+                : t('Only for people with access')
+            }
+          />
+        </Box>
+        <Button
+          onClick={() => {
+            navigator.clipboard
+              .writeText(window.location.href)
+              .then(() => {
+                toast(t('Link Copied !'), VariantType.SUCCESS, {
+                  duration: 3000,
+                });
+              })
+              .catch(() => {
+                toast(t('Failed to copy link'), VariantType.ERROR, {
+                  duration: 3000,
+                });
+              });
+          }}
+          color="primary"
+          icon={<span className="material-icons">copy</span>}
+        >
+          {t('Copy link')}
+        </Button>
+      </Box>
     </Card>
   );
 };

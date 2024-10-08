@@ -9,6 +9,7 @@ import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc } from '@/features/docs/doc-management';
 import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
+import { useResponsiveStore } from '@/stores';
 
 import { useHeadingStore } from '../stores';
 
@@ -25,6 +26,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   } = useRouter();
   const { t } = useTranslation();
   const { headings } = useHeadingStore();
+  const { isMobile } = useResponsiveStore();
 
   const isVersion = versionId && typeof versionId === 'string';
 
@@ -51,11 +53,12 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
         $background={colorsTokens()['primary-bg']}
         $height="100%"
         $direction="row"
-        $margin={{ all: 'small', top: 'none' }}
+        $margin={{ all: isMobile ? 'tiny' : 'small', top: 'none' }}
         $css="overflow-x: clip;"
+        $position="relative"
       >
         <Card
-          $padding="big"
+          $padding={isMobile ? 'small' : 'big'}
           $css="flex:1;"
           $overflow="auto"
           $position="relative"
@@ -65,7 +68,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
           ) : (
             <BlockNoteEditor doc={doc} />
           )}
-          <IconOpenPanelEditor headings={headings} />
+          {!isMobile && <IconOpenPanelEditor headings={headings} />}
         </Card>
         <PanelEditor doc={doc} headings={headings} />
       </Box>
