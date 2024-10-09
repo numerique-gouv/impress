@@ -1,8 +1,18 @@
+import { PropsWithChildren } from 'react';
+
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { Footer } from '@/features/footer';
 import { Header } from '@/features/header';
 
-export function MainLayout({ children }: { children: React.ReactNode }) {
+interface MainLayoutProps {
+  withoutFooter?: boolean;
+}
+
+export function MainLayout({
+  children,
+  withoutFooter,
+}: PropsWithChildren<MainLayoutProps>) {
   const { colorsTokens } = useCunninghamTheme();
 
   return (
@@ -20,6 +30,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </Box>
         </Box>
       </Box>
+      {!withoutFooter && <Footer />}
     </Box>
   );
 }

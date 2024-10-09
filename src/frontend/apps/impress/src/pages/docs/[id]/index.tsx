@@ -21,7 +21,7 @@ export function DocLayout() {
   }
 
   return (
-    <MainLayout>
+    <MainLayout withoutFooter>
       <DocPage id={id} />
     </MainLayout>
   );
