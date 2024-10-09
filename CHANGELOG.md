@@ -9,11 +9,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+
+## [1.5.0] - 2024-10-09
+
 ## Added
 
 - ✨(backend) add name fields to the user synchronized with OIDC #301
 - ✨(ci) add security scan #291
-- ✨(frontend) Activate versions feature #240
+- ♻️(frontend) Add versions #277
 - ✨(frontend) one-click document creation #275
 - ✨(frontend) edit title inline #275
 - 📱(frontend) mobile responsive #304
@@ -178,7 +181,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.4.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.5.0...main
+[1.5.0]: https://github.com/numerique-gouv/impress/releases/v1.5.0
 [1.4.0]: https://github.com/numerique-gouv/impress/releases/v1.4.0
 [1.3.0]: https://github.com/numerique-gouv/impress/releases/v1.3.0
 [1.2.1]: https://github.com/numerique-gouv/impress/releases/v1.2.1
