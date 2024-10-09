@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, Text } from '@/components';
+import { useAuthStore } from '@/core';
 import { usePanelEditorStore } from '@/features/docs/doc-editor/';
 import {
   Doc,
@@ -29,6 +30,7 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
   const { setIsPanelOpen, setIsPanelTableContentOpen } = usePanelEditorStore();
   const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);
   const { isSmallMobile } = useResponsiveStore();
+  const { authenticated } = useAuthStore();
 
   return (
     <Box
@@ -52,14 +54,16 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
         </Box>
       )}
       <Box $direction="row" $margin={{ left: 'auto' }} $gap="1rem">
-        <Button
-          onClick={() => {
-            setIsModalShareOpen(true);
-          }}
-          size={isSmallMobile ? 'small' : 'medium'}
-        >
-          {t('Share')}
-        </Button>
+        {authenticated && (
+          <Button
+            onClick={() => {
+              setIsModalShareOpen(true);
+            }}
+            size={isSmallMobile ? 'small' : 'medium'}
+          >
+            {t('Share')}
+          </Button>
+        )}
         <DropButton
           button={
             <IconOptions

@@ -94,6 +94,7 @@ test.describe('Doc Visibility: Not loggued', () => {
     await page.goto(urlDoc);
 
     await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Share' })).toBeHidden();
   });
 
   test('A private doc redirect to the OIDC when not authentified.', async ({
