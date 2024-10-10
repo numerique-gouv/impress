@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Fixed
+
+- 🐛(db) fix users duplicate #316
+
 
 ## [1.5.0] - 2024-10-09
 
