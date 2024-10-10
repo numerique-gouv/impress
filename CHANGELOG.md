@@ -9,6 +9,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.5.1] - 2024-10-10
+
 ## Fixed
 
 - 🐛(db) fix users duplicate #316
@@ -186,7 +188,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.5.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.5.1...main
+[1.5.1]: https://github.com/numerique-gouv/impress/releases/v1.5.1
 [1.5.0]: https://github.com/numerique-gouv/impress/releases/v1.5.0
 [1.4.0]: https://github.com/numerique-gouv/impress/releases/v1.4.0
 [1.3.0]: https://github.com/numerique-gouv/impress/releases/v1.3.0
