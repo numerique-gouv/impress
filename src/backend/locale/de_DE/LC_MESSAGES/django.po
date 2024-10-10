@@ -5,29 +5,29 @@ msgstr ""
 "POT-Creation-Date: 2024-09-25 10:15+0000\n"
 "PO-Revision-Date: 2024-09-25 10:21\n"
 "Last-Translator: \n"
-"Language-Team: French\n"
-"Language: fr_FR\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Crowdin-Project: lasuite-people\n"
 "X-Crowdin-Project-ID: 637934\n"
-"X-Crowdin-Language: fr\n"
+"X-Crowdin-Language: de\n"
 "X-Crowdin-File: backend-impress.pot\n"
 "X-Crowdin-File-ID: 8\n"
 
 #: core/admin.py:32
 msgid "Personal info"
-msgstr "Infos Personnelles"
+msgstr "Persönliche Angaben"
 
 #: core/admin.py:34
 msgid "Permissions"
-msgstr "Permissions"
+msgstr "Berechtigungen"
 
 #: core/admin.py:46
 msgid "Important dates"
-msgstr "Dates importantes"
+msgstr "Wichtige Termine"
 
 #: core/api/serializers.py:253
 msgid "Body"
@@ -55,31 +55,31 @@ msgstr ""
 
 #: core/models.py:62 core/models.py:69
 msgid "Reader"
-msgstr "Lecteur"
+msgstr "Leser"
 
 #: core/models.py:63 core/models.py:70
 msgid "Editor"
-msgstr "Éditeur"
+msgstr "Bearbeiter"
 
 #: core/models.py:71
 msgid "Administrator"
-msgstr "Administrateur"
+msgstr "Administrator"
 
 #: core/models.py:72
 msgid "Owner"
-msgstr "Propriétaire"
+msgstr "Eigentümer"
 
 #: core/models.py:80
 msgid "Restricted"
-msgstr "Restreint"
+msgstr "Eingeschränkt"
 
 #: core/models.py:84
 msgid "Authenticated"
-msgstr "Authentifié"
+msgstr "Authentifiziert"
 
 #: core/models.py:86
 msgid "Public"
-msgstr "Public"
+msgstr "Öffentlich"
 
 #: core/models.py:98
 msgid "id"
@@ -188,7 +188,7 @@ msgstr ""
 #: core/models.py:537
 #, python-format
 msgid "%(username)s shared a document with you: %(document)s"
-msgstr "%(username)s a partagé un document avec vous: %(document)s"
+msgstr "%(username)s hat ein Dokument mit Ihnen geteilt: %(document)s"
 
 #: core/models.py:580
 msgid "Document/user link trace"
@@ -293,48 +293,48 @@ msgstr ""
 #: core/templates/mail/text/invitation.txt:6
 #, python-format
 msgid " %(username)s shared a document with you ! "
-msgstr " %(username)s a partagé un document avec vous ! "
+msgstr " %(username)s hat ein Dokument mit Ihnen geteilt! "
 
 #: core/templates/mail/html/invitation.html:197
 #: core/templates/mail/text/invitation.txt:8
 #, python-format
 msgid " %(username)s invited you as an %(role)s on the following document : "
-msgstr " %(username)s vous a invité en tant que %(role)s sur le document suivant : "
+msgstr " %(username)s hat Sie als %(role)s zum folgenden Dokument eingeladen: "
 
 #: core/templates/mail/html/invitation.html:206
 #: core/templates/mail/html/invitation2.html:211
 #: core/templates/mail/text/invitation.txt:10
 #: core/templates/mail/text/invitation2.txt:11
 msgid "Open"
-msgstr "Ouvrir"
+msgstr "Öffnen"
 
 #: core/templates/mail/html/invitation.html:223
 #: core/templates/mail/text/invitation.txt:14
 msgid " Docs, your new essential tool for organizing, sharing and collaborate on your documents as a team. "
-msgstr " Docs, votre nouvel outil incontournable pour organiser, partager et collaborer sur vos documents en équipe. "
+msgstr " Docs, Ihr neues unverzichtbares Werkzeug zum Organisieren, Teilen und Zusammenarbeiten an Dokumenten im Team. "
 
 #: core/templates/mail/html/invitation.html:230
 #: core/templates/mail/html/invitation2.html:235
 #: core/templates/mail/text/invitation.txt:16
 #: core/templates/mail/text/invitation2.txt:17
 msgid "Brought to you by La Suite Numérique"
-msgstr "Proposé par La Suite Numérique"
+msgstr "Bereitgestellt von La Suite Numérique"
 
 #: core/templates/mail/html/invitation2.html:190
 #, python-format
 msgid "%(username)s shared a document with you"
-msgstr "%(username)s a partagé un document avec vous"
+msgstr "%(username)s hat ein Dokument mit Ihnen geteilt"
 
 #: core/templates/mail/html/invitation2.html:197
 #: core/templates/mail/text/invitation2.txt:8
 #, python-format
 msgid "%(username)s invited you as an %(role)s on the following document :"
-msgstr "%(username)s vous a invité en tant que %(role)s sur le document suivant :"
+msgstr "%(username)s hat Sie als %(role)s zum folgenden Dokument eingeladen:"
 
 #: core/templates/mail/html/invitation2.html:228
 #: core/templates/mail/text/invitation2.txt:15
 msgid "Docs, your new essential tool for organizing, sharing and collaborate on your document as a team."
-msgstr "Docs, votre nouvel outil essentiel pour organiser, partager et collaborer sur votre document en équipe."
+msgstr "Docs, Ihr neues unverzichtbares Werkzeug zum Organisieren, Teilen und gemeinsamen Arbeiten an Dokumenten im Team."
 
 #: impress/settings.py:176
 msgid "German"

@@ -337,10 +337,14 @@ msgid "Docs, your new essential tool for organizing, sharing and collaborate on 
 msgstr ""
 
 #: impress/settings.py:176
-msgid "English"
+msgid "German"
 msgstr ""
 
 #: impress/settings.py:177
+msgid "English"
+msgstr ""
+
+#: impress/settings.py:178
 msgid "French"
 msgstr ""
 
