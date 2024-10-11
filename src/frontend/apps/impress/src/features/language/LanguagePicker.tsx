@@ -1,13 +1,10 @@
 import { Select } from '@openfun/cunningham-react';
-import Image from 'next/image';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { Box, Text } from '@/components/';
 import { LANGUAGES_ALLOWED } from '@/i18n/conf';
-
-import IconLanguage from './assets/icon-language.svg?url';
 
 const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
   flex-shrink: 0;
@@ -49,12 +46,16 @@ export const LanguagePicker = () => {
           $gap="0.7rem"
           $align="center"
         >
-          <Image priority src={IconLanguage} alt={t('Language Icon')} />
-          <Text $theme="primary">{LANGUAGES_ALLOWED[lang]}</Text>
+          <Text $isMaterialIcon $size="1rem" $theme="primary" $variation="600">
+            translate
+          </Text>
+          <Text $theme="primary" $variation="600">
+            {LANGUAGES_ALLOWED[lang]}
+          </Text>
         </Box>
       ),
     }));
-  }, [languages, t]);
+  }, [languages]);
 
   return (
     <SelectStyled

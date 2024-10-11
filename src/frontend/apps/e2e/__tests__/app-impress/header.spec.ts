@@ -26,7 +26,7 @@ test.describe('Header', () => {
       }),
     ).toBeVisible();
 
-    await expect(header.getByAltText('Language Icon')).toBeVisible();
+    await expect(header.getByText('English')).toBeVisible();
 
     await expect(
       header.getByRole('button', {
@@ -87,7 +87,7 @@ test.describe('Header mobile', () => {
       }),
     ).toBeHidden();
 
-    await expect(page.getByAltText('Language Icon')).toBeHidden();
+    await expect(page.getByText('English')).toBeHidden();
 
     await header.getByLabel('Open the header menu').click();
 
@@ -97,7 +97,7 @@ test.describe('Header mobile', () => {
       }),
     ).toBeVisible();
 
-    await expect(page.getByAltText('Language Icon')).toBeVisible();
+    await expect(page.getByText('English')).toBeVisible();
   });
 });
 

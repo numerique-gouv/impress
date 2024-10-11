@@ -283,6 +283,7 @@
   );
   --c--components--button--disabled--color: white;
   --c--components--button--disabled--background--color: #b3cef0;
+  --c--components--la-gauffre--activated: false;
 }
 
 .cunningham-theme--dark {
@@ -451,6 +452,9 @@
   --c--components--button--tertiary-text--color-hover: var(
     --c--theme--colors--primary-text
   );
+  --c--components--button--tertiary-text--color: var(
+    --c--theme--colors--primary-600
+  );
   --c--components--datagrid--header--color: var(
     --c--theme--colors--primary-text
   );
@@ -460,6 +464,9 @@
   --c--components--datagrid--pagination--background-color: transparent;
   --c--components--datagrid--pagination--background-color-active: var(
     --c--theme--colors--primary-300
+  );
+  --c--components--datagrid--pagination--border-color: var(
+    --c--theme--colors--primary-400
   );
   --c--components--forms-checkbox--border-radius: 0;
   --c--components--forms-checkbox--color: var(--c--theme--colors--primary-text);
@@ -504,6 +511,7 @@
     --c--theme--colors--primary-text
   );
   --c--components--forms-textarea--border-radius: 0;
+  --c--components--la-gauffre--activated: true;
 }
 
 .clr-secondary-text {

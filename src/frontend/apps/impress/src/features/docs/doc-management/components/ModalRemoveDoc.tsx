@@ -14,7 +14,6 @@ import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
 
 import { useRemoveDoc } from '../api/useRemoveDoc';
 import IconDoc from '../assets/icon-doc.svg';
-import IconRemove from '../assets/icon-trash.svg';
 import { Doc } from '../types';
 
 interface ModalRemoveDocProps {
@@ -73,7 +72,9 @@ export const ModalRemoveDoc = ({ onClose, doc }: ModalRemoveDocProps) => {
       size={ModalSize.MEDIUM}
       title={
         <Box $align="center" $gap="1rem">
-          <IconRemove width={48} color={colorsTokens()['primary-text']} />
+          <Text $isMaterialIcon $size="48px" $theme="primary" $variation="600">
+            delete_forever
+          </Text>
           <Text as="h2" $size="h3" $margin="none">
             {t('Deleting the document "{{title}}"', { title: doc.title })}
           </Text>

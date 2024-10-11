@@ -2,7 +2,7 @@ import { Button } from '@openfun/cunningham-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, DropButton, IconOptions, Text } from '@/components';
+import { Box, DropButton, IconOptions } from '@/components';
 import { useAuthStore } from '@/core';
 import { usePanelEditorStore } from '@/features/docs/doc-editor/';
 import {
@@ -86,7 +86,7 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
                 icon={<span className="material-icons">history</span>}
                 size="small"
               >
-                <Text $theme="primary">{t('Version history')}</Text>
+                {t('Version history')}
               </Button>
             )}
             <Button
@@ -99,7 +99,7 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
               icon={<span className="material-icons">summarize</span>}
               size="small"
             >
-              <Text $theme="primary">{t('Table of contents')}</Text>
+              {t('Table of contents')}
             </Button>
             <Button
               onClick={() => {
@@ -110,7 +110,7 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
               icon={<span className="material-icons">file_download</span>}
               size="small"
             >
-              <Text $theme="primary">{t('Export')}</Text>
+              {t('Export')}
             </Button>
             {doc.abilities.destroy && (
               <Button
@@ -122,7 +122,7 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
                 icon={<span className="material-icons">delete</span>}
                 size="small"
               >
-                <Text $theme="primary">{t('Delete document')}</Text>
+                {t('Delete document')}
               </Button>
             )}
           </Box>

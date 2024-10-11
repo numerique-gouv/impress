@@ -102,6 +102,7 @@ export const PanelEditor = ({
               $weight="bold"
               $size="m"
               $theme="primary"
+              $variation="600"
               $padding={{ vertical: 'small', horizontal: 'small' }}
             >
               {t('Table of content')}
@@ -118,6 +119,7 @@ export const PanelEditor = ({
                 $weight="bold"
                 $size="m"
                 $theme="primary"
+                $variation="600"
                 $padding={{ vertical: 'small', horizontal: 'small' }}
               >
                 {t('Versions')}

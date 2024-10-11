@@ -116,11 +116,7 @@ export const MemberItem = ({
                 <Button
                   color="tertiary-text"
                   icon={
-                    <Text
-                      $isMaterialIcon
-                      $theme={isNotAllowed ? 'greyscale' : 'primary'}
-                      $variation={isNotAllowed ? '500' : 'text'}
-                    >
+                    <Text $isMaterialIcon $color="inherit">
                       delete
                     </Text>
                   }

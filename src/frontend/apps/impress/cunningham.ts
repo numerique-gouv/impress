@@ -189,6 +189,9 @@ const config = {
             },
           },
         },
+        'la-gauffre': {
+          activated: false,
+        },
       },
     },
     dsfr: {
@@ -321,6 +324,7 @@ const config = {
               'color-hover': 'var(--c--theme--colors--primary-100)',
             },
             'color-hover': 'var(--c--theme--colors--primary-text)',
+            color: 'var(--c--theme--colors--primary-600)',
           },
         },
         datagrid: {
@@ -335,6 +339,7 @@ const config = {
           pagination: {
             'background-color': 'transparent',
             'background-color-active': 'var(--c--theme--colors--primary-300)',
+            'border-color': 'var(--c--theme--colors--primary-400)',
           },
         },
         'forms-checkbox': {
@@ -383,6 +388,9 @@ const config = {
         },
         'forms-textarea': {
           'border-radius': '0',
+        },
+        'la-gauffre': {
+          activated: true,
         },
       },
     },

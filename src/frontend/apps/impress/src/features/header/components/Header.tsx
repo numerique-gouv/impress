@@ -62,9 +62,10 @@ export const Header = () => {
               <Text
                 $margin="none"
                 as="h2"
-                $theme="primary"
+                $color="#000091"
                 $zIndex={1}
                 $size="1.30rem"
+                $css="font-family: 'Marianne'"
               >
                 {t('Docs')}
               </Text>

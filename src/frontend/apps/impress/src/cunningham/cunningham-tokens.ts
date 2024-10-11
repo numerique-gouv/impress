@@ -276,6 +276,7 @@ export const tokens = {
           },
           disabled: { color: 'white', background: { color: '#b3cef0' } },
         },
+        'la-gauffre': { activated: false },
       },
     },
     dark: {
@@ -450,6 +451,7 @@ export const tokens = {
               'color-hover': 'var(--c--theme--colors--primary-100)',
             },
             'color-hover': 'var(--c--theme--colors--primary-text)',
+            color: 'var(--c--theme--colors--primary-600)',
           },
         },
         datagrid: {
@@ -464,6 +466,7 @@ export const tokens = {
           pagination: {
             'background-color': 'transparent',
             'background-color-active': 'var(--c--theme--colors--primary-300)',
+            'border-color': 'var(--c--theme--colors--primary-400)',
           },
         },
         'forms-checkbox': {
@@ -503,6 +506,7 @@ export const tokens = {
           'accent-color': 'var(--c--theme--colors--primary-text)',
         },
         'forms-textarea': { 'border-radius': '0' },
+        'la-gauffre': { activated: true },
       },
     },
   },

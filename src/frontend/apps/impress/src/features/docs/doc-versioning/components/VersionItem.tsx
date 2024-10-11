@@ -35,13 +35,13 @@ export const VersionItem = ({
         as="li"
         $background={isActive ? colorsTokens()['primary-300'] : 'transparent'}
         $css={`
-        border-left: 4px solid transparent;
-        border-bottom: 1px solid ${colorsTokens()['primary-100']};
-        &:hover{
-          border-left: 4px solid ${colorsTokens()['primary-400']};
-          background: ${colorsTokens()['primary-300']};
-        }
-      `}
+          border-left: 4px solid transparent;
+          border-bottom: 1px solid ${colorsTokens()['primary-100']};
+          &:hover{
+            border-left: 4px solid ${colorsTokens()['primary-400']};
+            background: ${colorsTokens()['primary-300']};
+          }
+        `}
         $hasTransition
         $minWidth="13rem"
       >
@@ -54,10 +54,15 @@ export const VersionItem = ({
             $width="100%"
           >
             <Box $direction="row" $gap="0.5rem" $align="center">
-              <Text $isMaterialIcon $size="24px" $theme="primary">
+              <Text
+                $isMaterialIcon
+                $size="24px"
+                $theme="primary"
+                $variation="600"
+              >
                 description
               </Text>
-              <Text $weight="bold" $theme="primary" $size="m">
+              <Text $weight="bold" $theme="primary" $size="m" $variation="600">
                 {text}
               </Text>
             </Box>
@@ -81,7 +86,7 @@ export const VersionItem = ({
                     icon={<span className="material-icons">save</span>}
                     size="small"
                   >
-                    <Text $theme="primary">{t('Restore the version')}</Text>
+                    {t('Restore the version')}
                   </Button>
                 </Box>
               </DropButton>
