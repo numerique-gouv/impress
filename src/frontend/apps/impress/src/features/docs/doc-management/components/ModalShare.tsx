@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 import { createGlobalStyle } from 'styled-components';
 
-import { Box, Card, SideModal, Text } from '@/components';
+import { Box, Card, IconBG, SideModal, Text } from '@/components';
 import { InvitationList } from '@/features/docs/members/invitation-list';
 import { AddMembers } from '@/features/docs/members/members-add';
 import { MemberList } from '@/features/docs/members/members-list';
@@ -62,9 +62,12 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
               $padding="tiny"
               $gap="1rem"
             >
-              <Text $isMaterialIcon $size="48px" $theme="primary">
-                share
-              </Text>
+              <IconBG
+                $isMaterialIcon
+                $size="48px"
+                iconName="share"
+                $margin="none"
+              />
               <Box $align="flex-start">
                 <Text as="h3" $size="26px" $margin="none">
                   {t('Share')}

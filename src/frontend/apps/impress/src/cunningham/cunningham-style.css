@@ -255,6 +255,7 @@ input:-webkit-autofill:focus {
   gap: 3px;
   border-radius: 4px;
   background: var(--c--components--datagrid--pagination--background-color);
+  border-color: var(--c--components--datagrid--pagination--border-color);
 }
 
 .c__pagination__list .c__button--tertiary-text.c__button--active {
@@ -452,6 +453,7 @@ input:-webkit-autofill:focus {
 
 .c__button--tertiary-text {
   border: none;
+  color: var(--c--components--button--tertiary-text--color);
 }
 
 .c__button--tertiary-text:hover,

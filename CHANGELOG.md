@@ -9,6 +9,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Changed
+
+♻️(frontend) More multi theme friendly #325
+
+
 ## [1.5.1] - 2024-10-10
 
 ## Fixed

@@ -13,6 +13,7 @@ export const IconBG = ({ iconName, ...textProps }: IconBGProps) => {
       $isMaterialIcon
       $size="36px"
       $theme="primary"
+      $variation="600"
       $background={colorsTokens()['primary-bg']}
       $css={`
         border: 1px solid ${colorsTokens()['primary-200']}; 
