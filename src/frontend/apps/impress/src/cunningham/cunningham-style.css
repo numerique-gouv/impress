@@ -4,6 +4,7 @@
 @import url('./cunningham-tokens.css');
 @import url('./cunningham-custom-tokens.css');
 @import url('../assets/fonts/Marianne/Marianne-font.css');
+@import url('../assets/fonts/OpenSans/OpenSans-font.css');
 
 .c__input,
 .c__field,
