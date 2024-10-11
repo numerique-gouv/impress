@@ -23,13 +23,15 @@ and this project adheres to
 
 - 🐛(frontend) invalidate queries after removing user #336
 
+## Fixed
+
+- 🐛(backend) Fix dysfunctional permissions on document create #329
 
 ## [1.5.1] - 2024-10-10
 
 ## Fixed
 
 - 🐛(db) fix users duplicate #316
-
 
 ## [1.5.0] - 2024-10-09
 

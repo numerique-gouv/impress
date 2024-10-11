@@ -66,14 +66,14 @@ def test_api_documents_update_authenticated_unrelated_forbidden(reach, role):
     Authenticated users should not be allowed to update a document to which
     they are not related if the link configuration does not allow it.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
 
     document = factories.DocumentFactory(link_reach=reach, link_role=role)
-    old_document_values = serializers.DocumentSerializer(instance=document).data
 
+    old_document_values = serializers.DocumentSerializer(instance=document).data
     new_document_values = serializers.DocumentSerializer(
         instance=factories.DocumentFactory()
     ).data
@@ -111,14 +111,14 @@ def test_api_documents_update_anonymous_or_authenticated_unrelated(
     client = APIClient()
 
     if is_authenticated:
-        user = factories.UserFactory()
+        user = factories.UserFactory(with_owned_document=True)
         client.force_login(user)
     else:
         user = AnonymousUser()
 
     document = factories.DocumentFactory(link_reach=reach, link_role=role)
-    old_document_values = serializers.DocumentSerializer(instance=document).data
 
+    old_document_values = serializers.DocumentSerializer(instance=document).data
     new_document_values = serializers.DocumentSerializer(
         instance=factories.DocumentFactory()
     ).data
@@ -146,7 +146,7 @@ def test_api_documents_update_authenticated_reader(via, mock_user_teams):
     Users who are reader of a document but not administrators should
     not be allowed to update it.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -187,7 +187,7 @@ def test_api_documents_update_authenticated_editor_administrator_or_owner(
     via, role, mock_user_teams
 ):
     """A user who is editor, administrator or owner of a document should be allowed to update it."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -227,7 +227,7 @@ def test_api_documents_update_authenticated_editor_administrator_or_owner(
 @pytest.mark.parametrize("via", VIA)
 def test_api_documents_update_authenticated_owners(via, mock_user_teams):
     """Administrators of a document should be allowed to update it."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -269,7 +269,7 @@ def test_api_documents_update_administrator_or_owner_of_another(via, mock_user_t
     Being administrator or owner of a document should not grant authorization to update
     another document.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)

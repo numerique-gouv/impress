@@ -149,7 +149,7 @@ def test_api_document_accesses_retrieve_authenticated_unrelated():
     Authenticated users should not be allowed to retrieve a document access for
     a document to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -246,7 +246,7 @@ def test_api_document_accesses_update_authenticated_unrelated():
     Authenticated users should not be allowed to update a document access for a document to which
     they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -279,7 +279,7 @@ def test_api_document_accesses_update_authenticated_reader_or_editor(
     via, role, mock_user_teams
 ):
     """Readers or editors of a document should not be allowed to update its accesses."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -321,7 +321,7 @@ def test_api_document_accesses_update_administrator_except_owner(via, mock_user_
     A user who is a direct administrator in a document should be allowed to update a user
     access for this document, as long as they don't try to set the role to owner.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -378,7 +378,7 @@ def test_api_document_accesses_update_administrator_from_owner(via, mock_user_te
     A user who is an administrator in a document, should not be allowed to update
     the user access of an "owner" for this document.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -425,7 +425,7 @@ def test_api_document_accesses_update_administrator_to_owner(via, mock_user_team
     A user who is an administrator in a document, should not be allowed to update
     the user access of another user to grant document ownership.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -479,7 +479,7 @@ def test_api_document_accesses_update_owner(via, mock_user_teams):
     A user who is an owner in a document should be allowed to update
     a user access for this document whatever the role.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -535,7 +535,7 @@ def test_api_document_accesses_update_owner_self(via, mock_user_teams):
     A user who is owner of a document should be allowed to update
     their own user access provided there are other owners in the document.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -605,7 +605,7 @@ def test_api_document_accesses_delete_authenticated():
     Authenticated users should not be allowed to delete a document access for a
     document to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -617,7 +617,7 @@ def test_api_document_accesses_delete_authenticated():
     )
 
     assert response.status_code == 403
-    assert models.DocumentAccess.objects.count() == 1
+    assert models.DocumentAccess.objects.count() == 2
 
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
@@ -627,7 +627,7 @@ def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_team
     Authenticated users should not be allowed to delete a document access for a
     document in which they are a simple reader or editor.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -643,7 +643,7 @@ def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_team
 
     access = factories.UserDocumentAccessFactory(document=document)
 
-    assert models.DocumentAccess.objects.count() == 2
+    assert models.DocumentAccess.objects.count() == 3
     assert models.DocumentAccess.objects.filter(user=access.user).exists()
 
     response = client.delete(
@@ -651,7 +651,7 @@ def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_team
     )
 
     assert response.status_code == 403
-    assert models.DocumentAccess.objects.count() == 2
+    assert models.DocumentAccess.objects.count() == 3
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -699,7 +699,7 @@ def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_tea
     Users who are administrators in a document should not be allowed to delete an ownership
     access from the document.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -717,7 +717,7 @@ def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_tea
 
     access = factories.UserDocumentAccessFactory(document=document, role="owner")
 
-    assert models.DocumentAccess.objects.count() == 2
+    assert models.DocumentAccess.objects.count() == 3
     assert models.DocumentAccess.objects.filter(user=access.user).exists()
 
     response = client.delete(
@@ -725,7 +725,7 @@ def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_tea
     )
 
     assert response.status_code == 403
-    assert models.DocumentAccess.objects.count() == 2
+    assert models.DocumentAccess.objects.count() == 3
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -766,7 +766,7 @@ def test_api_document_accesses_delete_owners_last_owner(via, mock_user_teams):
     """
     It should not be possible to delete the last owner access from a document
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -783,10 +783,10 @@ def test_api_document_accesses_delete_owners_last_owner(via, mock_user_teams):
             document=document, team="lasuite", role="owner"
         )
 
-    assert models.DocumentAccess.objects.count() == 1
+    assert models.DocumentAccess.objects.count() == 2
     response = client.delete(
         f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
     )
 
     assert response.status_code == 403
-    assert models.DocumentAccess.objects.count() == 1
+    assert models.DocumentAccess.objects.count() == 2

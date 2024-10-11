@@ -30,7 +30,7 @@ def test_api_documents_delete_authenticated_unrelated(reach, role):
     Authenticated users should not be allowed to delete a document to which
     they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -42,7 +42,7 @@ def test_api_documents_delete_authenticated_unrelated(reach, role):
     )
 
     assert response.status_code == 403
-    assert models.Document.objects.count() == 1
+    assert models.Document.objects.count() == 2
 
 
 @pytest.mark.parametrize("role", ["reader", "editor", "administrator"])
@@ -52,7 +52,7 @@ def test_api_documents_delete_authenticated_not_owner(via, role, mock_user_teams
     Authenticated users should not be allowed to delete a document for which they are
     only a reader, editor or administrator.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -74,7 +74,7 @@ def test_api_documents_delete_authenticated_not_owner(via, role, mock_user_teams
     assert response.json() == {
         "detail": "You do not have permission to perform this action."
     }
-    assert models.Document.objects.count() == 1
+    assert models.Document.objects.count() == 2
 
 
 @pytest.mark.parametrize("via", VIA)

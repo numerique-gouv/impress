@@ -79,7 +79,7 @@ def test_api_documents_attachment_upload_authenticated_forbidden(reach, role):
     Users who are not related to a document can't upload attachments if the
     link reach and role don't allow it.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -134,7 +134,7 @@ def test_api_documents_attachment_upload_reader(via, mock_user_teams):
     """
     Users who are simple readers on a document should not be allowed to upload an attachment.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)

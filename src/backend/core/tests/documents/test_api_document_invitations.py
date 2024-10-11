@@ -601,7 +601,7 @@ def test_api_document_invitations__update__forbidden__not_authenticated(
     """
     Update of invitations is currently forbidden.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
     invitation = factories.InvitationFactory()
     if via == USER:
         factories.UserDocumentAccessFactory(
@@ -641,7 +641,7 @@ def test_api_document_invitations__delete__anonymous():
 
 def test_api_document_invitations__delete__authenticated_outsider():
     """Members unrelated to a document should not be allowed to cancel invitations."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     document = factories.DocumentFactory()
     invitation = factories.InvitationFactory(document=document)
@@ -684,7 +684,7 @@ def test_api_document_invitations__delete__privileged_members(
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_invitations_delete_readers_or_editors(via, role, mock_user_teams):
     """Readers or editors should not be able to cancel invitation."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
     document = factories.DocumentFactory()
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)

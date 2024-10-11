@@ -18,13 +18,13 @@ pytestmark = pytest.mark.django_db
 
 def test_api_document_accesses_create_anonymous():
     """Anonymous users should not be allowed to create document accesses."""
-    user = factories.UserFactory()
     document = factories.DocumentFactory()
 
+    other_user = factories.UserFactory()
     response = APIClient().post(
         f"/api/v1.0/documents/{document.id!s}/accesses/",
         {
-            "user": str(user.id),
+            "user_id": str(other_user.id),
             "document": str(document.id),
             "role": random.choice(models.RoleChoices.choices)[0],
         },
@@ -43,7 +43,7 @@ def test_api_document_accesses_create_authenticated_unrelated():
     Authenticated users should not be allowed to create document accesses for a document to
     which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -54,7 +54,7 @@ def test_api_document_accesses_create_authenticated_unrelated():
     response = client.post(
         f"/api/v1.0/documents/{document.id!s}/accesses/",
         {
-            "user": str(other_user.id),
+            "user_id": str(other_user.id),
         },
         format="json",
     )
@@ -69,7 +69,7 @@ def test_api_document_accesses_create_authenticated_reader_or_editor(
     via, role, mock_user_teams
 ):
     """Readers or editors of a document should not be allowed to create document accesses."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -89,7 +89,7 @@ def test_api_document_accesses_create_authenticated_reader_or_editor(
         response = client.post(
             f"/api/v1.0/documents/{document.id!s}/accesses/",
             {
-                "user": str(other_user.id),
+                "user_id": str(other_user.id),
                 "role": new_role,
             },
             format="json",
@@ -107,7 +107,7 @@ def test_api_document_accesses_create_authenticated_administrator(via, mock_user
     except for the "owner" role.
     An email should be sent to the accesses to notify them of the adding.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -129,7 +129,7 @@ def test_api_document_accesses_create_authenticated_administrator(via, mock_user
     response = client.post(
         f"/api/v1.0/documents/{document.id!s}/accesses/",
         {
-            "user": str(other_user.id),
+            "user_id": str(other_user.id),
             "role": "owner",
         },
         format="json",

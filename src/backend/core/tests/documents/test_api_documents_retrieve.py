@@ -133,7 +133,7 @@ def test_api_documents_retrieve_authenticated_unrelated_restricted():
     Authenticated users should not be allowed to retrieve a document that is restricted and
     to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -208,7 +208,7 @@ def test_api_documents_retrieve_authenticated_related_team_none(mock_user_teams)
     """
     mock_user_teams.return_value = []
 
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)

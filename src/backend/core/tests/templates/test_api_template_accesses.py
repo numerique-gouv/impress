@@ -1,6 +1,7 @@
 """
 Test template accesses API endpoints for users in impress's core app.
 """
+# pylint: disable=too-many-lines
 
 import random
 from uuid import uuid4
@@ -32,7 +33,7 @@ def test_api_template_accesses_list_authenticated_unrelated():
     Authenticated users should not be allowed to list template accesses for a template
     to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -62,7 +63,7 @@ def test_api_template_accesses_list_authenticated_related(via, mock_user_teams):
     Authenticated users should be able to list template accesses for a template
     to which they are directly related, whatever their role in the template.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -146,7 +147,7 @@ def test_api_template_accesses_retrieve_authenticated_unrelated():
     Authenticated users should not be allowed to retrieve a template access for
     a template to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -183,7 +184,7 @@ def test_api_template_accesses_retrieve_authenticated_related(via, mock_user_tea
     A user who is related to a template should be allowed to retrieve the
     associated template user accesses.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -213,13 +214,13 @@ def test_api_template_accesses_retrieve_authenticated_related(via, mock_user_tea
 
 def test_api_template_accesses_create_anonymous():
     """Anonymous users should not be allowed to create template accesses."""
-    user = factories.UserFactory()
     template = factories.TemplateFactory()
 
+    other_user = factories.UserFactory()
     response = APIClient().post(
         f"/api/v1.0/templates/{template.id!s}/accesses/",
         {
-            "user": str(user.id),
+            "user": str(other_user.id),
             "template": str(template.id),
             "role": random.choice(models.RoleChoices.choices)[0],
         },
@@ -238,7 +239,7 @@ def test_api_template_accesses_create_authenticated_unrelated():
     Authenticated users should not be allowed to create template accesses for a template to
     which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -264,7 +265,7 @@ def test_api_template_accesses_create_authenticated_editor_or_reader(
     via, role, mock_user_teams
 ):
     """Editors or readers of a template should not be allowed to create template accesses."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -301,7 +302,7 @@ def test_api_template_accesses_create_authenticated_administrator(via, mock_user
     Administrators of a template should be able to create template accesses
     except for the "owner" role.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -365,7 +366,7 @@ def test_api_template_accesses_create_authenticated_owner(via, mock_user_teams):
     """
     Owners of a template should be able to create template accesses whatever the role.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -434,14 +435,14 @@ def test_api_template_accesses_update_authenticated_unrelated():
     Authenticated users should not be allowed to update a template access for a template to which
     they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
 
     access = factories.UserTemplateAccessFactory()
-    old_values = serializers.TemplateAccessSerializer(instance=access).data
 
+    old_values = serializers.TemplateAccessSerializer(instance=access).data
     new_values = {
         "id": uuid4(),
         "user": factories.UserFactory().id,
@@ -467,7 +468,7 @@ def test_api_template_accesses_update_authenticated_editor_or_reader(
     via, role, mock_user_teams
 ):
     """Editors or readers of a template should not be allowed to update its accesses."""
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -509,7 +510,7 @@ def test_api_template_accesses_update_administrator_except_owner(via, mock_user_
     A user who is a direct administrator in a template should be allowed to update a user
     access for this template, as long as they don't try to set the role to owner.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -529,8 +530,8 @@ def test_api_template_accesses_update_administrator_except_owner(via, mock_user_
         template=template,
         role=random.choice(["administrator", "editor", "reader"]),
     )
-    old_values = serializers.TemplateAccessSerializer(instance=access).data
 
+    old_values = serializers.TemplateAccessSerializer(instance=access).data
     new_values = {
         "id": uuid4(),
         "user_id": factories.UserFactory().id,
@@ -566,7 +567,7 @@ def test_api_template_accesses_update_administrator_from_owner(via, mock_user_te
     A user who is an administrator in a template, should not be allowed to update
     the user access of an "owner" for this template.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -586,8 +587,8 @@ def test_api_template_accesses_update_administrator_from_owner(via, mock_user_te
     access = factories.UserTemplateAccessFactory(
         template=template, user=other_user, role="owner"
     )
-    old_values = serializers.TemplateAccessSerializer(instance=access).data
 
+    old_values = serializers.TemplateAccessSerializer(instance=access).data
     new_values = {
         "id": uuid4(),
         "user_id": factories.UserFactory().id,
@@ -613,7 +614,7 @@ def test_api_template_accesses_update_administrator_to_owner(via, mock_user_team
     A user who is an administrator in a template, should not be allowed to update
     the user access of another user to grant template ownership.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -635,8 +636,8 @@ def test_api_template_accesses_update_administrator_to_owner(via, mock_user_team
         user=other_user,
         role=random.choice(["administrator", "editor", "reader"]),
     )
-    old_values = serializers.TemplateAccessSerializer(instance=access).data
 
+    old_values = serializers.TemplateAccessSerializer(instance=access).data
     new_values = {
         "id": uuid4(),
         "user_id": factories.UserFactory().id,
@@ -667,7 +668,7 @@ def test_api_template_accesses_update_owner(via, mock_user_teams):
     A user who is an owner in a template should be allowed to update
     a user access for this template whatever the role.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -685,8 +686,8 @@ def test_api_template_accesses_update_owner(via, mock_user_teams):
     access = factories.UserTemplateAccessFactory(
         template=template,
     )
-    old_values = serializers.TemplateAccessSerializer(instance=access).data
 
+    old_values = serializers.TemplateAccessSerializer(instance=access).data
     new_values = {
         "id": uuid4(),
         "user_id": factories.UserFactory().id,
@@ -723,21 +724,20 @@ def test_api_template_accesses_update_owner_self(via, mock_user_teams):
     A user who is owner of a template should be allowed to update
     their own user access provided there are other owners in the template.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
 
     template = factories.TemplateFactory()
-    access = None
-    if via == USER:
-        access = factories.UserTemplateAccessFactory(
-            template=template, user=user, role="owner"
-        )
-    elif via == TEAM:
+    if via == TEAM:
         mock_user_teams.return_value = ["lasuite", "unknown"]
         access = factories.TeamTemplateAccessFactory(
             template=template, team="lasuite", role="owner"
+        )
+    else:
+        access = factories.UserTemplateAccessFactory(
+            template=template, user=user, role="owner"
         )
 
     old_values = serializers.TemplateAccessSerializer(instance=access).data
@@ -787,7 +787,7 @@ def test_api_template_accesses_delete_authenticated():
     Authenticated users should not be allowed to delete a template access for a
     template to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -799,7 +799,7 @@ def test_api_template_accesses_delete_authenticated():
     )
 
     assert response.status_code == 403
-    assert models.TemplateAccess.objects.count() == 1
+    assert models.TemplateAccess.objects.count() == 2
 
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
@@ -809,7 +809,7 @@ def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_team
     Authenticated users should not be allowed to delete a template access for a
     template in which they are a simple editor or reader.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -825,7 +825,7 @@ def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_team
 
     access = factories.UserTemplateAccessFactory(template=template)
 
-    assert models.TemplateAccess.objects.count() == 2
+    assert models.TemplateAccess.objects.count() == 3
     assert models.TemplateAccess.objects.filter(user=access.user).exists()
 
     response = client.delete(
@@ -833,7 +833,7 @@ def test_api_template_accesses_delete_editor_or_reader(via, role, mock_user_team
     )
 
     assert response.status_code == 403
-    assert models.TemplateAccess.objects.count() == 2
+    assert models.TemplateAccess.objects.count() == 3
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -881,7 +881,7 @@ def test_api_template_accesses_delete_administrator_on_owners(via, mock_user_tea
     Users who are administrators in a template should not be allowed to delete an ownership
     access from the template.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -899,7 +899,7 @@ def test_api_template_accesses_delete_administrator_on_owners(via, mock_user_tea
 
     access = factories.UserTemplateAccessFactory(template=template, role="owner")
 
-    assert models.TemplateAccess.objects.count() == 2
+    assert models.TemplateAccess.objects.count() == 3
     assert models.TemplateAccess.objects.filter(user=access.user).exists()
 
     response = client.delete(
@@ -907,7 +907,7 @@ def test_api_template_accesses_delete_administrator_on_owners(via, mock_user_tea
     )
 
     assert response.status_code == 403
-    assert models.TemplateAccess.objects.count() == 2
+    assert models.TemplateAccess.objects.count() == 3
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -948,7 +948,7 @@ def test_api_template_accesses_delete_owners_last_owner(via, mock_user_teams):
     """
     It should not be possible to delete the last owner access from a template
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_template=True)
 
     client = APIClient()
     client.force_login(user)
@@ -965,10 +965,10 @@ def test_api_template_accesses_delete_owners_last_owner(via, mock_user_teams):
             template=template, team="lasuite", role="owner"
         )
 
-    assert models.TemplateAccess.objects.count() == 1
+    assert models.TemplateAccess.objects.count() == 2
     response = client.delete(
         f"/api/v1.0/templates/{template.id!s}/accesses/{access.id!s}/",
     )
 
     assert response.status_code == 403
-    assert models.TemplateAccess.objects.count() == 1
+    assert models.TemplateAccess.objects.count() == 2
