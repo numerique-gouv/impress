@@ -39,7 +39,7 @@ def test_api_document_versions_list_authenticated_unrelated(reach):
     Authenticated users should not be allowed to list document versions for a document
     to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -231,7 +231,7 @@ def test_api_document_versions_retrieve_authenticated_unrelated(reach):
     Authenticated users should not be allowed to retrieve specific versions for a
     document to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -475,7 +475,7 @@ def test_api_document_versions_delete_authenticated(reach):
     Authenticated users should not be allowed to delete a document version for a
     public document to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -500,7 +500,7 @@ def test_api_document_versions_delete_reader_or_editor(via, role, mock_user_team
     Authenticated users should not be allowed to delete a document version for a
     document in which they are a simple reader or editor.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)

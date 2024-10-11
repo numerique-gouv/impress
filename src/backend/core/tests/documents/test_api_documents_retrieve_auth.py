@@ -142,7 +142,7 @@ def test_api_documents_retrieve_auth_authenticated_restricted():
     """
     document = factories.DocumentFactory(link_reach="restricted")
 
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
     client = APIClient()
     client.force_login(user)
 

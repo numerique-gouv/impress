@@ -69,6 +69,7 @@ class BaseAccessSerializer(serializers.ModelSerializer):
             if not self.Meta.model.objects.filter(  # pylint: disable=no-member
                 Q(user=user) | Q(team__in=user.teams),
                 role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
+                **{self.Meta.resource_field_name: resource_id},  # pylint: disable=no-member
             ).exists():
                 raise exceptions.PermissionDenied(
                     "You are not allowed to manage accesses for this resource."

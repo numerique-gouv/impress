@@ -27,6 +27,24 @@ class UserFactory(factory.django.DjangoModelFactory):
     language = factory.fuzzy.FuzzyChoice([lang[0] for lang in settings.LANGUAGES])
     password = make_password("password")
 
+    @factory.post_generation
+    def with_owned_document(self, create, extracted, **kwargs):
+        """
+        Create a document for which the user is owner to check
+        that there is no interference
+        """
+        if create and (extracted is True):
+            UserDocumentAccessFactory(user=self, role="owner")
+
+    @factory.post_generation
+    def with_owned_template(self, create, extracted, **kwargs):
+        """
+        Create a template for which the user is owner to check
+        that there is no interference
+        """
+        if create and (extracted is True):
+            UserTemplateAccessFactory(user=self, role="owner")
+
 
 class DocumentFactory(factory.django.DjangoModelFactory):
     """A factory to create documents"""

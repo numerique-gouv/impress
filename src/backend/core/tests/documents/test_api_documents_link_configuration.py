@@ -42,7 +42,7 @@ def test_api_documents_link_configuration_update_authenticated_unrelated(reach, 
     Authenticated users should not be allowed to update the link configuration for
     a document to which they are not related.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
@@ -78,7 +78,7 @@ def test_api_documents_link_configuration_update_authenticated_related_forbidden
     Users who are readers or editors of a document should not be allowed to update
     the link configuration.
     """
-    user = factories.UserFactory()
+    user = factories.UserFactory(with_owned_document=True)
 
     client = APIClient()
     client.force_login(user)
