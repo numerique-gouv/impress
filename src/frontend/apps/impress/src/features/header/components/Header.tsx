@@ -8,7 +8,7 @@ import { LanguagePicker } from '@/features/language';
 import { useResponsiveStore } from '@/stores';
 import { useCunninghamTheme } from '@/cunningham';
 
-import { default as IconDocs } from '../assets/icon-docs.svg?url';
+import { default as IconDocs } from '../assets/icon-notes.svg?url';
 
 import { DropdownMenu } from './DropdownMenu';
 import { LaGaufre } from './LaGaufre';
@@ -41,7 +41,7 @@ export const Header = () => {
           <StyledLink href="/">
             <Box
               $align="center"
-              $gap="0.8rem"
+              $gap="0.4rem"
               $direction="row"
               $position="relative"
               $height="fit-content"
@@ -61,7 +61,7 @@ export const Header = () => {
                 )}
               </Box>
             </Box>
-            <Image priority src={IconDocs} alt={t('Docs Logo')} width={25} />
+            <Image priority src={IconDocs} alt={t('Docs Logo')} width={30} />
               <Text
                 $padding="2px 3px"
                 $size="8px"
