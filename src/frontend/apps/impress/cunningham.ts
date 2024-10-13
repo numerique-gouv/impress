@@ -478,9 +478,9 @@ const config = {
         },
         logo: {
           src: '/assets/logo-open-desk.svg',
-          widthHeader: '110px',
-          widthFooter: '220px',
-          alt: 'OpenDesk Logo',
+          widthHeader: '140px',
+          widthFooter: '110px',
+          alt: 'openDesk Logo',
         },
       },
       components: {

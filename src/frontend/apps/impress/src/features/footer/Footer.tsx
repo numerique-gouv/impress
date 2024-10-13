@@ -96,7 +96,7 @@ export const Footer = () => {
           $padding={{ top: 'tiny' }}
           $css={`
             flex-wrap: wrap;
-            border-top: 1px solid var(--c--theme--colors--greyscale-200); 
+            border-top: 1px solid var(--c--theme--colors--greyscale-200);
             column-gap: 1rem;
             row-gap: .5rem;
           `}

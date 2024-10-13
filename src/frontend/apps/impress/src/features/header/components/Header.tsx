@@ -6,6 +6,7 @@ import { Box, StyledLink, Text } from '@/components/';
 import { ButtonLogin } from '@/core/auth';
 import { LanguagePicker } from '@/features/language';
 import { useResponsiveStore } from '@/stores';
+import { useCunninghamTheme } from '@/cunningham';
 
 import { default as IconDocs } from '../assets/icon-docs.svg?url';
 
@@ -15,6 +16,8 @@ import { LaGaufre } from './LaGaufre';
 export const Header = () => {
   const { t } = useTranslation();
   const { isSmallMobile } = useResponsiveStore();
+  const { themeTokens } = useCunninghamTheme();
+  const logo = themeTokens().logo;
 
   return (
     <Box
@@ -44,7 +47,21 @@ export const Header = () => {
               $height="fit-content"
               $margin={{ top: 'auto' }}
             >
-              <Image priority src={IconDocs} alt={t('Docs Logo')} width={25} />
+            <Box>
+              <Box $align="center" $gap="6rem" $direction="row">
+                {logo && (
+                  <Image
+                    priority
+                    src={logo.src}
+                    alt={logo.alt}
+                    width={0}
+                    height={0}
+                    style={{ width: logo.widthHeader, height: 'auto' }}
+                  />
+                )}
+              </Box>
+            </Box>
+            <Image priority src={IconDocs} alt={t('Docs Logo')} width={25} />
               <Text
                 $padding="2px 3px"
                 $size="8px"
@@ -53,8 +70,8 @@ export const Header = () => {
                 $position="absolute"
                 $radius="5px"
                 $css={`
-                  bottom: 13px;
-                  right: -17px;
+                  bottom: 20px;
+                  right: -20px;
                 `}
               >
                 BETA
@@ -64,7 +81,7 @@ export const Header = () => {
                 as="h2"
                 $color="#000091"
                 $zIndex={1}
-                $size="1.30rem"
+                $size="1.20rem"
                 $css="font-family: 'Marianne'"
               >
                 {t('Docs')}
