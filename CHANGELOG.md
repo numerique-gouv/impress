@@ -13,6 +13,10 @@ and this project adheres to
 
 ♻️(frontend) More multi theme friendly #325
 
+## Fixed
+
+🐛(frontend) invalidate queries after removing user #336
+
 
 ## [1.5.1] - 2024-10-10
 

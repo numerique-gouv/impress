@@ -94,6 +94,15 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
       });
     }
 
+    if (
+      dataError.cause?.[0] ===
+      'This email is already associated to a registered user.'
+    ) {
+      messageError = t('"{{email}}" is already member of the document.', {
+        email: dataError['data']?.value,
+      });
+    }
+
     toast(messageError, VariantType.ERROR, toastOptions);
   };
 
@@ -123,6 +132,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
     setIsPending(false);
     setResetKey(resetKey + 1);
     setSelectedUsers([]);
+    setSelectedRole(undefined);
 
     settledPromises.forEach((settledPromise) => {
       switch (settledPromise.status) {
@@ -156,7 +166,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
         <Box $gap="0.7rem" $direction="row" $wrap="wrap" $css="flex: 80%;">
           <Box $css="flex: auto;" $width="15rem">
             <SearchUsers
-              key={resetKey + 1}
+              key={resetKey}
               doc={doc}
               setSelectedUsers={setSelectedUsers}
               selectedUsers={selectedUsers}
