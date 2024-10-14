@@ -42,7 +42,6 @@ dependencies = [
     "dockerflow==2024.4.2",
     "easy_thumbnails==2.10",
     "factory_boy==3.3.1",
-    "freezegun==1.5.1",
     "gunicorn==23.0.0",
     "jsonschema==4.23.0",
     "markdown==3.7",
@@ -69,6 +68,7 @@ dependencies = [
 dev = [
     "django-extensions==3.2.3",
     "drf-spectacular-sidecar==2024.7.1",
+    "freezegun==1.5.1",
     "ipdb==0.13.13",
     "ipython==8.28.0",
     "pyfakefs==5.7.1",
