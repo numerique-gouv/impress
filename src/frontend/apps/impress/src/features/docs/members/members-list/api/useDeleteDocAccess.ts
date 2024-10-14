@@ -6,6 +6,7 @@ import {
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
 import { KEY_DOC, KEY_LIST_DOC } from '@/features/docs/doc-management';
+import { KEY_LIST_USER } from '@/features/docs/members/members-add';
 
 import { KEY_LIST_DOC_ACCESSES } from './useDocAccesses';
 
@@ -50,6 +51,9 @@ export const useDeleteDocAccess = (options?: UseDeleteDocAccessOptions) => {
       });
       void queryClient.resetQueries({
         queryKey: [KEY_LIST_DOC],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [KEY_LIST_USER],
       });
       if (options?.onSuccess) {
         options.onSuccess(data, variables, context);

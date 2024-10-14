@@ -70,6 +70,7 @@ export const SearchUsers = ({
 
       if (!isFoundUser && !isFoundEmail) {
         users = [
+          ...users,
           {
             value: { email: userQuery },
             label: userQuery,
@@ -83,8 +84,7 @@ export const SearchUsers = ({
     resolveOptionsRef.current = null;
 
     return users;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options, selectedUsers]);
+  }, [options, selectedUsers, userQuery]);
 
   const loadOptions = (): Promise<OptionsSelect> => {
     return new Promise<OptionsSelect>((resolve) => {
