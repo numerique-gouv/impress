@@ -1,4 +1,4 @@
-FROM node:20-alpine as frontend-deps-y-provider
+FROM node:20-alpine AS frontend-deps-y-provider
 
 WORKDIR /home/frontend/
 
@@ -15,7 +15,7 @@ COPY ./src/frontend/ .
 COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
 
 # ---- y-provider ----
-FROM frontend-deps-y-provider as y-provider
+FROM frontend-deps-y-provider AS y-provider
 
 WORKDIR /home/frontend/servers/y-provider
 RUN yarn build
@@ -28,7 +28,7 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 
 CMD ["yarn", "start"]
 
-FROM node:20-alpine as frontend-deps
+FROM node:20-alpine AS frontend-deps
 
 WORKDIR /home/frontend/
 
@@ -43,11 +43,11 @@ COPY .dockerignore ./.dockerignore
 COPY ./src/frontend/ .
 
 ### ---- Front-end builder image ----
-FROM frontend-deps as impress
+FROM frontend-deps AS impress
 
 WORKDIR /home/frontend/apps/impress
 
-FROM frontend-deps as impress-dev
+FROM frontend-deps AS impress-dev
 
 WORKDIR /home/frontend/apps/impress
 
@@ -57,7 +57,7 @@ CMD [ "yarn", "dev"]
 
 # Tilt will rebuild impress target so, we dissociate impress and impress-builder 
 # to avoid rebuilding the app at every changes.
-FROM impress as impress-builder
+FROM impress AS impress-builder
 
 WORKDIR /home/frontend/apps/impress
 
@@ -79,7 +79,7 @@ ENV NEXT_PUBLIC_SW_DEACTIVATED=${SW_DEACTIVATED}
 RUN yarn build
 
 # ---- Front-end image ----
-FROM nginxinc/nginx-unprivileged:1.26-alpine as frontend-production
+FROM nginxinc/nginx-unprivileged:1.26-alpine AS frontend-production
 
 # Un-privileged user running the application
 ARG DOCKER_USER
