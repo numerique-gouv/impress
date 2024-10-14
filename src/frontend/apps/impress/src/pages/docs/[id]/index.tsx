@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
 import { useAuthStore } from '@/core/auth';
-import { DocEditor } from '@/features/docs';
+import { DocEditor, useDocStore } from '@/features/docs';
 import { useDoc } from '@/features/docs/doc-management';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
@@ -35,6 +35,7 @@ const DocPage = ({ id }: DocProps) => {
   const { login } = useAuthStore();
   const { data: docQuery, isError, error } = useDoc({ id });
   const [doc, setDoc] = useState(docQuery);
+  const { setCurrentDoc } = useDocStore();
 
   const navigate = useNavigate();
 
@@ -52,7 +53,12 @@ const DocPage = ({ id }: DocProps) => {
     }
 
     setDoc(docQuery);
-  }, [docQuery]);
+    setCurrentDoc(docQuery);
+
+    return () => {
+      setCurrentDoc(undefined);
+    };
+  }, [docQuery, setCurrentDoc]);
 
   if (isError && error) {
     if (error.status === 404) {
