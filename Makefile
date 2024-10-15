@@ -122,6 +122,7 @@ logs: ## display app-dev logs (follow mode)
 
 run: ## start the wsgi (production) and development server
 	@$(COMPOSE) up --force-recreate -d celery-dev
+	@$(COMPOSE) up --force-recreate -d nginx
 	@$(COMPOSE) up --force-recreate -d y-provider
 	@echo "Wait for postgresql to be up..."
 	@$(WAIT_DB)
