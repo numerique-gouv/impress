@@ -520,15 +520,18 @@ class Document(BaseModel):
             "versions_retrieve": can_get_versions,
         }
 
-    def email_invitation(self, language, email, role, username_sender):
+    def email_invitation(self, language, email, role, sender):
         """Send email invitation."""
 
+        sender_name = sender.full_name or sender.email
         domain = Site.objects.get_current().domain
 
         try:
             with override(language):
-                title = _("%(username)s shared a document with you: %(document)s") % {
-                    "username": username_sender,
+                title = _(
+                    "%(sender_name)s shared a document with you: %(document)s"
+                ) % {
+                    "sender_name": sender_name,
                     "document": self.title,
                 }
                 template_vars = {
@@ -536,7 +539,10 @@ class Document(BaseModel):
                     "domain": domain,
                     "document": self,
                     "link": f"{domain}/docs/{self.id}/",
-                    "username": username_sender,
+                    "sender_name": sender_name,
+                    "sender_name_email": f"{sender.full_name} ({sender.email})"
+                    if sender.full_name
+                    else sender.email,
                     "role": RoleChoices(role).label.lower(),
                 }
                 msg_html = render_to_string("mail/html/invitation.html", template_vars)

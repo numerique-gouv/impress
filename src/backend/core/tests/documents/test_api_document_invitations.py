@@ -119,7 +119,7 @@ def test_api_document_invitations__create__privileged_members(
         assert email.to == ["guest@example.com"]
         email_content = " ".join(email.body.split())
         assert (
-            f"{user.email} shared a document with you: {document.title}"
+            f"{user.full_name} shared a document with you: {document.title}"
             in email_content
         )
     else:
@@ -162,7 +162,7 @@ def test_api_document_invitations__create__email_from_content_language():
 
     email_content = " ".join(email.body.split())
     assert (
-        f"{user.email} a partagé un document avec vous: {document.title}"
+        f"{user.full_name} a partagé un document avec vous: {document.title}"
         in email_content
     )
 
@@ -202,7 +202,51 @@ def test_api_document_invitations__create__email_from_content_language_not_suppo
     assert email.to == ["guest@example.com"]
 
     email_content = " ".join(email.body.split())
+    assert (
+        f"{user.full_name} shared a document with you: {document.title}"
+        in email_content
+    )
+
+
+def test_api_document_invitations__create__email__full_name_empty():
+    """
+    If the full name of the user is empty, it will display the email address.
+    """
+    user = factories.UserFactory(full_name="")
+    document = factories.DocumentFactory()
+    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
+
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": "reader",
+    }
+
+    assert len(mail.outbox) == 0
+
+    client = APIClient()
+    client.force_login(user)
+    response = client.post(
+        f"/api/v1.0/documents/{document.id}/invitations/",
+        invitation_values,
+        format="json",
+        headers={"Content-Language": "not-supported"},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["email"] == "guest@example.com"
+    assert models.Invitation.objects.count() == 1
+    assert len(mail.outbox) == 1
+
+    email = mail.outbox[0]
+
+    assert email.to == ["guest@example.com"]
+
+    email_content = " ".join(email.body.split())
     assert f"{user.email} shared a document with you: {document.title}" in email_content
+    assert (
+        f'{user.email} invited you with the role "reader" on the '
+        f"following document : {document.title}" in email_content
+    )
 
 
 def test_api_document_invitations__create__issuer_and_document_override():
