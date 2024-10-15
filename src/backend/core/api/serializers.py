@@ -1,10 +1,13 @@
 """Client serializers for the impress core app."""
 
-import mimetypes
+import os
+from PIL import UnidentifiedImageError, Image
 
+from io import BytesIO
 from django.conf import settings
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 import magic
 from rest_framework import exceptions, serializers
@@ -208,46 +211,48 @@ class LinkDocumentSerializer(BaseResourceSerializer):
 # since we don't use a model and only rely on the serializer for validation
 # pylint: disable=abstract-method
 class FileUploadSerializer(serializers.Serializer):
-    """Receive file upload requests."""
+    """Receive file upload requests with validation, resizing, and compression."""
 
     file = serializers.FileField()
 
     def validate_file(self, file):
-        """Add file size and type constraints as defined in settings."""
-        # Validate file size
+        """Validate, resize, and compress the file if it’s an image."""
+        # Validate initial file size
         if file.size > settings.DOCUMENT_IMAGE_MAX_SIZE:
             max_size = settings.DOCUMENT_IMAGE_MAX_SIZE // (1024 * 1024)
             raise serializers.ValidationError(
                 f"File size exceeds the maximum limit of {max_size:d} MB."
             )
 
-        extension = file.name.rpartition(".")[-1] if "." in file.name else None
+        # Pass through SVG files without modification
+        if file.name.lower().endswith('.svg'):
+            return file  # Simply pass SVG files through without any modifications
 
-        # Read the first few bytes to determine the MIME type accurately
-        mime = magic.Magic(mime=True)
-        magic_mime_type = mime.from_buffer(file.read(1024))
-        file.seek(0)  # Reset file pointer to the beginning after reading
+        # Attempt to open the file with PIL to determine if it's a valid image
+        try:
+            image = Image.open(file)
+        except UnidentifiedImageError:
+            raise serializers.ValidationError("The uploaded file is not a valid image or the format is not supported.")
 
-        self.context["is_unsafe"] = (
-            magic_mime_type in settings.DOCUMENT_UNSAFE_MIME_TYPES
+        # Resize and compress the image
+        max_width, max_height = settings.DOCUMENT_IMAGE_MAX_DIMENSIONS
+        image.thumbnail((max_width, max_height))
+
+        image_io = BytesIO()
+        image.save(image_io, format=image.format, quality=85, optimize=True)
+        image_io.seek(0)
+        original_extension = os.path.splitext(file.name)[1]
+        image_io.name = f"compressed{original_extension}"
+        file = InMemoryUploadedFile(
+            image_io, None, file.name, image.format, image_io.getbuffer().nbytes, None
         )
 
-        extension_mime_type, _ = mimetypes.guess_type(file.name)
-
-        # Try guessing a coherent extension from the mimetype
-        if extension_mime_type != magic_mime_type:
-            self.context["is_unsafe"] = True
-
-        guessed_ext = mimetypes.guess_extension(magic_mime_type)
-        # Missing extensions or extensions longer than 5 characters (it's as long as an extension
-        # can be) are replaced by the extension we eventually guessed from mimetype.
-        if (extension is None or len(extension) > 5) and guessed_ext:
-            extension = guessed_ext[1:]
-
-        if extension is None:
-            raise serializers.ValidationError("Could not determine file extension.")
-
-        self.context["expected_extension"] = extension
+        # Validate compressed file size
+        if image_io.getbuffer().nbytes > settings.DOCUMENT_IMAGE_MAX_SIZE:
+            max_size = settings.DOCUMENT_IMAGE_MAX_SIZE // (1024 * 1024)
+            raise serializers.ValidationError(
+                f"Compressed file size exceeds the maximum limit of {max_size:d} MB."
+            )
 
         return file
 
