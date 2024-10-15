@@ -13,6 +13,7 @@ and this project adheres to
 
 - ♻️(frontend) More multi theme friendly #325
 - ♻️ Bootstrap frontend #257
+- ♻️(backend) Compress img before saving #320
 
 ## Fixed
 
