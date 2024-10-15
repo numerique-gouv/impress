@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, StyledLink, Text } from '@/components/';
 import { ButtonLogin } from '@/core/auth';
+import { useCunninghamTheme } from '@/cunningham';
 import { LanguagePicker } from '@/features/language';
 import { useResponsiveStore } from '@/stores';
-import { useCunninghamTheme } from '@/cunningham';
 
 import { default as IconDocs } from '../assets/icon-notes.svg?url';
 
@@ -47,21 +47,21 @@ export const Header = () => {
               $height="fit-content"
               $margin={{ top: 'auto' }}
             >
-            <Box>
-              <Box $align="center" $gap="6rem" $direction="row">
-                {logo && (
-                  <Image
-                    priority
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={0}
-                    height={0}
-                    style={{ width: logo.widthHeader, height: 'auto' }}
-                  />
-                )}
+              <Box>
+                <Box $align="center" $gap="6rem" $direction="row">
+                  {logo && (
+                    <Image
+                      priority
+                      src={logo.src}
+                      alt={logo.alt}
+                      width={0}
+                      height={0}
+                      style={{ width: logo.widthHeader, height: 'auto' }}
+                    />
+                  )}
+                </Box>
               </Box>
-            </Box>
-            <Image priority src={IconDocs} alt={t('Docs Logo')} width={30} />
+              <Image priority src={IconDocs} alt={t('Docs Logo')} width={30} />
               <Text
                 $padding="2px 3px"
                 $size="8px"
