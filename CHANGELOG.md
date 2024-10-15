@@ -13,6 +13,7 @@ and this project adheres to
 
 - ♻️(frontend) More multi theme friendly #325
 - ♻️ Bootstrap frontend #257
+- ♻️ Add username in email #314
 
 ## Fixed
 

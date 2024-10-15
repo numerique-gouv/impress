@@ -363,8 +363,9 @@ def test_models_documents__email_invitation__success():
     # pylint: disable-next=no-member
     assert len(mail.outbox) == 0
 
+    sender = factories.UserFactory(full_name="Test Sender", email="sender@example.com")
     document.email_invitation(
-        "en", "guest@example.com", models.RoleChoices.EDITOR, "sender@example.com"
+        "en", "guest@example.com", models.RoleChoices.EDITOR, sender
     )
 
     # pylint: disable-next=no-member
@@ -377,8 +378,8 @@ def test_models_documents__email_invitation__success():
     email_content = " ".join(email.body.split())
 
     assert (
-        f"sender@example.com invited you as an editor on the following document : {document.title}"
-        in email_content
+        f'Test Sender (sender@example.com) invited you with the role "editor" '
+        f"on the following document : {document.title}" in email_content
     )
     assert f"docs/{document.id}/" in email_content
 
@@ -392,8 +393,14 @@ def test_models_documents__email_invitation__success_fr():
     # pylint: disable-next=no-member
     assert len(mail.outbox) == 0
 
+    sender = factories.UserFactory(
+        full_name="Test Sender2", email="sender2@example.com"
+    )
     document.email_invitation(
-        "fr-fr", "guest2@example.com", models.RoleChoices.OWNER, "sender2@example.com"
+        "fr-fr",
+        "guest2@example.com",
+        models.RoleChoices.OWNER,
+        sender,
     )
 
     # pylint: disable-next=no-member
@@ -406,7 +413,7 @@ def test_models_documents__email_invitation__success_fr():
     email_content = " ".join(email.body.split())
 
     assert (
-        f"sender2@example.com vous a invité en tant que propriétaire "
+        f'Test Sender2 (sender2@example.com) vous a invité avec le rôle "propriétaire" '
         f"sur le document suivant : {document.title}" in email_content
     )
     assert f"docs/{document.id}/" in email_content
@@ -424,8 +431,12 @@ def test_models_documents__email_invitation__failed(mock_logger, _mock_send_mail
     # pylint: disable-next=no-member
     assert len(mail.outbox) == 0
 
+    sender = factories.UserFactory()
     document.email_invitation(
-        "en", "guest3@example.com", models.RoleChoices.ADMIN, "sender3@example.com"
+        "en",
+        "guest3@example.com",
+        models.RoleChoices.ADMIN,
+        sender,
     )
 
     # No email has been sent

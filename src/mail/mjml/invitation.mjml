@@ -24,14 +24,14 @@
           <mj-text align="center">
             <h1>
               {% blocktrans %}
-                {{username}} shared a document with you !
+                {{sender_name}} shared a document with you !
               {% endblocktrans %}
             </h1>
           </mj-text>
           <!-- Main Message -->
           <mj-text>
             {% blocktrans %}
-              {{username}} invited you as an {{role}} on the following document : 
+              {{sender_name_email}} invited you with the role "{{role}}" on the following document : 
             {% endblocktrans %}
             <a href="{{link}}">{{document.title}}</a>
           </mj-text>
@@ -52,7 +52,7 @@
           />
           <mj-text>
             {% blocktrans %}
-              Docs, your new essential tool for organizing, sharing and collaborate on your documents as a team.
+              Docs, your new essential tool for organizing, sharing and collaborating on your documents as a team.
             {% endblocktrans %}
           </mj-text>
           <!-- Signature -->

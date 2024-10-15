@@ -32,8 +32,7 @@
         /* Global styles */
         h1 {
             color: #161616;
-            font-size: 1.5rem;
-            line-height: 1em;
+            font-size: 1.4rem;
             font-weight: 700;
         }
 
