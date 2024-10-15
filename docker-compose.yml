@@ -63,7 +63,6 @@ services:
         - mailcatcher
         - redis
         - createbuckets
-        - nginx
   
   celery-dev:
     user: ${DOCKER_USER:-1000}
@@ -118,6 +117,7 @@ services:
       - ./docker/files/etc/nginx/conf.d:/etc/nginx/conf.d:ro
     depends_on:
       - keycloak
+      - app-dev
 
   frontend-dev:
     user: "${DOCKER_USER:-1000}"
