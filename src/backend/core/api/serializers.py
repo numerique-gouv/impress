@@ -1,6 +1,9 @@
 """Client serializers for the impress core app."""
 
 import mimetypes
+import os
+from io import BytesIO
+from PIL import Image
 
 from django.conf import settings
 from django.db.models import Q
@@ -205,13 +208,13 @@ class LinkDocumentSerializer(BaseResourceSerializer):
 # since we don't use a model and only rely on the serializer for validation
 # pylint: disable=abstract-method
 class FileUploadSerializer(serializers.Serializer):
-    """Receive file upload requests."""
+    """Receive file upload requests with validation and compression."""
 
     file = serializers.FileField()
 
     def validate_file(self, file):
-        """Add file size and type constraints as defined in settings."""
-        # Validate file size
+        """Validate and compress the file if it’s an image."""
+        # Validate initial file size
         if file.size > settings.DOCUMENT_IMAGE_MAX_SIZE:
             max_size = settings.DOCUMENT_IMAGE_MAX_SIZE // (1024 * 1024)
             raise serializers.ValidationError(
@@ -225,6 +228,23 @@ class FileUploadSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 f"File type '{mime_type:s}' is not allowed. Allowed types are: {mime_types:s}"
             )
+
+        # Compress the image if it’s a valid image type
+        if mime_type and mime_type.startswith("image/"):
+            original_extension = os.path.splitext(file.name)[1]
+            image = Image.open(file)
+            image_io = BytesIO()
+            image.save(image_io, format=image.format, quality=85, optimize=True)
+            image_io.seek(0)
+            image_io.name = f"compressed{original_extension}"
+            file = image_io  # Replace the file with the compressed version
+
+            # Validate compressed file size
+            if file.getbuffer().nbytes > settings.DOCUMENT_IMAGE_MAX_SIZE:
+                max_size = settings.DOCUMENT_IMAGE_MAX_SIZE // (1024 * 1024)
+                raise serializers.ValidationError(
+                    f"Compressed file size exceeds the maximum limit of {max_size:d} MB."
+                )
 
         return file
 
