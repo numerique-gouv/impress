@@ -1,10 +1,14 @@
-import { Button } from '@openfun/cunningham-react';
+import {
+  Button,
+  VariantType,
+  useToastProvider,
+} from '@openfun/cunningham-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions } from '@/components';
 import { useAuthStore } from '@/core';
-import { usePanelEditorStore } from '@/features/docs/doc-editor/';
+import { useDocStore, usePanelEditorStore } from '@/features/docs/doc-editor/';
 import {
   Doc,
   ModalRemoveDoc,
@@ -31,6 +35,32 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
   const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);
   const { isSmallMobile } = useResponsiveStore();
   const { authenticated } = useAuthStore();
+  const { docsStore } = useDocStore();
+  const { toast } = useToastProvider();
+
+  const copyCurrentEditorToClipboard = async (
+    asFormat: 'html' | 'markdown',
+  ) => {
+    const editor = docsStore[doc.id]?.editor;
+    if (!editor) {
+      toast(t('Editor unavailable'), VariantType.ERROR, { duration: 3000 });
+      return;
+    }
+
+    try {
+      const editorContentFormatted =
+        asFormat === 'html'
+          ? await editor.blocksToHTMLLossy()
+          : await editor.blocksToMarkdownLossy();
+      await navigator.clipboard.writeText(editorContentFormatted);
+      toast(t('Copied to clipboard'), VariantType.SUCCESS, { duration: 3000 });
+    } catch (error) {
+      console.error(error);
+      toast(t('Failed to copy to clipboard'), VariantType.ERROR, {
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <Box
@@ -125,6 +155,28 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
                 {t('Delete document')}
               </Button>
             )}
+            <Button
+              onClick={() => {
+                setIsDropOpen(false);
+                void copyCurrentEditorToClipboard('markdown');
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">content_copy</span>}
+              size="small"
+            >
+              {t('Copy as {{format}}', { format: 'Markdown' })}
+            </Button>
+            <Button
+              onClick={() => {
+                setIsDropOpen(false);
+                void copyCurrentEditorToClipboard('html');
+              }}
+              color="primary-text"
+              icon={<span className="material-icons">content_copy</span>}
+              size="small"
+            >
+              {t('Copy as {{format}}', { format: 'HTML' })}
+            </Button>
           </Box>
         </DropButton>
       </Box>

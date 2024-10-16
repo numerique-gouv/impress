@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- ✨(frontend) add buttons to copy document to clipboard as HTML/Markdown #300
+
 ## Changed
 
 - ♻️(frontend) More multi theme friendly #325
@@ -17,7 +21,7 @@ and this project adheres to
 
 ## Fixed
 
-🐛(frontend) invalidate queries after removing user #336
+- 🐛(frontend) invalidate queries after removing user #336
 
 
 ## [1.5.1] - 2024-10-10
