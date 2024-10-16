@@ -141,7 +141,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         ),
         max_length=255,
         unique=True,
-        validators=[sub_validator],
+        # validators=[sub_validator],
         blank=True,
         null=True,
     )
