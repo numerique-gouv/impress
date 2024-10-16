@@ -10,7 +10,7 @@ from django.core import mail
 
 import pytest
 
-from core.utils import email_invitation, yjs_base64_to_text
+from core.utils import email_invitation, text_to_yjs_base64, yjs_base64_to_text
 
 pytestmark = pytest.mark.django_db
 
@@ -110,4 +110,9 @@ def test_yjs_base64_to_text():
         "dGV4dENvbG9yAXcHZGVmYXVsdCgA9e7y1Q4eD2JhY2tncm91bmRDb2xvcgF3B2RlZmF1bHQA"
     )
 
+    assert yjs_base64_to_text(base64_string) == "Hello world"
+
+
+def test_text_to_yjs_base64():
+    base64_string = text_to_yjs_base64("Hello world")
     assert yjs_base64_to_text(base64_string) == "Hello world"
