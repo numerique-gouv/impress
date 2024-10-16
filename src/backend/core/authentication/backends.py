@@ -84,6 +84,8 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
         user = self.get_existing_user(sub, email)
 
         if user:
+            if not user.is_active:
+                raise SuspiciousOperation(_("User account is disabled"))
             self.update_user_if_needed(user, claims)
         elif self.get_settings("OIDC_CREATE_USER", True):
             user = User.objects.create(sub=sub, password="!", **claims)  # noqa: S106
@@ -101,11 +103,11 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
     def get_existing_user(self, sub, email):
         """Fetch existing user by sub or email."""
         try:
-            return User.objects.get(sub=sub, is_active=True)
+            return User.objects.get(sub=sub)
         except User.DoesNotExist:
             if email and settings.OIDC_FALLBACK_TO_EMAIL_FOR_IDENTIFICATION:
                 try:
-                    return User.objects.get(email=email, is_active=True)
+                    return User.objects.get(email=email)
                 except User.DoesNotExist:
                     pass
         return None

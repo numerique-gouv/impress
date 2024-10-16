@@ -23,6 +23,7 @@ and this project adheres to
 
 ## Fixed
 
+- 🛂(backend) do not duplicate user when disabled
 - 🐛(frontend) invalidate queries after removing user #336
 - 🐛(backend) Fix dysfunctional permissions on document create #329
 - 🐛(backend) fix nginx docker container #340
