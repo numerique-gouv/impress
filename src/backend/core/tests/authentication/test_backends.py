@@ -305,3 +305,63 @@ def test_authentication_get_userinfo_invalid_response():
         match="Invalid response format or token verification failed",
     ):
         oidc_backend.get_userinfo("fake_access_token", None, None)
+
+
+def test_authentication_getter_existing_disabled_user_via_sub(
+    django_assert_num_queries, monkeypatch
+):
+    """
+    If an existing user matches the sub but is disabled,
+    an error should be raised and a user should not be created.
+    """
+
+    klass = OIDCAuthenticationBackend()
+    db_user = UserFactory(is_active=False)
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": db_user.sub,
+            "email": db_user.email,
+            "first_name": "John",
+            "last_name": "Doe",
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    with (
+        django_assert_num_queries(1),
+        pytest.raises(SuspiciousOperation, match="User account is disabled"),
+    ):
+        klass.get_or_create_user(access_token="test-token", id_token=None, payload=None)
+
+    assert models.User.objects.count() == 1
+
+
+def test_authentication_getter_existing_disabled_user_via_email(
+    django_assert_num_queries, monkeypatch
+):
+    """
+    If an existing user does not matches the sub but matches the email and is disabled,
+    an error should be raised and a user should not be created.
+    """
+
+    klass = OIDCAuthenticationBackend()
+    db_user = UserFactory(is_active=False)
+
+    def get_userinfo_mocked(*args):
+        return {
+            "sub": "random",
+            "email": db_user.email,
+            "first_name": "John",
+            "last_name": "Doe",
+        }
+
+    monkeypatch.setattr(OIDCAuthenticationBackend, "get_userinfo", get_userinfo_mocked)
+
+    with (
+        django_assert_num_queries(2),
+        pytest.raises(SuspiciousOperation, match="User account is disabled"),
+    ):
+        klass.get_or_create_user(access_token="test-token", id_token=None, payload=None)
+
+    assert models.User.objects.count() == 1
