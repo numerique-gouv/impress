@@ -19,17 +19,16 @@ test.describe('Doc Visibility', () => {
     const header = page.locator('header').first();
     await header.locator('h2').getByText('Docs').click();
 
-    const datagrid = page
-      .getByLabel('Datagrid of the documents page 1')
-      .getByRole('table');
+    const datagrid = page.getByLabel('Datagrid of the documents page 1');
+    const datagridTable = datagrid.getByRole('table');
 
     await expect(datagrid.getByLabel('Loading data')).toBeHidden({
       timeout: 10000,
     });
 
-    await expect(datagrid.getByText(docTitle)).toBeVisible();
+    await expect(datagridTable.getByText(docTitle)).toBeVisible();
 
-    const row = datagrid.getByRole('row').filter({
+    const row = datagridTable.getByRole('row').filter({
       hasText: docTitle,
     });
 

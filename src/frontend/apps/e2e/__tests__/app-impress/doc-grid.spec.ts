@@ -52,6 +52,7 @@ test.describe('Documents Grid', () => {
       orderDefault: '',
       orderDesc: '&ordering=-title',
       orderAsc: '&ordering=title',
+      defaultColumn: false,
     },
     {
       nameColumn: 'Created at',
@@ -60,6 +61,7 @@ test.describe('Documents Grid', () => {
       orderDefault: '',
       orderDesc: '&ordering=-created_at',
       orderAsc: '&ordering=created_at',
+      defaultColumn: false,
     },
     {
       nameColumn: 'Updated at',
@@ -68,6 +70,7 @@ test.describe('Documents Grid', () => {
       orderDefault: '&ordering=-updated_at',
       orderDesc: '&ordering=updated_at',
       orderAsc: '',
+      defaultColumn: true,
     },
   ].forEach(
     ({
@@ -77,6 +80,7 @@ test.describe('Documents Grid', () => {
       orderDefault,
       orderDesc,
       orderAsc,
+      defaultColumn,
     }) => {
       test(`checks datagrid ordering ${ordering}`, async ({ page }) => {
         const responsePromise = page.waitForResponse(
@@ -98,20 +102,19 @@ test.describe('Documents Grid', () => {
         );
 
         // Checks the initial state
-        const datagrid = page
-          .getByLabel('Datagrid of the documents page 1')
-          .getByRole('table');
-        const thead = datagrid.locator('thead');
+        const datagrid = page.getByLabel('Datagrid of the documents page 1');
+        const datagridTable = datagrid.getByRole('table');
+        const thead = datagridTable.locator('thead');
 
         const response = await responsePromise;
         expect(response.ok()).toBeTruthy();
 
-        const docNameRow1 = datagrid
+        const docNameRow1 = datagridTable
           .getByRole('row')
           .nth(1)
           .getByRole('cell')
           .nth(cellNumber);
-        const docNameRow2 = datagrid
+        const docNameRow2 = datagridTable
           .getByRole('row')
           .nth(2)
           .getByRole('cell')
@@ -144,13 +147,21 @@ test.describe('Documents Grid', () => {
         await expect(docNameRow2).toHaveText(/.*/);
         const textDocNameRow1Asc = await docNameRow1.textContent();
         const textDocNameRow2Asc = await docNameRow2.textContent();
+
+        const compare = (comp1: string, comp2: string) => {
+          const comparisonResult = comp1.localeCompare(comp2, 'en', {
+            caseFirst: 'false',
+            ignorePunctuation: true,
+          });
+
+          // eslint-disable-next-line playwright/no-conditional-in-test
+          return defaultColumn ? comparisonResult >= 0 : comparisonResult <= 0;
+        };
+
         expect(
           textDocNameRow1Asc &&
             textDocNameRow2Asc &&
-            textDocNameRow1Asc.localeCompare(textDocNameRow2Asc, 'en', {
-              caseFirst: 'false',
-              ignorePunctuation: true,
-            }) <= 0,
+            compare(textDocNameRow1Asc, textDocNameRow2Asc),
         ).toBeTruthy();
 
         // Ordering Desc
@@ -171,10 +182,7 @@ test.describe('Documents Grid', () => {
         expect(
           textDocNameRow1Desc &&
             textDocNameRow2Desc &&
-            textDocNameRow1Desc.localeCompare(textDocNameRow2Desc, 'en', {
-              caseFirst: 'false',
-              ignorePunctuation: true,
-            }) >= 0,
+            compare(textDocNameRow2Desc, textDocNameRow1Desc),
         ).toBeTruthy();
       });
     },
