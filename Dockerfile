@@ -13,6 +13,9 @@ RUN apk update && \
 # ---- Back-end builder image ----
 FROM base AS back-builder
 
+RUN apk add \
+  cargo
+
 WORKDIR /builder
 
 # Copy required python dependencies
