@@ -57,6 +57,7 @@ dependencies = [
     "WeasyPrint>=60.2",
     "whitenoise==6.7.0",
     "mozilla-django-oidc==4.0.1",
+    "y-py==0.6.2"
 ]
 
 [project.urls]
