@@ -12,7 +12,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from faker import Faker
 
-from core import models
+from core import models, utils
 
 from demo import defaults
 
@@ -127,17 +127,14 @@ def create_demo(stdout):
 
     with Timeit(stdout, "Creating documents"):
         for _ in range(defaults.NB_OBJECTS["docs"]):
-            queue.push(
-                models.Document(
-                    title=fake.sentence(nb_words=4),
-                    link_reach=models.LinkReachChoices.AUTHENTICATED
-                    if random_true_with_probability(0.5)
-                    else random.choice(models.LinkReachChoices.values),
-                )
-            )
-
-        queue.flush()
-
+            models.Document(
+                title=fake.sentence(nb_words=4),
+                content=utils.text_to_yjs_base64(fake.text()),
+                link_reach=models.LinkReachChoices.AUTHENTICATED
+                if random_true_with_probability(0.5)
+                else random.choice(models.LinkReachChoices.values),
+            ).save()
+            
     with Timeit(stdout, "Creating docs accesses"):
         docs_ids = list(models.Document.objects.values_list("id", flat=True))
         users_ids = list(models.User.objects.values_list("id", flat=True))

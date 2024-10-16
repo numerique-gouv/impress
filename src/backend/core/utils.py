@@ -56,3 +56,23 @@ def yjs_base64_to_text(base64_string):
 
     soup = BeautifulSoup(blocknote_structure, "html.parser")
     return soup.get_text(separator=" ").strip()
+
+
+def text_to_yjs_base64(text: str) -> str:
+    """Convert plain text to a base64-encoded Yjs document"""
+    doc = Y.YDoc()
+
+    # Insert the paragraph text into the document
+    with doc.begin_transaction() as txn:
+        xml_fragment = doc.get_xml_element('document-store')
+
+        xml_element = xml_fragment.push_xml_element(txn, 'paragraph')
+
+        xml_text = xml_element.push_xml_text(txn)
+        xml_text.push(txn, text)
+
+    # Encode the document as a Uint8Array
+    update = Y.encode_state_as_update(doc)
+
+    # Encode the result to base64
+    return base64.b64encode(update).decode('utf-8')
