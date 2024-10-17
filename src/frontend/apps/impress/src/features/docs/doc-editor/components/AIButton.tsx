@@ -374,6 +374,7 @@ const useHandleAIError = () => {
         });
       }
 
+      toast(t('AI seems busy! Please try again.'), VariantType.ERROR);
       console.error(error);
     },
     [toast, t],
