@@ -25,9 +25,9 @@
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
-    "@blocknote/core": "0.16.0",
-    "@blocknote/mantine": "0.16.0",
-    "@blocknote/react": "0.16.0",
+    "@blocknote/core": "0.17.0",
+    "@blocknote/mantine": "0.17.0",
+    "@blocknote/react": "0.17.0",
     "@types/node": "20.16.12",
     "@types/react-dom": "18.3.1",
     "@typescript-eslint/eslint-plugin": "8.9.0",
