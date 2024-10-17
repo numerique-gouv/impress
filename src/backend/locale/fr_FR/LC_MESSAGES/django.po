@@ -346,10 +346,14 @@ msgid "This mail has been sent to %(email)s by %(name)s [%(href)s]"
 msgstr ""
 
 #: impress/settings.py:176
-msgid "English"
+msgid "German"
 msgstr ""
 
 #: impress/settings.py:177
+msgid "English"
+msgstr ""
+
+#: impress/settings.py:178
 msgid "French"
 msgstr ""
 
