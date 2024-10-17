@@ -28,15 +28,15 @@
     "@blocknote/core": "0.16.0",
     "@blocknote/mantine": "0.16.0",
     "@blocknote/react": "0.16.0",
-    "@types/node": "20.16.10",
-    "@types/react-dom": "18.3.0",
-    "@typescript-eslint/eslint-plugin": "8.7.0",
-    "@typescript-eslint/parser": "8.7.0",
+    "@types/node": "20.16.12",
+    "@types/react-dom": "18.3.1",
+    "@typescript-eslint/eslint-plugin": "8.9.0",
+    "@typescript-eslint/parser": "8.9.0",
     "cross-env": "7.0.3",
     "eslint": "8.57.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "typescript": "5.6.2",
-    "yjs": "13.6.19"
+    "typescript": "5.6.3",
+    "yjs": "13.6.20"
   }
 }
