@@ -27,6 +27,7 @@ and this project adheres to
 - 🐛(frontend) invalidate queries after removing user #336
 - 🐛(backend) Fix dysfunctional permissions on document create #329
 - 🐛(backend) fix nginx docker container #340
+- 🐛(frontend) fix copy paste firefox #353
 
 ## [1.5.1] - 2024-10-10
 
