@@ -9,6 +9,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+
+## [1.6.0] - 2024-10-17
+
 ## Added
 
 - ✨AI to doc editor #250
@@ -28,6 +31,7 @@ and this project adheres to
 - 🐛(backend) Fix dysfunctional permissions on document create #329
 - 🐛(backend) fix nginx docker container #340
 - 🐛(frontend) fix copy paste firefox #353
+
 
 ## [1.5.1] - 2024-10-10
 
@@ -207,7 +211,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.5.1...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.6.0...main
+[v1.6.0]: https://github.com/numerique-gouv/impress/releases/v1.6.0
 [1.5.1]: https://github.com/numerique-gouv/impress/releases/v1.5.1
 [1.5.0]: https://github.com/numerique-gouv/impress/releases/v1.5.0
 [1.4.0]: https://github.com/numerique-gouv/impress/releases/v1.4.0
