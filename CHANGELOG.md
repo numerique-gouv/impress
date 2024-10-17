@@ -17,6 +17,7 @@ and this project adheres to
 - ✨AI to doc editor #250
 - ✨(backend) allow uploading more types of attachments #309
 - ✨(frontend) add buttons to copy document to clipboard as HTML/Markdown #300
+- 📝Contributing.md #352
 
 ## Changed
 
