@@ -8,6 +8,8 @@ from rest_framework import views as drf_views
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from ..models import Document, User, RoleChoices, DocumentAccess
+
 
 def exception_handler(exc, context):
     """Handle Django ValidationError as an accepted exception.
@@ -38,3 +40,32 @@ def get_frontend_configuration(request):
     }
     frontend_configuration.update(settings.FRONTEND_CONFIGURATION)
     return Response(frontend_configuration)
+
+
+
+@api_view(["POST"])
+def create_summary(request):
+    """Wip."""
+
+    data = request.data
+
+    document = Document(
+        title="Votre résumé",
+        link_reach="authenticated",
+        link_role="reader",
+    )
+
+    document.save()
+    owner_user = User.objects.get(email=data["owner"])
+
+    document_access = DocumentAccess(
+        user=owner_user,
+        document=document,
+        role=RoleChoices.OWNER
+    )
+    document_access.save()
+
+    document.content = data["content"]
+    document.save()
+
+    return Response({"id": document.id})
