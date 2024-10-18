@@ -58,6 +58,7 @@ releases:
       - env.d/{{ .Environment.Name }}/values.impress.yaml.gotmpl
     secrets:
       - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - env.d/{{ .Environment.Name }}/custom-secrets.enc.yaml
 
 environments:
   dev:
