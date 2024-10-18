@@ -13,6 +13,10 @@ and this project adheres to
 
 - 📝Contributing.md #352
 
+## Fixed
+
+- 🐛(frontend) add default toolbar buttons #355
+
 
 ## [1.6.0] - 2024-10-17
 
