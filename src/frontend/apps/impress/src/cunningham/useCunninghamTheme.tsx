@@ -3,9 +3,10 @@ import { create } from 'zustand';
 
 import { tokens } from './cunningham-tokens';
 
-type Tokens = typeof tokens.themes.default & Partial<typeof tokens.themes.dsfr>;
-type ColorsTokens = Tokens['theme']['colors'];
-type ComponentTokens = Tokens['components'];
+export type Tokens = typeof tokens.themes.default &
+  Partial<typeof tokens.themes.dsfr>;
+export type ColorsTokens = Tokens['theme']['colors'];
+export type ComponentTokens = Tokens['components'];
 type Theme = 'default' | 'dsfr';
 
 interface AuthStore {

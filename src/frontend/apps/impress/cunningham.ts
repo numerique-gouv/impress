@@ -8,6 +8,9 @@ const config = {
           'primary-100': '#EDF5FA',
           'primary-150': '#E5EEFA',
           'info-150': '#E5EEFA',
+          'link-reach-restricted': 'var(--c--theme--colors--danger-500)',
+          'link-reach-public': 'var(--c--theme--colors--success-500)',
+          'link-reach-authenticated': 'var(--c--theme--colors--info-500)',
         },
         font: {
           sizes: {
@@ -358,6 +361,8 @@ const config = {
         },
         'forms-field': {
           color: 'var(--c--theme--colors--primary-text)',
+          'footer-font-size': 'var(--c--theme--font--sizes--t)',
+          'footer-color': 'var(--c--theme--colors--greyscale-text)',
         },
         'forms-input': {
           'border-radius': '4px',
@@ -371,6 +376,9 @@ const config = {
           'label-color': {
             big: 'var(--c--theme--colors--primary-text)',
           },
+        },
+        'forms-radio': {
+          'accent-color': 'var(--c--theme--colors--primary-600)',
         },
         'forms-select': {
           'item-font-size': '14px',

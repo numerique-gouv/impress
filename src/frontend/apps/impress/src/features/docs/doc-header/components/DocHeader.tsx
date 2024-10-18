@@ -5,6 +5,7 @@ import { Box, Card, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import {
   Doc,
+  LinkReachTag,
   Role,
   currentDocRole,
   useTrans,
@@ -13,7 +14,6 @@ import { Versions } from '@/features/docs/doc-versioning';
 import { useDate } from '@/hook';
 import { useResponsiveStore } from '@/stores';
 
-import { DocTagPublic } from './DocTagPublic';
 import { DocTitle } from './DocTitle';
 import { DocToolBox } from './DocToolBox';
 
@@ -91,7 +91,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
             $gap="0.5rem 2rem"
             $wrap="wrap"
           >
-            <DocTagPublic doc={doc} />
+            <LinkReachTag linkReach={doc.link_reach} />
             <Text $size="s" $display="inline">
               {t('Created at')} <strong>{formatDate(doc.created_at)}</strong>
             </Text>
