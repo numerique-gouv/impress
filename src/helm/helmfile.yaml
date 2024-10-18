@@ -53,6 +53,7 @@ releases:
   - name: impress
     version: {{ .Values.version }}
     namespace: {{ .Namespace }}
+    missingFileHandler: Warn
     chart: ./impress
     values:
       - env.d/{{ .Environment.Name }}/values.impress.yaml.gotmpl
