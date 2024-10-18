@@ -9,11 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 
 import { Card, StyledLink, Text, TextErrors } from '@/components';
-import { useCunninghamTheme } from '@/cunningham';
 import {
   Doc,
   DocsOrdering,
-  LinkReach,
+  LinkReachTag,
   currentDocRole,
   isDocsOrdering,
   useDocs,
@@ -53,7 +52,6 @@ function formatSortModel(sortModel: SortModelItem): DocsOrdering | undefined {
 }
 
 export const DocsGrid = () => {
-  const { colorsTokens } = useCunninghamTheme();
   const { transRole } = useTrans();
   const { t } = useTranslation();
   const { formatDate } = useDate();
@@ -95,21 +93,7 @@ export const DocsGrid = () => {
       id: 'visibility',
       size: 95,
       renderCell: ({ row }) => {
-        return (
-          row.link_reach === LinkReach.PUBLIC && (
-            <StyledLink href={`/docs/${row.id}`}>
-              <Text
-                $weight="bold"
-                $background={colorsTokens()['primary-600']}
-                $color="white"
-                $padding="xtiny"
-                $radius="3px"
-              >
-                {t('Public')}
-              </Text>
-            </StyledLink>
-          )
-        );
+        return <LinkReachTag linkReach={row.link_reach} />;
       },
     },
     {

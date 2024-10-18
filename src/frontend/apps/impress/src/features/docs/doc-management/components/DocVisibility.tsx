@@ -1,15 +1,16 @@
 import {
-  Button,
-  Switch,
+  Radio,
+  RadioGroup,
+  Select,
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, IconBG } from '@/components';
 
 import { KEY_DOC, KEY_LIST_DOC, useUpdateDocLink } from '../api';
+import { useTrans } from '../hooks';
 import { Doc, LinkReach } from '../types';
 
 interface DocVisibilityProps {
@@ -18,9 +19,7 @@ interface DocVisibilityProps {
 
 export const DocVisibility = ({ doc }: DocVisibilityProps) => {
   const { t } = useTranslation();
-  const [docPublic, setDocPublic] = useState(
-    doc.link_reach === LinkReach.PUBLIC,
-  );
+  const { transLinkReach } = useTrans();
   const { toast } = useToastProvider();
   const api = useUpdateDocLink({
     onSuccess: () => {
@@ -50,49 +49,81 @@ export const DocVisibility = ({ doc }: DocVisibilityProps) => {
         $width="100%"
         $wrap="wrap"
         $gap="1rem"
-        $justify="space-between"
         $direction="row"
+        $align="center"
       >
-        <Box $direction="row" $gap="1rem" $align="center">
-          <Switch
-            label={t(docPublic ? 'Doc public' : 'Doc private')}
-            defaultChecked={docPublic}
-            onChange={() => {
+        <Box
+          $shrink="0"
+          $css={`
+              & .c__field__footer .c__field__text {
+                ${!doc.abilities.link_configuration && 'color: #cacaca;'};
+              }
+            `}
+        >
+          <Select
+            label={t('Visibility')}
+            options={Object.values(LinkReach).map((linkReach) => ({
+              label: transLinkReach(linkReach).label,
+              value: linkReach,
+            }))}
+            onChange={(evt) =>
               api.mutate({
+                link_reach: evt.target.value as LinkReach,
                 id: doc.id,
-                link_reach: docPublic ? LinkReach.RESTRICTED : LinkReach.PUBLIC,
-                link_role: 'reader',
-              });
-              setDocPublic(!docPublic);
-            }}
-            disabled={!doc.abilities.link_configuration}
-            text={
-              docPublic
-                ? t('Anyone on the internet with the link can view')
-                : t('Only for people with access')
+              })
             }
+            value={doc.link_reach}
+            clearable={false}
+            text={transLinkReach(doc.link_reach).help}
+            disabled={!doc.abilities.link_configuration}
           />
         </Box>
-        <Button
-          onClick={() => {
-            navigator.clipboard
-              .writeText(window.location.href)
-              .then(() => {
-                toast(t('Link Copied !'), VariantType.SUCCESS, {
-                  duration: 3000,
-                });
-              })
-              .catch(() => {
-                toast(t('Failed to copy link'), VariantType.ERROR, {
-                  duration: 3000,
-                });
-              });
-          }}
-          color="primary"
-          icon={<span className="material-icons">copy</span>}
-        >
-          {t('Copy link')}
-        </Button>
+        {(doc.link_reach === LinkReach.AUTHENTICATED ||
+          doc.link_reach === LinkReach.PUBLIC) && (
+          <Box
+            $css={`
+              & .c__field__footer .c__field__text {
+                ${!doc.abilities.link_configuration && 'color: #cacaca;'};
+              }
+              & .c__checkbox{
+                padding: 0.15rem 0.25rem;
+              }
+            `}
+          >
+            <RadioGroup
+              compact
+              style={{
+                display: 'flex',
+              }}
+              text="How people can interact with the document"
+            >
+              {[
+                {
+                  label: t('Can view'),
+                  value: 'reader',
+                },
+                {
+                  label: t('Can view and edit'),
+                  value: 'editor',
+                },
+              ].map((radio) => (
+                <Radio
+                  key={radio.value}
+                  label={radio.label}
+                  value={radio.value}
+                  onChange={() =>
+                    api.mutate({
+                      link_role: radio.value as Doc['link_role'],
+                      id: doc.id,
+                    })
+                  }
+                  checked={doc.link_role === radio.value}
+                  disabled={!doc.abilities.link_configuration}
+                />
+              ))}
+            </RadioGroup>
+          </Box>
+        )}
       </Box>
     </Card>
   );
