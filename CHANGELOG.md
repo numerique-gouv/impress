@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- 📝Contributing.md #352
+
 
 ## [1.6.0] - 2024-10-17
 
