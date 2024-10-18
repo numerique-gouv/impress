@@ -53,11 +53,13 @@ releases:
   - name: impress
     version: {{ .Values.version }}
     namespace: {{ .Namespace }}
+    missingFileHandler: Warn
     chart: ./impress
     values:
       - env.d/{{ .Environment.Name }}/values.impress.yaml.gotmpl
     secrets:
       - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+      - env.d/{{ .Environment.Name }}/custom-secrets.enc.yaml
 
 environments:
   dev:
@@ -66,6 +68,11 @@ environments:
     secrets:
       - env.d/{{ .Environment.Name }}/secrets.enc.yaml
   staging:
+    values:
+      - version: 0.0.1
+    secrets:
+      - env.d/{{ .Environment.Name }}/secrets.enc.yaml
+  docs-ia:
     values:
       - version: 0.0.1
     secrets:
