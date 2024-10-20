@@ -39,6 +39,18 @@ docker_build(
     ]
 )
 
+
+docker_build(
+    'localhost:5001/impress-blocknote:latest',
+    context='..',
+    dockerfile='../src/blocknote/Dockerfile',
+    only=['./src/blocknote', './docker', './.dockerignore'],
+    target = 'production',
+    live_update=[
+        sync('../src/blocknote', '/home/blocknote'),
+    ]
+)
+
 k8s_yaml(local('cd ../src/helm && helmfile -n impress -e dev template .'))
 
 migration = '''
