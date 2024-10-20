@@ -17,8 +17,11 @@
     "check": "prettier --check ./src"
   },
   "dependencies": {
+    "@blocknote/server-util": "0.17.1",
     "dotenv": "16.4.5",
-    "express": "4.21.1"
+    "express": "4.21.1",
+    "prettier": "3.3.3",
+    "yjs": "13.6.20"
   },
   "devDependencies": {
     "@types/express": "5.0.0",
