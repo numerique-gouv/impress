@@ -134,6 +134,16 @@ services:
     ports:
       - "3000:3000"
 
+  blocknote-converter:
+    user: "${DOCKER_USER:-1000}"
+    build:
+      context: .
+      dockerfile: ./src/blocknote/Dockerfile
+      target: production
+    image: blocknote:blocknote-production
+    ports:
+      - "8081:8081"
+
   dockerize:
     image: jwilder/dockerize
 
