@@ -1,0 +1,29 @@
+{
+  "name": "blocknote-server",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "keywords": [
+    "nodejs",
+    "bootstrap",
+    "express"
+  ],
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "16.4.5",
+    "express": "4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.0",
+    "@types/node": "22.7.7",
+    "concurrently": "9.0.1",
+    "nodemon": "3.1.7",
+    "ts-node": "10.9.2",
+    "typescript": "5.6.3"
+  }
+}
