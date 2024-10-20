@@ -158,6 +158,15 @@ Requires top level scope
 {{- end }}
 
 {{/*
+Full name for the blocknote
+
+Requires top level scope
+*/}}
+{{- define "impress.blocknote.fullname" -}}
+{{ include "impress.fullname" . }}-blocknote
+{{- end }}
+
+{{/*
 Usage : {{ include "impress.secret.dockerconfigjson.name" (dict "fullname" (include "impress.fullname" .) "imageCredentials" .Values.path.to.the.image1) }}
 */}}
 {{- define "impress.secret.dockerconfigjson.name" }}

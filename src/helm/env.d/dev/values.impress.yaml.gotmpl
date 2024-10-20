@@ -93,6 +93,14 @@ yProvider:
     pullPolicy: Always
     tag: "latest"
 
+blocknote:
+  replicas: 1
+
+  image:
+      repository: localhost:5001/impress-blocknote
+      pullPolicy: Always
+      tag: "latest"
+
 ingress:
   enabled: true
   host: impress.127.0.0.1.nip.io
