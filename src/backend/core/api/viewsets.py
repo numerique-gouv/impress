@@ -807,7 +807,10 @@ class InvitationViewset(
 
     lookup_field = "id"
     pagination_class = Pagination
-    permission_classes = [permissions.IsAuthenticated, permissions.AccessPermission]
+    permission_classes = [
+        permissions.CanCreateInvitationPermission,
+        permissions.AccessPermission,
+    ]
     queryset = (
         models.Invitation.objects.all()
         .select_related("document")
@@ -842,10 +845,16 @@ class InvitationViewset(
             )
 
             queryset = (
-                # The logged-in user should be part of a document to see its accesses
+                # The logged-in user should be administrator or owner to see its accesses
                 queryset.filter(
-                    Q(document__accesses__user=user)
-                    | Q(document__accesses__team__in=teams),
+                    Q(
+                        document__accesses__user=user,
+                        document__accesses__role__in=models.PRIVILEGED_ROLES,
+                    )
+                    | Q(
+                        document__accesses__team__in=teams,
+                        document__accesses__role__in=models.PRIVILEGED_ROLES,
+                    ),
                 )
                 # Abilities are computed based on logged-in user's role and
                 # the user role on each document access
