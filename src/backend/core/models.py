@@ -72,6 +72,9 @@ class RoleChoices(models.TextChoices):
     OWNER = "owner", _("Owner")
 
 
+PRIVILEGED_ROLES = [RoleChoices.ADMIN, RoleChoices.OWNER]
+
+
 class LinkReachChoices(models.TextChoices):
     """Defines types of access for links"""
 
@@ -514,6 +517,7 @@ class Document(BaseModel):
             "destroy": RoleChoices.OWNER in roles,
             "link_configuration": is_owner_or_admin,
             "manage_accesses": is_owner_or_admin,
+            "invite_owner": RoleChoices.OWNER in roles,
             "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,
             "update": is_owner_or_admin or is_editor,
@@ -880,8 +884,6 @@ class Invitation(BaseModel):
 
     def get_abilities(self, user):
         """Compute and return abilities for a given user."""
-        can_delete = False
-        can_update = False
         roles = []
 
         if user.is_authenticated:
@@ -896,17 +898,13 @@ class Invitation(BaseModel):
                 except (self._meta.model.DoesNotExist, IndexError):
                     roles = []
 
-            can_delete = bool(
-                set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
-            )
-
-            can_update = bool(
-                set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
-            )
+        is_admin_or_owner = bool(
+            set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
+        )
 
         return {
-            "destroy": can_delete,
-            "update": can_update,
-            "partial_update": can_update,
-            "retrieve": bool(roles),
+            "destroy": is_admin_or_owner,
+            "update": is_admin_or_owner,
+            "partial_update": is_admin_or_owner,
+            "retrieve": is_admin_or_owner,
         }

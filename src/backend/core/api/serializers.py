@@ -328,48 +328,36 @@ class InvitationSerializer(serializers.ModelSerializer):
         return {}
 
     def validate(self, attrs):
-        """Validate and restrict invitation to new user based on email."""
-
+        """Validate invitation data."""
         request = self.context.get("request")
         user = getattr(request, "user", None)
-        role = attrs.get("role")
 
-        try:
-            document_id = self.context["resource_id"]
-        except KeyError as exc:
-            raise exceptions.ValidationError(
-                "You must set a document ID in kwargs to create a new document invitation."
-            ) from exc
+        attrs["document_id"] = self.context["resource_id"]
 
-        if not user and user.is_authenticated:
-            raise exceptions.PermissionDenied(
-                "Anonymous users are not allowed to create invitations."
-            )
+        # Only set the issuer if the instance is being created
+        if self.instance is None:
+            attrs["issuer"] = user
 
-        if not models.DocumentAccess.objects.filter(
-            Q(user=user) | Q(team__in=user.teams),
-            document=document_id,
-            role__in=[models.RoleChoices.OWNER, models.RoleChoices.ADMIN],
-        ).exists():
-            raise exceptions.PermissionDenied(
-                "You are not allowed to manage invitations for this document."
-            )
+        return attrs
 
-        if (
-            role == models.RoleChoices.OWNER
-            and not models.DocumentAccess.objects.filter(
+    def validate_role(self, role):
+        """Custom validation for the role field."""
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        document_id = self.context["resource_id"]
+
+        # If the role is OWNER, check if the user has OWNER access
+        if role == models.RoleChoices.OWNER:
+            if not models.DocumentAccess.objects.filter(
                 Q(user=user) | Q(team__in=user.teams),
                 document=document_id,
                 role=models.RoleChoices.OWNER,
-            ).exists()
-        ):
-            raise exceptions.PermissionDenied(
-                "Only owners of a document can invite other users as owners."
-            )
+            ).exists():
+                raise serializers.ValidationError(
+                    "Only owners of a document can invite other users as owners."
+                )
 
-        attrs["document_id"] = document_id
-        attrs["issuer"] = user
-        return attrs
+        return role
 
 
 class VersionFilterSerializer(serializers.Serializer):
