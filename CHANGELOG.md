@@ -12,6 +12,7 @@ and this project adheres to
 ## Added
 
 - 📝Contributing.md #352
+- 🌐(frontend) add localization to editor #268
 
 ## Fixed
 
