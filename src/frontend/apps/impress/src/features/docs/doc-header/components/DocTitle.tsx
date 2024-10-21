@@ -7,7 +7,6 @@ import {
 } from '@openfun/cunningham-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createGlobalStyle } from 'styled-components';
 
 import { Box, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
@@ -21,12 +20,6 @@ import {
 } from '@/features/docs/doc-management';
 import { useResponsiveStore } from '@/stores';
 import { isFirefox } from '@/utils/userAgent';
-
-const DocTitleStyle = createGlobalStyle`
-  .c__tooltip {
-    padding: 4px 6px;
-  }
-`;
 
 interface DocTitleProps {
   doc: Doc;
@@ -126,7 +119,6 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
 
   return (
     <>
-      <DocTitleStyle />
       <Tooltip content={t('Rename')} placement="top">
         <Box
           as="h2"
