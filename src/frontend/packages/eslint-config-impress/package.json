@@ -15,11 +15,11 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.8.3",
-    "eslint-plugin-jsx-a11y": "6.10.0",
-    "eslint-plugin-playwright": "1.7.0",
+    "eslint-plugin-jsx-a11y": "6.10.1",
+    "eslint-plugin-playwright": "1.8.0",
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-react": "7.37.1",
-    "eslint-plugin-testing-library": "6.3.0",
+    "eslint-plugin-testing-library": "6.4.0",
     "prettier": "3.3.3"
   }
 }
