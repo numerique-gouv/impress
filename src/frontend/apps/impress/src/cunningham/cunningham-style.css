@@ -532,3 +532,10 @@ input:-webkit-autofill:focus {
 .c__toast__container {
   z-index: 10000;
 }
+
+/**
+ * Tooltip
+*/
+.c__tooltip {
+  padding: 4px 6px;
+}
