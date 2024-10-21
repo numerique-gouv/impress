@@ -2,10 +2,12 @@
 Unit tests for the Invitation model
 """
 
-import time
+from datetime import timedelta
+from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
 from django.core import exceptions
+from django.utils import timezone
 
 import pytest
 from faker import Faker
@@ -60,7 +62,7 @@ def test_models_invitations_role_among_choices():
         factories.InvitationFactory(role="boss")
 
 
-def test_models_invitations__is_expired(settings):
+def test_models_invitations_is_expired():
     """
     The 'is_expired' property should return False until validity duration
     is exceeded and True afterwards.
@@ -68,13 +70,16 @@ def test_models_invitations__is_expired(settings):
     expired_invitation = factories.InvitationFactory()
     assert expired_invitation.is_expired is False
 
-    settings.INVITATION_VALIDITY_DURATION = 1
-    time.sleep(1)
+    not_late = timezone.now() + timedelta(seconds=604799)
+    with mock.patch("django.utils.timezone.now", return_value=not_late):
+        assert expired_invitation.is_expired is False
 
-    assert expired_invitation.is_expired is True
+    too_late = timezone.now() + timedelta(seconds=604800)  # 7 days
+    with mock.patch("django.utils.timezone.now", return_value=too_late):
+        assert expired_invitation.is_expired is True
 
 
-def test_models_invitation__new_user__convert_invitations_to_accesses():
+def test_models_invitationd_new_userd_convert_invitations_to_accesses():
     """
     Upon creating a new user, invitations linked to the email
     should be converted to accesses and then deleted.
@@ -109,7 +114,7 @@ def test_models_invitation__new_user__convert_invitations_to_accesses():
     ).exists()  # the other invitation remains
 
 
-def test_models_invitation__new_user__filter_expired_invitations():
+def test_models_invitationd_new_user_filter_expired_invitations():
     """
     Upon creating a new identity, valid invitations should be converted into accesses
     and expired invitations should remain unchanged.
@@ -140,7 +145,7 @@ def test_models_invitation__new_user__filter_expired_invitations():
 
 
 @pytest.mark.parametrize("num_invitations, num_queries", [(0, 3), (1, 6), (20, 6)])
-def test_models_invitation__new_user__user_creation_constant_num_queries(
+def test_models_invitationd_new_userd_user_creation_constant_num_queries(
     django_assert_num_queries, num_invitations, num_queries
 ):
     """
@@ -235,7 +240,7 @@ def test_models_document_invitations_get_abilities_reader(via, mock_user_teams):
 
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
+        "retrieve": False,
         "partial_update": False,
         "update": False,
     }
@@ -260,7 +265,7 @@ def test_models_document_invitations_get_abilities_editor(via, mock_user_teams):
 
     assert abilities == {
         "destroy": False,
-        "retrieve": True,
+        "retrieve": False,
         "partial_update": False,
         "update": False,
     }

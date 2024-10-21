@@ -3,354 +3,46 @@ Unit tests for the Invitation model
 """
 
 import random
-import time
+from datetime import timedelta
+from unittest import mock
 
 from django.core import mail
+from django.utils import timezone
 
 import pytest
-from rest_framework import status
 from rest_framework.test import APIClient
 
 from core import factories, models
+from core.api import serializers
 from core.tests.conftest import TEAM, USER, VIA
 
 pytestmark = pytest.mark.django_db
 
 
-def test_api_document_invitations__create__anonymous():
-    """Anonymous users should not be able to create invitations."""
-    document = factories.DocumentFactory()
-    invitation_values = {
-        "email": "guest@example.com",
-        "role": random.choice(models.RoleChoices.choices)[0],
-    }
-
-    response = APIClient().post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-    )
-
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert response.json() == {
-        "detail": "Authentication credentials were not provided."
-    }
+# List
 
 
-def test_api_document_invitations__create__authenticated_outsider():
-    """Users outside of document should not be permitted to invite to document."""
-    user = factories.UserFactory()
-    document = factories.DocumentFactory()
-    invitation_values = {
-        "email": "guest@example.com",
-        "role": random.choice(models.RoleChoices.choices)[0],
-    }
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-    )
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
-@pytest.mark.parametrize(
-    "inviting,invited,is_allowed",
-    (
-        ["reader", "reader", False],
-        ["reader", "editor", False],
-        ["reader", "administrator", False],
-        ["reader", "owner", False],
-        ["editor", "reader", False],
-        ["editor", "editor", False],
-        ["editor", "administrator", False],
-        ["editor", "owner", False],
-        ["administrator", "reader", True],
-        ["administrator", "editor", True],
-        ["administrator", "administrator", True],
-        ["administrator", "owner", False],
-        ["owner", "reader", True],
-        ["owner", "editor", True],
-        ["owner", "administrator", True],
-        ["owner", "owner", True],
-    ),
-)
-@pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__create__privileged_members(
-    via, inviting, invited, is_allowed, mock_user_teams
-):
-    """
-    Only owners and administrators should be able to invite new users.
-    Only owners can invite owners.
-    """
-    user = factories.UserFactory()
-    document = factories.DocumentFactory()
-    if via == USER:
-        factories.UserDocumentAccessFactory(document=document, user=user, role=inviting)
-    elif via == TEAM:
-        mock_user_teams.return_value = ["lasuite", "unknown"]
-        factories.TeamDocumentAccessFactory(
-            document=document, team="lasuite", role=inviting
-        )
-
-    invitation_values = {
-        "email": "guest@example.com",
-        "role": invited,
-    }
-
-    assert len(mail.outbox) == 0
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-    )
-    if is_allowed:
-        assert response.status_code == status.HTTP_201_CREATED
-        assert models.Invitation.objects.count() == 1
-
-        assert len(mail.outbox) == 1
-        email = mail.outbox[0]
-        assert email.to == ["guest@example.com"]
-        email_content = " ".join(email.body.split())
-        assert (
-            f"{user.full_name} shared a document with you: {document.title}"
-            in email_content
-        )
-    else:
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert models.Invitation.objects.exists() is False
-
-
-def test_api_document_invitations__create__email_from_content_language():
-    """
-    The email generated is from the language set in the Content-Language header
-    """
-    user = factories.UserFactory()
-    document = factories.DocumentFactory()
-    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
-
-    invitation_values = {
-        "email": "guest@example.com",
-        "role": "reader",
-    }
-
-    assert len(mail.outbox) == 0
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-        headers={"Content-Language": "fr-fr"},
-    )
-
-    assert response.status_code == status.HTTP_201_CREATED
-    assert response.json()["email"] == "guest@example.com"
-    assert models.Invitation.objects.count() == 1
-    assert len(mail.outbox) == 1
-
-    email = mail.outbox[0]
-
-    assert email.to == ["guest@example.com"]
-
-    email_content = " ".join(email.body.split())
-    assert (
-        f"{user.full_name} a partagé un document avec vous: {document.title}"
-        in email_content
-    )
-
-
-def test_api_document_invitations__create__email_from_content_language_not_supported():
-    """
-    If the language from the Content-Language is not supported
-    it will display the default language, English.
-    """
-    user = factories.UserFactory()
-    document = factories.DocumentFactory()
-    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
-
-    invitation_values = {
-        "email": "guest@example.com",
-        "role": "reader",
-    }
-
-    assert len(mail.outbox) == 0
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-        headers={"Content-Language": "not-supported"},
-    )
-
-    assert response.status_code == status.HTTP_201_CREATED
-    assert response.json()["email"] == "guest@example.com"
-    assert models.Invitation.objects.count() == 1
-    assert len(mail.outbox) == 1
-
-    email = mail.outbox[0]
-
-    assert email.to == ["guest@example.com"]
-
-    email_content = " ".join(email.body.split())
-    assert (
-        f"{user.full_name} shared a document with you: {document.title}"
-        in email_content
-    )
-
-
-def test_api_document_invitations__create__email__full_name_empty():
-    """
-    If the full name of the user is empty, it will display the email address.
-    """
-    user = factories.UserFactory(full_name="")
-    document = factories.DocumentFactory()
-    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
-
-    invitation_values = {
-        "email": "guest@example.com",
-        "role": "reader",
-    }
-
-    assert len(mail.outbox) == 0
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-        headers={"Content-Language": "not-supported"},
-    )
-
-    assert response.status_code == status.HTTP_201_CREATED
-    assert response.json()["email"] == "guest@example.com"
-    assert models.Invitation.objects.count() == 1
-    assert len(mail.outbox) == 1
-
-    email = mail.outbox[0]
-
-    assert email.to == ["guest@example.com"]
-
-    email_content = " ".join(email.body.split())
-    assert f"{user.email} shared a document with you: {document.title}" in email_content
-    assert (
-        f'{user.email} invited you with the role "reader" on the '
-        f"following document : {document.title}" in email_content
-    )
-
-
-def test_api_document_invitations__create__issuer_and_document_override():
-    """It should not be possible to set the "document" and "issuer" fields."""
-    user = factories.UserFactory()
-    document = factories.DocumentFactory(users=[(user, "owner")])
-    other_document = factories.DocumentFactory(users=[(user, "owner")])
-    invitation_values = {
-        "document": str(other_document.id),
-        "issuer": str(factories.UserFactory().id),
-        "email": "guest@example.com",
-        "role": random.choice(models.RoleChoices.choices)[0],
-    }
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-    )
-
-    assert response.status_code == status.HTTP_201_CREATED
-    # document and issuer automatically set
-    assert response.json()["document"] == str(document.id)
-    assert response.json()["issuer"] == str(user.id)
-
-
-def test_api_document_invitations__create__cannot_duplicate_invitation():
-    """An email should not be invited multiple times to the same document."""
-    existing_invitation = factories.InvitationFactory()
-    document = existing_invitation.document
-
-    # Grant privileged role on the Document to the user
-    user = factories.UserFactory()
-    models.DocumentAccess.objects.create(
-        document=document, user=user, role="administrator"
-    )
-
-    # Create a new invitation to the same document with the exact same email address
-    invitation_values = {
-        "email": existing_invitation.email,
-        "role": random.choice(["administrator", "editor", "reader"]),
-    }
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-    )
-
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == [
-        "Document invitation with this Email address and Document already exists."
-    ]
-
-
-def test_api_document_invitations__create__cannot_invite_existing_users():
-    """
-    It should not be possible to invite already existing users.
-    """
-    user = factories.UserFactory()
-    document = factories.DocumentFactory(users=[(user, "owner")])
-    existing_user = factories.UserFactory()
-
-    # Build an invitation to the email of an exising identity in the db
-    invitation_values = {
-        "email": existing_user.email,
-        "role": random.choice(models.RoleChoices.choices)[0],
-    }
-
-    client = APIClient()
-    client.force_login(user)
-    response = client.post(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-        invitation_values,
-        format="json",
-    )
-
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == ["This email is already associated to a registered user."]
-
-
-def test_api_document_invitations__list__anonymous_user():
+def test_api_document_invitations_list_anonymous_user():
     """Anonymous users should not be able to list invitations."""
-    document = factories.DocumentFactory()
-    response = APIClient().get(f"/api/v1.0/documents/{document.id}/invitations/")
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    invitation = factories.InvitationFactory()
+    response = APIClient().get(
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/"
+    )
+    assert response.status_code == 401
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__list__authenticated(
-    via, mock_user_teams, django_assert_num_queries
+@pytest.mark.parametrize("role", ["owner", "administrator"])
+def test_api_document_invitations_list_authenticated_privileged(
+    role, via, mock_user_teams, django_assert_num_queries
 ):
     """
     Authenticated users should be able to list invitations for documents to which they are
-    related, whatever the role and including invitations issued by other users.
+    related with administrator or owner privilege, including invitations issued by other users.
     """
     user = factories.UserFactory()
     other_user = factories.UserFactory()
     document = factories.DocumentFactory()
-    role = random.choice(models.RoleChoices.choices)[0]
     if via == USER:
         factories.UserDocumentAccessFactory(document=document, user=user, role=role)
     elif via == TEAM:
@@ -359,24 +51,22 @@ def test_api_document_invitations__list__authenticated(
             document=document, team="lasuite", role=role
         )
 
-    invitation = factories.InvitationFactory(
-        document=document, role="administrator", issuer=user
-    )
+    invitation = factories.InvitationFactory(document=document, issuer=user)
     other_invitations = factories.InvitationFactory.create_batch(
-        2, document=document, role="reader", issuer=other_user
+        2, document=document, issuer=other_user
     )
 
     # invitations from other documents should not be listed
     other_document = factories.DocumentFactory()
-    factories.InvitationFactory.create_batch(2, document=other_document, role="reader")
+    factories.InvitationFactory.create_batch(2, document=other_document)
 
     client = APIClient()
     client.force_login(user)
     with django_assert_num_queries(3):
         response = client.get(
-            f"/api/v1.0/documents/{document.id}/invitations/",
+            f"/api/v1.0/documents/{document.id!s}/invitations/",
         )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == 200
     assert response.json()["count"] == 3
     assert sorted(response.json()["results"], key=lambda x: x["created_at"]) == sorted(
         [
@@ -401,7 +91,44 @@ def test_api_document_invitations__list__authenticated(
     )
 
 
-def test_api_document_invitations__list__expired_invitations_still_listed(settings):
+@pytest.mark.parametrize("via", VIA)
+@pytest.mark.parametrize("role", ["reader", "editor"])
+def test_api_document_invitations_list_authenticated_unprivileged(
+    role, via, mock_user_teams, django_assert_num_queries
+):
+    """
+    Authenticated users should not be able to list invitations for documents to which they are
+    related with reader or editor role, including invitations issued by other users.
+    """
+    user = factories.UserFactory()
+    other_user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    if via == USER:
+        factories.UserDocumentAccessFactory(document=document, user=user, role=role)
+    elif via == TEAM:
+        mock_user_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=document, team="lasuite", role=role
+        )
+
+    factories.InvitationFactory(document=document, issuer=user)
+    factories.InvitationFactory.create_batch(2, document=document, issuer=other_user)
+
+    # invitations from other documents should not be listed
+    other_document = factories.DocumentFactory()
+    factories.InvitationFactory.create_batch(2, document=other_document)
+
+    client = APIClient()
+    client.force_login(user)
+    with django_assert_num_queries(2):
+        response = client.get(
+            f"/api/v1.0/documents/{document.id!s}/invitations/",
+        )
+    assert response.status_code == 200
+    assert response.json()["count"] == 0
+
+
+def test_api_document_invitations_list_expired_invitations_still_listed():
     """
     Expired invitations are still listed.
     """
@@ -412,21 +139,25 @@ def test_api_document_invitations__list__expired_invitations_still_listed(settin
         users=[(user, "administrator"), (other_user, "owner")]
     )
 
-    # override settings to accelerate validation expiration
-    settings.INVITATION_VALIDITY_DURATION = 1  # second
     expired_invitation = factories.InvitationFactory(
         document=document,
         role="reader",
         issuer=user,
     )
-    time.sleep(1)
 
     client = APIClient()
     client.force_login(user)
-    response = client.get(
-        f"/api/v1.0/documents/{document.id}/invitations/",
-    )
-    assert response.status_code == status.HTTP_200_OK
+
+    # mock timezone.now to accelerate validation expiration
+    too_late = timezone.now() + timedelta(seconds=604800)  # 7 days
+    with mock.patch("django.utils.timezone.now", return_value=too_late):
+        assert expired_invitation.is_expired is True
+
+        response = client.get(
+            f"/api/v1.0/documents/{document.id!s}/invitations/",
+        )
+
+    assert response.status_code == 200
     assert response.json()["count"] == 1
     assert sorted(response.json()["results"], key=lambda x: x["created_at"]) == sorted(
         [
@@ -452,20 +183,23 @@ def test_api_document_invitations__list__expired_invitations_still_listed(settin
     )
 
 
-def test_api_document_invitations__retrieve__anonymous_user():
+# Retrieve
+
+
+def test_api_document_invitations_retrieve_anonymous_user():
     """
     Anonymous users should not be able to retrieve invitations.
     """
 
     invitation = factories.InvitationFactory()
     response = APIClient().get(
-        f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/",
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/",
     )
 
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.status_code == 401
 
 
-def test_api_document_invitations__retrieve__unrelated_user():
+def test_api_document_invitations_retrieve_unrelated_user():
     """
     Authenticated unrelated users should not be able to retrieve invitations.
     """
@@ -478,18 +212,21 @@ def test_api_document_invitations__retrieve__unrelated_user():
         f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/",
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == 403
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__retrieve__document_member(via, mock_user_teams):
+@pytest.mark.parametrize("role", ["administrator", "owner"])
+def test_api_document_invitations_retrieve_document_privileged(
+    role, via, mock_user_teams
+):
     """
     Authenticated users related to the document should be able to retrieve invitations
-    whatever their role in the document.
+    provided they are administrators or owners of the document.
     """
     user = factories.UserFactory()
     invitation = factories.InvitationFactory()
-    role = random.choice(models.RoleChoices.choices)[0]
+
     if via == USER:
         factories.UserDocumentAccessFactory(
             document=invitation.document, user=user, role=role
@@ -502,11 +239,12 @@ def test_api_document_invitations__retrieve__document_member(via, mock_user_team
 
     client = APIClient()
     client.force_login(user)
+
     response = client.get(
-        f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/",
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/",
     )
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == 200
     assert response.json() == {
         "id": str(invitation.id),
         "created_at": invitation.created_at.isoformat().replace("+00:00", "Z"),
@@ -516,93 +254,26 @@ def test_api_document_invitations__retrieve__document_member(via, mock_user_team
         "issuer": str(invitation.issuer.id),
         "is_expired": False,
         "abilities": {
-            "destroy": role in ["administrator", "owner"],
-            "update": role in ["administrator", "owner"],
-            "partial_update": role in ["administrator", "owner"],
+            "destroy": True,
+            "update": True,
+            "partial_update": True,
             "retrieve": True,
         },
     }
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__put_authenticated(via, mock_user_teams):
-    """
-    Authenticated user can put invitations.
-    """
-    user = factories.UserFactory()
-    invitation = factories.InvitationFactory()
-    if via == USER:
-        factories.UserDocumentAccessFactory(
-            document=invitation.document, user=user, role="owner"
-        )
-    elif via == TEAM:
-        mock_user_teams.return_value = ["lasuite", "unknown"]
-        factories.TeamDocumentAccessFactory(
-            document=invitation.document, team="lasuite", role="owner"
-        )
-
-    client = APIClient()
-    client.force_login(user)
-    url = f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/"
-    response = client.patch(url, {"email": "test@test.test"}, format="json")
-
-    assert response.status_code == status.HTTP_200_OK
-
-    invitation.refresh_from_db()
-    assert invitation.email == "test@test.test"
-
-
-@pytest.mark.parametrize("via", VIA)
-def test_api_document_invitations__patch_authenticated(via, mock_user_teams):
-    """
-    Authenticated user can patch invitations.
-    """
-    user = factories.UserFactory()
-    invitation = factories.InvitationFactory(role="owner")
-    if via == USER:
-        factories.UserDocumentAccessFactory(
-            document=invitation.document, user=user, role="owner"
-        )
-    elif via == TEAM:
-        mock_user_teams.return_value = ["lasuite", "unknown"]
-        factories.TeamDocumentAccessFactory(
-            document=invitation.document, team="lasuite", role="owner"
-        )
-
-    assert invitation.role == "owner"
-
-    client = APIClient()
-    client.force_login(user)
-    url = f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/"
-    response = client.patch(
-        url,
-        {"role": "reader"},
-        format="json",
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-
-    invitation.refresh_from_db()
-    assert invitation.role == "reader"
-
-
-@pytest.mark.parametrize("via", VIA)
-@pytest.mark.parametrize(
-    "method",
-    ["put", "patch"],
-)
-@pytest.mark.parametrize(
-    "role",
-    ["editor", "reader"],
-)
-def test_api_document_invitations__update__forbidden__not_authenticated(
-    method, via, role, mock_user_teams
+@pytest.mark.parametrize("role", ["reader", "editor"])
+def test_api_document_invitations_retrieve_document_unprivileged(
+    role, via, mock_user_teams
 ):
     """
-    Update of invitations is currently forbidden.
+    Authenticated users related to the document should not be able to retrieve invitations
+    if they are simply reader or editor of the document.
     """
-    user = factories.UserFactory(with_owned_document=True)
+    user = factories.UserFactory()
     invitation = factories.InvitationFactory()
+
     if via == USER:
         factories.UserDocumentAccessFactory(
             document=invitation.document, user=user, role=role
@@ -615,31 +286,509 @@ def test_api_document_invitations__update__forbidden__not_authenticated(
 
     client = APIClient()
     client.force_login(user)
-    url = f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/"
 
-    response = client.put(url)
+    response = client.get(
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/",
+    )
 
-    if method == "patch":
-        response = client.patch(url)
+    assert response.status_code == 403
+    assert response.content
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+# Create
+
+
+def test_api_document_invitations_create_anonymous():
+    """Anonymous users should not be able to create invitations."""
+    document = factories.DocumentFactory()
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": random.choice(models.RoleChoices.choices)[0],
+    }
+
+    response = APIClient().post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+    )
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Authentication credentials were not provided."
+    }
+
+
+def test_api_document_invitations_create_authenticated_outsider():
+    """Users outside of document should not be permitted to invite to document."""
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": random.choice(models.RoleChoices.choices)[0],
+    }
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+    )
+
+    assert response.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "inviting,invited,response_code",
+    (
+        ["reader", "reader", 403],
+        ["reader", "editor", 403],
+        ["reader", "administrator", 403],
+        ["reader", "owner", 403],
+        ["editor", "reader", 403],
+        ["editor", "editor", 403],
+        ["editor", "administrator", 403],
+        ["editor", "owner", 403],
+        ["administrator", "reader", 201],
+        ["administrator", "editor", 201],
+        ["administrator", "administrator", 201],
+        ["administrator", "owner", 400],
+        ["owner", "reader", 201],
+        ["owner", "editor", 201],
+        ["owner", "administrator", 201],
+        ["owner", "owner", 201],
+    ),
+)
+@pytest.mark.parametrize("via", VIA)
+def test_api_document_invitations_create_privileged_members(
+    via, inviting, invited, response_code, mock_user_teams
+):
+    """
+    Only owners and administrators should be able to invite new users.
+    Only owners can invite owners.
+    """
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    if via == USER:
+        factories.UserDocumentAccessFactory(document=document, user=user, role=inviting)
+    elif via == TEAM:
+        mock_user_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=document, team="lasuite", role=inviting
+        )
+
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": invited,
+    }
+
+    assert len(mail.outbox) == 0
+
+    client = APIClient()
+    client.force_login(user)
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+    )
+
+    assert response.status_code == response_code
+
+    if response_code == 201:
+        assert models.Invitation.objects.count() == 1
+
+        assert len(mail.outbox) == 1
+        email = mail.outbox[0]
+        assert email.to == ["guest@example.com"]
+        email_content = " ".join(email.body.split())
+        assert (
+            f"{user.full_name} shared a document with you: {document.title}"
+            in email_content
+        )
+    else:
+        assert models.Invitation.objects.exists() is False
+
+    if response_code == 400:
+        assert response.json() == {
+            "role": [
+                "Only owners of a document can invite other users as owners.",
+            ],
+        }
+
+
+def test_api_document_invitations_create_email_from_content_language():
+    """
+    The email generated is from the language set in the Content-Language header
+    """
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
+
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": "reader",
+    }
+
+    assert len(mail.outbox) == 0
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+        headers={"Content-Language": "fr-fr"},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["email"] == "guest@example.com"
+    assert models.Invitation.objects.count() == 1
+    assert len(mail.outbox) == 1
+
+    email = mail.outbox[0]
+
+    assert email.to == ["guest@example.com"]
+
+    email_content = " ".join(email.body.split())
     assert (
-        response.json()["detail"]
-        == "You do not have permission to perform this action."
+        f"{user.full_name} a partagé un document avec vous: {document.title}"
+        in email_content
     )
 
 
-def test_api_document_invitations__delete__anonymous():
+def test_api_document_invitations_create_email_from_content_language_not_supported():
+    """
+    If the language from the Content-Language is not supported
+    it will display the default language, English.
+    """
+    user = factories.UserFactory()
+    document = factories.DocumentFactory()
+    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
+
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": "reader",
+    }
+
+    assert len(mail.outbox) == 0
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+        headers={"Content-Language": "not-supported"},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["email"] == "guest@example.com"
+    assert models.Invitation.objects.count() == 1
+    assert len(mail.outbox) == 1
+
+    email = mail.outbox[0]
+
+    assert email.to == ["guest@example.com"]
+
+    email_content = " ".join(email.body.split())
+    assert (
+        f"{user.full_name} shared a document with you: {document.title}"
+        in email_content
+    )
+
+
+def test_api_document_invitations_create_email_full_name_empty():
+    """
+    If the full name of the user is empty, it will display the email address.
+    """
+    user = factories.UserFactory(full_name="")
+    document = factories.DocumentFactory()
+    factories.UserDocumentAccessFactory(document=document, user=user, role="owner")
+
+    invitation_values = {
+        "email": "guest@example.com",
+        "role": "reader",
+    }
+
+    assert len(mail.outbox) == 0
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+        headers={"Content-Language": "not-supported"},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["email"] == "guest@example.com"
+    assert models.Invitation.objects.count() == 1
+    assert len(mail.outbox) == 1
+
+    email = mail.outbox[0]
+
+    assert email.to == ["guest@example.com"]
+
+    email_content = " ".join(email.body.split())
+    assert f"{user.email} shared a document with you: {document.title}" in email_content
+    assert (
+        f'{user.email} invited you with the role "reader" on the '
+        f"following document : {document.title}" in email_content
+    )
+
+
+def test_api_document_invitations_create_issuer_and_document_override():
+    """It should not be possible to set the "document" and "issuer" fields."""
+    user = factories.UserFactory()
+    document = factories.DocumentFactory(users=[(user, "owner")])
+    other_document = factories.DocumentFactory(users=[(user, "owner")])
+    invitation_values = {
+        "document": str(other_document.id),
+        "issuer": str(factories.UserFactory().id),
+        "email": "guest@example.com",
+        "role": random.choice(models.RoleChoices.choices)[0],
+    }
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+    )
+
+    assert response.status_code == 201
+    # document and issuer automatically set
+    assert response.json()["document"] == str(document.id)
+    assert response.json()["issuer"] == str(user.id)
+
+
+def test_api_document_invitations_create_cannot_duplicate_invitation():
+    """An email should not be invited multiple times to the same document."""
+    existing_invitation = factories.InvitationFactory()
+    document = existing_invitation.document
+
+    # Grant privileged role on the Document to the user
+    user = factories.UserFactory()
+    models.DocumentAccess.objects.create(
+        document=document, user=user, role="administrator"
+    )
+
+    # Create a new invitation to the same document with the exact same email address
+    invitation_values = {
+        "email": existing_invitation.email,
+        "role": random.choice(["administrator", "editor", "reader"]),
+    }
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+    )
+
+    assert response.status_code == 400
+    assert response.json() == [
+        "Document invitation with this Email address and Document already exists."
+    ]
+
+
+def test_api_document_invitations_create_cannot_invite_existing_users():
+    """
+    It should not be possible to invite already existing users.
+    """
+    user = factories.UserFactory()
+    document = factories.DocumentFactory(users=[(user, "owner")])
+    existing_user = factories.UserFactory()
+
+    # Build an invitation to the email of an exising identity in the db
+    invitation_values = {
+        "email": existing_user.email,
+        "role": random.choice(models.RoleChoices.choices)[0],
+    }
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        f"/api/v1.0/documents/{document.id!s}/invitations/",
+        invitation_values,
+        format="json",
+    )
+
+    assert response.status_code == 400
+    assert response.json() == ["This email is already associated to a registered user."]
+
+
+# Update
+
+
+@pytest.mark.parametrize("via", VIA)
+@pytest.mark.parametrize("role", ["administrator", "owner"])
+def test_api_document_invitations_update_authenticated_privileged_any_field_except_role(
+    role, via, mock_user_teams
+):
+    """
+    Authenticated user can update invitations if they are administrator or owner of the document.
+    """
+    user = factories.UserFactory()
+    invitation = factories.InvitationFactory()
+
+    if via == USER:
+        factories.UserDocumentAccessFactory(
+            document=invitation.document, user=user, role=role
+        )
+    elif via == TEAM:
+        mock_user_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=invitation.document, team="lasuite", role=role
+        )
+
+    old_invitation_values = serializers.InvitationSerializer(instance=invitation).data
+    new_invitation_values = serializers.InvitationSerializer(
+        instance=factories.InvitationFactory()
+    ).data
+    # The update of a role is tested in the next test
+    del new_invitation_values["role"]
+
+    client = APIClient()
+    client.force_login(user)
+
+    url = (
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/"
+    )
+    response = client.put(url, new_invitation_values, format="json")
+
+    assert response.status_code == 200
+
+    invitation.refresh_from_db()
+    invitation_values = serializers.InvitationSerializer(instance=invitation).data
+
+    for key, value in invitation_values.items():
+        if key == "email":
+            assert value == new_invitation_values[key]
+        elif key == "updated_at":
+            assert value > old_invitation_values[key]
+        else:
+            assert value == old_invitation_values[key]
+
+
+@pytest.mark.parametrize("via", VIA)
+@pytest.mark.parametrize("role_set", models.RoleChoices.values)
+@pytest.mark.parametrize("role", ["administrator", "owner"])
+def test_api_document_invitations_update_authenticated_privileged_role(
+    role, role_set, via, mock_user_teams
+):
+    """
+    Authenticated user can update invitations if they are administrator or owner of the document,
+    but only owners can set the invitation role to the "owner" role.
+    """
+    user = factories.UserFactory()
+    invitation = factories.InvitationFactory()
+    old_role = invitation.role
+
+    if via == USER:
+        factories.UserDocumentAccessFactory(
+            document=invitation.document, user=user, role=role
+        )
+    elif via == TEAM:
+        mock_user_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=invitation.document, team="lasuite", role=role
+        )
+
+    new_invitation_values = serializers.InvitationSerializer(instance=invitation).data
+    new_invitation_values["role"] = role_set
+
+    client = APIClient()
+    client.force_login(user)
+
+    url = (
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/"
+    )
+    response = client.put(url, new_invitation_values, format="json")
+
+    invitation.refresh_from_db()
+
+    if role_set == "owner" and role != "owner":
+        assert response.status_code == 400
+        assert invitation.role == old_role
+        assert response.json() == {
+            "role": [
+                "Only owners of a document can invite other users as owners.",
+            ],
+        }
+    else:
+        assert response.status_code == 200
+        assert invitation.role == role_set
+
+
+@pytest.mark.parametrize("via", VIA)
+@pytest.mark.parametrize("role", ["reader", "editor"])
+def test_api_document_invitations_update_authenticated_unprivileged(
+    role, via, mock_user_teams
+):
+    """
+    Authenticated user should not be allowed to update invitations if they are
+    simple reader or editor of the document.
+    """
+    user = factories.UserFactory()
+    invitation = factories.InvitationFactory()
+
+    if via == USER:
+        factories.UserDocumentAccessFactory(
+            document=invitation.document, user=user, role=role
+        )
+    elif via == TEAM:
+        mock_user_teams.return_value = ["lasuite", "unknown"]
+        factories.TeamDocumentAccessFactory(
+            document=invitation.document, team="lasuite", role=role
+        )
+
+    old_invitation_values = serializers.InvitationSerializer(instance=invitation).data
+    new_invitation_values = serializers.InvitationSerializer(
+        instance=factories.InvitationFactory()
+    ).data
+
+    client = APIClient()
+    client.force_login(user)
+
+    url = (
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/"
+    )
+    response = client.put(url, new_invitation_values, format="json")
+
+    assert response.status_code == 403
+
+    invitation.refresh_from_db()
+    invitation_values = serializers.InvitationSerializer(instance=invitation).data
+
+    for key, value in invitation_values.items():
+        assert value == old_invitation_values[key]
+
+
+# Delete
+
+
+def test_api_document_invitations_delete_anonymous():
     """Anonymous user should not be able to delete invitations."""
     invitation = factories.InvitationFactory()
 
     response = APIClient().delete(
-        f"/api/v1.0/documents/{invitation.document.id}/invitations/{invitation.id}/",
+        f"/api/v1.0/documents/{invitation.document.id!s}/invitations/{invitation.id!s}/",
     )
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.status_code == 401
 
 
-def test_api_document_invitations__delete__authenticated_outsider():
+def test_api_document_invitations_delete_authenticated_outsider():
     """Members unrelated to a document should not be allowed to cancel invitations."""
     user = factories.UserFactory(with_owned_document=True)
 
@@ -648,17 +797,16 @@ def test_api_document_invitations__delete__authenticated_outsider():
 
     client = APIClient()
     client.force_login(user)
+
     response = client.delete(
-        f"/api/v1.0/documents/{document.id}/invitations/{invitation.id}/",
+        f"/api/v1.0/documents/{document.id!s}/invitations/{invitation.id!s}/",
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == 403
 
 
 @pytest.mark.parametrize("via", VIA)
 @pytest.mark.parametrize("role", ["owner", "administrator"])
-def test_api_document_invitations__delete__privileged_members(
-    role, via, mock_user_teams
-):
+def test_api_document_invitations_delete_privileged_members(role, via, mock_user_teams):
     """Privileged member should be able to cancel invitation."""
     user = factories.UserFactory()
     document = factories.DocumentFactory()
@@ -674,10 +822,11 @@ def test_api_document_invitations__delete__privileged_members(
 
     client = APIClient()
     client.force_login(user)
+
     response = client.delete(
-        f"/api/v1.0/documents/{document.id}/invitations/{invitation.id}/",
+        f"/api/v1.0/documents/{document.id!s}/invitations/{invitation.id!s}/",
     )
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == 204
 
 
 @pytest.mark.parametrize("role", ["reader", "editor"])
@@ -698,10 +847,11 @@ def test_api_document_invitations_delete_readers_or_editors(via, role, mock_user
 
     client = APIClient()
     client.force_login(user)
+
     response = client.delete(
-        f"/api/v1.0/documents/{document.id}/invitations/{invitation.id}/",
+        f"/api/v1.0/documents/{document.id!s}/invitations/{invitation.id!s}/",
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == 403
     assert (
         response.json()["detail"]
         == "You do not have permission to perform this action."

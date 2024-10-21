@@ -16,6 +16,7 @@ and this project adheres to
 
 ## Fixed
 
+- 🐛(backend) require right to manage document accesses to see invitations #369
 - 🐛(frontend) add default toolbar buttons #355
 
 
@@ -29,7 +30,7 @@ and this project adheres to
 
 ## Changed
 
-- ♻️(frontend) More multi theme friendly #325
+- ♻️(frontend) more multi theme friendly #325
 - ♻️ Bootstrap frontend #257
 - ♻️ Add username in email #314
 

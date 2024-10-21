@@ -1,8 +1,11 @@
 """Permission handlers for the impress core app."""
 
 from django.core import exceptions
+from django.db.models import Q
 
 from rest_framework import permissions
+
+from core.models import DocumentAccess, RoleChoices
 
 ACTION_FOR_METHOD_TO_PERMISSION = {
     "versions_detail": {"DELETE": "versions_destroy", "GET": "versions_retrieve"}
@@ -57,6 +60,38 @@ class IsOwnedOrPublic(IsAuthenticated):
             return obj.user == request.user
         except exceptions.ObjectDoesNotExist:
             return False
+
+
+class CanCreateInvitationPermission(permissions.BasePermission):
+    """
+    Custom permission class to handle permission checks for managing invitations.
+    """
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        # Ensure the user is authenticated
+        if not (bool(request.auth) or request.user.is_authenticated):
+            return False
+
+        # Apply permission checks only for creation (POST requests)
+        if view.action != "create":
+            return True
+
+        # Check if resource_id is passed in the context
+        try:
+            document_id = view.kwargs["resource_id"]
+        except KeyError as exc:
+            raise exceptions.ValidationError(
+                "You must set a document ID in kwargs to manage document invitations."
+            ) from exc
+
+        # Check if the user has access to manage invitations (Owner/Admin roles)
+        return DocumentAccess.objects.filter(
+            Q(user=user) | Q(team__in=user.teams),
+            document=document_id,
+            role__in=[RoleChoices.OWNER, RoleChoices.ADMIN],
+        ).exists()
 
 
 class AccessPermission(permissions.BasePermission):
