@@ -9,6 +9,43 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Doc Editor', () => {
+  test('it checks default toolbar buttons are displayed', async ({
+    page,
+    browserName,
+  }) => {
+    await createDoc(page, 'doc-toolbar', browserName, 1);
+
+    const editor = page.locator('.ProseMirror');
+    await editor.click();
+    await editor.fill('test content');
+
+    await editor.getByText('test content').dblclick();
+
+    const toolbar = page.locator('.bn-formatting-toolbar');
+    await expect(toolbar.locator('button[data-test="bold"]')).toBeVisible();
+    await expect(toolbar.locator('button[data-test="italic"]')).toBeVisible();
+    await expect(
+      toolbar.locator('button[data-test="underline"]'),
+    ).toBeVisible();
+    await expect(toolbar.locator('button[data-test="strike"]')).toBeVisible();
+    await expect(
+      toolbar.locator('button[data-test="alignTextLeft"]'),
+    ).toBeVisible();
+    await expect(
+      toolbar.locator('button[data-test="alignTextCenter"]'),
+    ).toBeVisible();
+    await expect(
+      toolbar.locator('button[data-test="alignTextRight"]'),
+    ).toBeVisible();
+    await expect(toolbar.locator('button[data-test="colors"]')).toBeVisible();
+    await expect(
+      toolbar.locator('button[data-test="unnestBlock"]'),
+    ).toBeVisible();
+    await expect(
+      toolbar.locator('button[data-test="createLink"]'),
+    ).toBeVisible();
+  });
+
   test('checks the Doc is connected to the provider server', async ({
     page,
     browserName,
