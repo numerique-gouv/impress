@@ -1,0 +1,21 @@
+{{- $envVars := include "impress.common.env" (list . .Values.blocknote) -}}
+{{- $fullName := include "impress.blocknote.fullname" . -}}
+{{- $component := "blocknote" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "impress.common.labels" (list . $component) | nindent 4 }}
+  annotations:
+    {{- toYaml $.Values.blocknote.service.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.blocknote.service.type }}
+  ports:
+    - port: {{ .Values.blocknote.service.port }}
+      targetPort: {{ .Values.blocknote.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "impress.common.selectorLabels" (list . $component) | nindent 4 }}

@@ -413,3 +413,92 @@ yProvider:
 
   ## @param yProvider.extraVolumes Additional volumes to mount on the yProvider.
   extraVolumes: []
+
+## @section blocknote
+
+blocknote:
+
+  ## @param blocknote.command Override the blocknote container command
+  command: []
+
+  ## @param blocknote.args Override the blocknote container args
+  args: []
+
+  ## @param blocknote.replicas Amount of blocknote replicas
+  replicas: 3
+
+  ## @param blocknote.shareProcessNamespace Enable share process namespace between containers
+  shareProcessNamespace: false
+
+  ## @param blocknote.sidecars Add sidecars containers to blocknote deployment
+  sidecars: []
+
+  ## @param blocknote.securityContext Configure blocknote Pod security context
+  securityContext: null
+
+  ## @param blocknote.envVars Configure blocknote container environment variables
+  ## @extra blocknote.envVars.BY_VALUE Example environment variable by setting value directly
+  ## @extra blocknote.envVars.FROM_CONFIGMAP.configMapKeyRef.name Name of a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra blocknote.envVars.FROM_CONFIGMAP.configMapKeyRef.key Key within a ConfigMap when configuring env vars from a ConfigMap
+  ## @extra blocknote.envVars.FROM_SECRET.secretKeyRef.name Name of a Secret when configuring env vars from a Secret
+  ## @extra blocknote.envVars.FROM_SECRET.secretKeyRef.key Key within a Secret when configuring env vars from a Secret
+  ## @skip blocknote.envVars
+  envVars:
+    <<: *commonEnvVars
+
+  ## @param blocknote.podAnnotations Annotations to add to the blocknote Pod
+  podAnnotations: {}
+
+  ## @param blocknote.service.type blocknote Service type
+  ## @param blocknote.service.port blocknote Service listening port
+  ## @param blocknote.service.targetPort blocknote container listening port
+  ## @param blocknote.service.annotations Annotations to add to the blocknote Service
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8081
+    annotations: {}
+
+  ## @param blocknote.probes.liveness.path [nullable] Configure path for blocknote HTTP liveness probe
+  ## @param blocknote.probes.liveness.targetPort [nullable] Configure port for blocknote HTTP liveness probe
+  ## @param blocknote.probes.liveness.initialDelaySeconds [nullable] Configure initial delay for blocknote liveness probe
+  ## @param blocknote.probes.liveness.initialDelaySeconds [nullable] Configure timeout for blocknote liveness probe
+  ## @param blocknote.probes.startup.path [nullable] Configure path for blocknote HTTP startup probe
+  ## @param blocknote.probes.startup.targetPort [nullable] Configure port for blocknote HTTP startup probe
+  ## @param blocknote.probes.startup.initialDelaySeconds [nullable] Configure initial delay for blocknote startup probe
+  ## @param blocknote.probes.startup.initialDelaySeconds [nullable] Configure timeout for blocknote startup probe
+  ## @param blocknote.probes.readiness.path [nullable] Configure path for blocknote HTTP readiness probe
+  ## @param blocknote.probes.readiness.targetPort [nullable] Configure port for blocknote HTTP readiness probe
+  ## @param blocknote.probes.readiness.initialDelaySeconds [nullable] Configure initial delay for blocknote readiness probe
+  ## @param blocknote.probes.readiness.initialDelaySeconds [nullable] Configure timeout for blocknote readiness probe
+  probes:
+    liveness:
+      path: /__heartbeat__
+      initialDelaySeconds: 10
+    readiness:
+      path: /__lbheartbeat__
+      initialDelaySeconds: 10
+
+  ## @param blocknote.resources Resource requirements for the blocknote container
+  resources: {}
+
+  ## @param blocknote.nodeSelector Node selector for the blocknote Pod
+  nodeSelector: {}
+
+  ## @param blocknote.tolerations Tolerations for the blocknote Pod
+  tolerations: []
+
+  ## @param blocknote.affinity Affinity for the blocknote Pod
+  affinity: {}
+
+  ## @param blocknote.persistence Additional volumes to create and mount on the blocknote. Used for debugging purposes
+  ## @extra blocknote.persistence.volume-name.size Size of the additional volume
+  ## @extra blocknote.persistence.volume-name.type Type of the additional volume, persistentVolumeClaim or emptyDir
+  ## @extra blocknote.persistence.volume-name.mountPath Path where the volume should be mounted to
+  persistence: {}
+
+  ## @param blocknote.extraVolumeMounts Additional volumes to mount on the blocknote.
+  extraVolumeMounts: []
+
+  ## @param blocknote.extraVolumes Additional volumes to mount on the blocknote.
+  extraVolumes: []
