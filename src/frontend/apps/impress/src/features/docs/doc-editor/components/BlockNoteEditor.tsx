@@ -1,9 +1,11 @@
-import { BlockNoteEditor as BlockNoteEditorCore } from '@blocknote/core';
+import { locales } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
+import { useCreateBlockNote } from '@blocknote/react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box, TextErrors } from '@/components';
 import { mediaUrl } from '@/core';
@@ -113,6 +115,8 @@ export const BlockNoteContent = ({
     error: errorAttachment,
   } = useCreateDocAttachment();
   const { setHeadings, resetHeadings } = useHeadingStore();
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
 
   const uploadFile = useCallback(
     async (file: File) => {
@@ -129,12 +133,8 @@ export const BlockNoteContent = ({
     [createDocAttachment, doc.id],
   );
 
-  const editor = useMemo(() => {
-    if (storedEditor) {
-      return storedEditor;
-    }
-
-    return BlockNoteEditorCore.create({
+  const editor = useCreateBlockNote(
+    {
       collaboration: {
         provider,
         fragment: provider.document.getXmlFragment('document-store'),
@@ -143,9 +143,11 @@ export const BlockNoteContent = ({
           color: randomColor(),
         },
       },
+      dictionary: locales[lang as keyof typeof locales],
       uploadFile,
-    });
-  }, [provider, storedEditor, uploadFile, userData?.email]);
+    },
+    [provider, uploadFile, userData?.email, lang],
+  );
 
   useEffect(() => {
     setStore(storeId, { editor });
@@ -176,7 +178,7 @@ export const BlockNoteContent = ({
       )}
 
       <BlockNoteView
-        editor={editor}
+        editor={storedEditor ?? editor}
         formattingToolbar={false}
         editable={!readOnly}
         theme="light"
