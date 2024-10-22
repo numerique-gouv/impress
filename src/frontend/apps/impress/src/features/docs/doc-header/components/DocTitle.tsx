@@ -88,6 +88,7 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
           clearTimeout(debounceRef.current);
           debounceRef.current = undefined;
         }
+        setTitleDisplay(sanitizedTitle);
         updateDoc({ id: doc.id, title: sanitizedTitle });
       }
     },
