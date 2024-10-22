@@ -18,6 +18,7 @@ and this project adheres to
 ## Fixed
 
 - 🐛(backend) require right to manage document accesses to see invitations #369
+- 🐛(i18n) same frontend and backend language using shared cookies #365
 - 🐛(frontend) add default toolbar buttons #355
 
 
@@ -27,7 +28,7 @@ and this project adheres to
 
 - ✨AI to doc editor #250
 - ✨(backend) allow uploading more types of attachments #309
-- ✨(frontend) add buttons to copy document to clipboard as HTML/Markdown #300
+- ✨(frontend) add buttons to copy document to clipboard as HTML/Markdown #318
 
 ## Changed
 

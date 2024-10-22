@@ -223,6 +223,7 @@ class Base(Configuration):
 
     # Languages
     LANGUAGE_CODE = values.Value("en-us")
+    LANGUAGE_COOKIE_NAME = "docs_language"  # cookie & language is set from frontend
 
     DRF_NESTED_MULTIPART_PARSER = {
         # output of parser is converted to querydict
