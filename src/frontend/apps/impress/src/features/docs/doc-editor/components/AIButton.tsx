@@ -362,16 +362,33 @@ const useHandleAIError = () => {
   const handleAIError = useCallback(
     (error: unknown) => {
       if (isAPIError(error)) {
-        error.cause?.forEach((cause) => {
-          if (
-            cause === 'Request was throttled. Expected available in 60 seconds.'
-          ) {
-            toast(
-              t('Too many requests. Please wait 60 seconds.'),
-              VariantType.ERROR,
-            );
-          }
-        });
+      const useHandleAIError = () => {
+  const { toast } = useToastProvider();
+  const { t } = useTranslation();
+
+  const handleAIError = useCallback(
+    (error: unknown) => {
+      if (isAPIError(error)) {
+        const throttledMessage = 'Request was throttled. Expected available in 60 seconds.';
+        
+        const isThrottled = error.cause?.some(cause => cause === throttledMessage);
+
+        if (isThrottled) {
+          toast(t('Too many requests. Please wait 60 seconds.'), VariantType.ERROR);
+          return; // Exit early if throttled
+        }
+      }
+
+      toast(t('AI seems busy! Please try again.'), VariantType.ERROR);
+      console.error(error);
+    },
+    [toast, t],
+  );
+
+  return handleAIError;
+};
+
+
       }
 
       toast(t('AI seems busy! Please try again.'), VariantType.ERROR);
