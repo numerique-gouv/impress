@@ -22,7 +22,8 @@ i18n
       escapeValue: false,
     },
     preload: Object.keys(LANGUAGES_ALLOWED),
-    nsSeparator: '||',
+    nsSeparator: false,
+    keySeparator: false,
   })
   .catch(() => {
     throw new Error('i18n initialization failed');
