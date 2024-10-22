@@ -2,5 +2,5 @@ export const LANGUAGES_ALLOWED: { [key: string]: string } = {
   en: 'English',
   fr: 'Français',
 };
-export const LANGUAGE_LOCAL_STORAGE = 'impress-language';
-export const BASE_LANGUAGE = 'fr';
+export const LANGUAGE_COOKIE_NAME = 'docs_language';
+export const BASE_LANGUAGE = 'en';
