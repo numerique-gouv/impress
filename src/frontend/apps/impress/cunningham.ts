@@ -358,6 +358,8 @@ const config = {
         },
         'forms-field': {
           color: 'var(--c--theme--colors--primary-text)',
+          'footer-font-size': 'var(--c--theme--font--sizes--t)',
+          'footer-color': 'var(--c--theme--colors--greyscale-text)',
         },
         'forms-input': {
           'border-radius': '4px',
@@ -371,6 +373,9 @@ const config = {
           'label-color': {
             big: 'var(--c--theme--colors--primary-text)',
           },
+        },
+        'forms-radio': {
+          'accent-color': 'var(--c--theme--colors--primary-600)',
         },
         'forms-select': {
           'item-font-size': '14px',

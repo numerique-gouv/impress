@@ -1,3 +1,8 @@
+import {
+  Button,
+  VariantType,
+  useToastProvider,
+} from '@openfun/cunningham-react';
 import { t } from 'i18next';
 import { createGlobalStyle } from 'styled-components';
 
@@ -41,6 +46,7 @@ interface ModalShareProps {
 export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
   const { isMobile, isSmallMobile } = useResponsiveStore();
   const width = isSmallMobile ? '100vw' : isMobile ? '90vw' : '70vw';
+  const { toast } = useToastProvider();
 
   return (
     <>
@@ -68,13 +74,44 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
                 iconName="share"
                 $margin="none"
               />
-              <Box $align="flex-start">
-                <Text as="h3" $size="26px" $margin="none">
-                  {t('Share')}
-                </Text>
-                <Text $size="small" $weight="normal" $textAlign="left">
-                  {doc.title}
-                </Text>
+              <Box
+                $justify="space-between"
+                $direction="row"
+                $align="center"
+                $width="100%"
+                $gap="1rem"
+                $wrap="wrap"
+              >
+                <Box $align="flex-start">
+                  <Text as="h3" $size="26px" $margin="none">
+                    {t('Share')}
+                  </Text>
+                  <Text $size="small" $weight="normal" $textAlign="left">
+                    {doc.title}
+                  </Text>
+                </Box>
+                <Box $margin={{ right: '1.5rem' }} $shrink="0">
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard
+                        .writeText(window.location.href)
+                        .then(() => {
+                          toast(t('Link Copied !'), VariantType.SUCCESS, {
+                            duration: 3000,
+                          });
+                        })
+                        .catch(() => {
+                          toast(t('Failed to copy link'), VariantType.ERROR, {
+                            duration: 3000,
+                          });
+                        });
+                    }}
+                    color="primary"
+                    icon={<span className="material-icons">copy</span>}
+                  >
+                    {t('Copy link')}
+                  </Button>
+                </Box>
               </Box>
             </Card>
             <DocVisibility doc={doc} />
