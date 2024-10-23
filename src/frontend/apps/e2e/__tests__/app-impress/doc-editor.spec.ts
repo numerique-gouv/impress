@@ -131,9 +131,10 @@ test.describe('Doc Editor', () => {
 
   test('it renders correctly when we switch from one doc to another', async ({
     page,
+    browserName,
   }) => {
     // Check the first doc
-    const firstDoc = await goToGridDoc(page);
+    const [firstDoc] = await createDoc(page, 'doc-switch-1', browserName, 1);
     await expect(page.locator('h2').getByText(firstDoc)).toBeVisible();
 
     const editor = page.locator('.ProseMirror');
@@ -142,9 +143,7 @@ test.describe('Doc Editor', () => {
     await expect(editor.getByText('Hello World Doc 1')).toBeVisible();
 
     // Check the second doc
-    const secondDoc = await goToGridDoc(page, {
-      nthRow: 2,
-    });
+    const [secondDoc] = await createDoc(page, 'doc-switch-2', browserName, 1);
     await expect(page.locator('h2').getByText(secondDoc)).toBeVisible();
     await expect(editor.getByText('Hello World Doc 1')).toBeHidden();
     await editor.click();
@@ -160,9 +159,12 @@ test.describe('Doc Editor', () => {
     await expect(editor.getByText('Hello World Doc 1')).toBeVisible();
   });
 
-  test('it saves the doc when we change pages', async ({ page }) => {
+  test('it saves the doc when we change pages', async ({
+    page,
+    browserName,
+  }) => {
     // Check the first doc
-    const doc = await goToGridDoc(page);
+    const [doc] = await createDoc(page, 'doc-saves-change', browserName, 1);
     await expect(page.locator('h2').getByText(doc)).toBeVisible();
 
     const editor = page.locator('.ProseMirror');
