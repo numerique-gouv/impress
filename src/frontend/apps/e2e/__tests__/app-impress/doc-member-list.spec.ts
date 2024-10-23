@@ -164,14 +164,22 @@ test.describe('Document list members', () => {
     const shareModal = page.getByLabel('Share modal');
 
     // Admin still have the right to share
-    await expect(shareModal.getByLabel('Doc private')).toBeEnabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).not.toHaveAttribute('disabled');
 
     await SelectRoleCurrentUser.click();
     await page.getByRole('option', { name: 'Reader' }).click();
     await expect(page.getByText('The role has been updated')).toBeVisible();
 
     // Reader does not have the right to share
-    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
   });
 
   test('it checks the delete members', async ({ page, browserName }) => {
