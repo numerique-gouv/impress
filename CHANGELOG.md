@@ -22,6 +22,10 @@ and this project adheres to
 - 🐛(frontend) add default toolbar buttons #355
 - 🐛(frontend) throttle error correctly display #378
 
+## Removed
+
+- 🔥(helm) remove infra related codes #366
+
 
 ## [1.6.0] - 2024-10-17
 

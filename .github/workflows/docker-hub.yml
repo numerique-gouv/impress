@@ -8,9 +8,6 @@ on:
       - 'main'
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - 'main'
 
 env:
   DOCKER_USER: 1001:127
