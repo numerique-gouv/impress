@@ -199,7 +199,7 @@ export class ApiPlugin implements WorkboxPlugin {
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true,
+        accesses_manage: true,
         update: true,
         partial_update: true,
         retrieve: true,

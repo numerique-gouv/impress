@@ -61,7 +61,7 @@ export const MemberItem = ({
   });
 
   const isNotAllowed =
-    isOtherOwner || isLastOwner || !doc.abilities.manage_accesses;
+    isOtherOwner || isLastOwner || !doc.abilities.accesses_manage;
 
   if (!access.user) {
     return (
@@ -112,7 +112,7 @@ export const MemberItem = ({
                 }}
               />
             </Box>
-            {doc.abilities.manage_accesses && (
+            {doc.abilities.accesses_manage && (
               <Box $margin={isSmallMobile ? 'auto' : ''}>
                 <Button
                   color="tertiary-text"
@@ -136,7 +136,7 @@ export const MemberItem = ({
           <TextErrors causes={errorUpdate?.cause || errorDelete?.cause} />
         </Box>
       )}
-      {(isLastOwner || isOtherOwner) && doc.abilities.manage_accesses && (
+      {(isLastOwner || isOtherOwner) && doc.abilities.accesses_manage && (
         <Box $margin={{ top: 'tiny' }}>
           <Alert
             canClose={false}

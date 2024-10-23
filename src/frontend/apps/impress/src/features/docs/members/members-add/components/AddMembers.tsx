@@ -170,14 +170,14 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
               doc={doc}
               setSelectedUsers={setSelectedUsers}
               selectedUsers={selectedUsers}
-              disabled={isPending || !doc.abilities.manage_accesses}
+              disabled={isPending || !doc.abilities.accesses_manage}
             />
           </Box>
           <Box $css="flex: auto;">
             <ChooseRole
               key={resetKey}
               currentRole={currentRole}
-              disabled={isPending || !doc.abilities.manage_accesses}
+              disabled={isPending || !doc.abilities.accesses_manage}
               setRole={setSelectedRole}
             />
           </Box>
@@ -189,7 +189,7 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
               !selectedUsers.length ||
               isPending ||
               !selectedRole ||
-              !doc.abilities.manage_accesses
+              !doc.abilities.accesses_manage
             }
             onClick={() => void handleValidate()}
             style={{ height: '100%', maxHeight: '55px' }}

@@ -47,7 +47,7 @@ export interface Doc {
     attachment_upload: true;
     destroy: boolean;
     link_configuration: boolean;
-    manage_accesses: boolean;
+    accesses_manage: boolean;
     partial_update: boolean;
     retrieve: boolean;
     update: boolean;

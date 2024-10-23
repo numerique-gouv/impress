@@ -21,13 +21,14 @@ def test_api_documents_retrieve_anonymous_public():
     assert response.json() == {
         "id": str(document.id),
         "abilities": {
+            "accesses_manage": False,
+            "accesses_view": False,
             "ai_transform": document.link_role == "editor",
             "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
             "destroy": False,
             "invite_owner": False,
             "link_configuration": False,
-            "manage_accesses": False,
             "partial_update": document.link_role == "editor",
             "retrieve": True,
             "update": document.link_role == "editor",
@@ -78,13 +79,14 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
     assert response.json() == {
         "id": str(document.id),
         "abilities": {
+            "accesses_manage": False,
+            "accesses_view": False,
             "ai_transform": document.link_role == "editor",
             "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
             "link_configuration": False,
             "destroy": False,
             "invite_owner": False,
-            "manage_accesses": False,
             "partial_update": document.link_role == "editor",
             "retrieve": True,
             "update": document.link_role == "editor",

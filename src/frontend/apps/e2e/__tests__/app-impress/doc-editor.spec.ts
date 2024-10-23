@@ -215,7 +215,7 @@ test.describe('Doc Editor', () => {
         versions_destroy: false,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: false, // Means not admin
+        accesses_manage: false, // Means not admin
         update: false,
         partial_update: false, // Means not editor
         retrieve: true,

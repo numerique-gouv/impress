@@ -112,7 +112,7 @@ export const InvitationItem = ({
                 }}
               />
             </Box>
-            {doc.abilities.manage_accesses && (
+            {doc.abilities.accesses_manage && (
               <Box $margin={isSmallMobile ? 'auto' : ''}>
                 <Button
                   color="tertiary-text"
