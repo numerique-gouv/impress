@@ -83,13 +83,14 @@ def test_models_documents_get_abilities_forbidden(is_authenticated, reach, role)
     user = factories.UserFactory() if is_authenticated else AnonymousUser()
     abilities = document.get_abilities(user)
     assert abilities == {
+        "accesses_manage": False,
+        "accesses_view": False,
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
         "link_configuration": False,
         "destroy": False,
         "invite_owner": False,
-        "manage_accesses": False,
         "partial_update": False,
         "retrieve": False,
         "update": False,
@@ -116,13 +117,14 @@ def test_models_documents_get_abilities_reader(is_authenticated, reach):
     user = factories.UserFactory() if is_authenticated else AnonymousUser()
     abilities = document.get_abilities(user)
     assert abilities == {
+        "accesses_manage": False,
+        "accesses_view": False,
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
         "destroy": False,
         "link_configuration": False,
         "invite_owner": False,
-        "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,
         "update": False,
@@ -149,13 +151,14 @@ def test_models_documents_get_abilities_editor(is_authenticated, reach):
     user = factories.UserFactory() if is_authenticated else AnonymousUser()
     abilities = document.get_abilities(user)
     assert abilities == {
+        "accesses_manage": False,
+        "accesses_view": False,
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": False,
         "link_configuration": False,
         "invite_owner": False,
-        "manage_accesses": False,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -171,13 +174,14 @@ def test_models_documents_get_abilities_owner():
     access = factories.UserDocumentAccessFactory(role="owner", user=user)
     abilities = access.document.get_abilities(access.user)
     assert abilities == {
+        "accesses_manage": True,
+        "accesses_view": True,
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": True,
         "link_configuration": True,
         "invite_owner": True,
-        "manage_accesses": True,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -192,13 +196,14 @@ def test_models_documents_get_abilities_administrator():
     access = factories.UserDocumentAccessFactory(role="administrator")
     abilities = access.document.get_abilities(access.user)
     assert abilities == {
+        "accesses_manage": True,
+        "accesses_view": True,
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": False,
         "link_configuration": True,
         "invite_owner": False,
-        "manage_accesses": True,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -216,13 +221,14 @@ def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
         abilities = access.document.get_abilities(access.user)
 
     assert abilities == {
+        "accesses_manage": False,
+        "accesses_view": True,
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": False,
         "link_configuration": False,
         "invite_owner": False,
-        "manage_accesses": False,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -242,13 +248,14 @@ def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
         abilities = access.document.get_abilities(access.user)
 
     assert abilities == {
+        "accesses_manage": False,
+        "accesses_view": True,
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
         "destroy": False,
         "link_configuration": False,
         "invite_owner": False,
-        "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,
         "update": False,
@@ -269,13 +276,14 @@ def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
         abilities = access.document.get_abilities(access.user)
 
     assert abilities == {
+        "accesses_manage": False,
+        "accesses_view": True,
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
         "destroy": False,
         "link_configuration": False,
         "invite_owner": False,
-        "manage_accesses": False,
         "partial_update": False,
         "retrieve": True,
         "update": False,

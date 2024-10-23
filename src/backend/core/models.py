@@ -496,7 +496,8 @@ class Document(BaseModel):
         # Compute version roles before adding link roles because we don't
         # want anonymous users to access versions (we wouldn't know from
         # which date to allow them anyway)
-        can_get_versions = bool(roles)
+        # Anonymous users should also not see document accesses
+        has_role = bool(roles)
 
         # Add role provided by the document link
         if self.link_reach == LinkReachChoices.PUBLIC or (
@@ -511,19 +512,20 @@ class Document(BaseModel):
         can_get = bool(roles)
 
         return {
+            "accesses_manage": is_owner_or_admin,
+            "accesses_view": has_role,
             "ai_transform": is_owner_or_admin or is_editor,
             "ai_translate": is_owner_or_admin or is_editor,
             "attachment_upload": is_owner_or_admin or is_editor,
             "destroy": RoleChoices.OWNER in roles,
             "link_configuration": is_owner_or_admin,
-            "manage_accesses": is_owner_or_admin,
             "invite_owner": RoleChoices.OWNER in roles,
             "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,
             "update": is_owner_or_admin or is_editor,
             "versions_destroy": is_owner_or_admin,
-            "versions_list": can_get_versions,
-            "versions_retrieve": can_get_versions,
+            "versions_list": has_role,
+            "versions_retrieve": has_role,
         }
 
     def email_invitation(self, language, email, role, sender):
@@ -679,7 +681,7 @@ class Template(BaseModel):
         return {
             "destroy": RoleChoices.OWNER in roles,
             "generate_document": can_get,
-            "manage_accesses": is_owner_or_admin,
+            "accesses_manage": is_owner_or_admin,
             "update": is_owner_or_admin or is_editor,
             "partial_update": is_owner_or_admin or is_editor,
             "retrieve": can_get,

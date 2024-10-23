@@ -45,7 +45,7 @@ test.describe('Doc Header', () => {
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true,
+        accesses_manage: true,
         update: true,
         partial_update: true,
         retrieve: true,
@@ -182,7 +182,7 @@ test.describe('Doc Header', () => {
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true, // Means admin
+        accesses_manage: true, // Means admin
         update: true,
         partial_update: true,
         retrieve: true,
@@ -252,7 +252,7 @@ test.describe('Doc Header', () => {
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: false, // Means not admin
+        accesses_manage: false, // Means not admin
         update: true,
         partial_update: true, // Means editor
         retrieve: true,
@@ -329,7 +329,7 @@ test.describe('Doc Header', () => {
         versions_destroy: false,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: false, // Means not admin
+        accesses_manage: false, // Means not admin
         update: false,
         partial_update: false, // Means not editor
         retrieve: true,
@@ -489,7 +489,7 @@ test.describe('Documents Header mobile', () => {
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true,
+        accesses_manage: true,
         update: true,
         partial_update: true,
         retrieve: true,

@@ -115,7 +115,7 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
               </Box>
             </Card>
             <DocVisibility doc={doc} />
-            {doc.abilities.manage_accesses && (
+            {doc.abilities.accesses_manage && (
               <AddMembers
                 doc={doc}
                 currentRole={currentDocRole(doc.abilities)}

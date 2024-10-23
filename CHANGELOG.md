@@ -15,6 +15,7 @@ and this project adheres to
 - 🌐(frontend) add localization to editor #268
 - ✨Public and restricted doc editable #357
 - ✨(frontend) Add full name if available #380
+- ✨(backend) Add view accesses ability #376
 
 ## Fixed
 
