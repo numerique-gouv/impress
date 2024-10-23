@@ -211,7 +211,11 @@ test.describe('Doc Header', () => {
 
     const shareModal = page.getByLabel('Share modal');
 
-    await expect(shareModal.getByLabel('Doc private')).toBeEnabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).not.toHaveAttribute('disabled');
     await expect(shareModal.getByText('Search by email')).toBeVisible();
 
     const invitationCard = shareModal.getByLabel('List invitation card');
@@ -284,7 +288,11 @@ test.describe('Doc Header', () => {
 
     const shareModal = page.getByLabel('Share modal');
 
-    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
     await expect(shareModal.getByText('Search by email')).toBeHidden();
 
     const invitationCard = shareModal.getByLabel('List invitation card');
@@ -357,7 +365,11 @@ test.describe('Doc Header', () => {
 
     const shareModal = page.getByLabel('Share modal');
 
-    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
     await expect(shareModal.getByText('Search by email')).toBeHidden();
 
     const invitationCard = shareModal.getByLabel('List invitation card');

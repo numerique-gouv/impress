@@ -16,6 +16,12 @@
   line-height: initial;
 }
 
+.c__field .c__field__footer {
+  padding: 2px 0 0;
+  font-size: var(--c--components--forms-field--footer-font-size);
+  color: var(--c--components--forms-field--footer-color);
+}
+
 .labelled-box label {
   color: var(--c--theme--colors--primary-text);
 }
@@ -326,6 +332,10 @@ input:-webkit-autofill:focus {
 
 .c__switch.c__checkbox--disabled .c__switch__rail {
   cursor: not-allowed;
+}
+
+.c__checkbox.c__checkbox--disabled .c__checkbox__label {
+  color: var(--c--theme--colors--greyscale-400);
 }
 
 /**

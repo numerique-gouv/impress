@@ -1,7 +1,11 @@
 import { WorkboxPlugin } from 'workbox-core';
 
 import { Doc, DocsResponse } from '@/features/docs/doc-management';
-import { LinkReach, Role } from '@/features/docs/doc-management/types';
+import {
+  LinkReach,
+  LinkRole,
+  Role,
+} from '@/features/docs/doc-management/types';
 
 import { DBRequest, DocsDB } from './DocsDB';
 import { RequestSerializer } from './RequestSerializer';
@@ -220,7 +224,7 @@ export class ApiPlugin implements WorkboxPlugin {
         },
       ],
       link_reach: LinkReach.RESTRICTED,
-      link_role: 'reader',
+      link_role: LinkRole.READER,
     };
 
     await DocsDB.cacheResponse(

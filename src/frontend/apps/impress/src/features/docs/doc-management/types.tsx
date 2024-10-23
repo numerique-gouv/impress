@@ -27,6 +27,11 @@ export enum LinkReach {
   AUTHENTICATED = 'authenticated',
 }
 
+export enum LinkRole {
+  READER = 'reader',
+  EDITOR = 'editor',
+}
+
 export type Base64 = string;
 
 export interface Doc {
@@ -34,7 +39,7 @@ export interface Doc {
   title: string;
   content: Base64;
   link_reach: LinkReach;
-  link_role: 'reader' | 'editor';
+  link_role: LinkRole;
   accesses: Access[];
   created_at: string;
   updated_at: string;
