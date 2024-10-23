@@ -14,6 +14,12 @@ When creating an issue, please provide the following details:
 4.  **Expected vs. Actual Behavior**: Describe what you expected to happen and what actually happened.
 5.  **Labels**: Add appropriate labels to categorize the issue (e.g., bug, feature request, documentation).
 
+## Selecting an issue
+
+We use a [GitHub Project](https://github.com/orgs/numerique-gouv/projects/13) in order to prioritize our workload. 
+
+Please check in priority the issues that are in the **todo** column and have a higher priority (P0 -> P2). 
+
 ## Commit Message Format
 
 All commit messages must adhere to the following format:
