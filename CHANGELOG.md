@@ -20,6 +20,7 @@ and this project adheres to
 - 🐛(backend) require right to manage document accesses to see invitations #369
 - 🐛(i18n) same frontend and backend language using shared cookies #365
 - 🐛(frontend) add default toolbar buttons #355
+- 🐛(frontend) throttle error correctly display #378
 
 
 ## [1.6.0] - 2024-10-17
