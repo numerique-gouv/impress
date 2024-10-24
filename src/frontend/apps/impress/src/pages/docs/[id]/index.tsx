@@ -1,4 +1,5 @@
 import { Loader } from '@openfun/cunningham-react';
+import Head from 'next/head';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -21,9 +22,14 @@ export function DocLayout() {
   }
 
   return (
-    <MainLayout withoutFooter>
-      <DocPage id={id} />
-    </MainLayout>
+    <>
+      <Head>
+        <meta name="robots" content="noindex" />
+      </Head>
+      <MainLayout withoutFooter>
+        <DocPage id={id} />
+      </MainLayout>
+    </>
   );
 }
 

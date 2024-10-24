@@ -21,6 +21,7 @@ and this project adheres to
 - 🐛(i18n) same frontend and backend language using shared cookies #365
 - 🐛(frontend) add default toolbar buttons #355
 - 🐛(frontend) throttle error correctly display #378
+- 🐛(frontend) (frontend) avoid documents indexing in search engine #372
 
 ## Removed
 
