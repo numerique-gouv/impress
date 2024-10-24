@@ -194,16 +194,17 @@ export class ApiPlugin implements WorkboxPlugin {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       abilities: {
+        accesses_manage: true,
+        accesses_view: true,
+        attachment_upload: true,
         destroy: true,
         link_configuration: true,
+        partial_update: true,
+        retrieve: true,
+        update: true,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        accesses_manage: true,
-        update: true,
-        partial_update: true,
-        retrieve: true,
-        attachment_upload: true,
       },
       accesses: [
         {

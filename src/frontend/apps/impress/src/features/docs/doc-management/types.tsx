@@ -44,10 +44,11 @@ export interface Doc {
   created_at: string;
   updated_at: string;
   abilities: {
+    accesses_manage: boolean;
+    accesses_view: boolean;
     attachment_upload: true;
     destroy: boolean;
     link_configuration: boolean;
-    accesses_manage: boolean;
     partial_update: boolean;
     retrieve: boolean;
     update: boolean;

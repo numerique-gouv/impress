@@ -17,6 +17,10 @@ and this project adheres to
 - ✨(frontend) Add full name if available #380
 - ✨(backend) Add view accesses ability #376
 
+## Changed
+
+- ♻️(frontend) list accesses if user has abilities #376
+
 ## Fixed
 
 - 🐛(backend) require right to manage document accesses to see invitations #369

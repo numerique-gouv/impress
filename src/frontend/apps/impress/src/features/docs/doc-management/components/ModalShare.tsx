@@ -123,8 +123,12 @@ export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
             )}
           </Box>
           <Box $minHeight="0">
-            <InvitationList doc={doc} />
-            <MemberList doc={doc} />
+            {doc.abilities.accesses_view && (
+              <>
+                <InvitationList doc={doc} />
+                <MemberList doc={doc} />
+              </>
+            )}
           </Box>
         </Box>
       </SideModal>

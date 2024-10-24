@@ -177,12 +177,13 @@ test.describe('Doc Header', () => {
   test('it checks the options available if administrator', async ({ page }) => {
     await mockedDocument(page, {
       abilities: {
+        accesses_manage: true, // Means admin
+        accesses_view: true,
         destroy: false, // Means not owner
         link_configuration: true,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        accesses_manage: true, // Means admin
         update: true,
         partial_update: true,
         retrieve: true,
@@ -247,12 +248,13 @@ test.describe('Doc Header', () => {
   test('it checks the options available if editor', async ({ page }) => {
     await mockedDocument(page, {
       abilities: {
+        accesses_manage: false, // Means not admin
+        accesses_view: true,
         destroy: false, // Means not owner
         link_configuration: false,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        accesses_manage: false, // Means not admin
         update: true,
         partial_update: true, // Means editor
         retrieve: true,
@@ -324,12 +326,13 @@ test.describe('Doc Header', () => {
   test('it checks the options available if reader', async ({ page }) => {
     await mockedDocument(page, {
       abilities: {
+        accesses_manage: false, // Means not admin
+        accesses_view: true,
         destroy: false, // Means not owner
         link_configuration: false,
         versions_destroy: false,
         versions_list: true,
         versions_retrieve: true,
-        accesses_manage: false, // Means not admin
         update: false,
         partial_update: false, // Means not editor
         retrieve: true,

@@ -435,10 +435,20 @@ test.describe('Doc Visibility: Authenticated', () => {
     await page.goto(urlDoc);
 
     await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
+    await page.getByRole('button', { name: 'Share' }).click();
     await expect(
       page.getByText('Read only, you cannot edit this document'),
     ).toBeVisible();
+
+    const shareModal = page.getByLabel('Share modal');
+
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
+    await expect(shareModal.getByText('Search by email')).toBeHidden();
+    await expect(shareModal.getByLabel('List members card')).toBeHidden();
   });
 
   test('It checks a authenticated doc in editable mode', async ({
@@ -483,9 +493,19 @@ test.describe('Doc Visibility: Authenticated', () => {
     await page.goto(urlDoc);
 
     await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
+    await page.getByRole('button', { name: 'Share' }).click();
     await expect(
       page.getByText('Read only, you cannot edit this document'),
     ).toBeHidden();
+
+    const shareModal = page.getByLabel('Share modal');
+
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
+    await expect(shareModal.getByText('Search by email')).toBeHidden();
+    await expect(shareModal.getByLabel('List members card')).toBeHidden();
   });
 });
