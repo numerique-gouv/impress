@@ -70,6 +70,7 @@ and this project adheres to
 - ♻️(backend) Change email content #283
 - 🛂(frontend) viewers and editors can access share modal #302
 - ♻️(frontend) remove footer on doc editor #313
+- 🌐(backend) Add german translation #259
 
 ## Fixed
 

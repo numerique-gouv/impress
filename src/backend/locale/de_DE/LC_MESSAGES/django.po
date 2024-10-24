@@ -2,32 +2,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 07:19+0000\n"
-"PO-Revision-Date: 2024-10-15 07:23\n"
+"POT-Creation-Date: 2024-09-25 10:15+0000\n"
+"PO-Revision-Date: 2024-09-25 10:21\n"
 "Last-Translator: \n"
-"Language-Team: French\n"
-"Language: fr_FR\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Crowdin-Project: lasuite-people\n"
 "X-Crowdin-Project-ID: 637934\n"
-"X-Crowdin-Language: fr\n"
+"X-Crowdin-Language: de\n"
 "X-Crowdin-File: backend-impress.pot\n"
 "X-Crowdin-File-ID: 8\n"
 
-#: core/admin.py:33
+#: core/admin.py:32
 msgid "Personal info"
-msgstr "Infos Personnelles"
+msgstr "Persönliche Angaben"
+
+#: core/admin.py:34
+msgid "Permissions"
+msgstr "Berechtigungen"
 
 #: core/admin.py:46
-msgid "Permissions"
-msgstr "Permissions"
-
-#: core/admin.py:58
 msgid "Important dates"
-msgstr "Dates importantes"
+msgstr "Wichtige Termine"
 
 #: core/api/serializers.py:253
 msgid "Body"
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: core/authentication/backends.py:57
+#: core/authentication/backends.py:56
 msgid "Invalid response format or token verification failed"
 msgstr ""
 
@@ -49,33 +49,37 @@ msgstr ""
 msgid "User info contained no recognizable user identification"
 msgstr ""
 
+#: core/authentication/backends.py:101
+msgid "Claims contained no recognizable user identification"
+msgstr ""
+
 #: core/models.py:62 core/models.py:69
 msgid "Reader"
-msgstr "Lecteur"
+msgstr "Leser"
 
 #: core/models.py:63 core/models.py:70
 msgid "Editor"
-msgstr "Éditeur"
+msgstr "Bearbeiter"
 
 #: core/models.py:71
 msgid "Administrator"
-msgstr "Administrateur"
+msgstr "Administrator"
 
 #: core/models.py:72
 msgid "Owner"
-msgstr "Propriétaire"
+msgstr "Eigentümer"
 
 #: core/models.py:80
 msgid "Restricted"
-msgstr "Restreint"
+msgstr "Eingeschränkt"
 
 #: core/models.py:84
 msgid "Authenticated"
-msgstr "Authentifié"
+msgstr "Authentifiziert"
 
 #: core/models.py:86
 msgid "Public"
-msgstr "Public"
+msgstr "Öffentlich"
 
 #: core/models.py:98
 msgid "id"
@@ -113,237 +117,224 @@ msgstr ""
 msgid "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
 msgstr ""
 
-#: core/models.py:149
-msgid "full name"
-msgstr ""
-
-#: core/models.py:150
-msgid "short name"
-msgstr ""
-
-#: core/models.py:152
+#: core/models.py:148
 msgid "identity email address"
 msgstr ""
 
-#: core/models.py:157
+#: core/models.py:153
 msgid "admin email address"
 msgstr ""
 
-#: core/models.py:164
+#: core/models.py:160
 msgid "language"
 msgstr ""
 
-#: core/models.py:165
+#: core/models.py:161
 msgid "The language in which the user wants to see the interface."
 msgstr ""
 
-#: core/models.py:171
+#: core/models.py:167
 msgid "The timezone in which the user wants to see times."
 msgstr ""
 
-#: core/models.py:174
+#: core/models.py:170
 msgid "device"
 msgstr ""
 
-#: core/models.py:176
+#: core/models.py:172
 msgid "Whether the user is a device or a real user."
 msgstr ""
 
-#: core/models.py:179
+#: core/models.py:175
 msgid "staff status"
 msgstr ""
 
-#: core/models.py:181
+#: core/models.py:177
 msgid "Whether the user can log into this admin site."
 msgstr ""
 
-#: core/models.py:184
+#: core/models.py:180
 msgid "active"
 msgstr ""
 
-#: core/models.py:187
+#: core/models.py:183
 msgid "Whether this user should be treated as active. Unselect this instead of deleting accounts."
 msgstr ""
 
-#: core/models.py:199
+#: core/models.py:195
 msgid "user"
 msgstr ""
 
-#: core/models.py:200
+#: core/models.py:196
 msgid "users"
 msgstr ""
 
-#: core/models.py:332 core/models.py:638
+#: core/models.py:328 core/models.py:644
 msgid "title"
 msgstr ""
 
-#: core/models.py:347
+#: core/models.py:343
 msgid "Document"
 msgstr ""
 
-#: core/models.py:348
+#: core/models.py:344
 msgid "Documents"
 msgstr ""
 
-#: core/models.py:351
+#: core/models.py:347
 msgid "Untitled Document"
 msgstr ""
 
-#: core/models.py:530
+#: core/models.py:537
 #, python-format
-msgid "%(sender_name)s shared a document with you: %(document)s"
-msgstr "%(sender_name)s a partagé un document avec vous: %(document)s"
+msgid "%(username)s shared a document with you: %(document)s"
+msgstr "%(username)s hat ein Dokument mit Ihnen geteilt: %(document)s"
 
-#: core/models.py:574
+#: core/models.py:580
 msgid "Document/user link trace"
 msgstr ""
 
-#: core/models.py:575
+#: core/models.py:581
 msgid "Document/user link traces"
 msgstr ""
 
-#: core/models.py:581
+#: core/models.py:587
 msgid "A link trace already exists for this document/user."
 msgstr ""
 
-#: core/models.py:602
+#: core/models.py:608
 msgid "Document/user relation"
 msgstr ""
 
-#: core/models.py:603
+#: core/models.py:609
 msgid "Document/user relations"
 msgstr ""
 
-#: core/models.py:609
+#: core/models.py:615
 msgid "This user is already in this document."
 msgstr ""
 
-#: core/models.py:615
+#: core/models.py:621
 msgid "This team is already in this document."
 msgstr ""
 
-#: core/models.py:621 core/models.py:810
+#: core/models.py:627 core/models.py:816
 msgid "Either user or team must be set, not both."
 msgstr ""
 
-#: core/models.py:639
+#: core/models.py:645
 msgid "description"
 msgstr ""
 
-#: core/models.py:640
+#: core/models.py:646
 msgid "code"
 msgstr ""
 
-#: core/models.py:641
+#: core/models.py:647
 msgid "css"
 msgstr ""
 
-#: core/models.py:643
+#: core/models.py:649
 msgid "public"
 msgstr ""
 
-#: core/models.py:645
+#: core/models.py:651
 msgid "Whether this template is public for anyone to use."
 msgstr ""
 
-#: core/models.py:651
+#: core/models.py:657
 msgid "Template"
 msgstr ""
 
-#: core/models.py:652
+#: core/models.py:658
 msgid "Templates"
 msgstr ""
 
-#: core/models.py:791
+#: core/models.py:797
 msgid "Template/user relation"
 msgstr ""
 
-#: core/models.py:792
+#: core/models.py:798
 msgid "Template/user relations"
 msgstr ""
 
-#: core/models.py:798
+#: core/models.py:804
 msgid "This user is already in this template."
 msgstr ""
 
-#: core/models.py:804
+#: core/models.py:810
 msgid "This team is already in this template."
 msgstr ""
 
-#: core/models.py:827
+#: core/models.py:833
 msgid "email address"
 msgstr ""
 
-#: core/models.py:844
+#: core/models.py:850
 msgid "Document invitation"
 msgstr ""
 
-#: core/models.py:845
+#: core/models.py:851
 msgid "Document invitations"
 msgstr ""
 
-#: core/models.py:862
+#: core/models.py:868
 msgid "This email is already associated to a registered user."
 msgstr ""
 
-#: core/templates/mail/html/hello.html:159 core/templates/mail/text/hello.txt:3
-msgid "Company logo"
-msgstr ""
-
-#: core/templates/mail/html/hello.html:188 core/templates/mail/text/hello.txt:5
-#, python-format
-msgid "Hello %(name)s"
-msgstr ""
-
-#: core/templates/mail/html/hello.html:188 core/templates/mail/text/hello.txt:5
-msgid "Hello"
-msgstr ""
-
-#: core/templates/mail/html/hello.html:189 core/templates/mail/text/hello.txt:6
-msgid "Thank you very much for your visit!"
-msgstr ""
-
-#: core/templates/mail/html/hello.html:221
-#, python-format
-msgid "This mail has been sent to %(email)s by <a href=\"%(href)s\">%(name)s</a>"
-msgstr ""
-
-#: core/templates/mail/html/invitation.html:159
+#: core/templates/mail/html/invitation.html:160
+#: core/templates/mail/html/invitation2.html:160
 #: core/templates/mail/text/invitation.txt:3
+#: core/templates/mail/text/invitation2.txt:3
 msgid "La Suite Numérique"
 msgstr ""
 
-#: core/templates/mail/html/invitation.html:189
+#: core/templates/mail/html/invitation.html:190
 #: core/templates/mail/text/invitation.txt:6
 #, python-format
-msgid " %(sender_name)s shared a document with you ! "
-msgstr " %(sender_name)s a partagé un document avec vous ! "
+msgid " %(username)s shared a document with you ! "
+msgstr " %(username)s hat ein Dokument mit Ihnen geteilt! "
 
-#: core/templates/mail/html/invitation.html:196
+#: core/templates/mail/html/invitation.html:197
 #: core/templates/mail/text/invitation.txt:8
 #, python-format
-msgid " %(sender_name_email)s invited you with the role \"%(role)s\" on the following document : "
-msgstr " %(sender_name_email)s vous a invité avec le rôle \"%(role)s\" sur le document suivant : "
+msgid " %(username)s invited you as an %(role)s on the following document : "
+msgstr " %(username)s hat Sie als %(role)s zum folgenden Dokument eingeladen: "
 
-#: core/templates/mail/html/invitation.html:205
+#: core/templates/mail/html/invitation.html:206
+#: core/templates/mail/html/invitation2.html:211
 #: core/templates/mail/text/invitation.txt:10
+#: core/templates/mail/text/invitation2.txt:11
 msgid "Open"
-msgstr "Ouvrir"
+msgstr "Öffnen"
 
-#: core/templates/mail/html/invitation.html:222
+#: core/templates/mail/html/invitation.html:223
 #: core/templates/mail/text/invitation.txt:14
-msgid " Docs, your new essential tool for organizing, sharing and collaborating on your documents as a team. "
-msgstr " Docs, votre nouvel outil incontournable pour organiser, partager et collaborer sur vos documents en équipe. "
+msgid " Docs, your new essential tool for organizing, sharing and collaborate on your documents as a team. "
+msgstr " Docs, Ihr neues unverzichtbares Werkzeug zum Organisieren, Teilen und Zusammenarbeiten an Dokumenten im Team. "
 
-#: core/templates/mail/html/invitation.html:229
+#: core/templates/mail/html/invitation.html:230
+#: core/templates/mail/html/invitation2.html:235
 #: core/templates/mail/text/invitation.txt:16
+#: core/templates/mail/text/invitation2.txt:17
 msgid "Brought to you by La Suite Numérique"
-msgstr "Proposé par La Suite Numérique"
+msgstr "Bereitgestellt von La Suite Numérique"
 
-#: core/templates/mail/text/hello.txt:8
+#: core/templates/mail/html/invitation2.html:190
 #, python-format
-msgid "This mail has been sent to %(email)s by %(name)s [%(href)s]"
-msgstr ""
+msgid "%(username)s shared a document with you"
+msgstr "%(username)s hat ein Dokument mit Ihnen geteilt"
+
+#: core/templates/mail/html/invitation2.html:197
+#: core/templates/mail/text/invitation2.txt:8
+#, python-format
+msgid "%(username)s invited you as an %(role)s on the following document :"
+msgstr "%(username)s hat Sie als %(role)s zum folgenden Dokument eingeladen:"
+
+#: core/templates/mail/html/invitation2.html:228
+#: core/templates/mail/text/invitation2.txt:15
+msgid "Docs, your new essential tool for organizing, sharing and collaborate on your document as a team."
+msgstr "Docs, Ihr neues unverzichtbares Werkzeug zum Organisieren, Teilen und gemeinsamen Arbeiten an Dokumenten im Team."
 
 #: impress/settings.py:177
 msgid "English"
