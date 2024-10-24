@@ -28,6 +28,7 @@ and this project adheres to
 - 🐛(frontend) add default toolbar buttons #355
 - 🐛(frontend) throttle error correctly display #378
 - 🐛(frontend) (frontend) avoid documents indexing in search engine #372
+- 🐛(editor) collaborative user tag hidden when read only #385
 
 ## Removed
 
