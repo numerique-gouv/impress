@@ -21,6 +21,7 @@ test.describe('Doc Header', () => {
           role: 'owner',
           user: {
             email: 'super@owner.com',
+            full_name: 'Super Owner',
           },
         },
         {
@@ -65,7 +66,7 @@ test.describe('Doc Header', () => {
       card.getByText('Created at 09/01/2021, 11:00 AM'),
     ).toBeVisible();
     await expect(
-      card.getByText('Owners: super@owner.com / super2@owner.com'),
+      card.getByText('Owners: Super Owner / super2@owner.com'),
     ).toBeVisible();
     await expect(card.getByText('Your role: Owner')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();

@@ -213,6 +213,8 @@ export class ApiPlugin implements WorkboxPlugin {
           user: {
             id: 'dummy-id',
             email: 'dummy-email',
+            full_name: 'dummy-full-name',
+            short_name: 'dummy-short-name',
           },
           abilities: {
             destroy: false,

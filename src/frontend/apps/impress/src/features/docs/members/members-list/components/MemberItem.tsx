@@ -84,9 +84,10 @@ export const MemberItem = ({
           $css={`flex: ${isSmallMobile ? '100%' : '70%'};`}
         >
           <IconBG iconName="account_circle" $size="2rem" />
-          <Text $justify="center" $css="flex:1;">
-            {access.user.email}
-          </Text>
+          <Box $justify="center" $css="flex:1;">
+            {access.user.full_name && <Text>{access.user.full_name}</Text>}
+            <Text>{access.user.email}</Text>
+          </Box>
           <Box
             $direction="row"
             $gap="1rem"
