@@ -5,7 +5,7 @@ from django.urls import include, path, re_path
 
 from rest_framework.routers import DefaultRouter
 
-from core.api import viewsets
+from core.api import viewsets, create_summary
 from core.authentication.urls import urlpatterns as oidc_urls
 
 # - Main endpoints
@@ -44,6 +44,7 @@ urlpatterns = [
             [
                 *router.urls,
                 *oidc_urls,
+                path("summary/", create_summary, name="create_summary"),
                 re_path(
                     r"^documents/(?P<resource_id>[0-9a-z-]*)/",
                     include(document_related_router.urls),
