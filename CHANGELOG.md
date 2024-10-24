@@ -14,7 +14,7 @@ and this project adheres to
 - 📝Contributing.md #352
 - 🌐(frontend) add localization to editor #268
 - ✨Public and restricted doc editable #357
-
+- Add alert block
 ## Fixed
 
 - 🐛(backend) require right to manage document accesses to see invitations #369
