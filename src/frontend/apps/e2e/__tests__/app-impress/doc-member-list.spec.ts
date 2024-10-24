@@ -25,6 +25,7 @@ test.describe('Document list members', () => {
             user: {
               id: `fc092149-cafa-4ffa-a29d-e4b18af751-${pageId}-${i}`,
               email: `impress@impress.world-page-${pageId}-${i}`,
+              full_name: `Impress World Page ${pageId}-${i}`,
             },
             team: '',
             role: 'editor',
@@ -58,9 +59,11 @@ test.describe('Document list members', () => {
     await waitForElementCount(list.locator('li'), 21, 10000);
 
     expect(await list.locator('li').count()).toBeGreaterThan(20);
+    await expect(list.getByText(`Impress World Page 1-16`)).toBeVisible();
     await expect(
       list.getByText(`impress@impress.world-page-1-16`),
     ).toBeVisible();
+    await expect(list.getByText(`Impress World Page 2-15`)).toBeVisible();
     await expect(
       list.getByText(`impress@impress.world-page-2-15`),
     ).toBeVisible();

@@ -104,7 +104,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
                   )
                   .map((access, index, accesses) => (
                     <Fragment key={`access-${index}`}>
-                      {access.user.email}{' '}
+                      {access.user.full_name || access.user.email}{' '}
                       {index < accesses.length - 1 ? ' / ' : ''}
                     </Fragment>
                   ))}

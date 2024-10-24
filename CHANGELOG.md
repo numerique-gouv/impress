@@ -14,6 +14,7 @@ and this project adheres to
 - 📝Contributing.md #352
 - 🌐(frontend) add localization to editor #268
 - ✨Public and restricted doc editable #357
+- ✨(frontend) Add full name if available #380
 
 ## Fixed
 
