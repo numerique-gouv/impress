@@ -11,12 +11,11 @@ import { useTranslation } from 'react-i18next';
 import { Box, TextErrors } from '@/components';
 import { mediaUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
-import { Doc } from '@/features/docs/doc-management';
-import { Version } from '@/features/docs/doc-versioning/';
+import { Doc, useDocStore } from '@/features/docs/doc-management';
 
 import { useCreateDocAttachment } from '../api/useCreateDocUpload';
 import useSaveDoc from '../hook/useSaveDoc';
-import { useDocStore, useHeadingStore } from '../stores';
+import { useHeadingStore } from '../stores';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
@@ -76,39 +75,15 @@ const cssEditor = (readonly: boolean) => `
 
 interface BlockNoteEditorProps {
   doc: Doc;
-  version?: Version;
-}
-
-export const BlockNoteEditor = ({ doc, version }: BlockNoteEditorProps) => {
-  const { createProvider, docsStore } = useDocStore();
-  const storeId = version?.id || doc.id;
-  const initialContent = version?.content || doc.content;
-  const provider = docsStore?.[storeId]?.provider;
-
-  useEffect(() => {
-    if (!provider || provider.document.guid !== storeId) {
-      createProvider(storeId, initialContent);
-    }
-  }, [createProvider, initialContent, provider, storeId]);
-
-  if (!provider) {
-    return null;
-  }
-
-  return <BlockNoteContent doc={doc} provider={provider} storeId={storeId} />;
-};
-
-interface BlockNoteContentProps {
-  doc: Doc;
   provider: HocuspocusProvider;
   storeId: string;
 }
 
-export const BlockNoteContent = ({
+export const BlockNoteEditor = ({
   doc,
   provider,
   storeId,
-}: BlockNoteContentProps) => {
+}: BlockNoteEditorProps) => {
   const isVersion = doc.id !== storeId;
   const { userData } = useAuthStore();
   const { setStore, docsStore } = useDocStore();

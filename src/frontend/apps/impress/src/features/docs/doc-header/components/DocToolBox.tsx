@@ -8,11 +8,12 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions } from '@/components';
 import { useAuthStore } from '@/core';
-import { useDocStore, usePanelEditorStore } from '@/features/docs/doc-editor/';
+import { usePanelEditorStore } from '@/features/docs/doc-editor/';
 import {
   Doc,
   ModalRemoveDoc,
   ModalShare,
+  useDocStore,
 } from '@/features/docs/doc-management';
 import { useResponsiveStore } from '@/stores';
 

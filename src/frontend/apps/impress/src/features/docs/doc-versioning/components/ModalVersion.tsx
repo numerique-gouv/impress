@@ -11,8 +11,8 @@ import { useRouter } from 'next/navigation';
 import * as Y from 'yjs';
 
 import { Box, Text } from '@/components';
-import { toBase64, useDocStore } from '@/features/docs/doc-editor';
-import { Doc, useUpdateDoc } from '@/features/docs/doc-management';
+import { toBase64 } from '@/features/docs/doc-editor';
+import { Doc, useDocStore, useUpdateDoc } from '@/features/docs/doc-management';
 
 import { KEY_LIST_DOC_VERSIONS } from '../api/useDocVersions';
 import { Versions } from '../types';

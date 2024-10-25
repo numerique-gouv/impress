@@ -14,8 +14,7 @@ import { t } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 
 import { Box, Text } from '@/components';
-import { useDocStore } from '@/features/docs/doc-editor/';
-import { Doc } from '@/features/docs/doc-management';
+import { Doc, useDocStore } from '@/features/docs/doc-management';
 
 import { useExport } from '../api/useExport';
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';

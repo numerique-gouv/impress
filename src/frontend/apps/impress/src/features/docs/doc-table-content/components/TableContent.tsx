@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
-import { HeadingBlock, useDocStore } from '@/features/docs/doc-editor';
-import { Doc } from '@/features/docs/doc-management';
+import { HeadingBlock } from '@/features/docs/doc-editor';
+import { Doc, useDocStore } from '@/features/docs/doc-management';
 import { useResponsiveStore } from '@/stores';
 
 import { Heading } from './Heading';
