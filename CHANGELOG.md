@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased]
 
 ## Added
@@ -18,7 +17,7 @@ and this project adheres to
 
 - 🐛(backend) require right to manage document accesses to see invitations #369
 - 🐛(frontend) add default toolbar buttons #355
-
+- 🐛(frontend) fix title placeholder not turn black after editing #370
 
 ## [1.6.0] - 2024-10-17
 
@@ -41,7 +40,6 @@ and this project adheres to
 - 🐛(backend) Fix dysfunctional permissions on document create #329
 - 🐛(backend) fix nginx docker container #340
 - 🐛(frontend) fix copy paste firefox #353
-
 
 ## [1.5.1] - 2024-10-10
 
@@ -77,7 +75,6 @@ and this project adheres to
 - 🔧(backend) fix configuration to avoid different ssl warning #297
 - 🐛(frontend) fix editor break line not working #302
 
-
 ## [1.4.0] - 2024-09-17
 
 ## Added
@@ -97,7 +94,6 @@ and this project adheres to
 
 - 🐛(backend) Fix forcing ID when creating a document via API endpoint #234
 - 🐛 Rebuild frontend dev container from makefile #248
-
 
 ## [1.3.0] - 2024-09-05
 
@@ -123,14 +119,12 @@ and this project adheres to
 
 - 🔥(frontend) remove saving modal #213
 
-
 ## [1.2.1] - 2024-08-23
 
 ## Changed
 
 - ♻️ Change ordering docs datagrid #195
 - 🔥(helm) use scaleway email #194
-
 
 ## [1.2.0] - 2024-08-22
 
@@ -155,14 +149,14 @@ and this project adheres to
 - ⚡️(CI) only e2e chrome mandatory #177
 
 ## Removed
-- 🔥(helm) remove htaccess #181
 
+- 🔥(helm) remove htaccess #181
 
 ## [1.1.0] - 2024-07-15
 
 ## Added
 
-- 🤡(demo) generate dummy documents on dev users #120 
+- 🤡(demo) generate dummy documents on dev users #120
 - ✨(frontend) create side modal component #134
 - ✨(frontend) Doc grid actions (update / delete) #136
 - ✨(frontend) Doc editor header information #137
@@ -173,12 +167,11 @@ and this project adheres to
 - ♻️(frontend) create a doc from a modal #132
 - ♻️(frontend) manage members from the share modal #140
 
-
 ## [1.0.0] - 2024-07-02
 
 ## Added
 
-- 🛂(frontend) Manage the document's right (#75) 
+- 🛂(frontend) Manage the document's right (#75)
 - ✨(frontend) Update document (#68)
 - ✨(frontend) Remove document (#68)
 - 🐳(docker) dockerize dev frontend (#63)
@@ -212,14 +205,12 @@ and this project adheres to
 - 💚(CI) Remove trigger workflow on push tags on CI (#68)
 - 🔥(frontend) Remove coming soon page (#121)
 
-
 ## [0.1.0] - 2024-05-24
 
 ## Added
 
 - ✨(frontend) Coming Soon page (#67)
 - 🚀 Impress, project to manage your documents easily and collaboratively.
-
 
 [unreleased]: https://github.com/numerique-gouv/impress/compare/v1.6.0...main
 [v1.6.0]: https://github.com/numerique-gouv/impress/releases/v1.6.0
