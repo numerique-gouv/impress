@@ -4,9 +4,7 @@ import * as Y from 'yjs';
 import { create } from 'zustand';
 
 import { providerUrl } from '@/core';
-import { Base64, Doc } from '@/features/docs/doc-management';
-
-import { blocksToYDoc } from '../utils';
+import { Base64, Doc, blocksToYDoc } from '@/features/docs/doc-management';
 
 interface DocStore {
   provider: HocuspocusProvider;

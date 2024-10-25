@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react';
 import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
 import { useAuthStore } from '@/core/auth';
-import { DocEditor, useDocStore } from '@/features/docs';
-import { useDoc } from '@/features/docs/doc-management';
+import { DocEditor } from '@/features/docs/doc-editor';
+import { useDoc, useDocStore } from '@/features/docs/doc-management';
 import { MainLayout } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
@@ -41,7 +41,7 @@ const DocPage = ({ id }: DocProps) => {
   const { login } = useAuthStore();
   const { data: docQuery, isError, error } = useDoc({ id });
   const [doc, setDoc] = useState(docQuery);
-  const { setCurrentDoc } = useDocStore();
+  const { setCurrentDoc, createProvider, docsStore } = useDocStore();
 
   const navigate = useNavigate();
 
@@ -65,6 +65,18 @@ const DocPage = ({ id }: DocProps) => {
       setCurrentDoc(undefined);
     };
   }, [docQuery, setCurrentDoc]);
+
+  useEffect(() => {
+    if (!doc?.id) {
+      return;
+    }
+
+    const provider = docsStore?.[doc.id]?.provider;
+
+    if (!provider || provider.document.guid !== doc.id) {
+      createProvider(doc.id, doc.content);
+    }
+  }, [createProvider, doc, docsStore]);
 
   if (isError && error) {
     if (error.status === 404) {

@@ -1,13 +1,13 @@
 import { Alert, Loader, VariantType } from '@openfun/cunningham-react';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
-import { Doc } from '@/features/docs/doc-management';
+import { Doc, useDocStore } from '@/features/docs/doc-management';
 import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
 import { useResponsiveStore } from '@/stores';
 
@@ -31,6 +31,13 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   const isVersion = versionId && typeof versionId === 'string';
 
   const { colorsTokens } = useCunninghamTheme();
+
+  const { docsStore } = useDocStore();
+  const provider = docsStore?.[doc.id]?.provider;
+
+  if (!provider) {
+    return null;
+  }
 
   return (
     <>
@@ -66,7 +73,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
           {isVersion ? (
             <DocVersionEditor doc={doc} versionId={versionId} />
           ) : (
-            <BlockNoteEditor doc={doc} />
+            <BlockNoteEditor doc={doc} storeId={doc.id} provider={provider} />
           )}
           {!isMobile && <IconOpenPanelEditor headings={headings} />}
         </Card>
@@ -91,8 +98,20 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
     docId: doc.id,
     versionId,
   });
+  const { createProvider, docsStore } = useDocStore();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!version?.id) {
+      return;
+    }
+
+    const provider = docsStore?.[version.id]?.provider;
+    if (!provider || provider.document.guid !== version.id) {
+      createProvider(version.id, version.content);
+    }
+  }, [createProvider, docsStore, version]);
 
   if (isError && error) {
     if (error.status === 404) {
@@ -124,5 +143,11 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
     );
   }
 
-  return <BlockNoteEditor doc={doc} version={version} />;
+  const provider = docsStore?.[version.id]?.provider;
+
+  if (!provider) {
+    return null;
+  }
+
+  return <BlockNoteEditor doc={doc} storeId={version.id} provider={provider} />;
 };
