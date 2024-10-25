@@ -20,6 +20,7 @@ and this project adheres to
 ## Changed
 
 - ♻️(frontend) list accesses if user has abilities #376
+- 👔(backend) doc restricted by default #388
 
 ## Fixed
 
