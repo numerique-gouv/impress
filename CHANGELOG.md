@@ -9,10 +9,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.7.0] - 2024-10-24
+
 ## Added
 
 - 📝Contributing.md #352
-- 🌐(frontend) add localization to editor #268
+- 🌐(frontend) add localization to editor #368
 - ✨Public and restricted doc editable #357
 - ✨(frontend) Add full name if available #380
 - ✨(backend) Add view accesses ability #376
@@ -20,6 +22,7 @@ and this project adheres to
 ## Changed
 
 - ♻️(frontend) list accesses if user has abilities #376
+- ♻️(frontend) avoid documents indexing in search engine #372
 - 👔(backend) doc restricted by default #388
 
 ## Fixed
@@ -28,7 +31,6 @@ and this project adheres to
 - 🐛(i18n) same frontend and backend language using shared cookies #365
 - 🐛(frontend) add default toolbar buttons #355
 - 🐛(frontend) throttle error correctly display #378
-- 🐛(frontend) (frontend) avoid documents indexing in search engine #372
 
 ## Removed
 
@@ -236,7 +238,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.6.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.7.0...main
+[v1.7.0]: https://github.com/numerique-gouv/impress/releases/v1.7.0
 [v1.6.0]: https://github.com/numerique-gouv/impress/releases/v1.6.0
 [1.5.1]: https://github.com/numerique-gouv/impress/releases/v1.5.1
 [1.5.0]: https://github.com/numerique-gouv/impress/releases/v1.5.0
