@@ -336,7 +336,7 @@ class Document(BaseModel):
     link_reach = models.CharField(
         max_length=20,
         choices=LinkReachChoices.choices,
-        default=LinkReachChoices.AUTHENTICATED,
+        default=LinkReachChoices.RESTRICTED,
     )
     link_role = models.CharField(
         max_length=20, choices=LinkRoleChoices.choices, default=LinkRoleChoices.READER
