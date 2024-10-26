@@ -32,7 +32,7 @@ export const ModalVersion = ({
 }: ModalVersionProps) => {
   const { toast } = useToastProvider();
   const router = useRouter();
-  const { docsStore, setStore } = useDocStore();
+  const { docsStore } = useDocStore();
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
     onSuccess: () => {
@@ -45,10 +45,6 @@ export const ModalVersion = ({
         onDisplaySuccess();
         return;
       }
-
-      setStore(docId, {
-        editor: undefined,
-      });
 
       revertUpdate(
         docsStore[docId].provider.document,

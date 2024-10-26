@@ -1,4 +1,3 @@
-import { BlockNoteEditor } from '@blocknote/core';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import * as Y from 'yjs';
 import { create } from 'zustand';
@@ -8,7 +7,6 @@ import { Base64, Doc, blocksToYDoc } from '@/features/docs/doc-management';
 
 interface DocStore {
   provider: HocuspocusProvider;
-  editor?: BlockNoteEditor;
 }
 
 export interface UseDocStore {

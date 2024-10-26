@@ -8,16 +8,17 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions } from '@/components';
 import { useAuthStore } from '@/core';
-import { usePanelEditorStore } from '@/features/docs/doc-editor/';
+import {
+  useEditorStore,
+  usePanelEditorStore,
+} from '@/features/docs/doc-editor/';
 import {
   Doc,
   ModalRemoveDoc,
   ModalShare,
-  useDocStore,
 } from '@/features/docs/doc-management';
+import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
-
-import { ModalVersion, Versions } from '../../doc-versioning';
 
 import { ModalPDF } from './ModalExport';
 
@@ -36,13 +37,12 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
   const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);
   const { isSmallMobile } = useResponsiveStore();
   const { authenticated } = useAuthStore();
-  const { docsStore } = useDocStore();
+  const { editor } = useEditorStore();
   const { toast } = useToastProvider();
 
   const copyCurrentEditorToClipboard = async (
     asFormat: 'html' | 'markdown',
   ) => {
-    const editor = docsStore[doc.id]?.editor;
     if (!editor) {
       toast(t('Editor unavailable'), VariantType.ERROR, { duration: 3000 });
       return;

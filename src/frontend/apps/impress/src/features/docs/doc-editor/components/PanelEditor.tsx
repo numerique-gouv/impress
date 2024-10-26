@@ -127,9 +127,7 @@ export const PanelEditor = ({
             </BoxButton>
           )}
         </Box>
-        {isPanelTableContentOpen && (
-          <TableContent doc={doc} headings={headings} />
-        )}
+        {isPanelTableContentOpen && <TableContent headings={headings} />}
         {!isPanelTableContentOpen && doc.abilities.versions_list && (
           <VersionList doc={doc} />
         )}

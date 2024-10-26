@@ -2,22 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
-import { HeadingBlock } from '@/features/docs/doc-editor';
-import { Doc, useDocStore } from '@/features/docs/doc-management';
+import { HeadingBlock, useEditorStore } from '@/features/docs/doc-editor';
 import { useResponsiveStore } from '@/stores';
 
 import { Heading } from './Heading';
 
 interface TableContentProps {
-  doc: Doc;
   headings: HeadingBlock[];
 }
 
-export const TableContent = ({ doc, headings }: TableContentProps) => {
-  const { docsStore } = useDocStore();
+export const TableContent = ({ headings }: TableContentProps) => {
+  const { editor } = useEditorStore();
   const { isMobile } = useResponsiveStore();
   const { t } = useTranslation();
-  const editor = docsStore?.[doc.id]?.editor;
   const [headingIdHighlight, setHeadingIdHighlight] = useState<string>();
 
   // To highlight the first heading in the viewport
