@@ -14,7 +14,8 @@ import { t } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 
 import { Box, Text } from '@/components';
-import { Doc, useDocStore } from '@/features/docs/doc-management';
+import { useEditorStore } from '@/features/docs/doc-editor';
+import { Doc } from '@/features/docs/doc-management';
 
 import { useExport } from '../api/useExport';
 import { TemplatesOrdering, useTemplates } from '../api/useTemplates';
@@ -30,7 +31,7 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });
   const { toast } = useToastProvider();
-  const { docsStore } = useDocStore();
+  const { editor } = useEditorStore();
   const {
     mutate: createExport,
     data: documentGenerated,
@@ -102,8 +103,6 @@ export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
     if (!templateIdSelected || !format) {
       return;
     }
-
-    const editor = docsStore[doc.id].editor;
 
     if (!editor) {
       toast(t('No editor found'), VariantType.ERROR);

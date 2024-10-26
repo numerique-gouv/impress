@@ -11,11 +11,11 @@ import { useTranslation } from 'react-i18next';
 import { Box, TextErrors } from '@/components';
 import { mediaUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
-import { Doc, useDocStore } from '@/features/docs/doc-management';
+import { Doc } from '@/features/docs/doc-management';
 
 import { useCreateDocAttachment } from '../api/useCreateDocUpload';
 import useSaveDoc from '../hook/useSaveDoc';
-import { useHeadingStore } from '../stores';
+import { useEditorStore, useHeadingStore } from '../stores';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
@@ -86,11 +86,10 @@ export const BlockNoteEditor = ({
 }: BlockNoteEditorProps) => {
   const isVersion = doc.id !== storeId;
   const { userData } = useAuthStore();
-  const { setStore, docsStore } = useDocStore();
+  const { setEditor } = useEditorStore();
 
   const readOnly = !doc.abilities.partial_update || isVersion;
   useSaveDoc(doc.id, provider.document, !readOnly);
-  const storedEditor = docsStore?.[storeId]?.editor;
   const {
     mutateAsync: createDocAttachment,
     isError: isErrorAttachment,
@@ -132,8 +131,12 @@ export const BlockNoteEditor = ({
   );
 
   useEffect(() => {
-    setStore(storeId, { editor });
-  }, [setStore, storeId, editor]);
+    setEditor(editor);
+
+    return () => {
+      setEditor(undefined);
+    };
+  }, [setEditor, editor]);
 
   useEffect(() => {
     setHeadings(editor);
@@ -160,7 +163,7 @@ export const BlockNoteEditor = ({
       )}
 
       <BlockNoteView
-        editor={storedEditor ?? editor}
+        editor={editor}
         formattingToolbar={false}
         editable={!readOnly}
         theme="light"
