@@ -8,16 +8,33 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.7.0] - 2024-10-24
+
 ## Added
 
 - 📝Contributing.md #352
-- 🌐(frontend) add localization to editor #268
+- 🌐(frontend) add localization to editor #368
+- ✨Public and restricted doc editable #357
+- ✨(frontend) Add full name if available #380
+- ✨(backend) Add view accesses ability #376
+
+## Changed
+
+- ♻️(frontend) list accesses if user has abilities #376
+- ♻️(frontend) avoid documents indexing in search engine #372
+- 👔(backend) doc restricted by default #388
 
 ## Fixed
 
 - 🐛(backend) require right to manage document accesses to see invitations #369
+- 🐛(i18n) same frontend and backend language using shared cookies #365
 - 🐛(frontend) add default toolbar buttons #355
 - 🐛(frontend) fix title placeholder not turn black after editing #370
+- 🐛(frontend) throttle error correctly display #378
+
+## Removed
+
+- 🔥(helm) remove infra related codes #366
 
 ## [1.6.0] - 2024-10-17
 
@@ -25,7 +42,7 @@ and this project adheres to
 
 - ✨AI to doc editor #250
 - ✨(backend) allow uploading more types of attachments #309
-- ✨(frontend) add buttons to copy document to clipboard as HTML/Markdown #300
+- ✨(frontend) add buttons to copy document to clipboard as HTML/Markdown #318
 
 ## Changed
 
@@ -212,7 +229,8 @@ and this project adheres to
 - ✨(frontend) Coming Soon page (#67)
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.6.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.7.0...main
+[v1.7.0]: https://github.com/numerique-gouv/impress/releases/v1.7.0
 [v1.6.0]: https://github.com/numerique-gouv/impress/releases/v1.6.0
 [1.5.1]: https://github.com/numerique-gouv/impress/releases/v1.5.1
 [1.5.0]: https://github.com/numerique-gouv/impress/releases/v1.5.0

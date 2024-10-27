@@ -7,6 +7,22 @@ test.describe('Doc Routing', () => {
     await page.goto('/');
   });
 
+  test('Check the presence of the meta tag noindex', async ({ page }) => {
+    const buttonCreateHomepage = page.getByRole('button', {
+      name: 'Create a new document',
+    });
+
+    await expect(buttonCreateHomepage).toBeVisible();
+    await buttonCreateHomepage.click();
+    await expect(
+      page.getByRole('button', {
+        name: 'Share',
+      }),
+    ).toBeVisible();
+    const metaDescription = page.locator('meta[name="robots"]');
+    await expect(metaDescription).toHaveAttribute('content', 'noindex');
+  });
+
   test('checks alias docs url with homepage', async ({ page }) => {
     await expect(page).toHaveURL('/');
 

@@ -62,7 +62,7 @@ def test_models_templates_get_abilities_anonymous_public():
         "destroy": False,
         "retrieve": True,
         "update": False,
-        "manage_accesses": False,
+        "accesses_manage": False,
         "partial_update": False,
         "generate_document": True,
     }
@@ -76,7 +76,7 @@ def test_models_templates_get_abilities_anonymous_not_public():
         "destroy": False,
         "retrieve": False,
         "update": False,
-        "manage_accesses": False,
+        "accesses_manage": False,
         "partial_update": False,
         "generate_document": False,
     }
@@ -90,7 +90,7 @@ def test_models_templates_get_abilities_authenticated_public():
         "destroy": False,
         "retrieve": True,
         "update": False,
-        "manage_accesses": False,
+        "accesses_manage": False,
         "partial_update": False,
         "generate_document": True,
     }
@@ -104,7 +104,7 @@ def test_models_templates_get_abilities_authenticated_not_public():
         "destroy": False,
         "retrieve": False,
         "update": False,
-        "manage_accesses": False,
+        "accesses_manage": False,
         "partial_update": False,
         "generate_document": False,
     }
@@ -119,7 +119,7 @@ def test_models_templates_get_abilities_owner():
         "destroy": True,
         "retrieve": True,
         "update": True,
-        "manage_accesses": True,
+        "accesses_manage": True,
         "partial_update": True,
         "generate_document": True,
     }
@@ -133,7 +133,7 @@ def test_models_templates_get_abilities_administrator():
         "destroy": False,
         "retrieve": True,
         "update": True,
-        "manage_accesses": True,
+        "accesses_manage": True,
         "partial_update": True,
         "generate_document": True,
     }
@@ -150,7 +150,7 @@ def test_models_templates_get_abilities_editor_user(django_assert_num_queries):
         "destroy": False,
         "retrieve": True,
         "update": True,
-        "manage_accesses": False,
+        "accesses_manage": False,
         "partial_update": True,
         "generate_document": True,
     }
@@ -167,7 +167,7 @@ def test_models_templates_get_abilities_reader_user(django_assert_num_queries):
         "destroy": False,
         "retrieve": True,
         "update": False,
-        "manage_accesses": False,
+        "accesses_manage": False,
         "partial_update": False,
         "generate_document": True,
     }
@@ -185,7 +185,7 @@ def test_models_templates_get_abilities_preset_role(django_assert_num_queries):
         "destroy": False,
         "retrieve": True,
         "update": False,
-        "manage_accesses": False,
+        "accesses_manage": False,
         "partial_update": False,
         "generate_document": True,
     }

@@ -1,30 +1,32 @@
 import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
-import { LANGUAGES_ALLOWED, LANGUAGE_LOCAL_STORAGE } from './conf';
+import { BASE_LANGUAGE, LANGUAGES_ALLOWED, LANGUAGE_COOKIE_NAME } from './conf';
 import resources from './translations.json';
-import { getLanguage } from './utils';
 
 i18n
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    lng: getLanguage(),
+    fallbackLng: BASE_LANGUAGE,
+    supportedLngs: Object.keys(LANGUAGES_ALLOWED),
+    detection: {
+      order: ['cookie', 'navigator'], // detection order
+      caches: ['cookie'], // Use cookies to store the language preference
+      lookupCookie: LANGUAGE_COOKIE_NAME,
+      cookieMinutes: 525600, // Expires after one year
+    },
     interpolation: {
       escapeValue: false,
     },
     preload: Object.keys(LANGUAGES_ALLOWED),
-    nsSeparator: '||',
+    nsSeparator: false,
+    keySeparator: false,
   })
   .catch(() => {
     throw new Error('i18n initialization failed');
   });
-
-// Save language in local storage
-i18n.on('languageChanged', (lng) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(LANGUAGE_LOCAL_STORAGE, lng);
-  }
-});
 
 export default i18n;

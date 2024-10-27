@@ -303,7 +303,7 @@ test.describe('Documents Grid mobile', () => {
                   attachment_upload: true,
                   destroy: true,
                   link_configuration: true,
-                  manage_accesses: true,
+                  accesses_manage: true,
                   partial_update: true,
                   retrieve: true,
                   update: true,

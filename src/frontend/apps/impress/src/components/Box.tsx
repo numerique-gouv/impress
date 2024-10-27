@@ -19,7 +19,7 @@ export interface BoxProps {
   $direction?: CSSProperties['flexDirection'];
   $display?: CSSProperties['display'];
   $effect?: 'show' | 'hide';
-  $flex?: boolean;
+  $flex?: CSSProperties['flex'];
   $gap?: CSSProperties['gap'];
   $hasTransition?: boolean | 'slow';
   $height?: CSSProperties['height'];
@@ -50,7 +50,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $color }) => $color && `color: ${$color};`}
   ${({ $direction }) => $direction && `flex-direction: ${$direction};`}
   ${({ $display }) => $display && `display: ${$display};`}
-  ${({ $flex }) => $flex === false && `display: block;`}
+  ${({ $flex }) => $flex && `flex: ${$flex};`}
   ${({ $gap }) => $gap && `gap: ${$gap};`}
   ${({ $height }) => $height && `height: ${$height};`}
   ${({ $hasTransition }) =>

@@ -25,6 +25,7 @@ test.describe('Document list members', () => {
             user: {
               id: `fc092149-cafa-4ffa-a29d-e4b18af751-${pageId}-${i}`,
               email: `impress@impress.world-page-${pageId}-${i}`,
+              full_name: `Impress World Page ${pageId}-${i}`,
             },
             team: '',
             role: 'editor',
@@ -58,9 +59,11 @@ test.describe('Document list members', () => {
     await waitForElementCount(list.locator('li'), 21, 10000);
 
     expect(await list.locator('li').count()).toBeGreaterThan(20);
+    await expect(list.getByText(`Impress World Page 1-16`)).toBeVisible();
     await expect(
       list.getByText(`impress@impress.world-page-1-16`),
     ).toBeVisible();
+    await expect(list.getByText(`Impress World Page 2-15`)).toBeVisible();
     await expect(
       list.getByText(`impress@impress.world-page-2-15`),
     ).toBeVisible();
@@ -164,14 +167,22 @@ test.describe('Document list members', () => {
     const shareModal = page.getByLabel('Share modal');
 
     // Admin still have the right to share
-    await expect(shareModal.getByLabel('Doc private')).toBeEnabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).not.toHaveAttribute('disabled');
 
     await SelectRoleCurrentUser.click();
     await page.getByRole('option', { name: 'Reader' }).click();
     await expect(page.getByText('The role has been updated')).toBeVisible();
 
     // Reader does not have the right to share
-    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
   });
 
   test('it checks the delete members', async ({ page, browserName }) => {

@@ -9,14 +9,7 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import {
-  PropsWithChildren,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { PropsWithChildren, ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { isAPIError } from '@/api';
@@ -70,9 +63,8 @@ export function AIGroupButton() {
   const { t } = useTranslation();
   const { currentDoc } = useDocStore();
   const { data: docOptions } = useDocOptions();
-  const [languages, setLanguages] = useState<LanguageTranslate[]>([]);
 
-  useEffect(() => {
+  const languages = useMemo(() => {
     const languages = docOptions?.actions.POST.language.choices;
 
     if (!languages) {
@@ -90,7 +82,7 @@ export function AIGroupButton() {
       'pl',
     ]);
 
-    setLanguages(languages);
+    return languages;
   }, [docOptions?.actions.POST.language.choices]);
 
   const show = useMemo(() => {
@@ -220,45 +212,19 @@ const AIMenuItemTransform = ({
   children,
   icon,
 }: PropsWithChildren<AIMenuItemTransform>) => {
-  const editor = useBlockNoteEditor();
   const { mutateAsync: requestAI, isPending } = useDocAITransform();
-  const handleAIError = useHandleAIError();
 
-  const handleAIAction = useCallback(async () => {
-    const selectedBlocks = editor.getSelection()?.blocks;
-
-    if (!selectedBlocks || selectedBlocks.length === 0) {
-      return;
-    }
-
-    const markdown = await editor.blocksToMarkdownLossy(selectedBlocks);
-
-    try {
-      const responseAI = await requestAI({
-        text: markdown,
-        action,
-        docId,
-      });
-
-      if (!responseAI.answer) {
-        return;
-      }
-
-      const blockMarkdown = await editor.tryParseMarkdownToBlocks(
-        responseAI.answer,
-      );
-      editor.replaceBlocks(selectedBlocks, blockMarkdown);
-    } catch (error) {
-      handleAIError(error);
-    }
-  }, [editor, requestAI, action, docId, handleAIError]);
+  const requestAIAction = async (markdown: string) => {
+    const responseAI = await requestAI({
+      text: markdown,
+      action,
+      docId,
+    });
+    return responseAI.answer;
+  };
 
   return (
-    <AIMenuItem
-      icon={icon}
-      handleAIAction={handleAIAction}
-      isPending={isPending}
-    >
+    <AIMenuItem icon={icon} requestAI={requestAIAction} isPending={isPending}>
       {children}
     </AIMenuItem>
   );
@@ -276,11 +242,46 @@ const AIMenuItemTranslate = ({
   icon,
   language,
 }: PropsWithChildren<AIMenuItemTranslate>) => {
-  const editor = useBlockNoteEditor();
   const { mutateAsync: requestAI, isPending } = useDocAITranslate();
+
+  const requestAITranslate = async (markdown: string) => {
+    const responseAI = await requestAI({
+      text: markdown,
+      language,
+      docId,
+    });
+    return responseAI.answer;
+  };
+
+  return (
+    <AIMenuItem
+      icon={icon}
+      requestAI={requestAITranslate}
+      isPending={isPending}
+    >
+      {children}
+    </AIMenuItem>
+  );
+};
+
+interface AIMenuItemProps {
+  requestAI: (markdown: string) => Promise<string>;
+  isPending: boolean;
+  icon?: ReactNode;
+}
+
+const AIMenuItem = ({
+  requestAI,
+  isPending,
+  children,
+  icon,
+}: PropsWithChildren<AIMenuItemProps>) => {
+  const Components = useComponentsContext();
+
+  const editor = useBlockNoteEditor();
   const handleAIError = useHandleAIError();
 
-  const handleAIAction = useCallback(async () => {
+  const handleAIAction = async () => {
     const selectedBlocks = editor.getSelection()?.blocks;
 
     if (!selectedBlocks || selectedBlocks.length === 0) {
@@ -290,49 +291,18 @@ const AIMenuItemTranslate = ({
     const markdown = await editor.blocksToMarkdownLossy(selectedBlocks);
 
     try {
-      const responseAI = await requestAI({
-        text: markdown,
-        language,
-        docId,
-      });
+      const responseAI = await requestAI(markdown);
 
-      if (!responseAI.answer) {
+      if (!responseAI) {
         return;
       }
 
-      const blockMarkdown = await editor.tryParseMarkdownToBlocks(
-        responseAI.answer,
-      );
+      const blockMarkdown = await editor.tryParseMarkdownToBlocks(responseAI);
       editor.replaceBlocks(selectedBlocks, blockMarkdown);
     } catch (error) {
       handleAIError(error);
     }
-  }, [editor, requestAI, language, docId, handleAIError]);
-
-  return (
-    <AIMenuItem
-      icon={icon}
-      handleAIAction={handleAIAction}
-      isPending={isPending}
-    >
-      {children}
-    </AIMenuItem>
-  );
-};
-
-interface AIMenuItemProps {
-  handleAIAction: () => Promise<void>;
-  isPending: boolean;
-  icon?: ReactNode;
-}
-
-const AIMenuItem = ({
-  handleAIAction,
-  isPending,
-  children,
-  icon,
-}: PropsWithChildren<AIMenuItemProps>) => {
-  const Components = useComponentsContext();
+  };
 
   if (!Components) {
     return null;
@@ -359,26 +329,12 @@ const useHandleAIError = () => {
   const { toast } = useToastProvider();
   const { t } = useTranslation();
 
-  const handleAIError = useCallback(
-    (error: unknown) => {
-      if (isAPIError(error)) {
-        error.cause?.forEach((cause) => {
-          if (
-            cause === 'Request was throttled. Expected available in 60 seconds.'
-          ) {
-            toast(
-              t('Too many requests. Please wait 60 seconds.'),
-              VariantType.ERROR,
-            );
-          }
-        });
-      }
+  return (error: unknown) => {
+    if (isAPIError(error) && error.status === 429) {
+      toast(t('Too many requests. Please wait 60 seconds.'), VariantType.ERROR);
+      return;
+    }
 
-      toast(t('AI seems busy! Please try again.'), VariantType.ERROR);
-      console.error(error);
-    },
-    [toast, t],
-  );
-
-  return handleAIError;
+    toast(t('AI seems busy! Please try again.'), VariantType.ERROR);
+  };
 };

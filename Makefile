@@ -314,6 +314,10 @@ frontend-install: ## install the frontend locally
 	cd $(PATH_FRONT_IMPRESS) && yarn
 .PHONY: frontend-install
 
+frontend-lint: ## run the frontend linter
+	cd $(PATH_FRONT) && yarn lint
+.PHONY: frontend-lint
+
 run-frontend-development: ## Run the frontend in development mode
 	@$(COMPOSE) stop frontend-dev
 	cd $(PATH_FRONT_IMPRESS) && yarn dev

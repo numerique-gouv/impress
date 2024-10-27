@@ -5,7 +5,7 @@ export interface Template {
   abilities: {
     destroy: boolean;
     generate_document: boolean;
-    manage_accesses: boolean;
+    accesses_manage: boolean;
     retrieve: boolean;
     update: boolean;
     partial_update: boolean;

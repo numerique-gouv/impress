@@ -477,6 +477,12 @@
   --c--components--forms-datepicker--border-radius: 0;
   --c--components--forms-fileuploader--border-radius: 0;
   --c--components--forms-field--color: var(--c--theme--colors--primary-text);
+  --c--components--forms-field--footer-font-size: var(
+    --c--theme--font--sizes--t
+  );
+  --c--components--forms-field--footer-color: var(
+    --c--theme--colors--greyscale-text
+  );
   --c--components--forms-input--border-radius: 4px;
   --c--components--forms-input--background-color: #fff;
   --c--components--forms-input--border-color: var(
@@ -491,6 +497,9 @@
   --c--components--forms-input--font-size: 14px;
   --c--components--forms-labelledbox--label-color--big: var(
     --c--theme--colors--primary-text
+  );
+  --c--components--forms-radio--accent-color: var(
+    --c--theme--colors--primary-600
   );
   --c--components--forms-select--item-font-size: 14px;
   --c--components--forms-select--border-radius: 4px;

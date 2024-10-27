@@ -61,7 +61,7 @@ export const MemberItem = ({
   });
 
   const isNotAllowed =
-    isOtherOwner || isLastOwner || !doc.abilities.manage_accesses;
+    isOtherOwner || isLastOwner || !doc.abilities.accesses_manage;
 
   if (!access.user) {
     return (
@@ -84,9 +84,10 @@ export const MemberItem = ({
           $css={`flex: ${isSmallMobile ? '100%' : '70%'};`}
         >
           <IconBG iconName="account_circle" $size="2rem" />
-          <Text $justify="center" $css="flex:1;">
-            {access.user.email}
-          </Text>
+          <Box $justify="center" $css="flex:1;">
+            {access.user.full_name && <Text>{access.user.full_name}</Text>}
+            <Text>{access.user.email}</Text>
+          </Box>
           <Box
             $direction="row"
             $gap="1rem"
@@ -111,7 +112,7 @@ export const MemberItem = ({
                 }}
               />
             </Box>
-            {doc.abilities.manage_accesses && (
+            {doc.abilities.accesses_manage && (
               <Box $margin={isSmallMobile ? 'auto' : ''}>
                 <Button
                   color="tertiary-text"
@@ -135,7 +136,7 @@ export const MemberItem = ({
           <TextErrors causes={errorUpdate?.cause || errorDelete?.cause} />
         </Box>
       )}
-      {(isLastOwner || isOtherOwner) && doc.abilities.manage_accesses && (
+      {(isLastOwner || isOtherOwner) && doc.abilities.accesses_manage && (
         <Box $margin={{ top: 'tiny' }}>
           <Alert
             canClose={false}

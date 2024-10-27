@@ -1,7 +1,11 @@
 import { WorkboxPlugin } from 'workbox-core';
 
 import { Doc, DocsResponse } from '@/features/docs/doc-management';
-import { LinkReach, Role } from '@/features/docs/doc-management/types';
+import {
+  LinkReach,
+  LinkRole,
+  Role,
+} from '@/features/docs/doc-management/types';
 
 import { DBRequest, DocsDB } from './DocsDB';
 import { RequestSerializer } from './RequestSerializer';
@@ -190,16 +194,17 @@ export class ApiPlugin implements WorkboxPlugin {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       abilities: {
+        accesses_manage: true,
+        accesses_view: true,
+        attachment_upload: true,
         destroy: true,
         link_configuration: true,
+        partial_update: true,
+        retrieve: true,
+        update: true,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true,
-        update: true,
-        partial_update: true,
-        retrieve: true,
-        attachment_upload: true,
       },
       accesses: [
         {
@@ -209,6 +214,8 @@ export class ApiPlugin implements WorkboxPlugin {
           user: {
             id: 'dummy-id',
             email: 'dummy-email',
+            full_name: 'dummy-full-name',
+            short_name: 'dummy-short-name',
           },
           abilities: {
             destroy: false,
@@ -220,7 +227,7 @@ export class ApiPlugin implements WorkboxPlugin {
         },
       ],
       link_reach: LinkReach.RESTRICTED,
-      link_role: 'reader',
+      link_role: LinkRole.READER,
     };
 
     await DocsDB.cacheResponse(

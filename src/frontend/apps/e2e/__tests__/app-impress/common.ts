@@ -4,17 +4,17 @@ export const keyCloakSignIn = async (page: Page, browserName: string) => {
   const login = `user-e2e-${browserName}`;
   const password = `password-e2e-${browserName}`;
 
+  await expect(
+    page.locator('.login-pf-page-header').getByText('impress'),
+  ).toBeVisible();
+
   if (await page.getByLabel('Restart login').isVisible()) {
-    await page.getByRole('textbox', { name: 'password' }).fill(password);
-
-    await page.click('input[type="submit"]', { force: true });
-  } else {
-    await page.getByRole('textbox', { name: 'username' }).fill(login);
-
-    await page.getByRole('textbox', { name: 'password' }).fill(password);
-
-    await page.click('input[type="submit"]', { force: true });
+    await page.getByLabel('Restart login').click();
   }
+
+  await page.getByRole('textbox', { name: 'username' }).fill(login);
+  await page.getByRole('textbox', { name: 'password' }).fill(password);
+  await page.click('input[type="submit"]', { force: true });
 };
 
 export const randomName = (name: string, browserName: string, length: number) =>
@@ -27,7 +27,6 @@ export const createDoc = async (
   docName: string,
   browserName: string,
   length: number,
-  isPublic: boolean = false,
 ) => {
   const randomDocs = randomName(docName, browserName, length);
 
@@ -44,22 +43,6 @@ export const createDoc = async (
     await page.getByRole('heading', { name: 'Untitled document' }).click();
     await page.keyboard.type(randomDocs[i]);
     await page.getByText('Created at ').click();
-
-    if (isPublic) {
-      await page.getByRole('button', { name: 'Share' }).click();
-      await page.getByText('Doc private').click();
-
-      await page.locator('.c__modal__backdrop').click({
-        position: { x: 0, y: 0 },
-        force: true,
-      });
-
-      await expect(
-        page
-          .getByLabel('It is the card information about the document.')
-          .getByText('Public'),
-      ).toBeVisible();
-    }
   }
 
   return randomDocs;
@@ -161,7 +144,7 @@ export const mockedDocument = async (page: Page, json: object) => {
             versions_destroy: false,
             versions_list: true,
             versions_retrieve: true,
-            manage_accesses: false, // Means not admin
+            accesses_manage: false, // Means not admin
             update: false,
             partial_update: false, // Means not editor
             retrieve: true,

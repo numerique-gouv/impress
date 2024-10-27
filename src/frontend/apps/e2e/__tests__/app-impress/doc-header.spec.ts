@@ -21,6 +21,7 @@ test.describe('Doc Header', () => {
           role: 'owner',
           user: {
             email: 'super@owner.com',
+            full_name: 'Super Owner',
           },
         },
         {
@@ -44,7 +45,7 @@ test.describe('Doc Header', () => {
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true,
+        accesses_manage: true,
         update: true,
         partial_update: true,
         retrieve: true,
@@ -65,7 +66,7 @@ test.describe('Doc Header', () => {
       card.getByText('Created at 09/01/2021, 11:00 AM'),
     ).toBeVisible();
     await expect(
-      card.getByText('Owners: super@owner.com / super2@owner.com'),
+      card.getByText('Owners: Super Owner / super2@owner.com'),
     ).toBeVisible();
     await expect(card.getByText('Your role: Owner')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
@@ -176,12 +177,13 @@ test.describe('Doc Header', () => {
   test('it checks the options available if administrator', async ({ page }) => {
     await mockedDocument(page, {
       abilities: {
+        accesses_manage: true, // Means admin
+        accesses_view: true,
         destroy: false, // Means not owner
         link_configuration: true,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true, // Means admin
         update: true,
         partial_update: true,
         retrieve: true,
@@ -211,7 +213,11 @@ test.describe('Doc Header', () => {
 
     const shareModal = page.getByLabel('Share modal');
 
-    await expect(shareModal.getByLabel('Doc private')).toBeEnabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).not.toHaveAttribute('disabled');
     await expect(shareModal.getByText('Search by email')).toBeVisible();
 
     const invitationCard = shareModal.getByLabel('List invitation card');
@@ -242,12 +248,13 @@ test.describe('Doc Header', () => {
   test('it checks the options available if editor', async ({ page }) => {
     await mockedDocument(page, {
       abilities: {
+        accesses_manage: false, // Means not admin
+        accesses_view: true,
         destroy: false, // Means not owner
         link_configuration: false,
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: false, // Means not admin
         update: true,
         partial_update: true, // Means editor
         retrieve: true,
@@ -284,7 +291,11 @@ test.describe('Doc Header', () => {
 
     const shareModal = page.getByLabel('Share modal');
 
-    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
     await expect(shareModal.getByText('Search by email')).toBeHidden();
 
     const invitationCard = shareModal.getByLabel('List invitation card');
@@ -315,12 +326,13 @@ test.describe('Doc Header', () => {
   test('it checks the options available if reader', async ({ page }) => {
     await mockedDocument(page, {
       abilities: {
+        accesses_manage: false, // Means not admin
+        accesses_view: true,
         destroy: false, // Means not owner
         link_configuration: false,
         versions_destroy: false,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: false, // Means not admin
         update: false,
         partial_update: false, // Means not editor
         retrieve: true,
@@ -357,7 +369,11 @@ test.describe('Doc Header', () => {
 
     const shareModal = page.getByLabel('Share modal');
 
-    await expect(shareModal.getByLabel('Doc private')).toBeDisabled();
+    await expect(
+      shareModal.getByRole('combobox', {
+        name: 'Visibility',
+      }),
+    ).toHaveAttribute('disabled');
     await expect(shareModal.getByText('Search by email')).toBeHidden();
 
     const invitationCard = shareModal.getByLabel('List invitation card');
@@ -476,7 +492,7 @@ test.describe('Documents Header mobile', () => {
         versions_destroy: true,
         versions_list: true,
         versions_retrieve: true,
-        manage_accesses: true,
+        accesses_manage: true,
         update: true,
         partial_update: true,
         retrieve: true,

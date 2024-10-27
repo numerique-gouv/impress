@@ -22,7 +22,7 @@ def test_api_templates_retrieve_anonymous_public():
         "abilities": {
             "destroy": False,
             "generate_document": True,
-            "manage_accesses": False,
+            "accesses_manage": False,
             "partial_update": False,
             "retrieve": True,
             "update": False,
@@ -68,7 +68,7 @@ def test_api_templates_retrieve_authenticated_unrelated_public():
         "abilities": {
             "destroy": False,
             "generate_document": True,
-            "manage_accesses": False,
+            "accesses_manage": False,
             "partial_update": False,
             "retrieve": True,
             "update": False,
