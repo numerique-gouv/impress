@@ -19,6 +19,8 @@ const StyledPopover = styled(Popover)`
 
 const StyledButton = styled(Button)`
   cursor: pointer;
+  display: flex;
+
   border: none;
   background: none;
   outline: none;
@@ -29,7 +31,7 @@ const StyledButton = styled(Button)`
   text-wrap: nowrap;
 `;
 
-interface DropButtonProps {
+export interface DropButtonProps {
   button: ReactNode;
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;

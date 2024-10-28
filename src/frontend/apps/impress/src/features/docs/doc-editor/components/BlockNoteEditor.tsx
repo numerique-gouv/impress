@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { Box, TextErrors } from '@/components';
 import { mediaUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
+import { blockNoteSchema } from '@/features/docs';
+import { SuggestionMenuEditor } from '@/features/docs/doc-editor/components/custom-blocks/suggestion-menu/SuggestionMenuEditor';
 import { Doc } from '@/features/docs/doc-management';
 import { Version } from '@/features/docs/doc-versioning/';
 
@@ -135,6 +137,7 @@ export const BlockNoteContent = ({
 
   const editor = useCreateBlockNote(
     {
+      schema: blockNoteSchema,
       collaboration: {
         provider,
         fragment: provider.document.getXmlFragment('document-store'),
@@ -165,26 +168,32 @@ export const BlockNoteContent = ({
     };
   }, [editor, resetHeadings, setHeadings]);
 
-  return (
-    <Box $css={cssEditor(readOnly)}>
-      {isErrorAttachment && (
-        <Box $margin={{ bottom: 'big' }}>
-          <TextErrors
-            causes={errorAttachment.cause}
-            canClose
-            $textAlign="left"
-          />
-        </Box>
-      )}
+  const goodEditor = storedEditor ?? editor;
 
-      <BlockNoteView
-        editor={storedEditor ?? editor}
-        formattingToolbar={false}
-        editable={!readOnly}
-        theme="light"
-      >
-        <BlockNoteToolbar />
-      </BlockNoteView>
-    </Box>
+  return (
+    <>
+      <Box $css={cssEditor(readOnly)}>
+        {isErrorAttachment && (
+          <Box $margin={{ bottom: 'big' }}>
+            <TextErrors
+              causes={errorAttachment.cause}
+              canClose
+              $textAlign="left"
+            />
+          </Box>
+        )}
+
+        <BlockNoteView
+          editor={goodEditor}
+          slashMenu={false}
+          formattingToolbar={false}
+          editable={!readOnly}
+          theme="light"
+        >
+          <SuggestionMenuEditor editor={goodEditor} />
+          <BlockNoteToolbar />
+        </BlockNoteView>
+      </Box>
+    </>
   );
 };

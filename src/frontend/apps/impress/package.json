@@ -33,6 +33,7 @@
     "react-dom": "*",
     "react-i18next": "15.0.3",
     "react-select": "5.8.1",
+    "sass": "1.80.4",
     "styled-components": "6.1.13",
     "y-protocols": "1.0.6",
     "yjs": "*",

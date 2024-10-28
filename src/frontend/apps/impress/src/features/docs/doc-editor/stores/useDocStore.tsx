@@ -1,16 +1,16 @@
-import { BlockNoteEditor } from '@blocknote/core';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import * as Y from 'yjs';
 import { create } from 'zustand';
 
 import { providerUrl } from '@/core';
+import { DocsEditor } from '@/features/docs';
 import { Base64, Doc } from '@/features/docs/doc-management';
 
 import { blocksToYDoc } from '../utils';
 
 interface DocStore {
   provider: HocuspocusProvider;
-  editor?: BlockNoteEditor;
+  editor?: DocsEditor;
 }
 
 export interface UseDocStore {

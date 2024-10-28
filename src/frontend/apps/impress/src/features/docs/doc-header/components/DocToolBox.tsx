@@ -129,7 +129,6 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
               icon={<span className="material-icons">summarize</span>}
               size="small"
             >
-              {t('Table of contents')}
             </Button>
             <Button
               onClick={() => {

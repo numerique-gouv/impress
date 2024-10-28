@@ -1,0 +1,61 @@
+.alertContainer {
+  display: flex;
+  border-radius: 4px;
+  justify-content: flex-start;
+  align-items: center;
+  padding: var(--c--theme--spacings--s);
+  gap: var(--c--theme--spacings--t);
+  width: 100%;
+
+  &.default {
+    background: #f2f1ee; // To keep default coolor of BlockNote but maybe make a custom theme
+  }
+
+  &.warning {
+    background: #FEF7DA
+  }
+
+  &.error {
+    background: #FEE9E5
+
+  }
+
+  &.info {
+    background: #e6ebff
+  }
+
+  &.success {
+    background: #E3FDEB
+  }
+
+}
+
+.alertIcon {
+  &[data-alert-icon-type="warning"] {
+    color: #FBE769
+  }
+  &[data-alert-icon-type="error"] {
+    color: #E4794A
+  }
+  &[data-alert-icon-type="info"] {
+    color: #507aff
+  }
+  &[data-alert-icon-type="success"] {
+    color: #6FE49D
+  }
+}
+
+
+
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.content {
+  flex-grow: 1;
+}
+
+
+

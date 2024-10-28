@@ -1,0 +1,13 @@
+.simpleContent {
+  display: flex;
+  align-items: center;
+  gap: var(--c--theme--spacings--st);
+}
+
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+}
