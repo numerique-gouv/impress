@@ -69,6 +69,48 @@ def test_api_users_list_query_email():
     assert user_ids == [str(nicole.id), str(frank.id)]
 
 
+def test_api_users_list_query_email_matching():
+    """While filtering by email, results should be filtered and sorted by similarity"""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    alice = factories.UserFactory(email="alice.johnson@example.gouv.fr")
+    factories.UserFactory(email="jane.smith@example.gouv.fr")
+    michael_wilson = factories.UserFactory(email="michael.wilson@example.gouv.fr")
+    factories.UserFactory(email="david.jones@example.gouv.fr")
+    michael_brown = factories.UserFactory(email="michael.brown@example.gouv.fr")
+    factories.UserFactory(email="sophia.taylor@example.gouv.fr")
+
+    response = client.get(
+        "/api/v1.0/users/?q=michael.johnson@example.gouv.f",
+    )
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(michael_wilson.id)]
+
+    response = client.get("/api/v1.0/users/?q=michael.johnson@example.gouv.fr")
+
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(michael_wilson.id), str(alice.id), str(michael_brown.id)]
+
+    response = client.get(
+        "/api/v1.0/users/?q=ajohnson@example.gouv.f",
+    )
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(alice.id)]
+
+    response = client.get(
+        "/api/v1.0/users/?q=michael.wilson@example.gouv.f",
+    )
+    assert response.status_code == 200
+    user_ids = [user["id"] for user in response.json()["results"]]
+    assert user_ids == [str(michael_wilson.id)]
+
+
 def test_api_users_list_query_email_exclude_doc_user():
     """
     Authenticated users should be able to list users

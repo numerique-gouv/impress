@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Changed
+
+- 🚸(backend) improve users similarity search and sort results #391
+
 ## [1.7.0] - 2024-10-24
 
 ## Added
