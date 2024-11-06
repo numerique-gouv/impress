@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db.models import (
@@ -156,7 +157,20 @@ class UserViewSet(
 
             # Filter users by email similarity
             if query := self.request.GET.get("q", ""):
+                # For performance reasons we filter first by similarity, which relies on an index,
+                # then only calculate precise similarity scores for sorting purposes
                 queryset = queryset.filter(email__trigram_word_similar=query)
+
+                queryset = queryset.annotate(
+                    similarity=TrigramSimilarity("email", query)
+                )
+                # When the query only is on the name part, we should try to make many proposals
+                # But when the query looks like an email we should only propose serious matches
+                threshold = 0.6 if "@" in query else 0.1
+
+                queryset = queryset.filter(similarity__gt=threshold).order_by(
+                    "-similarity"
+                )
 
         return queryset
 
