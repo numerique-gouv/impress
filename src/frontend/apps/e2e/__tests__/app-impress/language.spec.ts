@@ -24,6 +24,18 @@ test.describe('Language', () => {
         name: 'Créer un nouveau document',
       }),
     ).toBeVisible();
+
+    await header.getByRole('combobox').getByText('Français').click();
+    await header.getByRole('option', { name: 'Deutsch' }).click();
+    await expect(
+      header.getByRole('combobox').getByText('Deutsch'),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('button', {
+        name: 'Neues Dokument erstellen',
+      }),
+    ).toBeVisible();
   });
 
   test('checks that backend uses the same language as the frontend', async ({
