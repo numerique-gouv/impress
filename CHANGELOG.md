@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- 🌐(frontend) Add German translation #255
+
 ## Changed
 
 - 🚸(backend) improve users similarity search and sort results #391
