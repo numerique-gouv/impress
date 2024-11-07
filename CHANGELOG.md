@@ -21,6 +21,7 @@ and this project adheres to
 ## Fixed
 
 - 🦺(backend) add comma to sub regex #408
+- 🐛(editor) collaborative user tag hidden when read only #385
 
 
 ## [1.7.0] - 2024-10-24
