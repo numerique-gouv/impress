@@ -12,6 +12,7 @@ and this project adheres to
 ## Added
 
 - 🌐(frontend) Add German translation #255
+- 🧑‍💻(helm) demo helm config #404
 
 ## Changed
 
