@@ -4,6 +4,7 @@ import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { useCreateBlockNote } from '@blocknote/react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
+import { t } from 'i18next';
 import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +27,13 @@ const cssEditor = (readonly: boolean) => `
   };
   & .bn-editor {
     padding-right: 30px;
-    ${readonly && `padding-left: 30px;`}
+    ${
+      readonly &&
+      `
+        padding-left: 30px;
+        pointer-events: none;
+      `
+    }
   };
   & .collaboration-cursor__caret.ProseMirror-widget{
     word-wrap: initial;
@@ -139,14 +146,14 @@ export const BlockNoteContent = ({
         provider,
         fragment: provider.document.getXmlFragment('document-store'),
         user: {
-          name: userData?.email || 'Anonymous',
+          name: userData?.full_name || userData?.email || t('Anonymous'),
           color: randomColor(),
         },
       },
       dictionary: locales[lang as keyof typeof locales],
       uploadFile,
     },
-    [provider, uploadFile, userData?.email, lang],
+    [lang, provider, uploadFile, userData?.email, userData?.full_name],
   );
 
   useEffect(() => {
