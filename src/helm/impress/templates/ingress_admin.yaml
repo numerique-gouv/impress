@@ -1,0 +1,98 @@
+{{- if .Values.ingressAdmin.enabled -}}
+{{- $fullName := include "impress.fullname" . -}}
+{{- if and .Values.ingressAdmin.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingressAdmin.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingressAdmin.annotations "kubernetes.io/ingress.class" .Values.ingressAdmin.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-admin
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "impress.labels" . | nindent 4 }}
+  {{- with .Values.ingressAdmin.annotations }}
+  annotations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingressAdmin.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingressAdmin.className }}
+  {{- end }}
+  {{- if .Values.ingressAdmin.tls.enabled }}
+  tls:
+    {{- if .Values.ingressAdmin.host }}
+    - secretName: {{ $fullName }}-tls
+      hosts:
+        - {{ .Values.ingressAdmin.host | quote }}
+    {{- end }}
+    {{- range .Values.ingressAdmin.tls.additional }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- if .Values.ingressAdmin.host }}
+    - host: {{ .Values.ingressAdmin.host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.ingressAdmin.path | quote }}
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "impress.backend.fullname" . }}
+                port:
+                  number: {{ .Values.backend.service.port }}
+              {{- else }}
+              serviceName: {{ include "impress.backend.fullname" . }}
+              servicePort: {{ .Values.backend.service.port }}
+            {{- end }}
+          - path: /static
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "impress.backend.fullname" . }}
+                port:
+                  number: {{ .Values.backend.service.port }}
+              {{- else }}
+              serviceName: {{ include "impress.backend.fullname" . }}
+              servicePort: {{ .Values.backend.service.port }}
+            {{- end }}
+    {{- end }}
+    {{- range .Values.ingressAdmin.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: {{ $.Values.ingressAdmin.path | quote }}
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "impress.backend.fullname" $ }}
+                port:
+                  number: {{ $.Values.backend.service.port }}
+              {{- else }}
+              serviceName: {{ include "impress.backend.fullname" $ }}
+              servicePort: {{ $.Values.backend.service.port }}
+            {{- end }}
+    {{- end }}
+{{- end }}
+
