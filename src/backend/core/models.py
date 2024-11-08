@@ -130,17 +130,17 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
     """User model to work with OIDC only authentication."""
 
     sub_validator = validators.RegexValidator(
-        regex=r"^[\w.@+-]+\Z",
+        regex=r"^[\w.@+-:]+\Z",
         message=_(
             "Enter a valid sub. This value may contain only letters, "
-            "numbers, and @/./+/-/_ characters."
+            "numbers, and @/./+/-/_/: characters."
         ),
     )
 
     sub = models.CharField(
         _("sub"),
         help_text=_(
-            "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_ characters only."
+            "Required. 255 characters or fewer. Letters, numbers, and @/./+/-/_/: characters only."
         ),
         max_length=255,
         unique=True,
