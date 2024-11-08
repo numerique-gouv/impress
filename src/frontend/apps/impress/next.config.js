@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 
+const { withSentryConfig } = require('@sentry/nextjs');
 const { InjectManifest } = require('workbox-webpack-plugin');
 
 const buildId = crypto.randomBytes(256).toString('hex').slice(0, 8);
@@ -65,4 +66,6 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withSentryConfig(nextConfig, {
+  silent: false,
+});
