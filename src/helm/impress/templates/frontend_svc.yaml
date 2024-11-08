@@ -1,0 +1,21 @@
+{{- $envVars := include "impress.common.env" (list . .Values.frontend) -}}
+{{- $fullName := include "impress.frontend.fullname" . -}}
+{{- $component := "frontend" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "impress.common.labels" (list . $component) | nindent 4 }}
+  annotations:
+    {{- toYaml $.Values.frontend.service.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.frontend.service.type }}
+  ports:
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "impress.common.selectorLabels" (list . $component) | nindent 4 }}
