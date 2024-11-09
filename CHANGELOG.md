@@ -28,6 +28,7 @@ and this project adheres to
 
 ## Added
 
+- ✨(backend) annotate number of accesses on documents in list view #411
 - ✨(backend) allow users to mark/unmark documents as favorite #411
 - 🌐(backend) add German translation #259
 - 🌐(frontend) add German translation #255

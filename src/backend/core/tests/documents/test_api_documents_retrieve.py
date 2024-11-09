@@ -38,6 +38,7 @@ def test_api_documents_retrieve_anonymous_public():
             "versions_list": False,
             "versions_retrieve": False,
         },
+        "nb_accesses": 0,
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "is_favorite": False,
@@ -102,6 +103,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
         "is_favorite": False,
         "link_reach": reach,
         "link_role": document.link_role,
+        "nb_accesses": 0,
         "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
@@ -188,6 +190,7 @@ def test_api_documents_retrieve_authenticated_related_direct():
         "is_favorite": False,
         "link_reach": document.link_reach,
         "link_role": document.link_role,
+        "nb_accesses": 2,
         "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
@@ -272,6 +275,7 @@ def test_api_documents_retrieve_authenticated_related_team_members(
     assert response.json() == {
         "id": str(document.id),
         "abilities": document.get_abilities(user),
+        "nb_accesses": 5,
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "is_favorite": False,
@@ -326,6 +330,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
     assert response.json() == {
         "id": str(document.id),
         "abilities": document.get_abilities(user),
+        "nb_accesses": 5,
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "is_favorite": False,
@@ -381,6 +386,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
     assert response.json() == {
         "id": str(document.id),
         "abilities": document.get_abilities(user),
+        "nb_accesses": 5,
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "is_favorite": False,
