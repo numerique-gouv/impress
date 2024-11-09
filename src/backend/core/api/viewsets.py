@@ -346,15 +346,23 @@ class DocumentViewSet(
 ):
     """Document ViewSet"""
 
+    access_model_class = models.DocumentAccess
+    metadata_class = DocumentMetadata
+    ordering = ["-updated_at"]
     permission_classes = [
         permissions.AccessPermission,
     ]
-    serializer_class = serializers.DocumentSerializer
-    access_model_class = models.DocumentAccess
-    resource_field_name = "document"
     queryset = models.Document.objects.all()
-    ordering = ["-updated_at"]
-    metadata_class = DocumentMetadata
+    resource_field_name = "document"
+    serializer_class = serializers.DocumentSerializer
+
+    def get_serializer_class(self):
+        """
+        Use ListDocumentSerializer for list actions, otherwise use DocumentSerializer.
+        """
+        if self.action == "list":
+            return serializers.ListDocumentSerializer
+        return self.serializer_class
 
     def list(self, request, *args, **kwargs):
         """Restrict resources returned by the list endpoint"""
