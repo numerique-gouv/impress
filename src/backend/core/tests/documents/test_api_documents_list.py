@@ -63,6 +63,7 @@ def test_api_documents_list_format():
         "is_favorite": True,
         "link_reach": document.link_reach,
         "link_role": document.link_role,
+        "nb_accesses": 3,
         "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
@@ -92,9 +93,7 @@ def test_api_documents_list_authenticated_direct(django_assert_num_queries):
     expected_ids = {str(document.id) for document in documents}
 
     with django_assert_num_queries(3):
-        response = client.get(
-            "/api/v1.0/documents/",
-        )
+        response = client.get("/api/v1.0/documents/")
 
     assert response.status_code == 200
     results = response.json()["results"]

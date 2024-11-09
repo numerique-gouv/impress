@@ -10,6 +10,7 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db.models import (
+    Count,
     Exists,
     Min,
     OuterRef,
@@ -332,6 +333,9 @@ class DocumentViewSet(
         queryset = super().get_queryset()
         user = self.request.user
 
+        # Annotate the number of accesses associated with each document
+        queryset = queryset.annotate(nb_accesses=Count("accesses"))
+
         if not user.is_authenticated:
             # If the user is not authenticated, annotate `is_favorite` as False
             return queryset.annotate(is_favorite=Value(False))
@@ -358,6 +362,7 @@ class DocumentViewSet(
         """Restrict resources returned by the list endpoint"""
         queryset = self.filter_queryset(self.get_queryset())
         user = self.request.user
+
         if user.is_authenticated:
             queryset = queryset.filter(
                 Q(accesses__user=user)
