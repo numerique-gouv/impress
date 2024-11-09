@@ -5,23 +5,19 @@ import { create } from 'zustand';
 import { providerUrl } from '@/core';
 import { Base64, Doc, blocksToYDoc } from '@/features/docs/doc-management';
 
-interface DocStore {
-  provider: HocuspocusProvider;
-}
-
 export interface UseDocStore {
   currentDoc?: Doc;
-  docsStore: {
-    [storeId: string]: DocStore;
+  providers: {
+    [storeId: string]: HocuspocusProvider;
   };
   createProvider: (storeId: string, initialDoc: Base64) => HocuspocusProvider;
-  setStore: (storeId: string, props: Partial<DocStore>) => void;
+  setProviders: (storeId: string, providers: HocuspocusProvider) => void;
   setCurrentDoc: (doc: Doc | undefined) => void;
 }
 
 export const useDocStore = create<UseDocStore>((set, get) => ({
   currentDoc: undefined,
-  docsStore: {},
+  providers: {},
   createProvider: (storeId: string, initialDoc: Base64) => {
     const doc = new Y.Doc({
       guid: storeId,
@@ -46,23 +42,17 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
       document: doc,
     });
 
-    get().setStore(storeId, { provider });
+    get().setProviders(storeId, provider);
 
     return provider;
   },
-  setStore: (storeId, props) => {
-    set(({ docsStore }, ...store) => {
-      return {
-        ...store,
-        docsStore: {
-          ...docsStore,
-          [storeId]: {
-            ...docsStore[storeId],
-            ...props,
-          },
-        },
-      };
-    });
+  setProviders: (storeId, provider) => {
+    set(({ providers }) => ({
+      providers: {
+        ...providers,
+        [storeId]: provider,
+      },
+    }));
   },
   setCurrentDoc: (doc) => {
     set({ currentDoc: doc });

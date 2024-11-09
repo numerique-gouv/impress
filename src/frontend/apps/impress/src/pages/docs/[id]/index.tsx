@@ -43,11 +43,11 @@ const DocPage = ({ id }: DocProps) => {
   const { login } = useAuthStore();
   const { data: docQuery, isError, error } = useDoc({ id });
   const [doc, setDoc] = useState(docQuery);
-  const { setCurrentDoc, createProvider, docsStore } = useDocStore();
+  const { setCurrentDoc, createProvider, providers } = useDocStore();
   const { setBroadcastProvider, addTask } = useBroadcastStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const provider = docsStore?.[id]?.provider;
+  const provider = providers?.[id];
 
   useEffect(() => {
     if (doc?.title) {
