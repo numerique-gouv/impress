@@ -518,6 +518,7 @@ class Document(BaseModel):
             "ai_translate": is_owner_or_admin or is_editor,
             "attachment_upload": is_owner_or_admin or is_editor,
             "destroy": RoleChoices.OWNER in roles,
+            "favorite": can_get and user.is_authenticated,
             "link_configuration": is_owner_or_admin,
             "invite_owner": RoleChoices.OWNER in roles,
             "partial_update": is_owner_or_admin or is_editor,
@@ -598,6 +599,37 @@ class LinkTrace(BaseModel):
 
     def __str__(self):
         return f"{self.user!s} trace on document {self.document!s}"
+
+
+class DocumentFavorite(BaseModel):
+    """Relation model to store a user's favorite documents."""
+
+    document = models.ForeignKey(
+        Document,
+        on_delete=models.CASCADE,
+        related_name="favorited_by_users",
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="favorite_documents"
+    )
+
+    class Meta:
+        db_table = "impress_document_favorite"
+        verbose_name = _("Document favorite")
+        verbose_name_plural = _("Document favorites")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "document"],
+                name="unique_document_favorite_user",
+                violation_error_message=_(
+                    "This document is already targeted by a favorite relation instance "
+                    "for the same user."
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user!s} favorite on document {self.document!s}"
 
 
 class DocumentAccess(BaseAccess):
