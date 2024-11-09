@@ -32,8 +32,8 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
 
   const { colorsTokens } = useCunninghamTheme();
 
-  const { docsStore } = useDocStore();
-  const provider = docsStore?.[doc.id]?.provider;
+  const { providers } = useDocStore();
+  const provider = providers?.[doc.id];
 
   if (!provider) {
     return null;
@@ -98,7 +98,7 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
     docId: doc.id,
     versionId,
   });
-  const { createProvider, docsStore } = useDocStore();
+  const { createProvider, providers } = useDocStore();
 
   const navigate = useNavigate();
 
@@ -107,11 +107,11 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
       return;
     }
 
-    const provider = docsStore?.[version.id]?.provider;
+    const provider = providers?.[version.id];
     if (!provider || provider.document.guid !== version.id) {
       createProvider(version.id, version.content);
     }
-  }, [createProvider, docsStore, version]);
+  }, [createProvider, providers, version]);
 
   if (isError && error) {
     if (error.status === 404) {
@@ -143,7 +143,7 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
     );
   }
 
-  const provider = docsStore?.[version.id]?.provider;
+  const provider = providers?.[version.id];
 
   if (!provider) {
     return null;

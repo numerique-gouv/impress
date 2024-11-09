@@ -32,7 +32,7 @@ export const ModalVersion = ({
 }: ModalVersionProps) => {
   const { toast } = useToastProvider();
   const router = useRouter();
-  const { docsStore } = useDocStore();
+  const { providers } = useDocStore();
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
     onSuccess: () => {
@@ -41,15 +41,15 @@ export const ModalVersion = ({
         router.push(`/docs/${docId}`);
       };
 
-      if (!docsStore?.[docId]?.provider || !docsStore?.[versionId]?.provider) {
+      if (!providers?.[docId] || !providers?.[versionId]) {
         onDisplaySuccess();
         return;
       }
 
       revertUpdate(
-        docsStore[docId].provider.document,
-        docsStore[docId].provider.document,
-        docsStore[versionId].provider.document,
+        providers[docId].document,
+        providers[docId].document,
+        providers[versionId].document,
       );
 
       onDisplaySuccess();
@@ -79,7 +79,7 @@ export const ModalVersion = ({
           fullWidth
           onClick={() => {
             const newDoc = toBase64(
-              Y.encodeStateAsUpdate(docsStore?.[versionId]?.provider.document),
+              Y.encodeStateAsUpdate(providers?.[versionId].document),
             );
 
             updateDoc({
