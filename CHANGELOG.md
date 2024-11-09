@@ -39,6 +39,7 @@ and this project adheres to
 
 ## Changed
 
+- ⚡️(backend) optimize number of queries on document list view #411
 - 🚸(backend) improve users similarity search and sort results #391
 - ♻️(frontend) simplify stores #402
 - ✨(frontend) update $css Box props type to add styled components RuleSet #423

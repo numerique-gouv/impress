@@ -216,7 +216,7 @@ def test_api_documents_update_authenticated_editor_administrator_or_owner(
     document = models.Document.objects.get(pk=document.pk)
     document_values = serializers.DocumentSerializer(instance=document).data
     for key, value in document_values.items():
-        if key in ["id", "accesses", "created_at", "link_reach", "link_role"]:
+        if key in ["id", "created_at", "link_reach", "link_role"]:
             assert value == old_document_values[key]
         elif key == "updated_at":
             assert value > old_document_values[key]
@@ -255,7 +255,7 @@ def test_api_documents_update_authenticated_owners(via, mock_user_teams):
     document = models.Document.objects.get(pk=document.pk)
     document_values = serializers.DocumentSerializer(instance=document).data
     for key, value in document_values.items():
-        if key in ["id", "accesses", "created_at", "link_reach", "link_role"]:
+        if key in ["id", "created_at", "link_reach", "link_role"]:
             assert value == old_document_values[key]
         elif key == "updated_at":
             assert value > old_document_values[key]
