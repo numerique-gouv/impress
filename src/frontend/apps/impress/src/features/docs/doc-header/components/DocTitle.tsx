@@ -18,7 +18,7 @@ import {
   useTrans,
   useUpdateDoc,
 } from '@/features/docs/doc-management';
-import { useResponsiveStore } from '@/stores';
+import { useBroadcastStore, useResponsiveStore } from '@/stores';
 import { isFirefox } from '@/utils/userAgent';
 
 interface DocTitleProps {
@@ -54,6 +54,7 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
   const headingText = headings?.[0]?.contentText;
   const debounceRef = useRef<NodeJS.Timeout>();
   const { isMobile } = useResponsiveStore();
+  const { broadcast } = useBroadcastStore();
 
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_DOC, KEY_LIST_DOC],
@@ -61,6 +62,9 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
       if (data.title !== untitledDocument) {
         toast(t('Document title updated successfully'), VariantType.SUCCESS);
       }
+
+      // Broadcast to every user connected to the document
+      broadcast(`${KEY_DOC}-${data.id}`);
     },
   });
 

@@ -11,6 +11,7 @@ import {
   KEY_LIST_DOC,
   Role,
 } from '@/features/docs/doc-management';
+import { useBroadcastStore } from '@/stores';
 
 import { KEY_LIST_DOC_ACCESSES } from './useDocAccesses';
 
@@ -49,6 +50,8 @@ type UseUpdateDocAccessOptions = UseMutationOptions<
 
 export const useUpdateDocAccess = (options?: UseUpdateDocAccessOptions) => {
   const queryClient = useQueryClient();
+  const { broadcast } = useBroadcastStore();
+
   return useMutation<Access, APIError, UpdateDocAccessProps>({
     mutationFn: updateDocAccess,
     ...options,
@@ -59,6 +62,10 @@ export const useUpdateDocAccess = (options?: UseUpdateDocAccessOptions) => {
       void queryClient.invalidateQueries({
         queryKey: [KEY_DOC],
       });
+
+      // Broadcast to every user connected to the document
+      broadcast(`${KEY_DOC}-${variables.docId}`);
+
       void queryClient.invalidateQueries({
         queryKey: [KEY_LIST_DOC],
       });
