@@ -141,6 +141,7 @@ class ListDocumentSerializer(BaseResourceSerializer):
     """Serialize documents with limited fields for display in lists."""
 
     is_favorite = serializers.BooleanField(read_only=True)
+    nb_accesses = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Document
@@ -152,6 +153,7 @@ class ListDocumentSerializer(BaseResourceSerializer):
             "is_favorite",
             "link_role",
             "link_reach",
+            "nb_accesses",
             "title",
             "updated_at",
         ]
@@ -162,6 +164,7 @@ class ListDocumentSerializer(BaseResourceSerializer):
             "is_favorite",
             "link_role",
             "link_reach",
+            "nb_accesses",
             "updated_at",
         ]
 
@@ -181,6 +184,7 @@ class DocumentSerializer(ListDocumentSerializer):
             "is_favorite",
             "link_role",
             "link_reach",
+            "nb_accesses",
             "title",
             "updated_at",
         ]
@@ -191,6 +195,7 @@ class DocumentSerializer(ListDocumentSerializer):
             "is_avorite",
             "link_role",
             "link_reach",
+            "nb_accesses",
             "updated_at",
         ]
 
