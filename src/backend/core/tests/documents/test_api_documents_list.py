@@ -32,7 +32,7 @@ def test_api_documents_list_anonymous(reach, role):
     assert len(results) == 0
 
 
-def test_api_documents_list_authenticated_direct():
+def test_api_documents_list_authenticated_direct(django_assert_num_queries):
     """
     Authenticated users should be able to list documents they are a direct
     owner/administrator/member of or documents that have a link reach other
@@ -55,9 +55,10 @@ def test_api_documents_list_authenticated_direct():
 
     expected_ids = {str(document.id) for document in documents}
 
-    response = client.get(
-        "/api/v1.0/documents/",
-    )
+    with django_assert_num_queries(3):
+        response = client.get(
+            "/api/v1.0/documents/",
+        )
 
     assert response.status_code == 200
     results = response.json()["results"]
@@ -66,7 +67,9 @@ def test_api_documents_list_authenticated_direct():
     assert expected_ids == results_id
 
 
-def test_api_documents_list_authenticated_via_team(mock_user_teams):
+def test_api_documents_list_authenticated_via_team(
+    django_assert_num_queries, mock_user_teams
+):
     """
     Authenticated users should be able to list documents they are a
     owner/administrator/member of via a team.
@@ -89,7 +92,8 @@ def test_api_documents_list_authenticated_via_team(mock_user_teams):
 
     expected_ids = {str(document.id) for document in documents_team1 + documents_team2}
 
-    response = client.get("/api/v1.0/documents/")
+    with django_assert_num_queries(3):
+        response = client.get("/api/v1.0/documents/")
 
     assert response.status_code == 200
     results = response.json()["results"]
@@ -98,7 +102,9 @@ def test_api_documents_list_authenticated_via_team(mock_user_teams):
     assert expected_ids == results_id
 
 
-def test_api_documents_list_authenticated_link_reach_restricted():
+def test_api_documents_list_authenticated_link_reach_restricted(
+    django_assert_num_queries,
+):
     """
     An authenticated user who has link traces to a document that is restricted should not
     see it on the list view
@@ -115,9 +121,10 @@ def test_api_documents_list_authenticated_link_reach_restricted():
     other_document = factories.DocumentFactory(link_reach="public")
     models.LinkTrace.objects.create(document=other_document, user=user)
 
-    response = client.get(
-        "/api/v1.0/documents/",
-    )
+    with django_assert_num_queries(3):
+        response = client.get(
+            "/api/v1.0/documents/",
+        )
 
     assert response.status_code == 200
     results = response.json()["results"]
@@ -127,7 +134,9 @@ def test_api_documents_list_authenticated_link_reach_restricted():
     assert results[0]["id"] == str(other_document.id)
 
 
-def test_api_documents_list_authenticated_link_reach_public_or_authenticated():
+def test_api_documents_list_authenticated_link_reach_public_or_authenticated(
+    django_assert_num_queries,
+):
     """
     An authenticated user who has link traces to a document with public or authenticated
     link reach should see it on the list view.
@@ -144,9 +153,10 @@ def test_api_documents_list_authenticated_link_reach_public_or_authenticated():
     ]
     expected_ids = {str(document.id) for document in documents}
 
-    response = client.get(
-        "/api/v1.0/documents/",
-    )
+    with django_assert_num_queries(3):
+        response = client.get(
+            "/api/v1.0/documents/",
+        )
 
     assert response.status_code == 200
     results = response.json()["results"]

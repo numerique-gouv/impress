@@ -36,12 +36,12 @@ def test_api_documents_retrieve_anonymous_public():
             "versions_list": False,
             "versions_retrieve": False,
         },
-        "accesses": [],
+        "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "is_user_favorite": False,
         "link_reach": "public",
         "link_role": document.link_role,
         "title": document.title,
-        "content": document.content,
-        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
@@ -94,7 +94,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
             "versions_list": False,
             "versions_retrieve": False,
         },
-        "accesses": [],
+        "is_user_favorite": False,
         "link_reach": reach,
         "link_role": document.link_role,
         "title": document.title,
@@ -168,35 +168,15 @@ def test_api_documents_retrieve_authenticated_related_direct():
     client.force_login(user)
 
     document = factories.DocumentFactory()
-    access1 = factories.UserDocumentAccessFactory(document=document, user=user)
+    factories.UserDocumentAccessFactory(document=document, user=user)
     access2 = factories.UserDocumentAccessFactory(document=document)
-    access1_user = serializers.UserSerializer(instance=user).data
-    access2_user = serializers.UserSerializer(instance=access2.user).data
+    serializers.UserSerializer(instance=user)
+    serializers.UserSerializer(instance=access2.user)
 
     response = client.get(
         f"/api/v1.0/documents/{document.id!s}/",
     )
     assert response.status_code == 200
-    content = response.json()
-    assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
-        [
-            {
-                "id": str(access1.id),
-                "user": access1_user,
-                "team": "",
-                "role": access1.role,
-                "abilities": access1.get_abilities(user),
-            },
-            {
-                "id": str(access2.id),
-                "user": access2_user,
-                "team": "",
-                "role": access2.role,
-                "abilities": access2.get_abilities(user),
-            },
-        ],
-        key=lambda x: x["id"],
-    )
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,
@@ -257,7 +237,7 @@ def test_api_documents_retrieve_authenticated_related_team_members(
 ):
     """
     Authenticated users should be allowed to retrieve a document to which they
-    are related via a team whatever the role and see all its accesses.
+    are related via a team whatever the role.
     """
     mock_user_teams.return_value = teams
 
@@ -268,73 +248,23 @@ def test_api_documents_retrieve_authenticated_related_team_members(
 
     document = factories.DocumentFactory(link_reach="restricted")
 
-    access_reader = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="readers", role="reader"
     )
-    access_editor = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="editors", role="editor"
     )
-    access_administrator = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="administrators", role="administrator"
     )
-    access_owner = factories.TeamDocumentAccessFactory(
-        document=document, team="owners", role="owner"
-    )
-    other_access = factories.TeamDocumentAccessFactory(document=document)
+    factories.TeamDocumentAccessFactory(document=document, team="owners", role="owner")
+    factories.TeamDocumentAccessFactory(document=document)
     factories.TeamDocumentAccessFactory()
 
     response = client.get(f"/api/v1.0/documents/{document.id!s}/")
 
     # pylint: disable=R0801
     assert response.status_code == 200
-    content = response.json()
-    expected_abilities = {
-        "destroy": False,
-        "retrieve": True,
-        "set_role_to": [],
-        "update": False,
-        "partial_update": False,
-    }
-    assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
-        [
-            {
-                "id": str(access_reader.id),
-                "user": None,
-                "team": "readers",
-                "role": access_reader.role,
-                "abilities": expected_abilities,
-            },
-            {
-                "id": str(access_editor.id),
-                "user": None,
-                "team": "editors",
-                "role": access_editor.role,
-                "abilities": expected_abilities,
-            },
-            {
-                "id": str(access_administrator.id),
-                "user": None,
-                "team": "administrators",
-                "role": access_administrator.role,
-                "abilities": expected_abilities,
-            },
-            {
-                "id": str(access_owner.id),
-                "user": None,
-                "team": "owners",
-                "role": access_owner.role,
-                "abilities": expected_abilities,
-            },
-            {
-                "id": str(other_access.id),
-                "user": None,
-                "team": other_access.team,
-                "role": other_access.role,
-                "abilities": expected_abilities,
-            },
-        ],
-        key=lambda x: x["id"],
-    )
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,
@@ -360,7 +290,7 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
 ):
     """
     Authenticated users should be allowed to retrieve a document to which they
-    are related via a team whatever the role and see all its accesses.
+    are related via a team whatever the role.
     """
     mock_user_teams.return_value = teams
 
@@ -371,90 +301,23 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
 
     document = factories.DocumentFactory(link_reach="restricted")
 
-    access_reader = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="readers", role="reader"
     )
-    access_editor = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="editors", role="editor"
     )
-    access_administrator = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="administrators", role="administrator"
     )
-    access_owner = factories.TeamDocumentAccessFactory(
-        document=document, team="owners", role="owner"
-    )
-    other_access = factories.TeamDocumentAccessFactory(document=document)
+    factories.TeamDocumentAccessFactory(document=document, team="owners", role="owner")
+    factories.TeamDocumentAccessFactory(document=document)
     factories.TeamDocumentAccessFactory()
 
     response = client.get(f"/api/v1.0/documents/{document.id!s}/")
 
     # pylint: disable=R0801
     assert response.status_code == 200
-    content = response.json()
-    assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
-        [
-            {
-                "id": str(access_reader.id),
-                "user": None,
-                "team": "readers",
-                "role": "reader",
-                "abilities": {
-                    "destroy": True,
-                    "retrieve": True,
-                    "set_role_to": ["administrator", "editor"],
-                    "update": True,
-                    "partial_update": True,
-                },
-            },
-            {
-                "id": str(access_editor.id),
-                "user": None,
-                "team": "editors",
-                "role": "editor",
-                "abilities": {
-                    "destroy": True,
-                    "retrieve": True,
-                    "set_role_to": ["administrator", "reader"],
-                    "update": True,
-                    "partial_update": True,
-                },
-            },
-            {
-                "id": str(access_administrator.id),
-                "user": None,
-                "team": "administrators",
-                "role": "administrator",
-                "abilities": {
-                    "destroy": True,
-                    "retrieve": True,
-                    "set_role_to": ["editor", "reader"],
-                    "update": True,
-                    "partial_update": True,
-                },
-            },
-            {
-                "id": str(access_owner.id),
-                "user": None,
-                "team": "owners",
-                "role": "owner",
-                "abilities": {
-                    "destroy": False,
-                    "retrieve": True,
-                    "set_role_to": [],
-                    "update": False,
-                    "partial_update": False,
-                },
-            },
-            {
-                "id": str(other_access.id),
-                "user": None,
-                "team": other_access.team,
-                "role": other_access.role,
-                "abilities": other_access.get_abilities(user),
-            },
-        ],
-        key=lambda x: x["id"],
-    )
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,
@@ -481,7 +344,7 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
 ):
     """
     Authenticated users should be allowed to retrieve a restricted document to which
-    they are related via a team whatever the role and see all its accesses.
+    they are related via a team whatever the role.
     """
     mock_user_teams.return_value = teams
 
@@ -492,93 +355,23 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
 
     document = factories.DocumentFactory(link_reach="restricted")
 
-    access_reader = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="readers", role="reader"
     )
-    access_editor = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="editors", role="editor"
     )
-    access_administrator = factories.TeamDocumentAccessFactory(
+    factories.TeamDocumentAccessFactory(
         document=document, team="administrators", role="administrator"
     )
-    access_owner = factories.TeamDocumentAccessFactory(
-        document=document, team="owners", role="owner"
-    )
-    other_access = factories.TeamDocumentAccessFactory(document=document)
+    factories.TeamDocumentAccessFactory(document=document, team="owners", role="owner")
+    factories.TeamDocumentAccessFactory(document=document)
     factories.TeamDocumentAccessFactory()
 
     response = client.get(f"/api/v1.0/documents/{document.id!s}/")
 
     # pylint: disable=R0801
     assert response.status_code == 200
-    content = response.json()
-    assert sorted(content.pop("accesses"), key=lambda x: x["id"]) == sorted(
-        [
-            {
-                "id": str(access_reader.id),
-                "user": None,
-                "team": "readers",
-                "role": "reader",
-                "abilities": {
-                    "destroy": True,
-                    "retrieve": True,
-                    "set_role_to": ["owner", "administrator", "editor"],
-                    "update": True,
-                    "partial_update": True,
-                },
-            },
-            {
-                "id": str(access_editor.id),
-                "user": None,
-                "team": "editors",
-                "role": "editor",
-                "abilities": {
-                    "destroy": True,
-                    "retrieve": True,
-                    "set_role_to": ["owner", "administrator", "reader"],
-                    "update": True,
-                    "partial_update": True,
-                },
-            },
-            {
-                "id": str(access_administrator.id),
-                "user": None,
-                "team": "administrators",
-                "role": "administrator",
-                "abilities": {
-                    "destroy": True,
-                    "retrieve": True,
-                    "set_role_to": ["owner", "editor", "reader"],
-                    "update": True,
-                    "partial_update": True,
-                },
-            },
-            {
-                "id": str(access_owner.id),
-                "user": None,
-                "team": "owners",
-                "role": "owner",
-                "abilities": {
-                    # editable only if there is another owner role than the user's team...
-                    "destroy": other_access.role == "owner",
-                    "retrieve": True,
-                    "set_role_to": ["administrator", "editor", "reader"]
-                    if other_access.role == "owner"
-                    else [],
-                    "update": other_access.role == "owner",
-                    "partial_update": other_access.role == "owner",
-                },
-            },
-            {
-                "id": str(other_access.id),
-                "user": None,
-                "team": other_access.team,
-                "role": other_access.role,
-                "abilities": other_access.get_abilities(user),
-            },
-        ],
-        key=lambda x: x["id"],
-    )
     assert response.json() == {
         "id": str(document.id),
         "title": document.title,

@@ -137,32 +137,55 @@ class BaseResourceSerializer(serializers.ModelSerializer):
         return {}
 
 
-class DocumentSerializer(BaseResourceSerializer):
-    """Serialize documents."""
+class ListDocumentSerializer(BaseResourceSerializer):
+    """Serialize documents with limited fields for display in lists."""
 
-    content = serializers.CharField(required=False)
-    accesses = DocumentAccessSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Document
         fields = [
             "id",
-            "content",
-            "title",
-            "accesses",
             "abilities",
+            "content",
+            "created_at",
             "link_role",
             "link_reach",
-            "created_at",
+            "title",
             "updated_at",
         ]
         read_only_fields = [
             "id",
-            "accesses",
             "abilities",
+            "created_at",
             "link_role",
             "link_reach",
+            "updated_at",
+        ]
+
+
+class DocumentSerializer(ListDocumentSerializer):
+    """Serialize documents with all fields for display in detail views."""
+
+    content = serializers.CharField(required=False)
+
+    class Meta:
+        model = models.Document
+        fields = [
+            "id",
+            "abilities",
+            "content",
             "created_at",
+            "link_role",
+            "link_reach",
+            "title",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "abilities",
+            "created_at",
+            "link_role",
+            "link_reach",
             "updated_at",
         ]
 

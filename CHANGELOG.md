@@ -17,6 +17,7 @@ and this project adheres to
 
 ## Changed
 
+- ⚡️(backend) optimize number of queries on document list view #411
 - 🚸(backend) improve users similarity search and sort results #391
 - 🌐(backend) add german translation #259
 - ♻️(frontend) simplify stores #402
