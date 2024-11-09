@@ -543,10 +543,11 @@ class Document(BaseModel):
                     "document": self.title,
                 }
                 template_vars = {
+                    "brandname": settings.EMAIL_BRAND_NAME,
                     "title": title,
-                    "domain": domain,
                     "document": self,
                     "link": f"{domain}/docs/{self.id}/",
+                    "logo_img": settings.EMAIL_LOGO_IMG,
                     "sender_name": sender_name,
                     "sender_name_email": f"{sender.full_name} ({sender.email})"
                     if sender.full_name
