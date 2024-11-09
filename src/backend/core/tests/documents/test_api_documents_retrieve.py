@@ -27,6 +27,8 @@ def test_api_documents_retrieve_anonymous_public():
             "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
             "destroy": False,
+            # Anonymous user can't favorite a document even with read access
+            "favorite": False,
             "invite_owner": False,
             "link_configuration": False,
             "partial_update": document.link_role == "editor",
@@ -38,7 +40,7 @@ def test_api_documents_retrieve_anonymous_public():
         },
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
-        "is_user_favorite": False,
+        "is_favorite": False,
         "link_reach": "public",
         "link_role": document.link_role,
         "title": document.title,
@@ -84,9 +86,10 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
             "ai_transform": document.link_role == "editor",
             "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
-            "link_configuration": False,
             "destroy": False,
+            "favorite": True,
             "invite_owner": False,
+            "link_configuration": False,
             "partial_update": document.link_role == "editor",
             "retrieve": True,
             "update": document.link_role == "editor",
@@ -94,12 +97,12 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
             "versions_list": False,
             "versions_retrieve": False,
         },
-        "is_user_favorite": False,
+        "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "is_favorite": False,
         "link_reach": reach,
         "link_role": document.link_role,
         "title": document.title,
-        "content": document.content,
-        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
     assert (
@@ -179,12 +182,13 @@ def test_api_documents_retrieve_authenticated_related_direct():
     assert response.status_code == 200
     assert response.json() == {
         "id": str(document.id),
-        "title": document.title,
-        "content": document.content,
         "abilities": document.get_abilities(user),
+        "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "is_favorite": False,
         "link_reach": document.link_reach,
         "link_role": document.link_role,
-        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
@@ -267,12 +271,13 @@ def test_api_documents_retrieve_authenticated_related_team_members(
     assert response.status_code == 200
     assert response.json() == {
         "id": str(document.id),
-        "title": document.title,
-        "content": document.content,
         "abilities": document.get_abilities(user),
+        "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "is_favorite": False,
         "link_reach": "restricted",
         "link_role": document.link_role,
-        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
@@ -320,12 +325,13 @@ def test_api_documents_retrieve_authenticated_related_team_administrators(
     assert response.status_code == 200
     assert response.json() == {
         "id": str(document.id),
-        "title": document.title,
-        "content": document.content,
         "abilities": document.get_abilities(user),
+        "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "is_favorite": False,
         "link_reach": "restricted",
         "link_role": document.link_role,
-        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
@@ -374,11 +380,12 @@ def test_api_documents_retrieve_authenticated_related_team_owners(
     assert response.status_code == 200
     assert response.json() == {
         "id": str(document.id),
-        "title": document.title,
-        "content": document.content,
         "abilities": document.get_abilities(user),
+        "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "is_favorite": False,
         "link_reach": "restricted",
         "link_role": document.link_role,
-        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }

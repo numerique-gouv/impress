@@ -11,6 +11,7 @@ and this project adheres to
 
 ## Added
 
+- ✨(backend) allow users to mark/unmark documents as favorite #411
 - 🌐(frontend) Add German translation #255
 - ✨(frontend) Add a broadcast store #387
 
