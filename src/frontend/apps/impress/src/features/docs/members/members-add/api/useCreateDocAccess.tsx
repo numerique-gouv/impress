@@ -5,11 +5,13 @@ import { User } from '@/core/auth';
 import {
   Access,
   Doc,
+  KEY_DOC,
   KEY_LIST_DOC,
   Role,
 } from '@/features/docs/doc-management';
 import { KEY_LIST_DOC_ACCESSES } from '@/features/docs/members/members-list';
 import { ContentLanguage } from '@/i18n/types';
+import { useBroadcastStore } from '@/stores';
 
 import { OptionType } from '../types';
 
@@ -53,9 +55,11 @@ export const createDocAccess = async ({
 
 export function useCreateDocAccess() {
   const queryClient = useQueryClient();
+  const { broadcast } = useBroadcastStore();
+
   return useMutation<Access, APIError, CreateDocAccessParams>({
     mutationFn: createDocAccess,
-    onSuccess: () => {
+    onSuccess: (_data, variable) => {
       void queryClient.resetQueries({
         queryKey: [KEY_LIST_DOC],
       });
@@ -65,6 +69,9 @@ export function useCreateDocAccess() {
       void queryClient.resetQueries({
         queryKey: [KEY_LIST_DOC_ACCESSES],
       });
+
+      // Broadcast to every user connected to the document
+      broadcast(`${KEY_DOC}-${variable.docId}`);
     },
   });
 }

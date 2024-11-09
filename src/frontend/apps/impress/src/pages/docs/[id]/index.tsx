@@ -1,4 +1,5 @@
 import { Loader } from '@openfun/cunningham-react';
+import { useQueryClient } from '@tanstack/react-query';
 import Head from 'next/head';
 import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
@@ -8,8 +9,9 @@ import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
 import { useAuthStore } from '@/core/auth';
 import { DocEditor } from '@/features/docs/doc-editor';
-import { useDoc, useDocStore } from '@/features/docs/doc-management';
+import { KEY_DOC, useDoc, useDocStore } from '@/features/docs/doc-management';
 import { MainLayout } from '@/layouts';
+import { useBroadcastStore } from '@/stores';
 import { NextPageWithLayout } from '@/types/next';
 
 export function DocLayout() {
@@ -42,8 +44,10 @@ const DocPage = ({ id }: DocProps) => {
   const { data: docQuery, isError, error } = useDoc({ id });
   const [doc, setDoc] = useState(docQuery);
   const { setCurrentDoc, createProvider, docsStore } = useDocStore();
-
+  const { setBroadcastProvider, addTask } = useBroadcastStore();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const provider = docsStore?.[id]?.provider;
 
   useEffect(() => {
     if (doc?.title) {
@@ -71,12 +75,29 @@ const DocPage = ({ id }: DocProps) => {
       return;
     }
 
-    const provider = docsStore?.[doc.id]?.provider;
-
+    let newProvider = provider;
     if (!provider || provider.document.guid !== doc.id) {
-      createProvider(doc.id, doc.content);
+      newProvider = createProvider(doc.id, doc.content);
     }
-  }, [createProvider, doc, docsStore]);
+
+    setBroadcastProvider(newProvider);
+  }, [createProvider, doc, provider, setBroadcastProvider]);
+
+  /**
+   * We add a broadcast task to reset the query cache
+   * when the document visibility changes.
+   */
+  useEffect(() => {
+    if (!doc?.id) {
+      return;
+    }
+
+    addTask(`${KEY_DOC}-${doc.id}`, () => {
+      void queryClient.resetQueries({
+        queryKey: [KEY_DOC, { id: doc.id }],
+      });
+    });
+  }, [addTask, doc?.id, queryClient]);
 
   if (isError && error) {
     if (error.status === 404) {

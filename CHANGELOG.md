@@ -12,6 +12,7 @@ and this project adheres to
 ## Added
 
 - 🌐(frontend) Add German translation #255
+- ✨(frontend) Add a broadcast store #387
 
 ## Changed
 
@@ -22,6 +23,7 @@ and this project adheres to
 
 - 🦺(backend) add comma to sub regex #408
 - 🐛(editor) collaborative user tag hidden when read only #385
+- 🐛(frontend) user have view access when revoked #387
 
 
 ## [1.7.0] - 2024-10-24

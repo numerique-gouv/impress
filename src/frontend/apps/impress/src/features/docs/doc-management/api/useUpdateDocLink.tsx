@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
-import { Doc } from '@/features/docs';
+import { Doc, KEY_DOC } from '@/features/docs/doc-management';
+import { useBroadcastStore } from '@/stores';
 
 export type UpdateDocLinkParams = Pick<Doc, 'id'> &
   Partial<Pick<Doc, 'link_role' | 'link_reach'>>;
@@ -37,14 +38,20 @@ export function useUpdateDocLink({
   listInvalideQueries,
 }: UpdateDocLinkProps = {}) {
   const queryClient = useQueryClient();
+  const { broadcast } = useBroadcastStore();
+
   return useMutation<Doc, APIError, UpdateDocLinkParams>({
     mutationFn: updateDocLink,
-    onSuccess: (data) => {
+    onSuccess: (data, variable) => {
       listInvalideQueries?.forEach((queryKey) => {
         void queryClient.resetQueries({
           queryKey: [queryKey],
         });
       });
+
+      // Broadcast to every user connected to the document
+      broadcast(`${KEY_DOC}-${variable.id}`);
+
       onSuccess?.(data);
     },
   });
