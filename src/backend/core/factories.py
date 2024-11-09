@@ -80,6 +80,13 @@ class DocumentFactory(factory.django.DjangoModelFactory):
             for item in extracted:
                 models.LinkTrace.objects.create(document=self, user=item)
 
+    @factory.post_generation
+    def favorited_by(self, create, extracted, **kwargs):
+        """Mark document as favorited by a list of users."""
+        if create and extracted:
+            for item in extracted:
+                models.DocumentFavorite.objects.create(document=self, user=item)
+
 
 class UserDocumentAccessFactory(factory.django.DjangoModelFactory):
     """Create fake document user accesses for testing."""

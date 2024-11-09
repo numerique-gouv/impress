@@ -28,9 +28,10 @@ and this project adheres to
 
 ## Added
 
-- 🌐(backend) add german translation #259
-- 🌐(frontend) Add German translation #255
-- ✨(frontend) Add a broadcast store #387
+- ✨(backend) allow users to mark/unmark documents as favorite #411
+- 🌐(backend) add German translation #259
+- 🌐(frontend) add German translation #255
+- ✨(frontend) add a broadcast store #387
 - ✨(backend) whitelist pod's IP address #443
 - ✨(backend) config endpoint #425
 - ✨(frontend) config endpoint #424

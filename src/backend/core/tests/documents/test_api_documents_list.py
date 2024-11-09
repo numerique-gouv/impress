@@ -32,6 +32,42 @@ def test_api_documents_list_anonymous(reach, role):
     assert len(results) == 0
 
 
+def test_api_documents_list_format():
+    """Validate the format of documents as returned by the list view."""
+    user = factories.UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    document = factories.DocumentFactory(
+        users=[user, *factories.UserFactory.create_batch(2)],
+        favorited_by=[user, *factories.UserFactory.create_batch(2)],
+    )
+
+    response = client.get("/api/v1.0/documents/")
+
+    assert response.status_code == 200
+    content = response.json()
+    results = content.pop("results")
+    assert content == {
+        "count": 1,
+        "next": None,
+        "previous": None,
+    }
+    assert len(results) == 1
+    assert results[0] == {
+        "id": str(document.id),
+        "abilities": document.get_abilities(user),
+        "content": document.content,
+        "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "is_favorite": True,
+        "link_reach": document.link_reach,
+        "link_role": document.link_role,
+        "title": document.title,
+        "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
+    }
+
+
 def test_api_documents_list_authenticated_direct(django_assert_num_queries):
     """
     Authenticated users should be able to list documents they are a direct
@@ -264,6 +300,8 @@ def test_api_documents_list_ordering_by_fields():
     for parameter in [
         "created_at",
         "-created_at",
+        "is_favorite",
+        "-is_favorite",
         "updated_at",
         "-updated_at",
         "title",
@@ -282,3 +320,45 @@ def test_api_documents_list_ordering_by_fields():
         compare = operator.ge if is_descending else operator.le
         for i in range(4):
             assert compare(results[i][field], results[i + 1][field])
+
+
+def test_api_documents_list_favorites_no_extra_queries(django_assert_num_queries):
+    """
+    Ensure that marking documents as favorite does not generate additional queries
+    when fetching the document list.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    special_documents = factories.DocumentFactory.create_batch(3, users=[user])
+    factories.DocumentFactory.create_batch(2, users=[user])
+
+    url = "/api/v1.0/documents/"
+    with django_assert_num_queries(3):
+        response = client.get(url)
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 5
+
+    assert all(result["is_favorite"] is False for result in results)
+
+    # Mark documents as favorite and check results again
+    for document in special_documents:
+        models.DocumentFavorite.objects.create(document=document, user=user)
+
+    with django_assert_num_queries(3):
+        response = client.get(url)
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 5
+
+    # Check if the "is_favorite" annotation is correctly set for the favorited documents
+    favorited_ids = {str(doc.id) for doc in special_documents}
+    for result in results:
+        if result["id"] in favorited_ids:
+            assert result["is_favorite"] is True
+        else:
+            assert result["is_favorite"] is False
