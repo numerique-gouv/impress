@@ -11,23 +11,23 @@ and this project adheres to
 
 ## Added
 
+- 🌐(backend) add german translation #259
 - 🌐(frontend) Add German translation #255
 - ✨(frontend) Add a broadcast store #387
 - ✨(backend) config endpoint #425
 
-
 ## Changed
 
 - 🚸(backend) improve users similarity search and sort results #391
-- 🌐(backend) add german translation #259
 - ♻️(frontend) simplify stores #402
 - ✨(frontend) update $css Box props type to add styled components RuleSet #423
 
 ## Fixed
 
+- 🔧(backend) fix logging for docker and make it configurable by envar #427
 - 🦺(backend) add comma to sub regex #408
 - 🐛(editor) collaborative user tag hidden when read only #385
-- 🐛(frontend) user have view access when revoked #387
+- 🐛(frontend) users have view access when revoked #387
 
 
 ## [1.7.0] - 2024-10-24
