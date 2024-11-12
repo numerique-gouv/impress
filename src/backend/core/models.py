@@ -341,6 +341,9 @@ class Document(BaseModel):
     link_role = models.CharField(
         max_length=20, choices=LinkRoleChoices.choices, default=LinkRoleChoices.READER
     )
+    creator = models.ForeignKey(
+        User, on_delete=models.RESTRICT, related_name="documents_created"
+    )
 
     _content = None
 

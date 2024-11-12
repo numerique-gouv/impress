@@ -56,6 +56,7 @@ class DocumentFactory(factory.django.DjangoModelFactory):
 
     title = factory.Sequence(lambda n: f"document{n}")
     content = factory.Sequence(lambda n: f"content{n}")
+    creator = factory.SubFactory(UserFactory)
     link_reach = factory.fuzzy.FuzzyChoice(
         [a[0] for a in models.LinkReachChoices.choices]
     )
