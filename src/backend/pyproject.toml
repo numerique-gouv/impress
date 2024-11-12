@@ -127,6 +127,7 @@ select = [
 [tool.ruff.lint.isort]
 section-order = ["future","standard-library","django","third-party","impress","first-party","local-folder"]
 sections = { impress=["core"], django=["django"] }
+extra-standard-library = ["tomllib"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/*" = ["S", "SLF"]
