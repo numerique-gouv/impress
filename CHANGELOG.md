@@ -13,6 +13,7 @@ and this project adheres to
 
 - 🌐(frontend) Add German translation #255
 - ✨(frontend) Add a broadcast store #387
+- ✨(frontend) WIP: New ui
 
 ## Changed
 
