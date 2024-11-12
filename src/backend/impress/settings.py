@@ -488,6 +488,42 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    # Logging
+    # We want to make it easy to log to console but by default we log production
+    # to Sentry and don't want to log to console.
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": values.Value(
+                    "ERROR",
+                    environ_name="LOGGING_LEVEL_HANDLERS_CONSOLE",
+                    environ_prefix=None,
+                ),
+            },
+        },
+        # Override root logger to send it to console
+        "root": {
+            "handlers": ["console"],
+            "level": values.Value(
+                "INFO", environ_name="LOGGING_LEVEL_LOGGERS_ROOT", environ_prefix=None
+            ),
+        },
+        "loggers": {
+            "core": {
+                "handlers": ["console"],
+                "level": values.Value(
+                    "INFO",
+                    environ_name="LOGGING_LEVEL_LOGGERS_APP",
+                    environ_prefix=None,
+                ),
+                "propagate": False,
+            },
+        },
+    }
+
     # pylint: disable=invalid-name
     @property
     def ENVIRONMENT(self):
@@ -583,23 +619,6 @@ class Development(Base):
 class Test(Base):
     """Test environment settings"""
 
-    LOGGING = values.DictValue(
-        {
-            "version": 1,
-            "disable_existing_loggers": False,
-            "handlers": {
-                "console": {
-                    "class": "logging.StreamHandler",
-                },
-            },
-            "loggers": {
-                "impress": {
-                    "handlers": ["console"],
-                    "level": "DEBUG",
-                },
-            },
-        }
-    )
     PASSWORD_HASHERS = [
         "django.contrib.auth.hashers.MD5PasswordHasher",
     ]
