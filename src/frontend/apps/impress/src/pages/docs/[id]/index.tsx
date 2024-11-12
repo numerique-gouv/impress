@@ -10,7 +10,7 @@ import { TextErrors } from '@/components/TextErrors';
 import { useAuthStore } from '@/core/auth';
 import { DocEditor } from '@/features/docs/doc-editor';
 import { KEY_DOC, useDoc, useDocStore } from '@/features/docs/doc-management';
-import { MainLayout } from '@/layouts';
+import { DocsLayout } from '@/layouts/docs/DocsLayout';
 import { useBroadcastStore } from '@/stores';
 import { NextPageWithLayout } from '@/types/next';
 
@@ -28,9 +28,11 @@ export function DocLayout() {
       <Head>
         <meta name="robots" content="noindex" />
       </Head>
-      <MainLayout withoutFooter>
-        <DocPage id={id} />
-      </MainLayout>
+      <DocsLayout>
+        <Box $width="100%">
+          <DocPage id={id} />
+        </Box>
+      </DocsLayout>
     </>
   );
 }

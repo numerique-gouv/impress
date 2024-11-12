@@ -4,7 +4,7 @@ import {
   SortModel,
   usePagination,
 } from '@openfun/cunningham-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 
@@ -118,7 +118,7 @@ export const DocsGrid = () => {
       renderCell: ({ row }) => {
         return (
           <StyledLink href={`/docs/${row.id}`}>
-            <Text $weight="bold" $theme="primary">
+            <Text $theme="primary" $weight="bold">
               {row.title}
             </Text>
           </StyledLink>
@@ -131,7 +131,9 @@ export const DocsGrid = () => {
       renderCell: ({ row }) => {
         return (
           <StyledLink href={`/docs/${row.id}`}>
-            <Text $weight="bold">{formatDate(row.created_at)}</Text>
+            <Text $theme="primary" $weight="bold">
+              {formatDate(row.created_at)}
+            </Text>
           </StyledLink>
         );
       },
@@ -142,7 +144,9 @@ export const DocsGrid = () => {
       renderCell: ({ row }) => {
         return (
           <StyledLink href={`/docs/${row.id}`}>
-            <Text $weight="bold">{formatDate(row.updated_at)}</Text>
+            <Text $theme="primary" $weight="bold">
+              {formatDate(row.updated_at)}
+            </Text>
           </StyledLink>
         );
       },
@@ -153,7 +157,7 @@ export const DocsGrid = () => {
       renderCell: ({ row }) => {
         return (
           <StyledLink href={`/docs/${row.id}`}>
-            <Text $weight="bold">
+            <Text $theme="primary" $weight="bold">
               {transRole(currentDocRole(row.abilities))}
             </Text>
           </StyledLink>
@@ -166,7 +170,9 @@ export const DocsGrid = () => {
       renderCell: ({ row }) => {
         return (
           <StyledLink href={`/docs/${row.id}`}>
-            <Text $weight="bold">{row.accesses.length}</Text>
+            <Text $theme="primary" $weight="bold">
+              {row.accesses.length}
+            </Text>
           </StyledLink>
         );
       },

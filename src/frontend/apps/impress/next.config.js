@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const path = require('path');
 
 const { InjectManifest } = require('workbox-webpack-plugin');
 
@@ -10,6 +11,9 @@ const nextConfig = {
   trailingSlash: true,
   images: {
     unoptimized: true,
+  },
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'styles')],
   },
   compiler: {
     // Enables the styled-components SWC transform

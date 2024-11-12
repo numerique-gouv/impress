@@ -1,15 +1,20 @@
 import type { ReactElement } from 'react';
 
-import { DocsGridContainer } from '@/features/docs/docs-grid';
-import { MainLayout } from '@/layouts';
+import { Box } from '@/components';
+import { DocsGrid } from '@/features/docs/docs-grid/components/DocsGrid';
+import { DocsLayout } from '@/layouts/docs/DocsLayout';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
-  return <DocsGridContainer />;
+  return (
+    <Box $overflow="auto" $width="100%">
+      <DocsGrid />
+    </Box>
+  );
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <MainLayout>{page}</MainLayout>;
+  return <DocsLayout>{page}</DocsLayout>;
 };
 
 export default Page;

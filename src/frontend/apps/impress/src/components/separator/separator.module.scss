@@ -1,0 +1,20 @@
+.horizontal {
+  width: 100%;
+  height: 1px;
+
+  &.light {
+    background-color: var(--c--theme--colors--greyscale-100);
+  }
+
+  &.dark {
+    background-color: #e5e5e533;
+  }
+}
+
+.separatedContainer {
+  padding: var(--c--theme--spacings--200W) var(--c--theme--spacings--300V);
+
+  &.showSeparator {
+    border-bottom: 1px solid var(--c--theme--colors--greyscale-200);
+  }
+}
