@@ -32,15 +32,25 @@ def test_models_documents_id_unique():
         factories.DocumentFactory(id=document.id)
 
 
+def test_models_documents_creator_required():
+    """The "creator" field should be required."""
+    with pytest.raises(ValidationError) as excinfo:
+        models.Document.objects.create()
+
+    assert excinfo.value.message_dict["creator"] == ["This field cannot be null."]
+
+
 def test_models_documents_title_null():
     """The "title" field can be null."""
-    document = models.Document.objects.create(title=None)
+    document = models.Document.objects.create(
+        title=None, creator=factories.UserFactory()
+    )
     assert document.title is None
 
 
 def test_models_documents_title_empty():
     """The "title" field can be empty."""
-    document = models.Document.objects.create(title="")
+    document = models.Document.objects.create(title="", creator=factories.UserFactory())
     assert document.title == ""
 
 

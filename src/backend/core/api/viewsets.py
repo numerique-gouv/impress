@@ -22,16 +22,19 @@ from django.db.models import (
 from django.http import Http404
 
 from botocore.exceptions import ClientError
+from django_filters import rest_framework as filters
 from rest_framework import (
     decorators,
     exceptions,
-    filters,
     metadata,
     mixins,
     pagination,
     status,
     views,
     viewsets,
+)
+from rest_framework import (
+    filters as drf_filters,
 )
 from rest_framework import (
     response as drf_response,
@@ -42,6 +45,7 @@ from core import enums, models
 from core.services.ai_services import AIService
 
 from . import permissions, serializers, utils
+from .filters import DocumentFilter
 
 ATTACHMENTS_FOLDER = "attachments"
 UUID_REGEX = (
@@ -311,9 +315,23 @@ class DocumentViewSet(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Document ViewSet"""
+    """
+    Document ViewSet for managing documents.
 
-    filter_backends = [filters.OrderingFilter]
+    Provides endpoints for creating, updating, and deleting documents,
+    along with filtering options.
+
+    Filtering:
+        - `is_creator_me=true`: Returns documents created by the current user.
+        - `is_creator_me=false`: Returns documents created by other users.
+
+    Example Usage:
+        - GET /api/v1.0/documents/?creator=me
+        - GET /api/v1.0/documents/?creator=other
+    """
+
+    filter_backends = [filters.DjangoFilterBackend, drf_filters.OrderingFilter]
+    filterset_class = DocumentFilter
     metadata_class = DocumentMetadata
     ordering = ["-updated_at"]
     ordering_fields = ["created_at", "is_favorite", "updated_at", "title"]
@@ -410,8 +428,8 @@ class DocumentViewSet(
         return drf_response.Response(serializer.data)
 
     def perform_create(self, serializer):
-        """Set the current user as owner of the newly created object."""
-        obj = serializer.save()
+        """Set the current user as creator and owner of the newly created object."""
+        obj = serializer.save(creator=self.request.user)
         models.DocumentAccess.objects.create(
             document=obj,
             user=self.request.user,
@@ -739,7 +757,7 @@ class TemplateViewSet(
 ):
     """Template ViewSet"""
 
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [drf_filters.OrderingFilter]
     permission_classes = [
         permissions.IsAuthenticatedOrSafe,
         permissions.AccessPermission,

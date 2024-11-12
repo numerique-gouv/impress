@@ -62,6 +62,7 @@ def test_api_documents_list_format():
         "abilities": document.get_abilities(user),
         "content": document.content,
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
+        "creator": str(document.creator.id),
         "is_favorite": True,
         "link_reach": document.link_reach,
         "link_role": document.link_role,
@@ -271,58 +272,6 @@ def test_api_documents_list_authenticated_distinct():
     assert content["results"][0]["id"] == str(document.id)
 
 
-def test_api_documents_list_ordering_default():
-    """Documents should be ordered by descending "updated_at" by default"""
-    user = factories.UserFactory()
-    client = APIClient()
-    client.force_login(user)
-
-    factories.DocumentFactory.create_batch(5, users=[user])
-
-    response = client.get("/api/v1.0/documents/")
-
-    assert response.status_code == 200
-    results = response.json()["results"]
-    assert len(results) == 5
-
-    # Check that results are sorted by descending "updated_at" as expected
-    for i in range(4):
-        assert operator.ge(results[i]["updated_at"], results[i + 1]["updated_at"])
-
-
-def test_api_documents_list_ordering_by_fields():
-    """It should be possible to order by several fields"""
-    user = factories.UserFactory()
-    client = APIClient()
-    client.force_login(user)
-
-    factories.DocumentFactory.create_batch(5, users=[user])
-
-    for parameter in [
-        "created_at",
-        "-created_at",
-        "is_favorite",
-        "-is_favorite",
-        "updated_at",
-        "-updated_at",
-        "title",
-        "-title",
-    ]:
-        is_descending = parameter.startswith("-")
-        field = parameter.lstrip("-")
-        querystring = f"?ordering={parameter}"
-
-        response = client.get(f"/api/v1.0/documents/{querystring:s}")
-        assert response.status_code == 200
-        results = response.json()["results"]
-        assert len(results) == 5
-
-        # Check that results are sorted by the field in querystring as expected
-        compare = operator.ge if is_descending else operator.le
-        for i in range(4):
-            assert compare(results[i][field], results[i + 1][field])
-
-
 def test_api_documents_list_favorites_no_extra_queries(django_assert_num_queries):
     """
     Ensure that marking documents as favorite does not generate additional queries
@@ -363,3 +312,227 @@ def test_api_documents_list_favorites_no_extra_queries(django_assert_num_queries
             assert result["is_favorite"] is True
         else:
             assert result["is_favorite"] is False
+
+
+# Filters: ordering
+
+
+def test_api_documents_list_ordering_default():
+    """Documents should be ordered by descending "updated_at" by default"""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(5, users=[user])
+
+    response = client.get("/api/v1.0/documents/")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 5
+
+    # Check that results are sorted by descending "updated_at" as expected
+    for i in range(4):
+        assert operator.ge(results[i]["updated_at"], results[i + 1]["updated_at"])
+
+
+def test_api_documents_list_ordering_by_fields():
+    """It should be possible to order by several fields"""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(5, users=[user])
+
+    for parameter in [
+        "created_at",
+        "-created_at",
+        "is_favorite",
+        "-is_favorite",
+        "nb_accesses",
+        "-nb_accesses",
+        "title",
+        "-title",
+        "updated_at",
+        "-updated_at",
+    ]:
+        is_descending = parameter.startswith("-")
+        field = parameter.lstrip("-")
+        querystring = f"?ordering={parameter}"
+
+        response = client.get(f"/api/v1.0/documents/{querystring:s}")
+        assert response.status_code == 200
+        results = response.json()["results"]
+        assert len(results) == 5
+
+        # Check that results are sorted by the field in querystring as expected
+        compare = operator.ge if is_descending else operator.le
+        for i in range(4):
+            assert compare(results[i][field], results[i + 1][field])
+
+
+# Filters: is_creator_me
+
+
+def test_api_documents_list_filter_is_creator_me_true():
+    """
+    Authenticated users should be able to filter documents they created.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(3, users=[user], creator=user)
+    factories.DocumentFactory.create_batch(2, users=[user])
+
+    response = client.get("/api/v1.0/documents/?is_creator_me=true")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 3
+
+    # Ensure all results are created by the current user
+    for result in results:
+        assert result["creator"] == str(user.id)
+
+
+def test_api_documents_list_filter_is_creator_me_false():
+    """
+    Authenticated users should be able to filter documents created by others.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(3, users=[user], creator=user)
+    factories.DocumentFactory.create_batch(2, users=[user])
+
+    response = client.get("/api/v1.0/documents/?is_creator_me=false")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 2
+
+    # Ensure all results are created by other users
+    for result in results:
+        assert result["creator"] != str(user.id)
+
+
+def test_api_documents_list_filter_is_creator_me_invalid():
+    """Filtering with an invalid `is_creator_me` value should do nothing."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(3, users=[user], creator=user)
+    factories.DocumentFactory.create_batch(2, users=[user])
+
+    response = client.get("/api/v1.0/documents/?is_creator_me=invalid")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 5
+
+
+# Filters: is_favorite
+
+
+def test_api_documents_list_filter_is_favorite_true():
+    """
+    Authenticated users should be able to filter documents they marked as favorite.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(3, users=[user], favorited_by=[user])
+    factories.DocumentFactory.create_batch(2, users=[user])
+
+    response = client.get("/api/v1.0/documents/?is_favorite=true")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 3
+
+    # Ensure all results are marked as favorite by the current user
+    for result in results:
+        assert result["is_favorite"] is True
+
+
+def test_api_documents_list_filter_is_favorite_false():
+    """
+    Authenticated users should be able to filter documents they didn't mark as favorite.
+    """
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(3, users=[user], favorited_by=[user])
+    factories.DocumentFactory.create_batch(2, users=[user])
+
+    response = client.get("/api/v1.0/documents/?is_favorite=false")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 2
+
+    # Ensure all results are not marked as favorite by the current user
+    for result in results:
+        assert result["is_favorite"] is False
+
+
+def test_api_documents_list_filter_is_favorite_invalid():
+    """Filtering with an invalid `is_favorite` value should do nothing."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(3, users=[user], favorited_by=[user])
+    factories.DocumentFactory.create_batch(2, users=[user])
+
+    response = client.get("/api/v1.0/documents/?is_favorite=invalid")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == 5
+
+
+# Filters: link_reach
+
+
+@pytest.mark.parametrize("reach", models.LinkReachChoices.values)
+def test_api_documents_list_filter_link_reach(reach):
+    """Authenticated users should be able to filter documents by link reach."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(5, users=[user])
+
+    response = client.get(f"/api/v1.0/documents/?link_reach={reach:s}")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+
+    # Ensure all results have the chosen link reach
+    for result in results:
+        assert result["link_reach"] == reach
+
+
+def test_api_documents_list_filter_link_reach_invalid():
+    """Filtering with an invalid `link_reach` value should raise an error."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    factories.DocumentFactory.create_batch(3, users=[user])
+
+    response = client.get("/api/v1.0/documents/?link_reach=invalid")
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "link_reach": [
+            "Select a valid choice. invalid is not one of the available choices."
+        ]
+    }
+
