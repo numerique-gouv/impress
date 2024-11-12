@@ -175,7 +175,7 @@ class UserViewSet(
                 threshold = 0.6 if "@" in query else 0.1
 
                 queryset = queryset.filter(similarity__gt=threshold).order_by(
-                    "-similarity"
+                    "-similarity", "email"
                 )
 
         return queryset
