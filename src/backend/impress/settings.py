@@ -372,7 +372,8 @@ class Base(Configuration):
     CORS_ALLOWED_ORIGIN_REGEXES = values.ListValue([])
 
     # Sentry
-    SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN")
+    SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN", environ_prefix=None)
+    SENTRY_ENV = values.Value(None, environ_name="SENTRY_ENV", environ_prefix=None)
 
     # Easy thumbnails
     THUMBNAIL_EXTENSION = "webp"
@@ -524,7 +525,7 @@ class Base(Configuration):
         if cls.SENTRY_DSN is not None:
             sentry_sdk.init(
                 dsn=cls.SENTRY_DSN,
-                environment=cls.__name__.lower(),
+                environment=cls.SENTRY_ENV or cls.__name__.lower(),
                 release=get_release(),
                 integrations=[DjangoIntegration()],
             )
