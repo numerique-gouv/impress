@@ -33,6 +33,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
   return (
     <>
       <Card
+        $width="100%"
         $margin={isMobile ? 'tiny' : 'small'}
         aria-label={t('It is the card information about the document.')}
       >
