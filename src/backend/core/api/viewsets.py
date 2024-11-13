@@ -324,10 +324,12 @@ class DocumentViewSet(
     Filtering:
         - `is_creator_me=true`: Returns documents created by the current user.
         - `is_creator_me=false`: Returns documents created by other users.
+        - `is_favorite=true`: Returns documents marked as favorite by the current user
+        - `is_favorite=false`: Returns documents not marked as favorite by the current user
 
     Example Usage:
-        - GET /api/v1.0/documents/?creator=me
-        - GET /api/v1.0/documents/?creator=other
+        - GET /api/v1.0/documents/?is_creator_me=true&is_favorite=true
+        - GET /api/v1.0/documents/?is_creator_me=false
     """
 
     filter_backends = [filters.DjangoFilterBackend, drf_filters.OrderingFilter]
