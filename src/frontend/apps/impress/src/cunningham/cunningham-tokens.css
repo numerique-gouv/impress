@@ -114,6 +114,21 @@
   --c--theme--spacings--auto: auto;
   --c--theme--spacings--bx: 2.2rem;
   --c--theme--spacings--full: 100%;
+  --c--theme--spacings--050v: 2px;
+  --c--theme--spacings--100v: 4px;
+  --c--theme--spacings--150v: 6px;
+  --c--theme--spacings--100w: 8px;
+  --c--theme--spacings--300v: 12px;
+  --c--theme--spacings--200w: 16px;
+  --c--theme--spacings--300w: 24px;
+  --c--theme--spacings--400w: 32px;
+  --c--theme--spacings--500w: 40px;
+  --c--theme--spacings--600w: 48px;
+  --c--theme--spacings--700w: 56px;
+  --c--theme--spacings--800w: 64px;
+  --c--theme--spacings--900w: 72px;
+  --c--theme--spacings--1200w: 96px;
+  --c--theme--spacings--1500w: 120px;
   --c--theme--transitions--ease-in: cubic-bezier(0.32, 0, 0.67, 0);
   --c--theme--transitions--ease-out: cubic-bezier(0.33, 1, 0.68, 1);
   --c--theme--transitions--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -336,6 +351,21 @@
 }
 
 .cunningham-theme--dsfr {
+  --c--theme--spacings--050V: 2px;
+  --c--theme--spacings--100V: 4px;
+  --c--theme--spacings--150V: 6px;
+  --c--theme--spacings--100W: 8px;
+  --c--theme--spacings--300V: 12px;
+  --c--theme--spacings--200W: 16px;
+  --c--theme--spacings--300W: 24px;
+  --c--theme--spacings--400W: 32px;
+  --c--theme--spacings--500W: 40px;
+  --c--theme--spacings--600W: 48px;
+  --c--theme--spacings--700W: 56px;
+  --c--theme--spacings--800W: 64px;
+  --c--theme--spacings--900W: 72px;
+  --c--theme--spacings--1200W: 96px;
+  --c--theme--spacings--1500W: 120px;
   --c--theme--colors--card-border: #ededed;
   --c--theme--colors--primary-text: #000091;
   --c--theme--colors--primary-100: #f5f5fe;
@@ -359,16 +389,16 @@
   --c--theme--colors--secondary-800: #341f1f;
   --c--theme--colors--secondary-900: #2b1919;
   --c--theme--colors--greyscale-text: #303c4b;
-  --c--theme--colors--greyscale-000: #f6f6f6;
+  --c--theme--colors--greyscale-000: #fff;
+  --c--theme--colors--greyscale-050: #f6f6f6;
   --c--theme--colors--greyscale-100: #eee;
   --c--theme--colors--greyscale-200: #e5e5e5;
-  --c--theme--colors--greyscale-300: #e1e1e1;
-  --c--theme--colors--greyscale-400: #ddd;
-  --c--theme--colors--greyscale-500: #cecece;
-  --c--theme--colors--greyscale-600: #7b7b7b;
-  --c--theme--colors--greyscale-700: #666;
-  --c--theme--colors--greyscale-800: #2a2a2a;
-  --c--theme--colors--greyscale-900: #1e1e1e;
+  --c--theme--colors--greyscale-250: #ddd;
+  --c--theme--colors--greyscale-300: #cecece;
+  --c--theme--colors--greyscale-400: #929292;
+  --c--theme--colors--greyscale-500: #666;
+  --c--theme--colors--greyscale-700: #3a3a3a;
+  --c--theme--colors--greyscale-1000: #161616;
   --c--theme--colors--success-text: #1f8d49;
   --c--theme--colors--success-100: #dffee6;
   --c--theme--colors--success-200: #b8fec9;
@@ -1431,6 +1461,306 @@
   margin-right: var(--c--theme--spacings--full);
 }
 
+.m-050V {
+  margin: var(--c--theme--spacings--050V);
+}
+
+.mb-050V {
+  margin-bottom: var(--c--theme--spacings--050V);
+}
+
+.mt-050V {
+  margin-top: var(--c--theme--spacings--050V);
+}
+
+.ml-050V {
+  margin-left: var(--c--theme--spacings--050V);
+}
+
+.mr-050V {
+  margin-right: var(--c--theme--spacings--050V);
+}
+
+.m-100V {
+  margin: var(--c--theme--spacings--100V);
+}
+
+.mb-100V {
+  margin-bottom: var(--c--theme--spacings--100V);
+}
+
+.mt-100V {
+  margin-top: var(--c--theme--spacings--100V);
+}
+
+.ml-100V {
+  margin-left: var(--c--theme--spacings--100V);
+}
+
+.mr-100V {
+  margin-right: var(--c--theme--spacings--100V);
+}
+
+.m-150V {
+  margin: var(--c--theme--spacings--150V);
+}
+
+.mb-150V {
+  margin-bottom: var(--c--theme--spacings--150V);
+}
+
+.mt-150V {
+  margin-top: var(--c--theme--spacings--150V);
+}
+
+.ml-150V {
+  margin-left: var(--c--theme--spacings--150V);
+}
+
+.mr-150V {
+  margin-right: var(--c--theme--spacings--150V);
+}
+
+.m-100W {
+  margin: var(--c--theme--spacings--100W);
+}
+
+.mb-100W {
+  margin-bottom: var(--c--theme--spacings--100W);
+}
+
+.mt-100W {
+  margin-top: var(--c--theme--spacings--100W);
+}
+
+.ml-100W {
+  margin-left: var(--c--theme--spacings--100W);
+}
+
+.mr-100W {
+  margin-right: var(--c--theme--spacings--100W);
+}
+
+.m-300V {
+  margin: var(--c--theme--spacings--300V);
+}
+
+.mb-300V {
+  margin-bottom: var(--c--theme--spacings--300V);
+}
+
+.mt-300V {
+  margin-top: var(--c--theme--spacings--300V);
+}
+
+.ml-300V {
+  margin-left: var(--c--theme--spacings--300V);
+}
+
+.mr-300V {
+  margin-right: var(--c--theme--spacings--300V);
+}
+
+.m-200W {
+  margin: var(--c--theme--spacings--200W);
+}
+
+.mb-200W {
+  margin-bottom: var(--c--theme--spacings--200W);
+}
+
+.mt-200W {
+  margin-top: var(--c--theme--spacings--200W);
+}
+
+.ml-200W {
+  margin-left: var(--c--theme--spacings--200W);
+}
+
+.mr-200W {
+  margin-right: var(--c--theme--spacings--200W);
+}
+
+.m-300W {
+  margin: var(--c--theme--spacings--300W);
+}
+
+.mb-300W {
+  margin-bottom: var(--c--theme--spacings--300W);
+}
+
+.mt-300W {
+  margin-top: var(--c--theme--spacings--300W);
+}
+
+.ml-300W {
+  margin-left: var(--c--theme--spacings--300W);
+}
+
+.mr-300W {
+  margin-right: var(--c--theme--spacings--300W);
+}
+
+.m-400W {
+  margin: var(--c--theme--spacings--400W);
+}
+
+.mb-400W {
+  margin-bottom: var(--c--theme--spacings--400W);
+}
+
+.mt-400W {
+  margin-top: var(--c--theme--spacings--400W);
+}
+
+.ml-400W {
+  margin-left: var(--c--theme--spacings--400W);
+}
+
+.mr-400W {
+  margin-right: var(--c--theme--spacings--400W);
+}
+
+.m-500W {
+  margin: var(--c--theme--spacings--500W);
+}
+
+.mb-500W {
+  margin-bottom: var(--c--theme--spacings--500W);
+}
+
+.mt-500W {
+  margin-top: var(--c--theme--spacings--500W);
+}
+
+.ml-500W {
+  margin-left: var(--c--theme--spacings--500W);
+}
+
+.mr-500W {
+  margin-right: var(--c--theme--spacings--500W);
+}
+
+.m-600W {
+  margin: var(--c--theme--spacings--600W);
+}
+
+.mb-600W {
+  margin-bottom: var(--c--theme--spacings--600W);
+}
+
+.mt-600W {
+  margin-top: var(--c--theme--spacings--600W);
+}
+
+.ml-600W {
+  margin-left: var(--c--theme--spacings--600W);
+}
+
+.mr-600W {
+  margin-right: var(--c--theme--spacings--600W);
+}
+
+.m-700W {
+  margin: var(--c--theme--spacings--700W);
+}
+
+.mb-700W {
+  margin-bottom: var(--c--theme--spacings--700W);
+}
+
+.mt-700W {
+  margin-top: var(--c--theme--spacings--700W);
+}
+
+.ml-700W {
+  margin-left: var(--c--theme--spacings--700W);
+}
+
+.mr-700W {
+  margin-right: var(--c--theme--spacings--700W);
+}
+
+.m-800W {
+  margin: var(--c--theme--spacings--800W);
+}
+
+.mb-800W {
+  margin-bottom: var(--c--theme--spacings--800W);
+}
+
+.mt-800W {
+  margin-top: var(--c--theme--spacings--800W);
+}
+
+.ml-800W {
+  margin-left: var(--c--theme--spacings--800W);
+}
+
+.mr-800W {
+  margin-right: var(--c--theme--spacings--800W);
+}
+
+.m-900W {
+  margin: var(--c--theme--spacings--900W);
+}
+
+.mb-900W {
+  margin-bottom: var(--c--theme--spacings--900W);
+}
+
+.mt-900W {
+  margin-top: var(--c--theme--spacings--900W);
+}
+
+.ml-900W {
+  margin-left: var(--c--theme--spacings--900W);
+}
+
+.mr-900W {
+  margin-right: var(--c--theme--spacings--900W);
+}
+
+.m-1200W {
+  margin: var(--c--theme--spacings--1200W);
+}
+
+.mb-1200W {
+  margin-bottom: var(--c--theme--spacings--1200W);
+}
+
+.mt-1200W {
+  margin-top: var(--c--theme--spacings--1200W);
+}
+
+.ml-1200W {
+  margin-left: var(--c--theme--spacings--1200W);
+}
+
+.mr-1200W {
+  margin-right: var(--c--theme--spacings--1200W);
+}
+
+.m-1500W {
+  margin: var(--c--theme--spacings--1500W);
+}
+
+.mb-1500W {
+  margin-bottom: var(--c--theme--spacings--1500W);
+}
+
+.mt-1500W {
+  margin-top: var(--c--theme--spacings--1500W);
+}
+
+.ml-1500W {
+  margin-left: var(--c--theme--spacings--1500W);
+}
+
+.mr-1500W {
+  margin-right: var(--c--theme--spacings--1500W);
+}
+
 .p-0 {
   padding: var(--c--theme--spacings--0);
 }
@@ -1649,4 +1979,304 @@
 
 .pr-full {
   padding-right: var(--c--theme--spacings--full);
+}
+
+.p-050V {
+  padding: var(--c--theme--spacings--050V);
+}
+
+.pb-050V {
+  padding-bottom: var(--c--theme--spacings--050V);
+}
+
+.pt-050V {
+  padding-top: var(--c--theme--spacings--050V);
+}
+
+.pl-050V {
+  padding-left: var(--c--theme--spacings--050V);
+}
+
+.pr-050V {
+  padding-right: var(--c--theme--spacings--050V);
+}
+
+.p-100V {
+  padding: var(--c--theme--spacings--100V);
+}
+
+.pb-100V {
+  padding-bottom: var(--c--theme--spacings--100V);
+}
+
+.pt-100V {
+  padding-top: var(--c--theme--spacings--100V);
+}
+
+.pl-100V {
+  padding-left: var(--c--theme--spacings--100V);
+}
+
+.pr-100V {
+  padding-right: var(--c--theme--spacings--100V);
+}
+
+.p-150V {
+  padding: var(--c--theme--spacings--150V);
+}
+
+.pb-150V {
+  padding-bottom: var(--c--theme--spacings--150V);
+}
+
+.pt-150V {
+  padding-top: var(--c--theme--spacings--150V);
+}
+
+.pl-150V {
+  padding-left: var(--c--theme--spacings--150V);
+}
+
+.pr-150V {
+  padding-right: var(--c--theme--spacings--150V);
+}
+
+.p-100W {
+  padding: var(--c--theme--spacings--100W);
+}
+
+.pb-100W {
+  padding-bottom: var(--c--theme--spacings--100W);
+}
+
+.pt-100W {
+  padding-top: var(--c--theme--spacings--100W);
+}
+
+.pl-100W {
+  padding-left: var(--c--theme--spacings--100W);
+}
+
+.pr-100W {
+  padding-right: var(--c--theme--spacings--100W);
+}
+
+.p-300V {
+  padding: var(--c--theme--spacings--300V);
+}
+
+.pb-300V {
+  padding-bottom: var(--c--theme--spacings--300V);
+}
+
+.pt-300V {
+  padding-top: var(--c--theme--spacings--300V);
+}
+
+.pl-300V {
+  padding-left: var(--c--theme--spacings--300V);
+}
+
+.pr-300V {
+  padding-right: var(--c--theme--spacings--300V);
+}
+
+.p-200W {
+  padding: var(--c--theme--spacings--200W);
+}
+
+.pb-200W {
+  padding-bottom: var(--c--theme--spacings--200W);
+}
+
+.pt-200W {
+  padding-top: var(--c--theme--spacings--200W);
+}
+
+.pl-200W {
+  padding-left: var(--c--theme--spacings--200W);
+}
+
+.pr-200W {
+  padding-right: var(--c--theme--spacings--200W);
+}
+
+.p-300W {
+  padding: var(--c--theme--spacings--300W);
+}
+
+.pb-300W {
+  padding-bottom: var(--c--theme--spacings--300W);
+}
+
+.pt-300W {
+  padding-top: var(--c--theme--spacings--300W);
+}
+
+.pl-300W {
+  padding-left: var(--c--theme--spacings--300W);
+}
+
+.pr-300W {
+  padding-right: var(--c--theme--spacings--300W);
+}
+
+.p-400W {
+  padding: var(--c--theme--spacings--400W);
+}
+
+.pb-400W {
+  padding-bottom: var(--c--theme--spacings--400W);
+}
+
+.pt-400W {
+  padding-top: var(--c--theme--spacings--400W);
+}
+
+.pl-400W {
+  padding-left: var(--c--theme--spacings--400W);
+}
+
+.pr-400W {
+  padding-right: var(--c--theme--spacings--400W);
+}
+
+.p-500W {
+  padding: var(--c--theme--spacings--500W);
+}
+
+.pb-500W {
+  padding-bottom: var(--c--theme--spacings--500W);
+}
+
+.pt-500W {
+  padding-top: var(--c--theme--spacings--500W);
+}
+
+.pl-500W {
+  padding-left: var(--c--theme--spacings--500W);
+}
+
+.pr-500W {
+  padding-right: var(--c--theme--spacings--500W);
+}
+
+.p-600W {
+  padding: var(--c--theme--spacings--600W);
+}
+
+.pb-600W {
+  padding-bottom: var(--c--theme--spacings--600W);
+}
+
+.pt-600W {
+  padding-top: var(--c--theme--spacings--600W);
+}
+
+.pl-600W {
+  padding-left: var(--c--theme--spacings--600W);
+}
+
+.pr-600W {
+  padding-right: var(--c--theme--spacings--600W);
+}
+
+.p-700W {
+  padding: var(--c--theme--spacings--700W);
+}
+
+.pb-700W {
+  padding-bottom: var(--c--theme--spacings--700W);
+}
+
+.pt-700W {
+  padding-top: var(--c--theme--spacings--700W);
+}
+
+.pl-700W {
+  padding-left: var(--c--theme--spacings--700W);
+}
+
+.pr-700W {
+  padding-right: var(--c--theme--spacings--700W);
+}
+
+.p-800W {
+  padding: var(--c--theme--spacings--800W);
+}
+
+.pb-800W {
+  padding-bottom: var(--c--theme--spacings--800W);
+}
+
+.pt-800W {
+  padding-top: var(--c--theme--spacings--800W);
+}
+
+.pl-800W {
+  padding-left: var(--c--theme--spacings--800W);
+}
+
+.pr-800W {
+  padding-right: var(--c--theme--spacings--800W);
+}
+
+.p-900W {
+  padding: var(--c--theme--spacings--900W);
+}
+
+.pb-900W {
+  padding-bottom: var(--c--theme--spacings--900W);
+}
+
+.pt-900W {
+  padding-top: var(--c--theme--spacings--900W);
+}
+
+.pl-900W {
+  padding-left: var(--c--theme--spacings--900W);
+}
+
+.pr-900W {
+  padding-right: var(--c--theme--spacings--900W);
+}
+
+.p-1200W {
+  padding: var(--c--theme--spacings--1200W);
+}
+
+.pb-1200W {
+  padding-bottom: var(--c--theme--spacings--1200W);
+}
+
+.pt-1200W {
+  padding-top: var(--c--theme--spacings--1200W);
+}
+
+.pl-1200W {
+  padding-left: var(--c--theme--spacings--1200W);
+}
+
+.pr-1200W {
+  padding-right: var(--c--theme--spacings--1200W);
+}
+
+.p-1500W {
+  padding: var(--c--theme--spacings--1500W);
+}
+
+.pb-1500W {
+  padding-bottom: var(--c--theme--spacings--1500W);
+}
+
+.pt-1500W {
+  padding-top: var(--c--theme--spacings--1500W);
+}
+
+.pl-1500W {
+  padding-left: var(--c--theme--spacings--1500W);
+}
+
+.pr-1500W {
+  padding-right: var(--c--theme--spacings--1500W);
 }
