@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
 import { HeadingBlock, useEditorStore } from '@/features/docs/doc-editor';
+import { MAIN_LAYOUT_ID } from '@/layouts/conf';
 import { useResponsiveStore } from '@/stores';
 
 import { Heading } from './Heading';
@@ -46,7 +47,7 @@ export const TableContent = ({ headings }: TableContentProps) => {
       }
     };
 
-    window.addEventListener('scroll', () => {
+    document.getElementById(MAIN_LAYOUT_ID)?.addEventListener('scroll', () => {
       setTimeout(() => {
         handleScroll();
       }, 300);
