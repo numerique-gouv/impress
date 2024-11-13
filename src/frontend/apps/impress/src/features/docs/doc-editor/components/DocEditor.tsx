@@ -1,6 +1,6 @@
 import { Alert, Loader, VariantType } from '@openfun/cunningham-react';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors } from '@/components';
