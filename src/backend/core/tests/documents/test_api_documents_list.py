@@ -433,7 +433,6 @@ def test_api_documents_list_filter_is_creator_me_invalid():
     results = response.json()["results"]
     assert len(results) == 5
 
-
 # Filters: is_favorite
 
 
@@ -495,7 +494,6 @@ def test_api_documents_list_filter_is_favorite_invalid():
     assert response.status_code == 200
     results = response.json()["results"]
     assert len(results) == 5
-
 
 # Filters: link_reach
 
