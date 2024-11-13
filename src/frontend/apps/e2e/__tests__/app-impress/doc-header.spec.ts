@@ -83,7 +83,7 @@ test.describe('Doc Header', () => {
   test('it updates the title doc from editor heading', async ({ page }) => {
     await page
       .getByRole('button', {
-        name: 'Create a new document',
+        name: 'New doc',
       })
       .click();
 
@@ -158,9 +158,7 @@ test.describe('Doc Header', () => {
       page.getByText('The document has been deleted.'),
     ).toBeVisible();
 
-    await expect(
-      page.getByRole('button', { name: 'Create a new document' }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'New do' })).toBeVisible();
 
     const row = page
       .getByLabel('Datagrid of the documents page 1')
@@ -413,7 +411,7 @@ test.describe('Doc Header', () => {
     // create page and navigate to it
     await page
       .getByRole('button', {
-        name: 'Create a new document',
+        name: 'New doc',
       })
       .click();
 
@@ -448,7 +446,7 @@ test.describe('Doc Header', () => {
     // create page and navigate to it
     await page
       .getByRole('button', {
-        name: 'Create a new document',
+        name: 'New doc',
       })
       .click();
 

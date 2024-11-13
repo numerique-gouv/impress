@@ -59,6 +59,7 @@ and this project adheres to
 - 🌐(frontend) add German translation #255
 - ✨(frontend) add a broadcast store #387
 - ✨(frontend) WIP: New ui
+- 💄(frontend) Add left panel #421
 - ✨(backend) config endpoint #425
 - ✨(backend) whitelist pod's IP address #443
 - ✨(backend) config endpoint #425
