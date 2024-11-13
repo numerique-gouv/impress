@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
@@ -49,7 +49,7 @@ export const TableContent = ({ doc, headings }: TableContentProps) => {
       }
     };
 
-    window.addEventListener('scroll', () => {
+    document.getElementById('mainContent')?.addEventListener('scroll', () => {
       setTimeout(() => {
         handleScroll();
       }, 300);

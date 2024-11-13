@@ -2,35 +2,50 @@ import { PropsWithChildren } from 'react';
 
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Footer } from '@/features/footer';
 import { Header } from '@/features/header';
+import { HEADER_HEIGHT } from '@/features/header/conf';
+import { LeftPanel } from '@/features/left-pannel/components/LeftPanel';
 
-interface MainLayoutProps {
-  withoutFooter?: boolean;
+export enum MainLayoutBackgroundColor {
+  WHITE = 'white',
+  GREY = 'grey',
 }
+
+type MainLayoutProps = {
+  backgroundColor?: MainLayoutBackgroundColor;
+};
 
 export function MainLayout({
   children,
-  withoutFooter,
+  backgroundColor = MainLayoutBackgroundColor.WHITE,
 }: PropsWithChildren<MainLayoutProps>) {
-  const { colorsTokens } = useCunninghamTheme();
+  const { themeTokens, colorsTokens } = useCunninghamTheme();
+  const tokens = themeTokens();
+  const colors = colorsTokens();
 
   return (
-    <Box>
-      <Box $minHeight="100vh">
-        <Header />
-        <Box $css="flex: 1;" $direction="row">
-          <Box
-            as="main"
-            $minHeight="100vh"
-            $width="100%"
-            $background={colorsTokens()['primary-bg']}
-          >
-            {children}
-          </Box>
+    <div>
+      <Header />
+      <Box $direction="row" $width="100%">
+        <LeftPanel />
+        <Box
+          as="main"
+          id="mainContent"
+          $css={`
+              display: flex;
+              width: 100%;
+              flex-direction: column;
+              align-items: center;
+              flex: 1;
+              padding: ${tokens.spacings?.['200W'] ?? '1.12rem'} ${tokens.spacings?.['1200W'] ?? '5.62rem'};
+              height: calc(100dvh - ${HEADER_HEIGHT}px);
+              overflow-y: scroll;
+              background-color: ${backgroundColor === MainLayoutBackgroundColor.WHITE ? colors['greyscale-000'] : colors['greyscale-050']};
+            `}
+        >
+          {children}
         </Box>
       </Box>
-      {!withoutFooter && <Footer />}
-    </Box>
+    </div>
   );
 }

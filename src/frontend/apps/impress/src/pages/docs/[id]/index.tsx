@@ -28,7 +28,7 @@ export function DocLayout() {
       <Head>
         <meta name="robots" content="noindex" />
       </Head>
-      <MainLayout withoutFooter>
+      <MainLayout>
         <DocPage id={id} />
       </MainLayout>
     </>

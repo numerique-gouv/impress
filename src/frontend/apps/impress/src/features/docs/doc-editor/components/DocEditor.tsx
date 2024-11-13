@@ -58,10 +58,10 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
       )}
       <Box
         $background={colorsTokens()['primary-bg']}
-        $height="100%"
         $direction="row"
+        $width="100%"
         $margin={{ all: isMobile ? 'tiny' : 'small', top: 'none' }}
-        $css="overflow-x: clip;"
+        $css="overflow-x: clip; flex: 1;"
         $position="relative"
       >
         <Card
