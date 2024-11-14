@@ -5,7 +5,7 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +35,7 @@ export const MemberItem = ({
   const { isSmallMobile, screenWidth } = useResponsiveStore();
   const [localRole, setLocalRole] = useState(role);
   const { toast } = useToastProvider();
-  const router = useRouter();
+  const { push } = useRouter();
   const { mutate: updateDocAccess, error: errorUpdate } = useUpdateDocAccess({
     onSuccess: () => {
       toast(t('The role has been updated'), VariantType.SUCCESS, {
@@ -55,7 +55,7 @@ export const MemberItem = ({
       );
 
       if (isMyself) {
-        router.push('/');
+        void push('/');
       }
     },
   });

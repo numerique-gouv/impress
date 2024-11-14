@@ -1,5 +1,4 @@
 import { Alert, Loader, VariantType } from '@openfun/cunningham-react';
-import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -100,7 +99,7 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
   });
   const { createProvider, providers } = useDocStore();
 
-  const navigate = useNavigate();
+  const { replace } = useRouter();
 
   useEffect(() => {
     if (!version?.id) {
@@ -115,7 +114,7 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
 
   if (isError && error) {
     if (error.status === 404) {
-      navigate.replace(`/404`);
+      void replace(`/404`);
       return null;
     }
 

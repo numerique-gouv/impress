@@ -1,7 +1,6 @@
 import { Loader } from '@openfun/cunningham-react';
 import { useQueryClient } from '@tanstack/react-query';
 import Head from 'next/head';
-import { useRouter as useNavigate } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -46,7 +45,7 @@ const DocPage = ({ id }: DocProps) => {
   const { setCurrentDoc, createProvider, providers } = useDocStore();
   const { setBroadcastProvider, addTask } = useBroadcastStore();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const { replace } = useRouter();
   const provider = providers?.[id];
 
   useEffect(() => {
@@ -101,7 +100,7 @@ const DocPage = ({ id }: DocProps) => {
 
   if (isError && error) {
     if (error.status === 404) {
-      navigate.replace(`/404`);
+      void replace(`/404`);
       return null;
     }
 

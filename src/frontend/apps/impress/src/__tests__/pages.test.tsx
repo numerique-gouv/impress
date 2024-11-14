@@ -5,7 +5,7 @@ import { AppWrapper } from '@/tests/utils';
 
 import Page from '../pages';
 
-jest.mock('next/navigation', () => ({
+jest.mock('next/router', () => ({
   useRouter() {
     return {
       push: jest.fn(),
