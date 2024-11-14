@@ -1,4 +1,4 @@
-import { locales } from '@blocknote/core';
+import { Dictionary, locales } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -124,7 +124,7 @@ export const BlockNoteEditor = ({
           color: randomColor(),
         },
       },
-      dictionary: locales[lang as keyof typeof locales],
+      dictionary: locales[lang as keyof typeof locales] as Dictionary,
       uploadFile,
     },
     [lang, provider, uploadFile, userData?.email, userData?.full_name],
