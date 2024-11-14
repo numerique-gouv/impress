@@ -75,29 +75,13 @@ test.describe('Header mobile', () => {
   test('it checks the header when mobile', async ({ page }) => {
     const header = page.locator('header').first();
 
+    await expect(header.getByLabel('Open the header menu')).toBeVisible();
     await expect(
-      header.getByRole('button', {
-        name: 'Les services de La Suite numérique',
-      }),
+      header.getByRole('link', { name: 'Docs Logo Docs' }),
     ).toBeVisible();
-
     await expect(
-      page.getByRole('button', {
-        name: 'Logout',
-      }),
-    ).toBeHidden();
-
-    await expect(page.getByText('English')).toBeHidden();
-
-    await header.getByLabel('Open the header menu').click();
-
-    await expect(
-      page.getByRole('button', {
-        name: 'Logout',
-      }),
+      header.getByRole('button', { name: 'Les services de La Suite numé' }),
     ).toBeVisible();
-
-    await expect(page.getByText('English')).toBeVisible();
   });
 });
 

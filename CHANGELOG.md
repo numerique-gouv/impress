@@ -15,6 +15,7 @@ and this project adheres to
 - ✨(frontend) Add a broadcast store #387
 - ✨(frontend) WIP: New ui
 - 💄(frontend) Add left panel
+- 💄(frontend) update header layout #421
 
 ## Changed
 
