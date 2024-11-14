@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from 'styled-components';
 
 import { Box, Card, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
@@ -46,7 +47,11 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
               $theme="primary"
               $variation="600"
               $size="2rem"
-              $css={`&:hover {background-color: ${colorsTokens()['primary-100']}; };`}
+              $css={css`
+                &:hover {
+                  background-color: ${colorsTokens()['primary-100']};
+                }
+              `}
               $hasTransition
               $radius="5px"
               $padding="tiny"

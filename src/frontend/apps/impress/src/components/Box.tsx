@@ -1,6 +1,6 @@
 import { ComponentPropsWithRef, ReactHTML } from 'react';
 import styled from 'styled-components';
-import { CSSProperties } from 'styled-components/dist/types';
+import { CSSProperties, RuleSet } from 'styled-components/dist/types';
 
 import {
   MarginPadding,
@@ -15,7 +15,7 @@ export interface BoxProps {
   $align?: CSSProperties['alignItems'];
   $background?: CSSProperties['background'];
   $color?: CSSProperties['color'];
-  $css?: string;
+  $css?: string | RuleSet<object>;
   $direction?: CSSProperties['flexDirection'];
   $display?: CSSProperties['display'];
   $effect?: 'show' | 'hide';
@@ -73,7 +73,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $transition }) => $transition && `transition: ${$transition};`}
   ${({ $width }) => $width && `width: ${$width};`}
   ${({ $wrap }) => $wrap && `flex-wrap: ${$wrap};`}
-  ${({ $css }) => $css && `${$css};`}
+  ${({ $css }) => $css && (typeof $css === 'string' ? `${$css};` : $css)}
   ${({ $zIndex }) => $zIndex && `z-index: ${$zIndex};`}
   ${({ $effect }) => {
     let effect;

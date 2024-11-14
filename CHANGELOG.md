@@ -14,11 +14,13 @@ and this project adheres to
 - 🌐(frontend) Add German translation #255
 - ✨(frontend) Add a broadcast store #387
 
+
 ## Changed
 
 - 🚸(backend) improve users similarity search and sort results #391
 - 🌐(backend) add german translation #259
 - ♻️(frontend) simplify stores #402
+- ✨(frontend) update $css Box props type to add styled components RuleSet #423
 
 ## Fixed
 
