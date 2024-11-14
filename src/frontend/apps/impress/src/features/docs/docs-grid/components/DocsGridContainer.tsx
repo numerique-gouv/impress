@@ -1,5 +1,5 @@
 import { Button } from '@openfun/cunningham-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,12 +12,12 @@ import { DocsGrid } from './DocsGrid';
 export const DocsGridContainer = () => {
   const { t } = useTranslation();
   const { untitledDocument } = useTrans();
-  const router = useRouter();
+  const { push } = useRouter();
   const { isMobile } = useResponsiveStore();
 
   const { mutate: createDoc } = useCreateDoc({
     onSuccess: (doc) => {
-      router.push(`/docs/${doc.id}`);
+      void push(`/docs/${doc.id}`);
     },
   });
 

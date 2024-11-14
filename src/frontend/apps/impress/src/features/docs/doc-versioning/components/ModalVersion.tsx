@@ -7,7 +7,7 @@ import {
   useToastProvider,
 } from '@openfun/cunningham-react';
 import { t } from 'i18next';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import * as Y from 'yjs';
 
 import { Box, Text } from '@/components';
@@ -31,14 +31,14 @@ export const ModalVersion = ({
   versionId,
 }: ModalVersionProps) => {
   const { toast } = useToastProvider();
-  const router = useRouter();
+  const { push } = useRouter();
   const { providers } = useDocStore();
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
     onSuccess: () => {
       const onDisplaySuccess = () => {
         toast(t('Version restored successfully'), VariantType.SUCCESS);
-        router.push(`/docs/${docId}`);
+        void push(`/docs/${docId}`);
       };
 
       if (!providers?.[docId] || !providers?.[versionId]) {

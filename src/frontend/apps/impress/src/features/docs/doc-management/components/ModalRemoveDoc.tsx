@@ -7,7 +7,7 @@ import {
   useToastProvider,
 } from '@openfun/cunningham-react';
 import { t } from 'i18next';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import { Box, Text, TextErrors } from '@/components';
 import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
@@ -24,7 +24,7 @@ interface ModalRemoveDocProps {
 export const ModalRemoveDoc = ({ onClose, doc }: ModalRemoveDocProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { toast } = useToastProvider();
-  const router = useRouter();
+  const { push } = useRouter();
 
   const {
     mutate: removeDoc,
@@ -35,7 +35,7 @@ export const ModalRemoveDoc = ({ onClose, doc }: ModalRemoveDocProps) => {
       toast(t('The document has been deleted.'), VariantType.SUCCESS, {
         duration: 4000,
       });
-      router.push('/');
+      void push('/');
     },
   });
 
