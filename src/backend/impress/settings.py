@@ -18,6 +18,9 @@ from django.utils.translation import gettext_lazy as _
 import sentry_sdk
 from configurations import Configuration, values
 from sentry_sdk.integrations.django import DjangoIntegration
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -56,7 +59,7 @@ class Base(Configuration):
     * DB_USER
     """
 
-    DEBUG = False
+    DEBUG = True
     USE_SWAGGER = False
 
     API_VERSION = "v1.0"
@@ -516,9 +519,13 @@ class Base(Configuration):
 
         # The SENTRY_DSN setting should be available to activate sentry for an environment
         if cls.SENTRY_DSN is not None:
+            logger.debug("Sentry is SENTRY_ENV. %s ", cls.SENTRY_ENV)
+            logger.debug("Sentry is cls.__name__.lower(): %s ", cls.__name__.lower())
+            print("Sentry is cls.__name__.lower(): %s ", cls.__name__.lower())
+            print("Sentry is SENTRY_ENV. %s ", cls.SENTRY_ENV)
             sentry_sdk.init(
                 dsn=cls.SENTRY_DSN,
-                environment=cls.SENTRY_ENV or cls.__name__.lower(),
+                environment=cls.__name__.lower(),
                 release=get_release(),
                 integrations=[DjangoIntegration()],
             )

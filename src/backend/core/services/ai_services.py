@@ -72,6 +72,8 @@ class AIService:
 
         json_response = json.loads(sanitized_content)
 
+        raise RuntimeError("Error Test Sentry")
+
         if "answer" not in json_response:
             raise RuntimeError("AI response does not contain an answer")
 
