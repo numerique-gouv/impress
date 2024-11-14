@@ -21,7 +21,7 @@ class DocumentFilter(django_filters.FilterSet):
 
     class Meta:
         model = models.Document
-        fields = ["is_creator_me", "is_favorite"]
+        fields = ["is_creator_me", "is_favorite", "link_reach"]
 
     # pylint: disable=unused-argument
     def filter_is_creator_me(self, queryset, name, value):
