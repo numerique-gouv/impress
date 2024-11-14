@@ -1,4 +1,5 @@
 import { ComponentPropsWithRef, forwardRef } from 'react';
+import { css } from 'styled-components';
 
 import { Box, BoxType } from './Box';
 
@@ -26,7 +27,7 @@ const BoxButton = forwardRef<HTMLDivElement, BoxType>(
         $background="none"
         $margin="none"
         $padding="none"
-        $css={`
+        $css={css`
           cursor: pointer;
           border: none;
           outline: none;
