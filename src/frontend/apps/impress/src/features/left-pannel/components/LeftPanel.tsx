@@ -4,27 +4,33 @@ import { PropsWithChildren, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Icon } from '@/components';
+import { HorizontalSeparator } from '@/components/separators/HorizontalSeparator';
 import { SeparatedSection } from '@/components/separators/SeparatedSection';
+import { ButtonLogin } from '@/core';
 import { useCunninghamTheme } from '@/cunningham';
 import { useCreateDoc } from '@/features/docs';
 import { HEADER_HEIGHT } from '@/features/header/conf';
+import { LanguagePicker } from '@/features/language';
 import { useResponsiveStore } from '@/stores';
 
 export const LeftPanel = ({ children }: PropsWithChildren) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { isResponsive } = useResponsiveStore();
+  const { isResponsive, isMobileMenuOpen, toggleMobileMenu } =
+    useResponsiveStore();
   const theme = useCunninghamTheme();
   const colors = theme.colorsTokens();
 
   const { mutate: createDoc } = useCreateDoc({
     onSuccess: (doc) => {
       router.push(`/docs/${doc.id}`);
+      toggleMobileMenu();
     },
   });
 
   const goToHome = () => {
     router.push('/');
+    toggleMobileMenu();
   };
 
   const createNewDoc = () => {
@@ -70,6 +76,37 @@ export const LeftPanel = ({ children }: PropsWithChildren) => {
         `}
         >
           {getContent()}
+        </Box>
+      )}
+      {isResponsive && (
+        <Box
+          data-testid="left-panel-mobile"
+          $css={`
+            z-index: 1000;
+            width: 100dvw;
+            height: calc(100dvh - ${HEADER_HEIGHT}px);
+            position: fixed;
+            transition: 0.15s;
+            background-color: ${(colors?.['greyscale-000'] as string) ?? '#fff'};
+            left: ${isMobileMenuOpen ? '0' : '-100dvw'};
+          `}
+        >
+          {getContent()}
+
+          <Box
+            $css={`
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: var(--c--theme--spacings--200W);
+            `}
+          >
+            {children && <HorizontalSeparator />}
+            <ButtonLogin />
+            <LanguagePicker />
+          </Box>
         </Box>
       )}
     </>

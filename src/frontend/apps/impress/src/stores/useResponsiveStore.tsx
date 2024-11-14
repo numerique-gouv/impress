@@ -5,19 +5,22 @@ export type ScreenSize = 'small-mobile' | 'mobile' | 'tablet' | 'desktop';
 export interface UseResponsiveStore {
   isMobile: boolean;
   isTablet: boolean;
+  isMobileMenuOpen: boolean;
   isSmallMobile: boolean;
   screenSize: ScreenSize;
   screenWidth: number;
   setScreenSize: (size: ScreenSize) => void;
+  toggleMobileMenu: () => void;
   isResponsive: boolean;
   initializeResizeListener: () => () => void;
 }
 
 const initialState = {
   isMobile: false,
-  isSmallMobile: false,
   isTablet: false,
+  isSmallMobile: false,
   isResponsive: false,
+  isMobileMenuOpen: false,
   screenSize: 'desktop' as ScreenSize,
   screenWidth: 0,
 };
@@ -27,9 +30,13 @@ export const useResponsiveStore = create<UseResponsiveStore>((set) => ({
   isTablet: initialState.isTablet,
   isSmallMobile: initialState.isSmallMobile,
   screenSize: initialState.screenSize,
+  isMobileMenuOpen: initialState.isMobileMenuOpen,
   screenWidth: initialState.screenWidth,
   setScreenSize: (size: ScreenSize) => set(() => ({ screenSize: size })),
   isResponsive: initialState.isResponsive,
+  toggleMobileMenu: () => {
+    set((old) => ({ isMobileMenuOpen: !old.isMobileMenuOpen }));
+  },
   initializeResizeListener: () => {
     const resizeHandler = () => {
       const width = window.innerWidth;
