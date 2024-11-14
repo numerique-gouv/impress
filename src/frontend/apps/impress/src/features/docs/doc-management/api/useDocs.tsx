@@ -1,4 +1,8 @@
-import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import {
+  UseQueryOptions,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query';
 
 import { APIError, APIList, errorCauses, fetchAPI } from '@/api';
 
@@ -52,3 +56,14 @@ export function useDocs(
     ...queryConfig,
   });
 }
+
+export const useInfiniteDocs = (params: DocsParams) => {
+  return useInfiniteQuery({
+    initialPageParam: 1,
+    queryKey: [KEY_LIST_DOC, 'infinite', params],
+    queryFn: ({ pageParam }) => getDocs({ ...params, page: pageParam }),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.next ? allPages.length + 1 : undefined;
+    },
+  });
+};

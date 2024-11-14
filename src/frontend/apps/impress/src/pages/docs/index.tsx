@@ -1,16 +1,11 @@
 import type { ReactElement } from 'react';
 
-import { Box } from '@/components';
-import { DocsGrid } from '@/features/docs/docs-grid/components/DocsGrid';
+import { DocsGridList } from '@/features/docs/docs-grid/components/DocsGridList';
 import { MainLayout, MainLayoutBackgroundColor } from '@/layouts';
 import { NextPageWithLayout } from '@/types/next';
 
 const Page: NextPageWithLayout = () => {
-  return (
-    <Box $width="100%">
-      <DocsGrid />
-    </Box>
-  );
+  return <DocsGridList />;
 };
 
 Page.getLayout = function getLayout(page: ReactElement) {

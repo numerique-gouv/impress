@@ -1,6 +1,6 @@
 import { ComponentPropsWithRef, ReactHTML } from 'react';
 import styled from 'styled-components';
-import { CSSProperties } from 'styled-components/dist/types';
+import { CSSProperties, RuleSet } from 'styled-components/dist/types';
 
 import {
   MarginPadding,
@@ -38,6 +38,7 @@ export interface BoxProps {
   $width?: CSSProperties['width'];
   $wrap?: CSSProperties['flexWrap'];
   $zIndex?: CSSProperties['zIndex'];
+  $styledCss?: RuleSet<object>;
 }
 
 export type BoxType = ComponentPropsWithRef<typeof Box>;
@@ -45,6 +46,7 @@ export type BoxType = ComponentPropsWithRef<typeof Box>;
 export const Box = styled('div')<BoxProps>`
   display: flex;
   flex-direction: column;
+  ${({ $styledCss }) => $styledCss && $styledCss}
   ${({ $align }) => $align && `align-items: ${$align};`}
   ${({ $background }) => $background && `background: ${$background};`}
   ${({ $color }) => $color && `color: ${$color};`}

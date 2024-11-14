@@ -1,9 +1,4 @@
-import React, {
-  PropsWithChildren,
-  ReactNode,
-  useEffect,
-  useState,
-} from 'react';
+import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import { Button, DialogTrigger, Popover } from 'react-aria-components';
 import styled from 'styled-components';
 
@@ -29,7 +24,7 @@ const StyledButton = styled(Button)`
   text-wrap: nowrap;
 `;
 
-interface DropButtonProps {
+export interface DropButtonProps {
   button: ReactNode;
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;

@@ -3,7 +3,7 @@ const config = {
     default: {
       theme: {
         colors: {
-          'card-border': '#ededed',
+          'card-border': '#E5E5E5',
           'primary-bg': '#FAFAFA',
           'primary-100': '#EDF5FA',
           'primary-150': '#E5EEFA',
@@ -14,15 +14,19 @@ const config = {
         font: {
           sizes: {
             ml: '0.938rem',
-            xl: '1.50rem',
             t: '0.6875rem',
             s: '0.75rem',
-            h1: '2.2rem',
-            h2: '1.7rem',
-            h3: '1.37rem',
-            h4: '1.15rem',
-            h5: '1rem',
-            h6: '0.87rem',
+            xl: '20px',
+            lg: '18px',
+            md: '16px',
+            sm: '14px',
+            xs: '12px',
+            h1: '32px',
+            h2: '28px',
+            h3: '24px',
+            h4: '22px',
+            h5: '20px',
+            h6: '18px',
           },
           weights: {
             thin: 100,
@@ -309,6 +313,22 @@ const config = {
           families: {
             accent: 'Marianne',
             base: 'Marianne',
+          },
+          size: {
+            ml: '0.938rem',
+            t: '0.6875rem',
+            s: '0.75rem',
+            xl: '20px',
+            lg: '18px',
+            md: '16px',
+            sm: '14px',
+            xs: '12px',
+            h1: '32px',
+            h2: '28px',
+            h3: '24px',
+            h4: '22px',
+            h5: '20px',
+            h6: '18px',
           },
         },
         logo: {

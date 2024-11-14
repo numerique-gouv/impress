@@ -23,6 +23,7 @@ export interface TextProps extends BoxProps {
   $weight?: CSSProperties['fontWeight'];
   $textAlign?: CSSProperties['textAlign'];
   $size?: TextSizes | (string & {});
+
   $theme?:
     | 'primary'
     | 'secondary'
@@ -31,6 +32,7 @@ export interface TextProps extends BoxProps {
     | 'warning'
     | 'danger'
     | 'greyscale';
+
   $variation?:
     | 'text'
     | '100'
@@ -41,7 +43,8 @@ export interface TextProps extends BoxProps {
     | '600'
     | '700'
     | '800'
-    | '900';
+    | '900'
+    | '1000';
 }
 
 export type TextType = ComponentPropsWithRef<typeof Text>;
@@ -63,14 +66,16 @@ export const TextStyled = styled(Box)<TextProps>`
 const Text = forwardRef<HTMLElement, ComponentPropsWithRef<typeof TextStyled>>(
   ({ className, $isMaterialIcon, ...props }, ref) => {
     return (
-      <TextStyled
-        ref={ref}
-        as="span"
-        $theme="greyscale"
-        $variation="text"
-        className={`${className || ''}${$isMaterialIcon ? ' material-icons' : ''}`}
-        {...props}
-      />
+      <>
+        <TextStyled
+          ref={ref}
+          as="span"
+          $theme={props.$theme ?? 'greyscale'}
+          $variation={props.$variation ?? 'text'}
+          className={`${className || ''}${$isMaterialIcon ? ' material-icons' : ''}`}
+          {...props}
+        />
+      </>
     );
   },
 );
