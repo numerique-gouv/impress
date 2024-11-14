@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { css } from 'styled-components';
 
 import { Box, Card, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
@@ -47,14 +48,14 @@ export const DocsGridList = () => {
       <section>
         <Box
           as="header"
-          $css={`
+          $css={css`
             display: flex;
             flex-direction: row;
             margin-bottom: ${spacings['100W']};
             font-size: ${themeTokens().font?.sizes.xs};
             color: ${colors['greyscale-500']};
             padding-bottom: ${spacings['150V']} ${spacings['100W']};
-        `}
+          `}
         >
           <Box $flex={7}>{t('Name')}</Box>
 

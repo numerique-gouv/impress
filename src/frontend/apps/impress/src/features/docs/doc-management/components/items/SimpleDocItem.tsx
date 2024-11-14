@@ -46,16 +46,11 @@ export const SimpleDocItem = ({ doc, isPinned = false, subText }: Props) => {
         {isPinned ? <PinnedDocumentIcon /> : <SimpleFileIcon />}
       </Box>
       <div>
-        <Text
-          $weight={500}
-          $variation="1000"
-          $size="sm"
-          $styledCss={ItemTextCss}
-        >
+        <Text $weight={500} $variation="1000" $size="sm" $css={ItemTextCss}>
           {doc.title}
         </Text>
 
-        <Text $variation="500" $size="xs" $styledCss={ItemTextCss}>
+        <Text $variation="500" $size="xs" $css={ItemTextCss}>
           {subText ??
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vel ante libero. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed imperdiet neque quam, sed euismod metus mollis ut. '}
         </Text>

@@ -67,6 +67,11 @@ const config = {
           alt: '',
         },
       },
+      global: {
+        hover: {
+          'greyscale-100': '#055fd214',
+        },
+      },
       components: {
         datagrid: {
           header: {

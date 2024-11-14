@@ -15,7 +15,7 @@ export interface BoxProps {
   $align?: CSSProperties['alignItems'];
   $background?: CSSProperties['background'];
   $color?: CSSProperties['color'];
-  $css?: string;
+  $css?: string | RuleSet<object>;
   $direction?: CSSProperties['flexDirection'];
   $display?: CSSProperties['display'];
   $effect?: 'show' | 'hide';
@@ -38,7 +38,6 @@ export interface BoxProps {
   $width?: CSSProperties['width'];
   $wrap?: CSSProperties['flexWrap'];
   $zIndex?: CSSProperties['zIndex'];
-  $styledCss?: RuleSet<object>;
 }
 
 export type BoxType = ComponentPropsWithRef<typeof Box>;
@@ -46,7 +45,7 @@ export type BoxType = ComponentPropsWithRef<typeof Box>;
 export const Box = styled('div')<BoxProps>`
   display: flex;
   flex-direction: column;
-  ${({ $styledCss }) => $styledCss && $styledCss}
+
   ${({ $align }) => $align && `align-items: ${$align};`}
   ${({ $background }) => $background && `background: ${$background};`}
   ${({ $color }) => $color && `color: ${$color};`}
@@ -75,7 +74,7 @@ export const Box = styled('div')<BoxProps>`
   ${({ $transition }) => $transition && `transition: ${$transition};`}
   ${({ $width }) => $width && `width: ${$width};`}
   ${({ $wrap }) => $wrap && `flex-wrap: ${$wrap};`}
-  ${({ $css }) => $css && `${$css};`}
+  ${({ $css }) => $css && (typeof $css === 'string' ? `${$css};` : $css)}
   ${({ $zIndex }) => $zIndex && `z-index: ${$zIndex};`}
   ${({ $effect }) => {
     let effect;
