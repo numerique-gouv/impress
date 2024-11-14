@@ -42,6 +42,11 @@ const cssEditor = (readonly: boolean) => `
     padding: 2px;
     border-radius: 4px;
   }
+  /* @TODO: A fix is made in v0.19.1 - This code can be removed after the upgrade  */
+  .bn-block-content[data-content-type=codeBlock]>div>select option{
+    color: black;
+    background-color: white;
+  }
   @media screen and (width <= 560px) {
     & .bn-editor {
       padding-left: 40px;
