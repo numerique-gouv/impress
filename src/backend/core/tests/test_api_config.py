@@ -15,7 +15,10 @@ from core import factories
 pytestmark = pytest.mark.django_db
 
 
-@override_settings(SENTRY_DSN="https://sentry.test/123")
+@override_settings(
+    SENTRY_DSN="https://sentry.test/123",
+    MEDIA_BASE_URL="http://testserver/",
+)
 def test_api_config_anonymous():
     """Anonymous users should be allowed to get the configuration."""
     client = APIClient()
@@ -26,10 +29,13 @@ def test_api_config_anonymous():
         "LANGUAGE_CODE": "en-us",
         "SENTRY_DSN": "https://sentry.test/123",
         "ENVIRONMENT": "test",
+        "MEDIA_BASE_URL": "http://testserver/",
     }
 
 
-@override_settings(SENTRY_DSN="https://sentry.test/123")
+@override_settings(
+    SENTRY_DSN="https://sentry.test/123", MEDIA_BASE_URL="http://testserver/"
+)
 def test_api_config_authenticated():
     """Authenticated users should be allowed to get the configuration."""
     user = factories.UserFactory()
@@ -44,4 +50,5 @@ def test_api_config_authenticated():
         "LANGUAGE_CODE": "en-us",
         "SENTRY_DSN": "https://sentry.test/123",
         "ENVIRONMENT": "test",
+        "MEDIA_BASE_URL": "http://testserver/",
     }

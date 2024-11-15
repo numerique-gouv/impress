@@ -902,6 +902,7 @@ class ConfigView(views.APIView):
         """
         array_settings = [
             "ENVIRONMENT",
+            "MEDIA_BASE_URL",
             "LANGUAGES",
             "LANGUAGE_CODE",
             "SENTRY_DSN",
