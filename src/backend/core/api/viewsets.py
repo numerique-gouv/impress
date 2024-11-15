@@ -901,8 +901,9 @@ class ConfigView(views.APIView):
             Return a dictionary of public settings.
         """
         array_settings = [
-            "ENVIRONMENT",
             "COLLABORATION_SERVER_URL",
+            "ENVIRONMENT",
+            "FRONTEND_THEME",
             "MEDIA_BASE_URL",
             "LANGUAGES",
             "LANGUAGE_CODE",

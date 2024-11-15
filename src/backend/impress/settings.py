@@ -382,6 +382,11 @@ class Base(Configuration):
         None, environ_name="COLLABORATION_SERVER_URL", environ_prefix=None
     )
 
+    # Frontend
+    FRONTEND_THEME = values.Value(
+        None, environ_name="FRONTEND_THEME", environ_prefix=None
+    )
+
     # Easy thumbnails
     THUMBNAIL_EXTENSION = "webp"
     THUMBNAIL_TRANSPARENCY_EXTENSION = "webp"
