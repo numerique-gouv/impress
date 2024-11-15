@@ -6,22 +6,25 @@ import { tokens } from './cunningham-tokens';
 type Tokens = typeof tokens.themes.default & Partial<typeof tokens.themes.dsfr>;
 type ColorsTokens = Tokens['theme']['colors'];
 type ComponentTokens = Tokens['components'];
-type Theme = 'default' | 'dsfr';
+export type Theme = keyof typeof tokens.themes;
 
 interface AuthStore {
-  theme: Theme;
+  theme: string;
   setTheme: (theme: Theme) => void;
   themeTokens: () => Partial<Tokens['theme']>;
   colorsTokens: () => Partial<ColorsTokens>;
   componentTokens: () => ComponentTokens;
 }
 
-const useCunninghamTheme = create<AuthStore>((set, get) => {
+export const useCunninghamTheme = create<AuthStore>((set, get) => {
   const currentTheme = () =>
-    merge(tokens.themes['default'], tokens.themes[get().theme]) as Tokens;
+    merge(
+      tokens.themes['default'],
+      tokens.themes[get().theme as keyof typeof tokens.themes],
+    ) as Tokens;
 
   return {
-    theme: (process.env.NEXT_PUBLIC_THEME as Theme) || 'dsfr',
+    theme: 'dsfr',
     themeTokens: () => currentTheme().theme,
     colorsTokens: () => currentTheme().theme.colors,
     componentTokens: () => currentTheme().components,
@@ -30,5 +33,3 @@ const useCunninghamTheme = create<AuthStore>((set, get) => {
     },
   };
 });
-
-export default useCunninghamTheme;
