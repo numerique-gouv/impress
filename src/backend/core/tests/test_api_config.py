@@ -18,6 +18,7 @@ pytestmark = pytest.mark.django_db
 @override_settings(
     SENTRY_DSN="https://sentry.test/123",
     MEDIA_BASE_URL="http://testserver/",
+    COLLABORATION_SERVER_URL="http://testcollab/",
 )
 def test_api_config_anonymous():
     """Anonymous users should be allowed to get the configuration."""
@@ -25,6 +26,7 @@ def test_api_config_anonymous():
     response = client.get("/api/v1.0/config/")
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
+        "COLLABORATION_SERVER_URL": "http://testcollab/",
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"], ["de-de", "German"]],
         "LANGUAGE_CODE": "en-us",
         "SENTRY_DSN": "https://sentry.test/123",
@@ -34,7 +36,9 @@ def test_api_config_anonymous():
 
 
 @override_settings(
-    SENTRY_DSN="https://sentry.test/123", MEDIA_BASE_URL="http://testserver/"
+    SENTRY_DSN="https://sentry.test/123",
+    MEDIA_BASE_URL="http://testserver/",
+    COLLABORATION_SERVER_URL="http://testcollab/",
 )
 def test_api_config_authenticated():
     """Authenticated users should be allowed to get the configuration."""
@@ -46,6 +50,7 @@ def test_api_config_authenticated():
     response = client.get("/api/v1.0/config/")
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
+        "COLLABORATION_SERVER_URL": "http://testcollab/",
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"], ["de-de", "German"]],
         "LANGUAGE_CODE": "en-us",
         "SENTRY_DSN": "https://sentry.test/123",

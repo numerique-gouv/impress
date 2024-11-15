@@ -902,6 +902,7 @@ class ConfigView(views.APIView):
         """
         array_settings = [
             "ENVIRONMENT",
+            "COLLABORATION_SERVER_URL",
             "MEDIA_BASE_URL",
             "LANGUAGES",
             "LANGUAGE_CODE",
