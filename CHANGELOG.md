@@ -17,6 +17,7 @@ and this project adheres to
 - ✨(backend) whitelist pod's IP address #443
 - ✨(backend) config endpoint #425
 - ✨(frontend) config endpoint #424
+- ✨(frontend) add sentry #424
 
 ## Changed
 
