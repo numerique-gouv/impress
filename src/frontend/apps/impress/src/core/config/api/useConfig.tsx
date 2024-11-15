@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { APIError, errorCauses, fetchAPI } from '@/api';
+import { Theme } from '@/cunningham/';
 
 interface ConfigResponse {
   SENTRY_DSN: string;
   COLLABORATION_SERVER_URL: string;
   ENVIRONMENT: string;
-  FRONTEND_THEME: string;
+  FRONTEND_THEME: Theme;
   LANGUAGES: [string, string][];
   LANGUAGE_CODE: string;
   MEDIA_BASE_URL: string;

@@ -10,7 +10,7 @@ import { t } from 'i18next';
 import { useRouter } from 'next/router';
 
 import { Box, Text, TextErrors } from '@/components';
-import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
+import { useCunninghamTheme } from '@/cunningham/';
 
 import { useRemoveDoc } from '../api/useRemoveDoc';
 import IconDoc from '../assets/icon-doc.svg';
