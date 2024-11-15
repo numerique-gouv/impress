@@ -26,11 +26,13 @@ from rest_framework import (
     mixins,
     pagination,
     status,
+    views,
     viewsets,
 )
 from rest_framework import (
     response as drf_response,
 )
+from rest_framework.permissions import AllowAny
 
 from core import enums, models
 from core.services.ai_services import AIService
@@ -886,3 +888,27 @@ class InvitationViewset(
         invitation.document.email_invitation(
             language, invitation.email, invitation.role, self.request.user
         )
+
+
+class ConfigView(views.APIView):
+    """API ViewSet for sharing some public settings."""
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        """
+        GET /api/v1.0/config/
+            Return a dictionary of public settings.
+        """
+        array_settings = [
+            "ENVIRONMENT",
+            "LANGUAGES",
+            "LANGUAGE_CODE",
+            "SENTRY_DSN",
+        ]
+        dict_settings = {}
+        for setting in array_settings:
+            if hasattr(settings, setting):
+                dict_settings[setting] = getattr(settings, setting)
+
+        return drf_response.Response(dict_settings)

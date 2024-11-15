@@ -56,7 +56,7 @@ class Base(Configuration):
     You may also want to override default configuration by setting the following environment
     variables:
 
-    * DJANGO_SENTRY_DSN
+    * SENTRY_DSN
     * DB_NAME
     * DB_HOST
     * DB_PASSWORD
@@ -372,7 +372,7 @@ class Base(Configuration):
     CORS_ALLOWED_ORIGIN_REGEXES = values.ListValue([])
 
     # Sentry
-    SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN")
+    SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN", environ_prefix=None)
 
     # Easy thumbnails
     THUMBNAIL_EXTENSION = "webp"
