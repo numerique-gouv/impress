@@ -1,7 +1,3 @@
-export const mediaUrl = () =>
-  process.env.NEXT_PUBLIC_MEDIA_URL ||
-  (typeof window !== 'undefined' ? window.location.origin : '');
-
 export const backendUrl = () =>
   process.env.NEXT_PUBLIC_API_ORIGIN ||
   (typeof window !== 'undefined' ? window.location.origin : '');

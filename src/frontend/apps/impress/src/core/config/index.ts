@@ -1,2 +1,3 @@
-export * from './api/useConfig';
+export * from './api/';
 export * from './ConfigProvider';
+export * from './hooks';

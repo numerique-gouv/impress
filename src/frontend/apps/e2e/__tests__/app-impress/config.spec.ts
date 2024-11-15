@@ -1,4 +1,8 @@
+import path from 'path';
+
 import { expect, test } from '@playwright/test';
+
+import { createDoc } from './common';
 
 const config = {
   COLLABORATION_SERVER_URL: 'ws://localhost:4444',
@@ -76,5 +80,34 @@ test.describe('Config', () => {
     const footer = page.locator('footer').first();
     // alt 'Gouvernement Logo' comes from the theme
     await expect(footer.getByAltText('Gouvernement Logo')).toBeVisible();
+  });
+
+  test('it checks that media server is configured from config endpoint', async ({
+    page,
+    browserName,
+  }) => {
+    await page.goto('/');
+
+    await createDoc(page, 'doc-media', browserName, 1);
+
+    const fileChooserPromise = page.waitForEvent('filechooser');
+
+    await page.locator('.bn-block-outer').last().fill('/');
+    await page.getByText('Resizable image with caption').click();
+    await page.getByText('Upload image').click();
+
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(
+      path.join(__dirname, 'assets/logo-suite-numerique.png'),
+    );
+
+    const image = page.getByRole('img', { name: 'logo-suite-numerique.png' });
+
+    await expect(image).toBeVisible();
+
+    // Check src of image
+    expect(await image.getAttribute('src')).toMatch(
+      /http:\/\/localhost:8083\/media\/.*\/attachments\/.*.png/,
+    );
   });
 });

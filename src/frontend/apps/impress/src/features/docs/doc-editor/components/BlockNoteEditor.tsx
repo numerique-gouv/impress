@@ -9,8 +9,8 @@ import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, TextErrors } from '@/components';
-import { mediaUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
+import { useMediaUrl } from '@/core/config';
 import { Doc } from '@/features/docs/doc-management';
 
 import { useCreateDocAttachment } from '../api/useCreateDocUpload';
@@ -92,6 +92,7 @@ export const BlockNoteEditor = ({
   const isVersion = doc.id !== storeId;
   const { userData } = useAuthStore();
   const { setEditor } = useEditorStore();
+  const mediaUrl = useMediaUrl();
 
   const readOnly = !doc.abilities.partial_update || isVersion;
   useSaveDoc(doc.id, provider.document, !readOnly);
@@ -114,9 +115,9 @@ export const BlockNoteEditor = ({
         body,
       });
 
-      return `${mediaUrl()}${ret.file}`;
+      return `${mediaUrl}${ret.file}`;
     },
-    [createDocAttachment, doc.id],
+    [createDocAttachment, doc.id, mediaUrl],
   );
 
   const editor = useCreateBlockNote(
