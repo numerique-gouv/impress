@@ -104,6 +104,9 @@ class Base(Configuration):
     STATIC_ROOT = os.path.join(DATA_DIR, "static")
     MEDIA_URL = "/media/"
     MEDIA_ROOT = os.path.join(DATA_DIR, "media")
+    MEDIA_BASE_URL = values.Value(
+        None, environ_name="MEDIA_BASE_URL", environ_prefix=None
+    )
 
     SITE_ID = 1
 
