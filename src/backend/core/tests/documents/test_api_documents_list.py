@@ -433,6 +433,7 @@ def test_api_documents_list_filter_is_creator_me_invalid():
     results = response.json()["results"]
     assert len(results) == 5
 
+
 # Filters: is_favorite
 
 
@@ -495,6 +496,7 @@ def test_api_documents_list_filter_is_favorite_invalid():
     results = response.json()["results"]
     assert len(results) == 5
 
+
 # Filters: link_reach
 
 
@@ -534,3 +536,45 @@ def test_api_documents_list_filter_link_reach_invalid():
         ]
     }
 
+
+# Filters: title
+
+
+@pytest.mark.parametrize(
+    "query,nb_results",
+    [
+        ("Project Alpha", 1),  # Exact match
+        ("project", 2),  # Partial match (case-insensitive)
+        ("Guide", 1),  # Word match within a title
+        ("Special", 0),  # No match (nonexistent keyword)
+        ("2024", 2),  # Match by numeric keyword
+        ("", 5),  # Empty string
+    ],
+)
+def test_api_documents_list_filter_title(query, nb_results):
+    """Authenticated users should be able to search documents by their title."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    # Create documents with predefined titles
+    titles = [
+        "Project Alpha Documentation",
+        "Project Beta Overview",
+        "User Guide",
+        "Financial Report 2024",
+        "Annual Review 2024",
+    ]
+    for title in titles:
+        factories.DocumentFactory(title=title, users=[user])
+
+    # Perform the search query
+    response = client.get(f"/api/v1.0/documents/?title={query:s}")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert len(results) == nb_results
+
+    # Ensure all results contain the query in their title
+    for result in results:
+        assert query.lower().strip() in result["title"].lower()

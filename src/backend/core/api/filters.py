@@ -18,10 +18,13 @@ class DocumentFilter(django_filters.FilterSet):
     is_favorite = django_filters.BooleanFilter(
         method="filter_is_favorite", label=_("Favorite")
     )
+    title = django_filters.CharFilter(
+        field_name="title", lookup_expr="icontains", label=_("Title")
+    )
 
     class Meta:
         model = models.Document
-        fields = ["is_creator_me", "is_favorite", "link_reach"]
+        fields = ["is_creator_me", "is_favorite", "link_reach", "title"]
 
     # pylint: disable=unused-argument
     def filter_is_creator_me(self, queryset, name, value):

@@ -44,8 +44,8 @@ def test_api_documents_retrieve_anonymous_public():
         "is_favorite": False,
         "link_reach": "public",
         "link_role": document.link_role,
-        "title": document.title,
         "nb_accesses": 0,
+        "title": document.title,
         "updated_at": document.updated_at.isoformat().replace("+00:00", "Z"),
     }
 
