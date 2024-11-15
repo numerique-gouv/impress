@@ -48,3 +48,6 @@ AI_MODEL=llama
 
 # Collaboration
 COLLABORATION_SERVER_URL=ws://localhost:4444
+
+# Frontend
+FRONTEND_THEME=dsfr
