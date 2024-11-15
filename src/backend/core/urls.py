@@ -55,4 +55,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path(f"api/{settings.API_VERSION}/config/", viewsets.ConfigView.as_view()),
 ]
