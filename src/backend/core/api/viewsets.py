@@ -1,6 +1,7 @@
 """API endpoints"""
 # pylint: disable=too-many-lines
 
+import logging
 import re
 import uuid
 from urllib.parse import urlparse
@@ -10,10 +11,10 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
+from django.db import models as db
 from django.db.models import (
     Count,
     Exists,
-    Min,
     OuterRef,
     Q,
     Subquery,
@@ -21,24 +22,10 @@ from django.db.models import (
 )
 from django.http import Http404
 
+import rest_framework as drf
 from botocore.exceptions import ClientError
-from django_filters import rest_framework as filters
-from rest_framework import (
-    decorators,
-    exceptions,
-    metadata,
-    mixins,
-    pagination,
-    status,
-    views,
-    viewsets,
-)
-from rest_framework import (
-    filters as drf_filters,
-)
-from rest_framework import (
-    response as drf_response,
-)
+from django_filters import rest_framework as drf_filters
+from rest_framework import filters
 from rest_framework.permissions import AllowAny
 
 from core import enums, models
@@ -47,22 +34,22 @@ from core.services.ai_services import AIService
 from . import permissions, serializers, utils
 from .filters import DocumentFilter
 
+logger = logging.getLogger(__name__)
+
 ATTACHMENTS_FOLDER = "attachments"
 UUID_REGEX = (
     r"[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
 )
 FILE_EXT_REGEX = r"\.[a-zA-Z]{3,4}"
-MEDIA_URL_PATTERN = re.compile(
-    f"{settings.MEDIA_URL:s}({UUID_REGEX:s})/"
-    f"({ATTACHMENTS_FOLDER:s}/{UUID_REGEX:s}{FILE_EXT_REGEX:s})$"
+MEDIA_STORAGE_URL_PATTERN = re.compile(
+    f"{settings.MEDIA_URL:s}(?P<pk>{UUID_REGEX:s})/"
+    f"(?P<key>{ATTACHMENTS_FOLDER:s}/{UUID_REGEX:s}{FILE_EXT_REGEX:s})$"
 )
 
 # pylint: disable=too-many-ancestors
 
-ATTACHMENTS_FOLDER = "attachments"
 
-
-class NestedGenericViewSet(viewsets.GenericViewSet):
+class NestedGenericViewSet(drf.viewsets.GenericViewSet):
     """
     A generic Viewset aims to be used in a nested route context.
     e.g: `/api/v1.0/resource_1/<resource_1_pk>/resource_2/<resource_2_pk>/`
@@ -134,7 +121,7 @@ class SerializerPerActionMixin:
         return self.serializer_classes.get(self.action, self.default_serializer_class)
 
 
-class Pagination(pagination.PageNumberPagination):
+class Pagination(drf.pagination.PageNumberPagination):
     """Pagination to display no more than 100 objects per page sorted by creation date."""
 
     ordering = "-created_on"
@@ -143,7 +130,7 @@ class Pagination(pagination.PageNumberPagination):
 
 
 class UserViewSet(
-    mixins.UpdateModelMixin, viewsets.GenericViewSet, mixins.ListModelMixin
+    drf.mixins.UpdateModelMixin, drf.viewsets.GenericViewSet, drf.mixins.ListModelMixin
 ):
     """User ViewSet"""
 
@@ -184,7 +171,7 @@ class UserViewSet(
 
         return queryset
 
-    @decorators.action(
+    @drf.decorators.action(
         detail=False,
         methods=["get"],
         url_name="me",
@@ -196,7 +183,7 @@ class UserViewSet(
         Return information on currently logged user
         """
         context = {"request": request}
-        return drf_response.Response(
+        return drf.response.Response(
             self.serializer_class(request.user, context=context).data
         )
 
@@ -231,7 +218,7 @@ class ResourceAccessViewsetMixin:
             teams = user.teams
             user_roles_query = (
                 queryset.filter(
-                    Q(user=user) | Q(team__in=teams),
+                    db.Q(user=user) | db.Q(team__in=teams),
                     **{self.resource_field_name: self.kwargs["resource_id"]},
                 )
                 .values(self.resource_field_name)
@@ -245,11 +232,13 @@ class ResourceAccessViewsetMixin:
             # access instances pointing to the logged-in user)
             queryset = (
                 queryset.filter(
-                    Q(**{f"{self.resource_field_name}__accesses__user": user})
-                    | Q(**{f"{self.resource_field_name}__accesses__team__in": teams}),
+                    db.Q(**{f"{self.resource_field_name}__accesses__user": user})
+                    | db.Q(
+                        **{f"{self.resource_field_name}__accesses__team__in": teams}
+                    ),
                     **{self.resource_field_name: self.kwargs["resource_id"]},
                 )
-                .annotate(user_roles=Subquery(user_roles_query))
+                .annotate(user_roles=db.Subquery(user_roles_query))
                 .distinct()
             )
         return queryset
@@ -264,9 +253,9 @@ class ResourceAccessViewsetMixin:
             instance.role == "owner"
             and resource.accesses.filter(role="owner").count() == 1
         ):
-            return drf_response.Response(
+            return drf.response.Response(
                 {"detail": "Cannot delete the last owner access for the resource."},
-                status=status.HTTP_403_FORBIDDEN,
+                status=drf.status.HTTP_403_FORBIDDEN,
             )
 
         return super().destroy(request, *args, **kwargs)
@@ -287,12 +276,12 @@ class ResourceAccessViewsetMixin:
                 and resource.accesses.filter(role=models.RoleChoices.OWNER).count() == 1
             ):
                 message = "Cannot change the role to a non-owner role for the last owner access."
-                raise exceptions.PermissionDenied({"detail": message})
+                raise drf.exceptions.PermissionDenied({"detail": message})
 
         serializer.save()
 
 
-class DocumentMetadata(metadata.SimpleMetadata):
+class DocumentMetadata(drf.metadata.SimpleMetadata):
     """Custom metadata class to add information"""
 
     def determine_metadata(self, request, view):
@@ -310,10 +299,10 @@ class DocumentMetadata(metadata.SimpleMetadata):
 
 
 class DocumentViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
+    drf.mixins.CreateModelMixin,
+    drf.mixins.DestroyModelMixin,
+    drf.mixins.UpdateModelMixin,
+    drf.viewsets.GenericViewSet,
 ):
     """
     Document ViewSet for managing documents.
@@ -333,7 +322,7 @@ class DocumentViewSet(
         - GET /api/v1.0/documents/?is_creator_me=false&title=hello
     """
 
-    filter_backends = [filters.DjangoFilterBackend, drf_filters.OrderingFilter]
+    filter_backends = [drf_filters.DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = DocumentFilter
     metadata_class = DocumentMetadata
     ordering = ["-updated_at"]
@@ -389,11 +378,11 @@ class DocumentViewSet(
 
         if user.is_authenticated:
             queryset = queryset.filter(
-                Q(accesses__user=user)
-                | Q(accesses__team__in=user.teams)
+                db.Q(accesses__user=user)
+                | db.Q(accesses__team__in=user.teams)
                 | (
-                    Q(link_traces__user=user)
-                    & ~Q(link_reach=models.LinkReachChoices.RESTRICTED)
+                    db.Q(link_traces__user=user)
+                    & ~db.Q(link_reach=models.LinkReachChoices.RESTRICTED)
                 )
             )
         else:
@@ -405,7 +394,7 @@ class DocumentViewSet(
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return drf_response.Response(serializer.data)
+        return drf.response.Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -428,7 +417,7 @@ class DocumentViewSet(
                 # The trace already exists, so we just pass without doing anything
                 pass
 
-        return drf_response.Response(serializer.data)
+        return drf.response.Response(serializer.data)
 
     def perform_create(self, serializer):
         """Set the current user as creator and owner of the newly created object."""
@@ -439,7 +428,7 @@ class DocumentViewSet(
             role=models.RoleChoices.OWNER,
         )
 
-    @decorators.action(detail=True, methods=["get"], url_path="versions")
+    @drf.decorators.action(detail=True, methods=["get"], url_path="versions")
     def versions_list(self, request, *args, **kwargs):
         """
         Return the document's versions but only those created after the user got access
@@ -447,7 +436,7 @@ class DocumentViewSet(
         """
         user = request.user
         if not user.is_authenticated:
-            raise exceptions.PermissionDenied("Authentication required.")
+            raise drf.exceptions.PermissionDenied("Authentication required.")
 
         # Validate query parameters using dedicated serializer
         serializer = serializers.VersionFilterSerializer(data=request.query_params)
@@ -458,13 +447,13 @@ class DocumentViewSet(
         # Users should not see version history dating from before they gained access to the
         # document. Filter to get the minimum access date for the logged-in user
         access_queryset = document.accesses.filter(
-            Q(user=user) | Q(team__in=user.teams)
-        ).aggregate(min_date=Min("created_at"))
+            db.Q(user=user) | db.Q(team__in=user.teams)
+        ).aggregate(min_date=db.Min("created_at"))
 
         # Handle the case where the user has no accesses
         min_datetime = access_queryset["min_date"]
         if not min_datetime:
-            return exceptions.PermissionDenied(
+            return drf.exceptions.PermissionDenied(
                 "Only users with specific access can see version history"
             )
 
@@ -474,9 +463,9 @@ class DocumentViewSet(
             page_size=serializer.validated_data.get("page_size"),
         )
 
-        return drf_response.Response(versions_data)
+        return drf.response.Response(versions_data)
 
-    @decorators.action(
+    @drf.decorators.action(
         detail=True,
         methods=["get", "delete"],
         url_path="versions/(?P<version_id>[0-9a-f-]{36})",
@@ -497,7 +486,7 @@ class DocumentViewSet(
         min_datetime = min(
             access.created_at
             for access in document.accesses.filter(
-                Q(user=user) | Q(team__in=user.teams),
+                db.Q(user=user) | db.Q(team__in=user.teams),
             )
         )
         if response["LastModified"] < min_datetime:
@@ -505,11 +494,11 @@ class DocumentViewSet(
 
         if request.method == "DELETE":
             response = document.delete_version(version_id)
-            return drf_response.Response(
+            return drf.response.Response(
                 status=response["ResponseMetadata"]["HTTPStatusCode"]
             )
 
-        return drf_response.Response(
+        return drf.response.Response(
             {
                 "content": response["Body"].read().decode("utf-8"),
                 "last_modified": response["LastModified"],
@@ -517,7 +506,7 @@ class DocumentViewSet(
             }
         )
 
-    @decorators.action(detail=True, methods=["put"], url_path="link-configuration")
+    @drf.decorators.action(detail=True, methods=["put"], url_path="link-configuration")
     def link_configuration(self, request, *args, **kwargs):
         """Update link configuration with specific rights (cf get_abilities)."""
         # Check permissions first
@@ -530,9 +519,9 @@ class DocumentViewSet(
         serializer.is_valid(raise_exception=True)
 
         serializer.save()
-        return drf_response.Response(serializer.data, status=status.HTTP_200_OK)
+        return drf.response.Response(serializer.data, status=drf.status.HTTP_200_OK)
 
-    @decorators.action(detail=True, methods=["post", "delete"], url_path="favorite")
+    @drf.decorators.action(detail=True, methods=["post", "delete"], url_path="favorite")
     def favorite(self, request, *args, **kwargs):
         """
         Mark or unmark the document as a favorite for the logged-in user based on the HTTP method.
@@ -546,13 +535,13 @@ class DocumentViewSet(
             try:
                 models.DocumentFavorite.objects.create(document=document, user=user)
             except ValidationError:
-                return drf_response.Response(
+                return drf.response.Response(
                     {"detail": "Document already marked as favorite"},
-                    status=status.HTTP_200_OK,
+                    status=drf.status.HTTP_200_OK,
                 )
-            return drf_response.Response(
+            return drf.response.Response(
                 {"detail": "Document marked as favorite"},
-                status=status.HTTP_201_CREATED,
+                status=drf.status.HTTP_201_CREATED,
             )
 
         # Handle DELETE method to unmark as favorite
@@ -560,16 +549,16 @@ class DocumentViewSet(
             document=document, user=user
         ).delete()
         if deleted:
-            return drf_response.Response(
+            return drf.response.Response(
                 {"detail": "Document unmarked as favorite"},
-                status=status.HTTP_204_NO_CONTENT,
+                status=drf.status.HTTP_204_NO_CONTENT,
             )
-        return drf_response.Response(
+        return drf.response.Response(
             {"detail": "Document was already not marked as favorite"},
-            status=status.HTTP_200_OK,
+            status=drf.status.HTTP_200_OK,
         )
 
-    @decorators.action(detail=True, methods=["post"], url_path="attachment-upload")
+    @drf.decorators.action(detail=True, methods=["post"], url_path="attachment-upload")
     def attachment_upload(self, request, *args, **kwargs):
         """Upload a file related to a given document"""
         # Check permissions first
@@ -594,15 +583,15 @@ class DocumentViewSet(
             file, default_storage.bucket_name, key, ExtraArgs=extra_args
         )
 
-        return drf_response.Response(
-            {"file": f"{settings.MEDIA_URL:s}{key:s}"}, status=status.HTTP_201_CREATED
+        return drf.response.Response(
+            {"file": f"{settings.MEDIA_URL:s}{key:s}"},
+            status=drf.status.HTTP_201_CREATED,
         )
 
-    @decorators.action(detail=False, methods=["get"], url_path="retrieve-auth")
-    def retrieve_auth(self, request, *args, **kwargs):
+    def _authorize_subrequest(self, request, pattern):
         """
-        This view is used by an Nginx subrequest to control access to a document's
-        attachment file.
+        Shared method to authorize access based on the original URL of an Nginx subrequest
+        and user permissions. Returns a dictionary of URL parameters if authorized.
 
         The original url is passed by nginx in the "HTTP_X_ORIGINAL_URL" header.
         See corresponding ingress configuration in Helm chart and read about the
@@ -614,33 +603,80 @@ class DocumentViewSet(
         a 403 error). Note that we return 403 errors without any further details for security
         reasons.
 
+        Parameters:
+        - pattern: The regex pattern to extract identifiers from the URL.
+
+        Returns:
+        - A dictionary of URL parameters if the request is authorized.
+        Raises:
+        - PermissionDenied if authorization fails.
+        """
+        # Extract the original URL from the request header
+        original_url = request.META.get("HTTP_X_ORIGINAL_URL")
+        if not original_url:
+            logger.debug("Missing HTTP_X_ORIGINAL_URL header in subrequest")
+            raise drf.exceptions.PermissionDenied()
+
+        parsed_url = urlparse(original_url)
+        match = pattern.search(parsed_url.path)
+
+        if not match:
+            logger.debug(
+                "Subrequest URL '%s' did not match pattern '%s'",
+                parsed_url.path,
+                pattern,
+            )
+            raise drf.exceptions.PermissionDenied()
+
+        try:
+            url_params = match.groupdict()
+        except (ValueError, AttributeError) as exc:
+            logger.debug("Failed to extract parameters from subrequest URL: %s", exc)
+            raise drf.exceptions.PermissionDenied() from exc
+
+        pk = url_params.get("pk")
+        if not pk:
+            logger.debug("Document ID (pk) not found in URL parameters: %s", url_params)
+            raise drf.exceptions.PermissionDenied()
+
+        # Fetch the document and check if the user has access
+        try:
+            document, _created = models.Document.objects.get_or_create(pk=pk)
+        except models.Document.DoesNotExist as exc:
+            logger.debug("Document with ID '%s' does not exist", pk)
+            raise drf.exceptions.PermissionDenied() from exc
+        print(document)
+        if not document.get_abilities(request.user).get(self.action, False):
+            logger.debug(
+                "User '%s' lacks permission for document '%s'", request.user, pk
+            )
+            # raise drf.exceptions.PermissionDenied()
+
+        logger.debug(
+            "Subrequest authorization successful. Extracted parameters: %s", url_params
+        )
+        return url_params
+
+    @drf.decorators.action(detail=False, methods=["get"], url_path="media-auth")
+    def media_auth(self, request, *args, **kwargs):
+        """
+        This view is used by an Nginx subrequest to control access to a document's
+        attachment file.
+
         When we let the request go through, we compute authorization headers that will be added to
         the request going through thanks to the nginx.ingress.kubernetes.io/auth-response-headers
         annotation. The request will then be proxied to the object storage backend who will
         respond with the file after checking the signature included in headers.
         """
-        original_url = urlparse(request.META.get("HTTP_X_ORIGINAL_URL"))
-        match = MEDIA_URL_PATTERN.search(original_url.path)
+        url_params = self._authorize_subrequest(request, MEDIA_STORAGE_URL_PATTERN)
+        pk, key = url_params.values()
 
-        try:
-            pk, attachment_key = match.groups()
-        except AttributeError as excpt:
-            raise exceptions.PermissionDenied() from excpt
+        # Generate S3 authorization headers using the extracted URL parameters
+        request = utils.generate_s3_authorization_headers(f"{pk:s}/{key:s}")
 
-        # Check permission
-        try:
-            document = models.Document.objects.get(pk=pk)
-        except models.Document.DoesNotExist as excpt:
-            raise exceptions.PermissionDenied() from excpt
+        return drf.response.Response("authorized", headers=request.headers, status=200)
 
-        if not document.get_abilities(request.user).get("retrieve", False):
-            raise exceptions.PermissionDenied()
-
-        # Generate authorization headers and return an authorization to proceed with the request
-        request = utils.generate_s3_authorization_headers(f"{pk:s}/{attachment_key:s}")
-        return drf_response.Response("authorized", headers=request.headers, status=200)
-
-    @decorators.action(
+    @drf.decorators.action(
         detail=True,
         methods=["post"],
         name="Apply a transformation action on a piece of text with AI",
@@ -666,9 +702,9 @@ class DocumentViewSet(
 
         response = AIService().transform(text, action)
 
-        return drf_response.Response(response, status=status.HTTP_200_OK)
+        return drf.response.Response(response, status=drf.status.HTTP_200_OK)
 
-    @decorators.action(
+    @drf.decorators.action(
         detail=True,
         methods=["post"],
         name="Translate a piece of text with AI",
@@ -695,17 +731,17 @@ class DocumentViewSet(
 
         response = AIService().translate(text, language)
 
-        return drf_response.Response(response, status=status.HTTP_200_OK)
+        return drf.response.Response(response, status=drf.status.HTTP_200_OK)
 
 
 class DocumentAccessViewSet(
     ResourceAccessViewsetMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
+    drf.mixins.CreateModelMixin,
+    drf.mixins.DestroyModelMixin,
+    drf.mixins.ListModelMixin,
+    drf.mixins.RetrieveModelMixin,
+    drf.mixins.UpdateModelMixin,
+    drf.viewsets.GenericViewSet,
 ):
     """
     API ViewSet for all interactions with document accesses.
@@ -752,15 +788,15 @@ class DocumentAccessViewSet(
 
 
 class TemplateViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
+    drf.mixins.CreateModelMixin,
+    drf.mixins.DestroyModelMixin,
+    drf.mixins.RetrieveModelMixin,
+    drf.mixins.UpdateModelMixin,
+    drf.viewsets.GenericViewSet,
 ):
     """Template ViewSet"""
 
-    filter_backends = [drf_filters.OrderingFilter]
+    filter_backends = [drf.filters.OrderingFilter]
     permission_classes = [
         permissions.IsAuthenticatedOrSafe,
         permissions.AccessPermission,
@@ -795,9 +831,9 @@ class TemplateViewSet(
         user = self.request.user
         if user.is_authenticated:
             queryset = queryset.filter(
-                Q(accesses__user=user)
-                | Q(accesses__team__in=user.teams)
-                | Q(is_public=True)
+                db.Q(accesses__user=user)
+                | db.Q(accesses__team__in=user.teams)
+                | db.Q(is_public=True)
             )
         else:
             queryset = queryset.filter(is_public=True)
@@ -808,7 +844,7 @@ class TemplateViewSet(
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return drf_response.Response(serializer.data)
+        return drf.response.Response(serializer.data)
 
     def perform_create(self, serializer):
         """Set the current user as owner of the newly created object."""
@@ -819,7 +855,7 @@ class TemplateViewSet(
             role=models.RoleChoices.OWNER,
         )
 
-    @decorators.action(
+    @drf.decorators.action(
         detail=True,
         methods=["post"],
         url_path="generate-document",
@@ -842,8 +878,8 @@ class TemplateViewSet(
         serializer = serializers.DocumentGenerationSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return drf_response.Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            return drf.response.Response(
+                serializer.errors, status=drf.status.HTTP_400_BAD_REQUEST
             )
 
         body = serializer.validated_data["body"]
@@ -856,12 +892,12 @@ class TemplateViewSet(
 
 class TemplateAccessViewSet(
     ResourceAccessViewsetMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
+    drf.mixins.CreateModelMixin,
+    drf.mixins.DestroyModelMixin,
+    drf.mixins.ListModelMixin,
+    drf.mixins.RetrieveModelMixin,
+    drf.mixins.UpdateModelMixin,
+    drf.viewsets.GenericViewSet,
 ):
     """
     API ViewSet for all interactions with template accesses.
@@ -896,12 +932,12 @@ class TemplateAccessViewSet(
 
 
 class InvitationViewset(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
+    drf.mixins.CreateModelMixin,
+    drf.mixins.ListModelMixin,
+    drf.mixins.RetrieveModelMixin,
+    drf.mixins.DestroyModelMixin,
+    drf.mixins.UpdateModelMixin,
+    drf.viewsets.GenericViewSet,
 ):
     """API ViewSet for user invitations to document.
 
@@ -953,7 +989,7 @@ class InvitationViewset(
             # Determine which role the logged-in user has in the document
             user_roles_query = (
                 models.DocumentAccess.objects.filter(
-                    Q(user=user) | Q(team__in=teams),
+                    db.Q(user=user) | db.Q(team__in=teams),
                     document=self.kwargs["resource_id"],
                 )
                 .values("document")
@@ -964,18 +1000,18 @@ class InvitationViewset(
             queryset = (
                 # The logged-in user should be administrator or owner to see its accesses
                 queryset.filter(
-                    Q(
+                    db.Q(
                         document__accesses__user=user,
                         document__accesses__role__in=models.PRIVILEGED_ROLES,
                     )
-                    | Q(
+                    | db.Q(
                         document__accesses__team__in=teams,
                         document__accesses__role__in=models.PRIVILEGED_ROLES,
                     ),
                 )
                 # Abilities are computed based on logged-in user's role and
                 # the user role on each document access
-                .annotate(user_roles=Subquery(user_roles_query))
+                .annotate(user_roles=db.Subquery(user_roles_query))
                 .distinct()
             )
         return queryset
@@ -991,7 +1027,7 @@ class InvitationViewset(
         )
 
 
-class ConfigView(views.APIView):
+class ConfigView(drf.views.APIView):
     """API ViewSet for sharing some public settings."""
 
     permission_classes = [AllowAny]
@@ -1016,4 +1052,4 @@ class ConfigView(views.APIView):
             if hasattr(settings, setting):
                 dict_settings[setting] = getattr(settings, setting)
 
-        return drf_response.Response(dict_settings)
+        return drf.response.Response(dict_settings)
