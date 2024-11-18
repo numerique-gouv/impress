@@ -45,6 +45,7 @@ MEDIA_STORAGE_URL_PATTERN = re.compile(
     f"{settings.MEDIA_URL:s}(?P<pk>{UUID_REGEX:s})/"
     f"(?P<key>{ATTACHMENTS_FOLDER:s}/{UUID_REGEX:s}{FILE_EXT_REGEX:s})$"
 )
+COLLABORATION_WS_URL_PATTERN = re.compile(rf"(?:^|&)room=(?P<pk>{UUID_REGEX})(?:&|$)")
 
 # pylint: disable=too-many-ancestors
 
@@ -620,6 +621,10 @@ class DocumentViewSet(
         parsed_url = urlparse(original_url)
         match = pattern.search(parsed_url.path)
 
+        # If the path does not match the pattern, try to extract the parameters from the query
+        if not match:
+            match = pattern.search(parsed_url.query)
+
         if not match:
             logger.debug(
                 "Subrequest URL '%s' did not match pattern '%s'",
@@ -645,17 +650,19 @@ class DocumentViewSet(
         except models.Document.DoesNotExist as exc:
             logger.debug("Document with ID '%s' does not exist", pk)
             raise drf.exceptions.PermissionDenied() from exc
-        print(document)
-        if not document.get_abilities(request.user).get(self.action, False):
+
+        user_abilities = document.get_abilities(request.user)
+
+        if not user_abilities.get(self.action, False):
             logger.debug(
                 "User '%s' lacks permission for document '%s'", request.user, pk
             )
-            # raise drf.exceptions.PermissionDenied()
+            raise drf.exceptions.PermissionDenied()
 
         logger.debug(
             "Subrequest authorization successful. Extracted parameters: %s", url_params
         )
-        return url_params
+        return url_params, user_abilities, request.user.id
 
     @drf.decorators.action(detail=False, methods=["get"], url_path="media-auth")
     def media_auth(self, request, *args, **kwargs):
@@ -668,13 +675,35 @@ class DocumentViewSet(
         annotation. The request will then be proxied to the object storage backend who will
         respond with the file after checking the signature included in headers.
         """
-        url_params = self._authorize_subrequest(request, MEDIA_STORAGE_URL_PATTERN)
+        url_params, _, _ = self._authorize_subrequest(
+            request, MEDIA_STORAGE_URL_PATTERN
+        )
         pk, key = url_params.values()
 
         # Generate S3 authorization headers using the extracted URL parameters
         request = utils.generate_s3_authorization_headers(f"{pk:s}/{key:s}")
 
         return drf.response.Response("authorized", headers=request.headers, status=200)
+
+    @drf.decorators.action(detail=False, methods=["get"], url_path="collaboration-auth")
+    def collaboration_auth(self, request, *args, **kwargs):
+        """
+        This view is used by an Nginx subrequest to control access to a document's
+        collaboration server.
+        """
+        _, user_abilities, user_id = self._authorize_subrequest(
+            request, COLLABORATION_WS_URL_PATTERN
+        )
+        can_edit = user_abilities["partial_update"]
+
+        # Add the collaboration server secret token to the headers
+        headers = {
+            "Authorization": settings.COLLABORATION_SERVER_SECRET,
+            "X-Can-Edit": str(can_edit),
+            "X-User-Id": str(user_id),
+        }
+
+        return drf.response.Response("authorized", headers=headers, status=200)
 
     @drf.decorators.action(
         detail=True,

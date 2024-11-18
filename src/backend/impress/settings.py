@@ -372,6 +372,9 @@ class Base(Configuration):
     SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN", environ_prefix=None)
 
     # Collaboration
+    COLLABORATION_SERVER_SECRET = values.Value(
+        None, environ_name="COLLABORATION_SERVER_SECRET", environ_prefix=None
+    )
     COLLABORATION_WS_URL = values.Value(
         None, environ_name="COLLABORATION_WS_URL", environ_prefix=None
     )
@@ -465,9 +468,22 @@ class Base(Configuration):
         environ_prefix=None,
     )
 
+    USER_OIDC_FIELDS_TO_FULLNAME = values.ListValue(
+        default=["first_name", "last_name"],
+        environ_name="USER_OIDC_FIELDS_TO_FULLNAME",
+        environ_prefix=None,
+    )
+    USER_OIDC_FIELD_TO_SHORTNAME = values.Value(
+        default="first_name",
+        environ_name="USER_OIDC_FIELD_TO_SHORTNAME",
+        environ_prefix=None,
+    )
+
     ALLOW_LOGOUT_GET_METHOD = values.BooleanValue(
         default=True, environ_name="ALLOW_LOGOUT_GET_METHOD", environ_prefix=None
     )
+
+    # AI service
     AI_API_KEY = values.Value(None, environ_name="AI_API_KEY", environ_prefix=None)
     AI_BASE_URL = values.Value(None, environ_name="AI_BASE_URL", environ_prefix=None)
     AI_MODEL = values.Value(None, environ_name="AI_MODEL", environ_prefix=None)
@@ -482,17 +498,6 @@ class Base(Configuration):
         "hour": 50,
         "day": 200,
     }
-
-    USER_OIDC_FIELDS_TO_FULLNAME = values.ListValue(
-        default=["first_name", "last_name"],
-        environ_name="USER_OIDC_FIELDS_TO_FULLNAME",
-        environ_prefix=None,
-    )
-    USER_OIDC_FIELD_TO_SHORTNAME = values.Value(
-        default="first_name",
-        environ_name="USER_OIDC_FIELD_TO_SHORTNAME",
-        environ_prefix=None,
-    )
 
     # Logging
     # We want to make it easy to log to console but by default we log production
