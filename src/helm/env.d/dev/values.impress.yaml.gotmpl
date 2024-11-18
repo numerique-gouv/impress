@@ -6,6 +6,7 @@ image:
 backend:
   replicas: 1
   envVars:
+    COLLABORATION_SERVER_SECRET: my-secret
     DJANGO_CSRF_TRUSTED_ORIGINS: https://impress.127.0.0.1.nip.io,http://impress.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Feature
     DJANGO_ALLOWED_HOSTS: impress.127.0.0.1.nip.io
@@ -103,6 +104,12 @@ ingress:
 ingressWS:
   enabled: true
   host: impress.127.0.0.1.nip.io
+
+  annotations:
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, Can-Edit, User-Id"
+    nginx.ingress.kubernetes.io/auth-url: https://impress.127.0.0.1.nip.io/api/v1.0/documents/collaboration-auth/
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
 
 ingressAdmin:
   enabled: true

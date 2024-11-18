@@ -26,6 +26,7 @@ def test_api_documents_retrieve_anonymous_public():
             "ai_transform": document.link_role == "editor",
             "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
+            "collaboration_auth": True,
             "destroy": False,
             # Anonymous user can't favorite a document even with read access
             "favorite": False,
@@ -89,6 +90,7 @@ def test_api_documents_retrieve_authenticated_unrelated_public_or_authenticated(
             "ai_transform": document.link_role == "editor",
             "ai_translate": document.link_role == "editor",
             "attachment_upload": document.link_role == "editor",
+            "collaboration_auth": True,
             "destroy": False,
             "favorite": True,
             "invite_owner": False,

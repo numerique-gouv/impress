@@ -118,6 +118,7 @@ services:
     depends_on:
       - keycloak
       - app-dev
+      - y-provider
 
   frontend-dev:
     user: "${DOCKER_USER:-1000}"
