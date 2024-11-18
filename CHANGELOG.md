@@ -14,7 +14,8 @@ and this project adheres to
 - 🌐(frontend) Add German translation #255
 - ✨(frontend) Add a broadcast store #387
 - ✨(frontend) WIP: New ui
-- 💄(frontend) Add left panel #421
+- 💄(frontend) Add left panel #420
+- 💄(frontend) updating the header and leftpanel for responsive #421
 
 
 ## Changed
