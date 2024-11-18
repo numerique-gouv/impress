@@ -511,22 +511,23 @@ class Document(BaseModel):
         is_owner_or_admin = bool(
             roles.intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
-        is_editor = bool(RoleChoices.EDITOR in roles)
         can_get = bool(roles)
+        can_update = is_owner_or_admin or RoleChoices.EDITOR in roles
 
         return {
             "accesses_manage": is_owner_or_admin,
             "accesses_view": has_role,
-            "ai_transform": is_owner_or_admin or is_editor,
-            "ai_translate": is_owner_or_admin or is_editor,
-            "attachment_upload": is_owner_or_admin or is_editor,
+            "ai_transform": can_update,
+            "ai_translate": can_update,
+            "attachment_upload": can_update,
             "destroy": RoleChoices.OWNER in roles,
             "favorite": can_get and user.is_authenticated,
             "link_configuration": is_owner_or_admin,
             "invite_owner": RoleChoices.OWNER in roles,
-            "partial_update": is_owner_or_admin or is_editor,
+            "partial_update": can_update,
             "retrieve": can_get,
-            "update": is_owner_or_admin or is_editor,
+            "media_auth": can_get,
+            "update": can_update,
             "versions_destroy": is_owner_or_admin,
             "versions_list": has_role,
             "versions_retrieve": has_role,
@@ -710,15 +711,15 @@ class Template(BaseModel):
         is_owner_or_admin = bool(
             set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
-        is_editor = bool(RoleChoices.EDITOR in roles)
         can_get = self.is_public or bool(roles)
+        can_update = is_owner_or_admin or RoleChoices.EDITOR in roles
 
         return {
             "destroy": RoleChoices.OWNER in roles,
             "generate_document": can_get,
             "accesses_manage": is_owner_or_admin,
-            "update": is_owner_or_admin or is_editor,
-            "partial_update": is_owner_or_admin or is_editor,
+            "update": can_update,
+            "partial_update": can_update,
             "retrieve": can_get,
         }
 

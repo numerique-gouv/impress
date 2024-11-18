@@ -116,7 +116,7 @@ ingressMedia:
     additional: []
 
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: https://impress.example.com/api/v1.0/documents/retrieve-auth/
+    nginx.ingress.kubernetes.io/auth-url: https://impress.example.com/api/v1.0/documents/media-auth/
     nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Amz-Date, X-Amz-Content-SHA256"
     nginx.ingress.kubernetes.io/upstream-vhost: minio.impress.svc.cluster.local:9000
 

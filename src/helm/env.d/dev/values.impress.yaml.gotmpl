@@ -7,8 +7,8 @@ backend:
   replicas: 1
   envVars:
     DJANGO_CSRF_TRUSTED_ORIGINS: https://impress.127.0.0.1.nip.io,http://impress.127.0.0.1.nip.io
-    DJANGO_CONFIGURATION: Production
-    DJANGO_ALLOWED_HOSTS: "*"
+    DJANGO_CONFIGURATION: Feature
+    DJANGO_ALLOWED_HOSTS: impress.127.0.0.1.nip.io
     DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
     DJANGO_SETTINGS_MODULE: impress.settings
     DJANGO_SUPERUSER_PASSWORD: admin
@@ -113,7 +113,7 @@ ingressMedia:
   host: impress.127.0.0.1.nip.io
 
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: https://impress.127.0.0.1.nip.io/api/v1.0/documents/retrieve-auth/
+    nginx.ingress.kubernetes.io/auth-url: https://impress.127.0.0.1.nip.io/api/v1.0/documents/media-auth/
     nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Amz-Date, X-Amz-Content-SHA256"
     nginx.ingress.kubernetes.io/upstream-vhost: minio.impress.svc.cluster.local:9000
     nginx.ingress.kubernetes.io/rewrite-target: /impress-media-storage/$1

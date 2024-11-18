@@ -20,7 +20,7 @@ from core.tests.conftest import TEAM, USER, VIA
 pytestmark = pytest.mark.django_db
 
 
-def test_api_documents_retrieve_auth_anonymous_public():
+def test_api_documents_media_auth_anonymous_public():
     """Anonymous users should be able to retrieve attachments linked to a public document"""
     document = factories.DocumentFactory(link_reach="public")
 
@@ -36,7 +36,7 @@ def test_api_documents_retrieve_auth_anonymous_public():
 
     original_url = f"http://localhost/media/{key:s}"
     response = APIClient().get(
-        "/api/v1.0/documents/retrieve-auth/", HTTP_X_ORIGINAL_URL=original_url
+        "/api/v1.0/documents/media-auth/", HTTP_X_ORIGINAL_URL=original_url
     )
 
     assert response.status_code == 200
@@ -65,7 +65,7 @@ def test_api_documents_retrieve_auth_anonymous_public():
 
 
 @pytest.mark.parametrize("reach", ["authenticated", "restricted"])
-def test_api_documents_retrieve_auth_anonymous_authenticated_or_restricted(reach):
+def test_api_documents_media_auth_anonymous_authenticated_or_restricted(reach):
     """
     Anonymous users should not be allowed to retrieve attachments linked to a document
     with link reach set to authenticated or restricted.
@@ -76,7 +76,7 @@ def test_api_documents_retrieve_auth_anonymous_authenticated_or_restricted(reach
     media_url = f"http://localhost/media/{document.pk!s}/attachments/{filename:s}"
 
     response = APIClient().get(
-        "/api/v1.0/documents/retrieve-auth/", HTTP_X_ORIGINAL_URL=media_url
+        "/api/v1.0/documents/media-auth/", HTTP_X_ORIGINAL_URL=media_url
     )
 
     assert response.status_code == 403
@@ -84,7 +84,7 @@ def test_api_documents_retrieve_auth_anonymous_authenticated_or_restricted(reach
 
 
 @pytest.mark.parametrize("reach", ["public", "authenticated"])
-def test_api_documents_retrieve_auth_authenticated_public_or_authenticated(reach):
+def test_api_documents_media_auth_authenticated_public_or_authenticated(reach):
     """
     Authenticated users who are not related to a document should be able to retrieve
     attachments related to a document with public or authenticated link reach.
@@ -107,7 +107,7 @@ def test_api_documents_retrieve_auth_authenticated_public_or_authenticated(reach
 
     original_url = f"http://localhost/media/{key:s}"
     response = client.get(
-        "/api/v1.0/documents/retrieve-auth/", HTTP_X_ORIGINAL_URL=original_url
+        "/api/v1.0/documents/media-auth/", HTTP_X_ORIGINAL_URL=original_url
     )
 
     assert response.status_code == 200
@@ -135,7 +135,7 @@ def test_api_documents_retrieve_auth_authenticated_public_or_authenticated(reach
     assert response.content.decode("utf-8") == "my prose"
 
 
-def test_api_documents_retrieve_auth_authenticated_restricted():
+def test_api_documents_media_auth_authenticated_restricted():
     """
     Authenticated users who are not related to a document should not be allowed to
     retrieve attachments linked to a document that is restricted.
@@ -150,7 +150,7 @@ def test_api_documents_retrieve_auth_authenticated_restricted():
     media_url = f"http://localhost/media/{document.pk!s}/attachments/{filename:s}"
 
     response = client.get(
-        "/api/v1.0/documents/retrieve-auth/", HTTP_X_ORIGINAL_URL=media_url
+        "/api/v1.0/documents/media-auth/", HTTP_X_ORIGINAL_URL=media_url
     )
 
     assert response.status_code == 403
@@ -158,7 +158,7 @@ def test_api_documents_retrieve_auth_authenticated_restricted():
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_documents_retrieve_auth_related(via, mock_user_teams):
+def test_api_documents_media_auth_related(via, mock_user_teams):
     """
     Users who have a specific access to a document, whatever the role, should be able to
     retrieve related attachments.
@@ -186,7 +186,7 @@ def test_api_documents_retrieve_auth_related(via, mock_user_teams):
 
     original_url = f"http://localhost/media/{key:s}"
     response = client.get(
-        "/api/v1.0/documents/retrieve-auth/", HTTP_X_ORIGINAL_URL=original_url
+        "/api/v1.0/documents/media-auth/", HTTP_X_ORIGINAL_URL=original_url
     )
 
     assert response.status_code == 200
