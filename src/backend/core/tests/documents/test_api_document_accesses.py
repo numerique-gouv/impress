@@ -15,6 +15,9 @@ from core.tests.conftest import TEAM, USER, VIA
 pytestmark = pytest.mark.django_db
 
 
+# List
+
+
 def test_api_document_accesses_list_anonymous():
     """Anonymous users should not be allowed to list document accesses."""
     document = factories.DocumentFactory()
@@ -128,6 +131,9 @@ def test_api_document_accesses_list_authenticated_related(via, mock_user_teams):
     )
 
 
+# Retrieve
+
+
 def test_api_document_accesses_retrieve_anonymous():
     """
     Anonymous users should not be allowed to retrieve a document access.
@@ -214,6 +220,9 @@ def test_api_document_accesses_retrieve_authenticated_related(via, mock_user_tea
         "role": access.role,
         "abilities": access.get_abilities(user),
     }
+
+
+# Update
 
 
 def test_api_document_accesses_update_anonymous():

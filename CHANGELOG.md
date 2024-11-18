@@ -9,6 +9,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+## Changed
+
+## Fixed
+
+- 🐛(backend) invitation e-mails in receivers language #401
+
 
 ## [1.8.2] - 2024-11-28
 
