@@ -25,7 +25,7 @@ releases:
     version: 12.10.10
     values: 
       - auth:
-          rootUser: impress
+          rootUser: root
           rootPassword: password
       - provisioning:
           enabled: true
