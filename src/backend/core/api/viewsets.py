@@ -45,6 +45,7 @@ MEDIA_STORAGE_URL_PATTERN = re.compile(
     f"{settings.MEDIA_URL:s}(?P<pk>{UUID_REGEX:s})/"
     f"(?P<key>{ATTACHMENTS_FOLDER:s}/{UUID_REGEX:s}{FILE_EXT_REGEX:s})$"
 )
+COLLABORATION_SERVER_URL_PATTERN = re.compile(f"/ws/(?P<pk>{UUID_REGEX:s})/?$")
 
 # pylint: disable=too-many-ancestors
 
@@ -675,6 +676,19 @@ class DocumentViewSet(
         request = utils.generate_s3_authorization_headers(f"{pk:s}/{key:s}")
 
         return drf.response.Response("authorized", headers=request.headers, status=200)
+
+    @drf.decorators.action(detail=False, methods=["get"], url_path="collaboration-auth")
+    def collaboration_auth(self, request, *args, **kwargs):
+        """
+        This view is used by an Nginx subrequest to control access to a document's
+        collaboration server.
+        """
+        self._authorize_subrequest(request, COLLABORATION_SERVER_URL_PATTERN)
+
+        # Add the collaboration server secret token to the headers
+        headers = {"Authorization": settings.COLLABORATION_SERVER_SECRET}
+
+        return drf.response.Response("authorized", headers=headers, status=200)
 
     @drf.decorators.action(
         detail=True,
