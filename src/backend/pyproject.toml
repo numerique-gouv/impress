@@ -17,13 +17,13 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.12",
 ]
 description = "An application to print markdown to pdf from a set of managed templates."
 keywords = ["Django", "Contacts", "Templates", "RBAC"]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "boto3==1.35.44",
     "Brotli==1.1.0",
@@ -127,6 +127,7 @@ select = [
 [tool.ruff.lint.isort]
 section-order = ["future","standard-library","django","third-party","impress","first-party","local-folder"]
 sections = { impress=["core"], django=["django"] }
+extra-standard-library = ["tomllib"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/*" = ["S", "SLF"]
