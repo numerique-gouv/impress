@@ -18,6 +18,8 @@ and this project adheres to
 - 💄(frontend) Add left panel #420
 - 💄(frontend) updating the header and leftpanel for responsive #421
 - ✨(backend) config endpoint #425
+- 💄(frontend) update DocsGrid component #431
+
 
 ## Changed
 
