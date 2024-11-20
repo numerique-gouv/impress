@@ -73,7 +73,7 @@ ingressWS:
 
   annotations: 
     nginx.ingress.kubernetes.io/auth-url: https://impress.example.com/api/v1.0/documents/collaboration-auth/
-    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, Can-Edit, User-Id"
     nginx.ingress.kubernetes.io/enable-websocket: "true" 
     nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
 

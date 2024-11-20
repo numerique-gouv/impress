@@ -372,6 +372,9 @@ class Base(Configuration):
     SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN", environ_prefix=None)
 
     # Collaboration
+    COLLABORATION_SERVER_SECRET = values.Value(
+        None, environ_name="COLLABORATION_SERVER_SECRET", environ_prefix=None
+    )
     COLLABORATION_WS_URL = values.Value(
         None, environ_name="COLLABORATION_WS_URL", environ_prefix=None
     )
@@ -495,11 +498,6 @@ class Base(Configuration):
         "hour": 50,
         "day": 200,
     }
-
-    # Collaboration server
-    COLLABORATION_SERVER_SECRET = values.Value(
-        None, environ_name="COLLABORATION_SERVER_SECRET", environ_prefix=None
-    )
 
     # Logging
     # We want to make it easy to log to console but by default we log production

@@ -16,6 +16,7 @@ and this project adheres to
 
 ## Changed
 
+- 🔒️(collaboration) increase collaboration access security #472
 - 🔨(frontend) encapsulated title to its own component #474
 - 🐛(frontend) Fix hidden menu on Firefox #468
 - ⚡️(backend) optimize number of queries on document list view #411
