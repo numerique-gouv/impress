@@ -15,7 +15,6 @@ from django.db import models as db
 from django.db.models import (
     Count,
     Exists,
-    Min,
     OuterRef,
     Q,
     Subquery,
@@ -25,6 +24,7 @@ from django.http import Http404
 
 import rest_framework as drf
 from botocore.exceptions import ClientError
+from django_filters import rest_framework as drf_filters
 from rest_framework import filters
 from rest_framework.permissions import AllowAny
 
@@ -32,9 +32,9 @@ from core import enums, models
 from core.services.ai_services import AIService
 
 from . import permissions, serializers, utils
+from .filters import DocumentFilter
 
 logger = logging.getLogger(__name__)
-from .filters import DocumentFilter
 
 ATTACHMENTS_FOLDER = "attachments"
 UUID_REGEX = (
@@ -323,7 +323,7 @@ class DocumentViewSet(
         - GET /api/v1.0/documents/?is_creator_me=false&title=hello
     """
 
-    filter_backends = [filters.DjangoFilterBackend, drf_filters.OrderingFilter]
+    filter_backends = [drf_filters.DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = DocumentFilter
     metadata_class = DocumentMetadata
     ordering = ["-updated_at"]
@@ -522,7 +522,7 @@ class DocumentViewSet(
         serializer.save()
         return drf.response.Response(serializer.data, status=drf.status.HTTP_200_OK)
 
-    @decorators.action(detail=True, methods=["post", "delete"], url_path="favorite")
+    @drf.decorators.action(detail=True, methods=["post", "delete"], url_path="favorite")
     def favorite(self, request, *args, **kwargs):
         """
         Mark or unmark the document as a favorite for the logged-in user based on the HTTP method.
@@ -536,13 +536,13 @@ class DocumentViewSet(
             try:
                 models.DocumentFavorite.objects.create(document=document, user=user)
             except ValidationError:
-                return drf_response.Response(
+                return drf.response.Response(
                     {"detail": "Document already marked as favorite"},
-                    status=status.HTTP_200_OK,
+                    status=drf.status.HTTP_200_OK,
                 )
-            return drf_response.Response(
+            return drf.response.Response(
                 {"detail": "Document marked as favorite"},
-                status=status.HTTP_201_CREATED,
+                status=drf.status.HTTP_201_CREATED,
             )
 
         # Handle DELETE method to unmark as favorite
@@ -550,13 +550,13 @@ class DocumentViewSet(
             document=document, user=user
         ).delete()
         if deleted:
-            return drf_response.Response(
+            return drf.response.Response(
                 {"detail": "Document unmarked as favorite"},
-                status=status.HTTP_204_NO_CONTENT,
+                status=drf.status.HTTP_204_NO_CONTENT,
             )
-        return drf_response.Response(
+        return drf.response.Response(
             {"detail": "Document was already not marked as favorite"},
-            status=status.HTTP_200_OK,
+            status=drf.status.HTTP_200_OK,
         )
 
     @drf.decorators.action(detail=True, methods=["post"], url_path="attachment-upload")
@@ -810,7 +810,7 @@ class TemplateViewSet(
 ):
     """Template ViewSet"""
 
-    filter_backends = [drf_filters.OrderingFilter]
+    filter_backends = [drf.filters.OrderingFilter]
     permission_classes = [
         permissions.IsAuthenticatedOrSafe,
         permissions.AccessPermission,
