@@ -110,4 +110,26 @@ test.describe('Config', () => {
       /http:\/\/localhost:8083\/media\/.*\/attachments\/.*.png/,
     );
   });
+
+  test('it checks that collaboration server is configured from config endpoint', async ({
+    page,
+    browserName,
+  }) => {
+    const webSocketPromise = page.waitForEvent('websocket', (webSocket) => {
+      return webSocket.url().includes('ws://localhost:4444/');
+    });
+
+    await page.goto('/');
+
+    const randomDoc = await createDoc(
+      page,
+      'doc-collaboration',
+      browserName,
+      1,
+    );
+    await expect(page.locator('h2').getByText(randomDoc[0])).toBeVisible();
+
+    const webSocket = await webSocketPromise;
+    expect(webSocket.url()).toContain('ws://localhost:4444/');
+  });
 });
