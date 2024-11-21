@@ -21,6 +21,7 @@ and this project adheres to
 - 🚸(backend) improve users similarity search and sort results #391
 - ♻️(frontend) simplify stores #402
 - ✨(frontend) update $css Box props type to add styled components RuleSet #423
+- ✨(frontend) change visibility options order in dropdown menu #441
 
 ## Fixed
 
