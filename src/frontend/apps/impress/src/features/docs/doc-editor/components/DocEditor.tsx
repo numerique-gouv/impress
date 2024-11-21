@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Text, TextErrors } from '@/components';
+import { useCollaborationUrl } from '@/core';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
 import { Doc, useDocStore } from '@/features/docs/doc-management';
@@ -98,19 +99,20 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
     versionId,
   });
   const { createProvider, providers } = useDocStore();
+  const collaborationUrl = useCollaborationUrl(versionId);
 
   const { replace } = useRouter();
 
   useEffect(() => {
-    if (!version?.id) {
+    if (!version?.id || !collaborationUrl) {
       return;
     }
 
     const provider = providers?.[version.id];
     if (!provider || provider.document.guid !== version.id) {
-      createProvider(version.id, version.content);
+      createProvider(collaborationUrl, version.id, version.content);
     }
-  }, [createProvider, providers, version]);
+  }, [createProvider, providers, version, collaborationUrl]);
 
   if (isError && error) {
     if (error.status === 404) {
