@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { baseApiUrl } from '@/core/conf';
+import { baseApiUrl } from '@/api';
 
 import { User, getMe } from './api';
 import { PATH_AUTH_LOCAL_STORAGE } from './conf';

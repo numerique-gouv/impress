@@ -1,5 +1,4 @@
-import { baseApiUrl } from '@/core';
-
+import { baseApiUrl } from './config';
 import { getCSRFToken } from './utils';
 
 interface FetchAPIInit extends RequestInit {
