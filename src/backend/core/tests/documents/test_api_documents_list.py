@@ -3,7 +3,9 @@ Tests for Documents API endpoint in impress's core app: list
 """
 
 import operator
+import random
 from unittest import mock
+from urllib.parse import urlencode
 
 import pytest
 from faker import Faker
@@ -312,6 +314,98 @@ def test_api_documents_list_favorites_no_extra_queries(django_assert_num_queries
             assert result["is_favorite"] is True
         else:
             assert result["is_favorite"] is False
+
+
+def test_api_documents_list_filter_and_access_rights():
+    """Filtering on querystring parameters should respect access rights."""
+    user = factories.UserFactory()
+    client = APIClient()
+    client.force_login(user)
+
+    other_user = factories.UserFactory()
+
+    def random_favorited_by():
+        return random.choice([[], [user], [other_user]])
+
+    # Documents that should be listed to this user
+    listed_documents = [
+        factories.DocumentFactory(
+            link_reach="public",
+            link_traces=[user],
+            favorited_by=random_favorited_by(),
+            creator=random.choice([user, other_user]),
+        ),
+        factories.DocumentFactory(
+            link_reach="authenticated",
+            link_traces=[user],
+            favorited_by=random_favorited_by(),
+            creator=random.choice([user, other_user]),
+        ),
+        factories.DocumentFactory(
+            link_reach="restricted",
+            users=[user],
+            favorited_by=random_favorited_by(),
+            creator=random.choice([user, other_user]),
+        ),
+    ]
+    listed_ids = [str(doc.id) for doc in listed_documents]
+    word_list = [word for doc in listed_documents for word in doc.title.split(" ")]
+
+    # Documents that should not be listed to this user
+    factories.DocumentFactory(
+        link_reach="public",
+        favorited_by=random_favorited_by(),
+        creator=random.choice([user, other_user]),
+    )
+    factories.DocumentFactory(
+        link_reach="authenticated",
+        favorited_by=random_favorited_by(),
+        creator=random.choice([user, other_user]),
+    )
+    factories.DocumentFactory(
+        link_reach="restricted",
+        favorited_by=random_favorited_by(),
+        creator=random.choice([user, other_user]),
+    )
+    factories.DocumentFactory(
+        link_reach="restricted",
+        link_traces=[user],
+        favorited_by=random_favorited_by(),
+        creator=random.choice([user, other_user]),
+    )
+
+    filters = {
+        "link_reach": random.choice([None, *models.LinkReachChoices.values]),
+        "title": random.choice([None, *word_list]),
+        "favorite": random.choice([None, True, False]),
+        "creator": random.choice([None, user, other_user]),
+        "ordering": random.choice(
+            [
+                None,
+                "created_at",
+                "-created_at",
+                "is_favorite",
+                "-is_favorite",
+                "nb_accesses",
+                "-nb_accesses",
+                "title",
+                "-title",
+                "updated_at",
+                "-updated_at",
+            ]
+        ),
+    }
+    query_params = {key: value for key, value in filters.items() if value is not None}
+    querystring = urlencode(query_params)
+
+    response = client.get(f"/api/v1.0/documents/?{querystring:s}")
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+
+    # Ensure all documents in results respect expected access rights
+    for result in results:
+        assert result["id"] in listed_ids
 
 
 # Filters: ordering
