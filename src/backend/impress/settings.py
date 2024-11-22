@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 import tomllib
+from socket import gethostbyname, gethostname
 
 from django.utils.translation import gettext_lazy as _
 
@@ -649,7 +650,13 @@ class Production(Base):
     """
 
     # Security
-    ALLOWED_HOSTS = values.ListValue(None)
+    # Add allowed host from environment variables.
+    # The machine hostname is added by default,
+    # it makes the application pingable by a load balancer on the same machine by example
+    ALLOWED_HOSTS = [
+        *values.ListValue([], environ_name="ALLOWED_HOSTS"),
+        gethostbyname(gethostname()),
+    ]
     CSRF_TRUSTED_ORIGINS = values.ListValue([])
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
