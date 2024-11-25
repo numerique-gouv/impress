@@ -17,47 +17,29 @@ pytestmark = pytest.mark.django_db
 
 @override_settings(
     COLLABORATION_SERVER_URL="http://testcollab/",
+    CRISP_WEBSITE_ID="123",
     FRONTEND_THEME="test-theme",
     MEDIA_BASE_URL="http://testserver/",
     SENTRY_DSN="https://sentry.test/123",
 )
-def test_api_config_anonymous():
+@pytest.mark.parametrize("is_authenticated", [False, True])
+def test_api_config(is_authenticated):
     """Anonymous users should be allowed to get the configuration."""
     client = APIClient()
-    response = client.get("/api/v1.0/config/")
-    assert response.status_code == HTTP_200_OK
-    assert response.json() == {
-        "COLLABORATION_SERVER_URL": "http://testcollab/",
-        "ENVIRONMENT": "test",
-        "FRONTEND_THEME": "test-theme",
-        "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"], ["de-de", "German"]],
-        "LANGUAGE_CODE": "en-us",
-        "MEDIA_BASE_URL": "http://testserver/",
-        "SENTRY_DSN": "https://sentry.test/123",
-    }
 
-
-@override_settings(
-    COLLABORATION_SERVER_URL="http://testcollab/",
-    FRONTEND_THEME="test-theme",
-    MEDIA_BASE_URL="http://testserver/",
-    SENTRY_DSN="https://sentry.test/123",
-)
-def test_api_config_authenticated():
-    """Authenticated users should be allowed to get the configuration."""
-    user = factories.UserFactory()
-
-    client = APIClient()
-    client.force_login(user)
+    if is_authenticated:
+        user = factories.UserFactory()
+        client.force_login(user)
 
     response = client.get("/api/v1.0/config/")
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
         "COLLABORATION_SERVER_URL": "http://testcollab/",
+        "CRISP_WEBSITE_ID": "123",
         "ENVIRONMENT": "test",
         "FRONTEND_THEME": "test-theme",
-        "MEDIA_BASE_URL": "http://testserver/",
         "LANGUAGES": [["en-us", "English"], ["fr-fr", "French"], ["de-de", "German"]],
         "LANGUAGE_CODE": "en-us",
+        "MEDIA_BASE_URL": "http://testserver/",
         "SENTRY_DSN": "https://sentry.test/123",
     }
