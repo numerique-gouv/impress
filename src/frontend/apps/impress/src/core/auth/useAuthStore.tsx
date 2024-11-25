@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 import { baseApiUrl } from '@/api';
+import { terminateCrispSession } from '@/services';
 
 import { User, getMe } from './api';
 import { PATH_AUTH_LOCAL_STORAGE } from './conf';
@@ -42,6 +43,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     window.location.replace(`${baseApiUrl()}authenticate/`);
   },
   logout: () => {
+    terminateCrispSession();
     window.location.replace(`${baseApiUrl()}logout/`);
   },
   // If we try to access a specific page and we are not authenticated

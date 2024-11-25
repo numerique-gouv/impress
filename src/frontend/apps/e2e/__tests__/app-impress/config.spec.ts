@@ -5,6 +5,7 @@ import { expect, test } from '@playwright/test';
 import { createDoc } from './common';
 
 const config = {
+  CRISP_WEBSITE_ID: null,
   COLLABORATION_SERVER_URL: 'ws://localhost:4444',
   ENVIRONMENT: 'development',
   FRONTEND_THEME: 'dsfr',
@@ -131,5 +132,29 @@ test.describe('Config', () => {
 
     const webSocket = await webSocketPromise;
     expect(webSocket.url()).toContain('ws://localhost:4444/');
+  });
+
+  test('it checks that Crisp is trying to init from config endpoint', async ({
+    page,
+  }) => {
+    await page.route('**/api/v1.0/config/', async (route) => {
+      const request = route.request();
+      if (request.method().includes('GET')) {
+        await route.fulfill({
+          json: {
+            ...config,
+            CRISP_WEBSITE_ID: '1234',
+          },
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.goto('/');
+
+    await expect(
+      page.locator('#crisp-chatbox').getByText('Invalid website'),
+    ).toBeVisible();
   });
 });

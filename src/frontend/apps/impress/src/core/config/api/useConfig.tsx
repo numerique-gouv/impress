@@ -4,13 +4,14 @@ import { APIError, errorCauses, fetchAPI } from '@/api';
 import { Theme } from '@/cunningham/';
 
 interface ConfigResponse {
-  SENTRY_DSN: string;
-  COLLABORATION_SERVER_URL: string;
-  ENVIRONMENT: string;
-  FRONTEND_THEME: Theme;
   LANGUAGES: [string, string][];
   LANGUAGE_CODE: string;
-  MEDIA_BASE_URL: string;
+  ENVIRONMENT: string;
+  COLLABORATION_SERVER_URL?: string;
+  CRISP_WEBSITE_ID?: string;
+  FRONTEND_THEME?: Theme;
+  MEDIA_BASE_URL?: string;
+  SENTRY_DSN?: string;
 }
 
 export const getConfig = async (): Promise<ConfigResponse> => {
