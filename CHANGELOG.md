@@ -18,6 +18,7 @@ and this project adheres to
 - ✨(backend) config endpoint #425
 - ✨(frontend) config endpoint #424
 - ✨(frontend) add sentry #424
+- ✨(frontend) add crisp chatbot #450
 
 ## Changed
 
