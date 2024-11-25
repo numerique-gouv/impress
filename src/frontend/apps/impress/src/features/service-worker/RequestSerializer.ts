@@ -2,7 +2,7 @@ export type RequestData = {
   url: string;
   method?: string;
   headers: Record<string, string>;
-  body?: ArrayBuffer;
+  body?: ArrayBufferLike;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };
@@ -48,12 +48,12 @@ export class RequestSerializer {
     return new RequestSerializer(requestData);
   }
 
-  public static arrayBufferToString(buffer: ArrayBuffer) {
+  public static arrayBufferToString(buffer: ArrayBufferLike) {
     const decoder = new TextDecoder();
-    return decoder.decode(buffer);
+    return decoder.decode(buffer as ArrayBuffer);
   }
 
-  public static arrayBufferToJson<T>(buffer: ArrayBuffer) {
+  public static arrayBufferToJson<T>(buffer: ArrayBufferLike) {
     const jsonString = RequestSerializer.arrayBufferToString(buffer);
     return JSON.parse(jsonString) as T;
   }
@@ -64,7 +64,9 @@ export class RequestSerializer {
   }
 
   public static objectToArrayBuffer(ob: Record<string, unknown>) {
-    return RequestSerializer.stringToArrayBuffer(JSON.stringify(ob));
+    return RequestSerializer.stringToArrayBuffer(
+      JSON.stringify(ob),
+    ) as ArrayBuffer;
   }
 
   constructor(requestData: RequestData) {
@@ -85,7 +87,7 @@ export class RequestSerializer {
 
   toRequest(): Request {
     const { url, ...rest } = this._requestData;
-    return new Request(url, rest);
+    return new Request(url, { ...rest, body: rest.body as BodyInit });
   }
 
   clone(): RequestSerializer {
