@@ -381,6 +381,11 @@ class Base(Configuration):
         None, environ_name="FRONTEND_THEME", environ_prefix=None
     )
 
+    # Crisp
+    CRISP_WEBSITE_ID = values.Value(
+        None, environ_name="CRISP_WEBSITE_ID", environ_prefix=None
+    )
+
     # Easy thumbnails
     THUMBNAIL_EXTENSION = "webp"
     THUMBNAIL_TRANSPARENCY_EXTENSION = "webp"

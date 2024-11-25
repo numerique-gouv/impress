@@ -902,6 +902,7 @@ class ConfigView(views.APIView):
         """
         array_settings = [
             "COLLABORATION_SERVER_URL",
+            "CRISP_WEBSITE_ID",
             "ENVIRONMENT",
             "FRONTEND_THEME",
             "MEDIA_BASE_URL",
