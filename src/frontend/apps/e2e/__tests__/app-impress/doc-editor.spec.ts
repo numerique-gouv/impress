@@ -9,41 +9,6 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Doc Editor', () => {
-  test('it check translations of the slash menu when changing language', async ({
-    page,
-    browserName,
-  }) => {
-    await createDoc(page, 'doc-toolbar', browserName, 1);
-
-    const header = page.locator('header').first();
-    const editor = page.locator('.ProseMirror');
-    // Trigger slash menu to show english menu
-    await editor.click();
-    await editor.fill('/');
-    await expect(page.getByText('Headings', { exact: true })).toBeVisible();
-    await header.click();
-    await expect(page.getByText('Headings', { exact: true })).toBeHidden();
-
-    // Reset menu
-    await editor.click();
-    await editor.fill('');
-
-    // Change language to French
-    await header.click();
-    await header.getByRole('combobox').getByText('English').click();
-    await header.getByRole('option', { name: 'Français' }).click();
-    await expect(
-      header.getByRole('combobox').getByText('Français'),
-    ).toBeVisible();
-
-    // Trigger slash menu to show french menu
-    await editor.click();
-    await editor.fill('/');
-    await expect(page.getByText('Titres', { exact: true })).toBeVisible();
-    await header.click();
-    await expect(page.getByText('Titres', { exact: true })).toBeHidden();
-  });
-
   test('it checks default toolbar buttons are displayed', async ({
     page,
     browserName,

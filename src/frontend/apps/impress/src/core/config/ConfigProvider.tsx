@@ -3,12 +3,16 @@ import { PropsWithChildren, useEffect } from 'react';
 
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import i18n from '@/i18n/initI18n';
 import { configureCrispSession } from '@/services';
 import { useSentryStore } from '@/stores/useSentryStore';
+
+import { useAuthStore } from '../auth';
 
 import { useConfig } from './api/useConfig';
 
 export const ConfigProvider = ({ children }: PropsWithChildren) => {
+  const { userData } = useAuthStore();
   const { data: conf } = useConfig();
   const { setSentry } = useSentryStore();
   const { setTheme } = useCunninghamTheme();
@@ -36,6 +40,23 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
 
     configureCrispSession(conf.CRISP_WEBSITE_ID);
   }, [conf?.CRISP_WEBSITE_ID]);
+
+  useEffect(() => {
+    if (!userData?.language || !conf?.LANGUAGES) {
+      return;
+    }
+
+    conf.LANGUAGES.some(([available_lang]) => {
+      if (
+        userData.language === available_lang && // language is expected by user
+        i18n.language !== available_lang // language not set as expected
+      ) {
+        void i18n.changeLanguage(available_lang); // change language to expected
+        return true;
+      }
+      return false;
+    });
+  }, [conf?.LANGUAGES, userData?.language]);
 
   if (!conf) {
     return (

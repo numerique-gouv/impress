@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { useCunninghamTheme } from '@/cunningham';
-import '@/i18n/initI18n';
 import { useResponsiveStore } from '@/stores/';
 
 import { Auth } from './auth/';

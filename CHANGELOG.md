@@ -13,6 +13,8 @@ and this project adheres to
 
 ## Changed
 
+- ✨(frontend) sync user and frontend language #401
+
 ## Fixed
 
 - 🐛(backend) invitation e-mails in receivers language #401

@@ -111,9 +111,6 @@ test.describe('Document create member', () => {
     await expect(page.getByText(`Invitation sent to ${email}`)).toBeVisible();
     const responseCreateInvitation = await responsePromiseCreateInvitation;
     expect(responseCreateInvitation.ok()).toBeTruthy();
-    expect(
-      responseCreateInvitation.request().headers()['content-language'],
-    ).toBe('en-us');
 
     // Check user added
     await expect(
@@ -121,9 +118,6 @@ test.describe('Document create member', () => {
     ).toBeVisible();
     const responseAddUser = await responsePromiseAddUser;
     expect(responseAddUser.ok()).toBeTruthy();
-    expect(responseAddUser.request().headers()['content-language']).toBe(
-      'en-us',
-    );
 
     const listInvitation = page.getByLabel('List invitation card');
     await expect(listInvitation.locator('li').getByText(email)).toBeVisible();
@@ -223,46 +217,6 @@ test.describe('Document create member', () => {
     const responseCreateInvitationFail =
       await responsePromiseCreateInvitationFail;
     expect(responseCreateInvitationFail.ok()).toBeFalsy();
-  });
-
-  test('The invitation endpoint get the language of the website', async ({
-    page,
-    browserName,
-  }) => {
-    await createDoc(page, 'user-invitation', browserName, 1);
-
-    const header = page.locator('header').first();
-    await header.getByRole('combobox').getByText('EN').click();
-    await header.getByRole('option', { name: 'FR' }).click();
-
-    await page.getByRole('button', { name: 'Partager' }).click();
-
-    const inputSearch = page.getByLabel(
-      /Trouver un membre à ajouter au document/,
-    );
-
-    const email = randomName('test@test.fr', browserName, 1)[0];
-    await inputSearch.fill(email);
-    await page.getByRole('option', { name: email }).click();
-
-    // Choose a role
-    await page.getByRole('combobox', { name: /Choisissez un rôle/ }).click();
-    await page.getByRole('option', { name: 'Administrateur' }).click();
-
-    const responsePromiseCreateInvitation = page.waitForResponse(
-      (response) =>
-        response.url().includes('/invitations/') && response.status() === 201,
-    );
-
-    await page.getByRole('button', { name: 'Valider' }).click();
-
-    // Check invitation sent
-    await expect(page.getByText(`Invitation envoyée à ${email}`)).toBeVisible();
-    const responseCreateInvitation = await responsePromiseCreateInvitation;
-    expect(responseCreateInvitation.ok()).toBeTruthy();
-    expect(
-      responseCreateInvitation.request().headers()['content-language'],
-    ).toBe('fr-fr');
   });
 
   test('it manages invitation', async ({ page, browserName }) => {
