@@ -17,7 +17,9 @@ test.describe('Doc Table Content', () => {
       1,
     );
 
-    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue(randomDoc);
 
     await page.getByLabel('Open the document options').click();
     await page
@@ -108,7 +110,9 @@ test.describe('Doc Table Content', () => {
       1,
     );
 
-    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue(randomDoc);
     await expect(page.getByLabel('Open the panel')).toBeHidden();
 
     const editor = page.locator('.ProseMirror');

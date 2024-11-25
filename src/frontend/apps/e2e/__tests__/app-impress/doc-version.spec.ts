@@ -10,7 +10,9 @@ test.describe('Doc Version', () => {
   test('it displays the doc versions', async ({ page, browserName }) => {
     const [randomDoc] = await createDoc(page, 'doc-version', browserName, 1);
 
-    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue(randomDoc);
 
     await page.getByLabel('Open the document options').click();
     await page
@@ -79,12 +81,14 @@ test.describe('Doc Version', () => {
 
     await goToGridDoc(page);
 
-    await expect(page.locator('h2').getByText('Mocked document')).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue('Mocked document');
 
     await page.getByLabel('Open the document options').click();
     await expect(
       page.getByRole('button', { name: 'Version history' }),
-    ).toBeHidden();
+    ).toBeDisabled();
 
     await page.getByRole('button', { name: 'Table of content' }).click();
 
@@ -95,12 +99,14 @@ test.describe('Doc Version', () => {
 
   test('it restores the doc version', async ({ page, browserName }) => {
     const [randomDoc] = await createDoc(page, 'doc-version', browserName, 1);
-
-    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue(randomDoc);
 
     await page.locator('.bn-block-outer').last().click();
     await page.locator('.bn-block-outer').last().fill('Hello');
 
+    expect(true).toBe(true);
     await goToGridDoc(page, {
       title: randomDoc,
     });
@@ -152,7 +158,9 @@ test.describe('Doc Version', () => {
   }) => {
     const [randomDoc] = await createDoc(page, 'doc-version', browserName, 1);
 
-    await expect(page.locator('h2').getByText(randomDoc)).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue(randomDoc);
 
     const editor = page.locator('.ProseMirror');
     await editor.locator('.bn-block-outer').last().click();

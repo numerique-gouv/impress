@@ -126,8 +126,9 @@ test.describe('Document list members', () => {
 
   test('it checks the role rules', async ({ page, browserName }) => {
     const [docTitle] = await createDoc(page, 'Doc role rules', browserName, 1);
-
-    await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue(docTitle);
 
     await page.getByRole('button', { name: 'Share' }).click();
 
@@ -188,7 +189,9 @@ test.describe('Document list members', () => {
   test('it checks the delete members', async ({ page, browserName }) => {
     const [docTitle] = await createDoc(page, 'Doc role rules', browserName, 1);
 
-    await expect(page.locator('h2').getByText(docTitle)).toBeVisible();
+    const input = page.getByPlaceholder('Untitled document');
+    await expect(input).toBeVisible();
+    await expect(input).toHaveValue(docTitle);
 
     await page.getByRole('button', { name: 'Share' }).click();
 
