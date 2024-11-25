@@ -1,6 +1,6 @@
 import { Button } from '@openfun/cunningham-react';
 import { t } from 'i18next';
-import React, { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 
 import { Box, DropButton, IconOptions, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
@@ -69,10 +69,7 @@ export const VersionItem = ({
             {isActive && versionId && (
               <DropButton
                 button={
-                  <IconOptions
-                    isOpen={isDropOpen}
-                    aria-label={t('Open the version options')}
-                  />
+                  <IconOptions aria-label={t('Open the version options')} />
                 }
                 onOpenChange={(isOpen) => setIsDropOpen(isOpen)}
                 isOpen={isDropOpen}
