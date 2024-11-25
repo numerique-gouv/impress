@@ -3,6 +3,7 @@ import { PropsWithChildren, useEffect } from 'react';
 
 import { Box } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
+import { configureCrispSession } from '@/services';
 import { useSentryStore } from '@/stores/useSentryStore';
 
 import { useConfig } from './api/useConfig';
@@ -27,6 +28,14 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
 
     setTheme(conf.FRONTEND_THEME);
   }, [conf?.FRONTEND_THEME, setTheme]);
+
+  useEffect(() => {
+    if (!conf?.CRISP_WEBSITE_ID) {
+      return;
+    }
+
+    configureCrispSession(conf.CRISP_WEBSITE_ID);
+  }, [conf?.CRISP_WEBSITE_ID]);
 
   if (!conf) {
     return (
