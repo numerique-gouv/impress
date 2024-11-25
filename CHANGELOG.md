@@ -20,6 +20,8 @@ and this project adheres to
 - ✨(backend) config endpoint #425
 - 💄(frontend) update DocsGrid component #431
 - ✨(backend) whitelist pod's IP address #443
+- 💄(frontend) update DocsGridOptions component #432
+
 
 ## Changed
 
