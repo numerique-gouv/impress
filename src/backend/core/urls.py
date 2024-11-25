@@ -13,6 +13,7 @@ router = DefaultRouter()
 router.register("templates", viewsets.TemplateViewSet, basename="templates")
 router.register("documents", viewsets.DocumentViewSet, basename="documents")
 router.register("users", viewsets.UserViewSet, basename="users")
+router.register("stats", viewsets.StatsViewSet, basename="stats")
 
 # - Routes nested under a document
 document_related_router = DefaultRouter()

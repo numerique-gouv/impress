@@ -12,6 +12,7 @@ and this project adheres to
 ## Changed
 
 - 🚸(backend) improve users similarity search and sort results #391
+- 🐛(backend) adding /stats endpoint for user and document statistics
 
 ## [1.7.0] - 2024-10-24
 

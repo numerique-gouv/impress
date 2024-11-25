@@ -3,19 +3,26 @@
 import re
 import uuid
 from urllib.parse import urlparse
+from datetime import timedelta
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from rest_framework.permissions import IsAdminUser
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db.models import (
+    Max,
     Min,
+    Count,
     OuterRef,
     Q,
+    F,
     Subquery,
 )
 from django.http import Http404
+from django.utils.timezone import now
 
 from botocore.exceptions import ClientError
 from rest_framework import (
@@ -189,6 +196,142 @@ class UserViewSet(
         return drf_response.Response(
             self.serializer_class(request.user, context=context).data
         )
+
+
+class StatsViewSet(viewsets.GenericViewSet):
+    """
+    API endpoint that provides various statistics in JSON format.
+    """
+
+    permission_classes = [IsAdminUser]
+
+    def list(self, request):
+        user_timezone = "UTC"
+        if request.user.is_authenticated:
+            user_timezone = str(getattr(request.user, "timezone", user_timezone))
+
+        try:
+            timezone_to_use = ZoneInfo(user_timezone)
+        except ZoneInfoNotFoundError:
+            return drf_response.Response(
+                {"detail": "Invalid user timezone provided."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if "tz" in request.query_params:
+            try:
+                timezone_to_use = ZoneInfo(request.query_params["tz"])
+            except ZoneInfoNotFoundError:
+                return drf_response.Response(
+                    {"detail": "Invalid timezone provided."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        now_time = now()
+        now_in_user_tz = now_time.astimezone(timezone_to_use)
+        today = now_in_user_tz.replace(hour=0, minute=0, second=0, microsecond=0)
+        one_week_ago = today - timedelta(days=7)
+        one_month_ago = today - timedelta(days=30)
+
+        # Adjust "today" and "tomorrow" to UTC for document queries
+        today_in_user_tz = now_time.astimezone(timezone_to_use).replace(hour=0, minute=0, second=0, microsecond=0)
+        tomorrow_in_user_tz = today_in_user_tz + timedelta(days=1)
+
+        # Convert to UTC for database queries
+        today_start_utc = today_in_user_tz.astimezone(ZoneInfo("UTC"))
+        tomorrow_start_utc = tomorrow_in_user_tz.astimezone(ZoneInfo("UTC"))
+
+        user_count = models.User.objects.count()
+        active_users_today = models.User.objects.filter(
+            Q(documentaccess__updated_at__gte=today_start_utc) |
+            Q(link_traces__created_at__gte=today_start_utc) |
+            Q(last_login__gte=today_start_utc)
+        ).distinct().count()
+        active_users_7_days = models.User.objects.filter(
+            Q(documentaccess__updated_at__gte=one_week_ago.astimezone(ZoneInfo("UTC"))) |
+            Q(link_traces__created_at__gte=one_week_ago.astimezone(ZoneInfo("UTC"))) |
+            Q(last_login__gte=one_week_ago.astimezone(ZoneInfo("UTC")))
+        ).distinct().count()
+        active_users_30_days = models.User.objects.filter(
+            Q(documentaccess__updated_at__gte=one_month_ago.astimezone(ZoneInfo("UTC"))) |
+            Q(link_traces__created_at__gte=one_month_ago.astimezone(ZoneInfo("UTC"))) |
+            Q(last_login__gte=one_month_ago.astimezone(ZoneInfo("UTC")))
+        ).distinct().count()
+        percentage_active_users_today = (
+            round((active_users_today / user_count) * 100, 1) if user_count > 0 else 0
+        )
+        percentage_active_users_7_days = (
+            round((active_users_7_days / user_count) * 100, 1) if user_count > 0 else 0
+        )
+        percentage_active_users_30_days = (
+            round((active_users_30_days / user_count) * 100, 1) if user_count > 0 else 0
+        )
+
+        total_documents = models.Document.objects.count()
+        shared_docs_count = models.Document.objects.annotate(
+            access_count=Count("accesses")
+        ).filter(access_count__gt=1).count()
+        active_docs_today = models.Document.objects.filter(
+            updated_at__gte=today_start_utc,
+            updated_at__lt=tomorrow_start_utc,
+        ).count()
+        active_docs_last_7_days = models.Document.objects.filter(
+            updated_at__gte=one_week_ago.astimezone(ZoneInfo("UTC"))
+        ).count()
+        active_docs_last_30_days = models.Document.objects.filter(
+            updated_at__gte=one_month_ago.astimezone(ZoneInfo("UTC"))
+        ).count()
+        oldest_doc_date = models.Document.objects.aggregate(
+            oldest=Min("created_at")
+        )["oldest"]
+        newest_doc_date = models.Document.objects.aggregate(
+            newest=Max("created_at")
+        )["newest"]
+        user_doc_counts = models.DocumentAccess.objects.values("user_id").annotate(
+            doc_count=Count("document_id")
+        )
+        avg_docs_per_user = (
+            round(sum(u["doc_count"] for u in user_doc_counts) / user_count, 1)
+            if user_count > 0 else 0
+        )
+        user_doc_distribution = {
+            user["admin_email"]: user["doc_count"]
+            for user in models.DocumentAccess.objects.values("user_id").annotate(
+                doc_count=Count("document_id"),
+                admin_email=F("user__admin_email")
+            )
+        }
+
+        user_statistics = {
+            "total_users": user_count,
+            "active_users_today": active_users_today,
+            "active_users_7_days": active_users_7_days,
+            "active_users_30_days": active_users_30_days,
+            "percentage_active_users_today": percentage_active_users_today,
+            "percentage_active_users_7_days": percentage_active_users_7_days,
+            "percentage_active_users_30_days": percentage_active_users_30_days,
+        }
+
+        document_statistics = {
+            "total_documents": total_documents,
+            "shared_documents_count": shared_docs_count,
+            "active_docs_today": active_docs_today,
+            "active_docs_last_7_days": active_docs_last_7_days,
+            "active_docs_last_30_days": active_docs_last_30_days,
+            "oldest_document_date": oldest_doc_date,
+            "newest_document_date": newest_doc_date,
+            "average_documents_per_user": avg_docs_per_user,
+            "user_document_distribution": user_doc_distribution,
+        }
+
+        statistics = {
+            "statistics": {
+                "user_statistics": user_statistics,
+                "document_statistics": document_statistics,
+            }
+        }
+
+        return drf_response.Response(statistics)
 
 
 class ResourceViewsetMixin:
