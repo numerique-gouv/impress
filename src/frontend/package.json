@@ -25,18 +25,18 @@
     "i18n:test": "yarn I18N run test"
   },
   "resolutions": {
-    "@blocknote/core": "0.19.1",
-    "@blocknote/mantine": "0.19.1",
-    "@blocknote/react": "0.19.1",
-    "@types/node": "22.9.0",
+    "@blocknote/core": "0.19.2",
+    "@blocknote/mantine": "0.19.2",
+    "@blocknote/react": "0.19.2",
+    "@types/node": "22.9.3",
     "@types/react-dom": "18.3.1",
-    "@typescript-eslint/eslint-plugin": "8.14.0",
-    "@typescript-eslint/parser": "8.14.0",
+    "@typescript-eslint/eslint-plugin": "8.15.0",
+    "@typescript-eslint/parser": "8.15.0",
     "cross-env": "7.0.3",
     "eslint": "8.57.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "typescript": "5.6.3",
+    "typescript": "5.7.2",
     "yjs": "13.6.20"
   }
 }
