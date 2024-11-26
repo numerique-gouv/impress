@@ -33,6 +33,7 @@ and this project adheres to
 - 🦺(backend) add comma to sub regex #408
 - 🐛(editor) collaborative user tag hidden when read only #385
 - 🐛(frontend) users have view access when revoked #387
+- 🐛(frontend) fix placeholder editable when double clicks #454
 
 
 ## [1.7.0] - 2024-10-24

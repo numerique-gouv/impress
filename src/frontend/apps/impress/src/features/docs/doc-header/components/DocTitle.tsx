@@ -57,7 +57,7 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
   const { broadcast } = useBroadcastStore();
 
   const { mutate: updateDoc } = useUpdateDoc({
-    listInvalideQueries: [KEY_DOC, KEY_LIST_DOC],
+    listInvalideQueries: [KEY_LIST_DOC],
     onSuccess(data) {
       if (data.title !== untitledDocument) {
         toast(t('Document title updated successfully'), VariantType.SUCCESS);
@@ -105,6 +105,10 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
   };
 
   useEffect(() => {
+    setTitleDisplay(doc.title);
+  }, [doc.title]);
+
+  useEffect(() => {
     if ((!debounceRef.current && !isUntitled) || !headingText) {
       return;
     }
@@ -129,6 +133,7 @@ const DocTitleInput = ({ doc }: DocTitleProps) => {
           $radius="4px"
           $padding={{ horizontal: 'tiny', vertical: '4px' }}
           $margin="none"
+          $minWidth="200px"
           contentEditable={isFirefox() ? 'true' : 'plaintext-only'}
           onClick={handleOnClick}
           onBlurCapture={(e) =>
