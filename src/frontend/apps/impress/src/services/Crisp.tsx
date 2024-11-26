@@ -19,6 +19,7 @@ export const configureCrispSession = (websiteId: string) => {
     return;
   }
   Crisp.configure(websiteId);
+  Crisp.setSafeMode(true);
 };
 
 export const terminateCrispSession = () => {
