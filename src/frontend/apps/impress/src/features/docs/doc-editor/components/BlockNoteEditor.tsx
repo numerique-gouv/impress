@@ -4,16 +4,14 @@ import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { useCreateBlockNote } from '@blocknote/react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
-import { t } from 'i18next';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, TextErrors } from '@/components';
 import { useAuthStore } from '@/core/auth';
-import { useMediaUrl } from '@/core/config';
 import { Doc } from '@/features/docs/doc-management';
 
-import { useCreateDocAttachment } from '../api/useCreateDocUpload';
+import { useUploadFile } from '../hook';
 import useSaveDoc from '../hook/useSaveDoc';
 import { useEditorStore, useHeadingStore } from '../stores';
 import { randomColor } from '../utils';
@@ -87,33 +85,14 @@ export const BlockNoteEditor = ({
   const isVersion = doc.id !== storeId;
   const { userData } = useAuthStore();
   const { setEditor } = useEditorStore();
-  const mediaUrl = useMediaUrl();
-
+  const { t } = useTranslation();
   const readOnly = !doc.abilities.partial_update || isVersion;
   useSaveDoc(doc.id, provider.document, !readOnly);
-  const {
-    mutateAsync: createDocAttachment,
-    isError: isErrorAttachment,
-    error: errorAttachment,
-  } = useCreateDocAttachment();
   const { setHeadings, resetHeadings } = useHeadingStore();
   const { i18n } = useTranslation();
   const lang = i18n.language;
 
-  const uploadFile = useCallback(
-    async (file: File) => {
-      const body = new FormData();
-      body.append('file', file);
-
-      const ret = await createDocAttachment({
-        docId: doc.id,
-        body,
-      });
-
-      return `${mediaUrl}${ret.file}`;
-    },
-    [createDocAttachment, doc.id, mediaUrl],
-  );
+  const { uploadFile, errorAttachment } = useUploadFile(doc.id);
 
   const editor = useCreateBlockNote(
     {
@@ -153,7 +132,7 @@ export const BlockNoteEditor = ({
 
   return (
     <Box $css={cssEditor(readOnly)}>
-      {isErrorAttachment && (
+      {errorAttachment && (
         <Box $margin={{ bottom: 'big' }}>
           <TextErrors
             causes={errorAttachment.cause}
