@@ -13,6 +13,7 @@ import {
 } from '@/features/docs/members/members-list';
 import { useWhoAmI } from '@/features/docs/members/members-list/hooks/useWhoAmI';
 import { SearchUserRow } from '@/features/users/components/SearchUserRow';
+import { useResponsiveStore } from '@/stores';
 
 import { Access, Doc, Role } from '../../types';
 import { DocRoleDropdown } from '../DocRoleDropdown';
@@ -25,6 +26,7 @@ export const DocShareMemberItem = ({ doc, access }: Props) => {
   const { t } = useTranslation();
   const { isLastOwner, isOtherOwner } = useWhoAmI(access);
   const { toast } = useToastProvider();
+  const { isDesktop } = useResponsiveStore();
   const isNotAllowed =
     isOtherOwner || isLastOwner || !doc.abilities.accesses_manage;
 
@@ -64,9 +66,10 @@ export const DocShareMemberItem = ({ doc, access }: Props) => {
       disabled: isNotAllowed,
     },
   ];
+
   return (
     <SearchUserRow
-      showRightOnHover={false}
+      alwaysShowRight={true}
       user={access.user}
       right={
         <Box $direction="row" $align="center">
@@ -76,9 +79,11 @@ export const DocShareMemberItem = ({ doc, access }: Props) => {
             canUpdate={!isNotAllowed}
           />
 
-          <DropdownMenu options={moreActions}>
-            <IconOptions $variation="600" />
-          </DropdownMenu>
+          {isDesktop && (
+            <DropdownMenu options={moreActions}>
+              <IconOptions $variation="600" />
+            </DropdownMenu>
+          )}
         </Box>
       }
     />

@@ -23,7 +23,7 @@ export const DocShareAddMemberListItem = ({ user, onRemoveUser }: Props) => {
       $justify="center"
       $align="center"
       $gap={spacing.xs}
-      $background={color['greyscale-200']}
+      $background={color['greyscale-250']}
       $padding={{ horizontal: spacing['2xs'], vertical: spacing['3xs'] }}
       $css={css`
         color: ${color['greyscale-1000']};
@@ -34,8 +34,8 @@ export const DocShareAddMemberListItem = ({ user, onRemoveUser }: Props) => {
       <Button
         color="primary-text"
         size="nano"
-        onClick={() => onRemoveUser(user)}
-        icon={<Icon $variation="400" $size="sm" iconName="close" />}
+        onClick={() => onRemoveUser?.(user)}
+        icon={<Icon $variation="500" $size="sm" iconName="close" />}
       />
     </Box>
   );

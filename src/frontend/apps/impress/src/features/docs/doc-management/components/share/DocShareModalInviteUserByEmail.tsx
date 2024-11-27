@@ -15,6 +15,7 @@ export const DocShareModalInviteUserRow = ({ user }: Props) => {
       user={user}
       right={
         <Box
+          className="right-hover"
           $direction="row"
           $align="center"
           $css={css`

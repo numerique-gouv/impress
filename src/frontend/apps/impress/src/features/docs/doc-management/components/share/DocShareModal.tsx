@@ -1,4 +1,10 @@
-import { Modal, ModalSize } from '@openfun/cunningham-react';
+import {
+  Button,
+  Modal,
+  ModalSize,
+  VariantType,
+  useToastProvider,
+} from '@openfun/cunningham-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
@@ -10,13 +16,17 @@ import {
   QuickSearchData,
 } from '@/components/quick-search/QuickSearch';
 import { QuickSearchGroup } from '@/components/quick-search/QuickSearchGroup';
+import { HorizontalSeparator } from '@/components/separators/HorizontalSeparator';
 import { User } from '@/core';
 import { Access, Doc } from '@/features/docs';
 import { useDocInvitationsInfinite } from '@/features/docs/members/invitation-list';
 import { Invitation } from '@/features/docs/members/invitation-list/types';
 import { KEY_LIST_USER, useUsers } from '@/features/docs/members/members-add';
 import { useDocAccessesInfinite } from '@/features/docs/members/members-list';
+import { useResponsiveStore } from '@/stores';
 import { isValidEmail } from '@/utils';
+
+import { DocVisibility } from '../DocVisibility';
 
 import { DocShareAddMemberList } from './DocShareAddMemberList';
 import { DocShareInvitationItem } from './DocShareInvitationItem';
@@ -29,6 +39,9 @@ type Props = {
 };
 export const DocShareModal = ({ doc, onClose }: Props) => {
   const { t } = useTranslation();
+  const { toast } = useToastProvider();
+  const { isDesktop } = useResponsiveStore();
+
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [userQuery, setUserQuery] = useState('');
   const [inputValue, setInputValue] = useState('');
@@ -61,8 +74,12 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
     const members =
       membersQuery.data?.pages.flatMap((page) => page.results) || [];
 
+    const count = membersQuery.data?.pages[0]?.count ?? 1;
+
     return {
-      groupName: t('Members'),
+      groupName: t('Share with {{count}} users', {
+        count: count,
+      }),
       elements: members,
       endActions: membersQuery.hasNextPage
         ? [
@@ -80,7 +97,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
       invitationQuery.data?.pages.flatMap((page) => page.results) || [];
 
     return {
-      groupName: t('Invitations'),
+      groupName: t('Pending invitations'),
       elements: invitations,
       endActions: invitationQuery.hasNextPage
         ? [
@@ -104,7 +121,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
     };
 
     return {
-      groupName: t('Users'),
+      groupName: t('Share with {{count}} users', { count: users.length }),
       elements: users,
       endActions:
         isEmail && users.length === 0
@@ -137,7 +154,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
   return (
     <Modal
       isOpen
-      size={ModalSize.LARGE}
+      size={isDesktop ? ModalSize.LARGE : ModalSize.FULL}
       onClose={onClose}
       title={
         <Box $padding="base" $align="flex-start">
@@ -200,6 +217,35 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
           </>
         )}
       </QuickSearch>
+      <HorizontalSeparator />
+      <DocVisibility doc={doc} />
+      <HorizontalSeparator />
+      <Box $direction="row" $justify="space-between" $padding="base">
+        <Button
+          fullWidth={false}
+          onClick={() => {
+            navigator.clipboard
+              .writeText(window.location.href)
+              .then(() => {
+                toast(t('Link Copied !'), VariantType.SUCCESS, {
+                  duration: 3000,
+                });
+              })
+              .catch(() => {
+                toast(t('Failed to copy link'), VariantType.ERROR, {
+                  duration: 3000,
+                });
+              });
+          }}
+          color="tertiary"
+          icon={<span className="material-icons">add_link</span>}
+        >
+          {t('Copy link')}
+        </Button>
+        <Button onClick={onClose} color="primary">
+          {t('Ok')}
+        </Button>
+      </Box>
     </Modal>
   );
 };
