@@ -9,6 +9,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+
+## [1.8.1] - 2024-11-27
+
 ## Fixed
 
 🐛(frontend) link not clickable and flickering firefox #457
@@ -272,7 +275,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.8.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.8.1...main
+[v1.8.1]: https://github.com/numerique-gouv/impress/releases/v1.8.1
 [v1.8.0]: https://github.com/numerique-gouv/impress/releases/v1.8.0
 [v1.7.0]: https://github.com/numerique-gouv/impress/releases/v1.7.0
 [v1.6.0]: https://github.com/numerique-gouv/impress/releases/v1.6.0
