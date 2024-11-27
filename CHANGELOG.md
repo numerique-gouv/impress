@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Fixed
+
+🐛(frontend) link not clickable and flickering firefox #457
+
 
 ## [1.8.0] - 2024-11-25
 
