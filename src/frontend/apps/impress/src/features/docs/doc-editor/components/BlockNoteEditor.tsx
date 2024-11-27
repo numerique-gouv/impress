@@ -24,17 +24,8 @@ const cssEditor = (readonly: boolean) => `
   };
   & .bn-editor {
     padding-right: 30px;
-    ${
-      readonly &&
-      `
-        padding-left: 30px;
-        pointer-events: none;
-      `
-    }
+    ${readonly && `padding-left: 30px;`}
   };
-  & .collaboration-cursor__caret.ProseMirror-widget{
-    word-wrap: initial;
-  }
   & .bn-inline-content code {
     background-color: gainsboro;
     padding: 2px;
@@ -94,20 +85,50 @@ export const BlockNoteEditor = ({
 
   const { uploadFile, errorAttachment } = useUploadFile(doc.id);
 
+  const collabName =
+    userData?.full_name ||
+    userData?.email ||
+    (readOnly ? 'Reader' : t('Anonymous'));
+
   const editor = useCreateBlockNote(
     {
       collaboration: {
         provider,
         fragment: provider.document.getXmlFragment('document-store'),
         user: {
-          name: userData?.full_name || userData?.email || t('Anonymous'),
+          name: collabName,
           color: randomColor(),
+        },
+        /**
+         * We re-use the blocknote code to render the cursor but we:
+         * - fix rendering issue with Firefox
+         * - We don't want to show the cursor when anonymous users
+         */
+        renderCursor: (user: { color: string; name: string }) => {
+          const cursor = document.createElement('span');
+
+          if (user.name === 'Reader') {
+            return cursor;
+          }
+
+          cursor.classList.add('collaboration-cursor__caret');
+          cursor.setAttribute('style', `border-color: ${user.color}`);
+
+          const label = document.createElement('span');
+
+          label.classList.add('collaboration-cursor__label');
+          label.setAttribute('style', `background-color: ${user.color}`);
+          label.insertBefore(document.createTextNode(user.name), null);
+
+          cursor.insertBefore(label, null);
+
+          return cursor;
         },
       },
       dictionary: locales[lang as keyof typeof locales] as Dictionary,
       uploadFile,
     },
-    [lang, provider, uploadFile, userData?.email, userData?.full_name],
+    [collabName, lang, provider, uploadFile],
   );
 
   useEffect(() => {
