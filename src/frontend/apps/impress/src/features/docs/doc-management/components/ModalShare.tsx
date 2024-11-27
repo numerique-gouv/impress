@@ -3,7 +3,7 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 
 import { Box, Card, IconBG, SideModal, Text } from '@/components';
@@ -44,6 +44,7 @@ interface ModalShareProps {
 }
 
 export const ModalShare = ({ onClose, doc }: ModalShareProps) => {
+  const { t } = useTranslation();
   const { isMobile, isSmallMobile } = useResponsiveStore();
   const width = isSmallMobile ? '100vw' : isMobile ? '90vw' : '70vw';
   const { toast } = useToastProvider();
