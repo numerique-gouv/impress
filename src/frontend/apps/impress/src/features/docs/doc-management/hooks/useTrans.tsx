@@ -17,5 +17,6 @@ export const useTrans = () => {
       return translatedRoles[role];
     },
     untitledDocument: t('Untitled document'),
+    translatedRoles,
   };
 };

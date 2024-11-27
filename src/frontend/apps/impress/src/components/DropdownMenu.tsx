@@ -40,7 +40,7 @@ export const DropdownMenu = ({
       onOpenChange={onOpenChange}
       button={
         showArrow ? (
-          <Box>
+          <Box $direction="row" $align="center">
             <div>{children}</div>
             <Icon
               $css={
