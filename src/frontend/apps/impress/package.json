@@ -66,6 +66,6 @@
     "stylelint-prettier": "5.0.2",
     "typescript": "*",
     "webpack": "5.96.1",
-    "workbox-webpack-plugin": "7.3.0"
+    "workbox-webpack-plugin": "7.1.0"
   }
 }
