@@ -6,10 +6,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "tsc -p ./src",
+    "build": "tsc -p tsconfig.build.json && tsc-alias",
     "dev": "nodemon --config nodemon.json",
-    "start": "node ./dist/server.js",
-    "lint": "eslint . --ext .ts"
+    "start": "node ./dist/start-server.js",
+    "lint": "eslint . --ext .ts",
+    "test": "jest"
   },
   "engines": {
     "node": ">=18"
@@ -21,13 +22,21 @@
     "y-protocols": "1.0.6"
   },
   "devDependencies": {
+    "@hocuspocus/provider": "2.14.0",
     "@types/express": "5.0.0",
     "@types/express-ws": "3.0.5",
+    "@types/jest": "29.5.14",
     "@types/node": "*",
+    "@types/supertest": "6.0.2",
+    "@types/ws": "8.5.13",
     "eslint-config-impress": "*",
+    "jest": "29.7.0",
     "nodemon": "3.1.7",
+    "supertest": "7.0.0",
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
-    "typescript": "*"
+    "tsc-alias": "1.8.10",
+    "typescript": "*",
+    "ws": "8.18.0"
   }
 }
