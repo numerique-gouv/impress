@@ -1,6 +1,7 @@
 import {
   Button,
   VariantType,
+  useModal,
   useToastProvider,
 } from '@openfun/cunningham-react';
 import { useState } from 'react';
@@ -20,13 +21,11 @@ import {
   useEditorStore,
   usePanelEditorStore,
 } from '@/features/docs/doc-editor/';
-import {
-  Doc,
-  ModalRemoveDoc,
-  ModalShare,
-} from '@/features/docs/doc-management';
+import { Doc, ModalRemoveDoc } from '@/features/docs/doc-management';
 import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
+
+import { DocShareModal } from '../../doc-management/components/share/DocShareModal';
 
 import { ModalPDF } from './ModalExport';
 
@@ -45,6 +44,8 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
   const [isModalShareOpen, setIsModalShareOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
+
+  const modalShare = useModal();
 
   const { setIsPanelOpen, setIsPanelTableContentOpen } = usePanelEditorStore();
   const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);
@@ -162,7 +163,8 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
           <Button
             color="primary-text"
             onClick={() => {
-              setIsModalShareOpen(true);
+              modalShare.open();
+              // setIsModalShareOpen(true);
             }}
             size={isSmallMobile ? 'small' : 'medium'}
           >
@@ -198,8 +200,11 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
           />
         </DropdownMenu>
       </Box>
-      {isModalShareOpen && (
+      {/* {isModalShareOpen && (
         <ModalShare onClose={() => setIsModalShareOpen(false)} doc={doc} />
+      )} */}
+      {modalShare.isOpen && (
+        <DocShareModal doc={doc} onClose={modalShare.onClose} />
       )}
       {isModalPDFOpen && (
         <ModalPDF onClose={() => setIsModalPDFOpen(false)} doc={doc} />

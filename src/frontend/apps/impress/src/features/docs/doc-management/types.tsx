@@ -57,3 +57,8 @@ export interface Doc {
     versions_retrieve: boolean;
   };
 }
+
+export enum DocDownloadFormat {
+  PDF = 'pdf',
+  DOCX = 'docx',
+}

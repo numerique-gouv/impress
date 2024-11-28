@@ -143,22 +143,22 @@ test.describe('Doc Visibility: Restricted', () => {
 
     await page.getByRole('button', { name: 'Share' }).click();
 
-    const inputSearch = page.getByLabel(/Find a member to add to the document/);
+    const inputSearch = page.getByRole('combobox', {
+      name: 'Find a member to add to the document',
+    });
 
     const otherBrowser = browsersName.find((b) => b !== browserName);
     const username = `user@${otherBrowser}.e2e`;
     await inputSearch.fill(username);
-    await page.getByRole('option', { name: username }).click();
+    await page.getByTestId(`search-user-row-${username}`).click();
 
     // Choose a role
-    await page.getByRole('combobox', { name: /Choose a role/ }).click();
+
+    const container = page.getByTestId('doc-share-add-member-list');
+    await container.getByLabel('doc-role-dropdown').click();
     await page.getByRole('option', { name: 'Administrator' }).click();
 
-    await page.getByRole('button', { name: 'Validate' }).click();
-
-    await expect(
-      page.getByText(`User ${username} added to the document.`),
-    ).toBeVisible();
+    await page.getByRole('button', { name: 'Invite' }).click();
 
     await page.locator('.c__modal__backdrop').click({
       position: { x: 0, y: 0 },
@@ -434,15 +434,17 @@ test.describe('Doc Visibility: Authenticated', () => {
       page.getByText('Read only, you cannot edit this document'),
     ).toBeVisible();
 
-    const shareModal = page.getByLabel('Share modal');
-
     await expect(
-      shareModal.getByRole('combobox', {
+      page.getByRole('combobox', {
         name: 'Visibility',
       }),
     ).toHaveAttribute('disabled');
-    await expect(shareModal.getByText('Search by email')).toBeHidden();
-    await expect(shareModal.getByLabel('List members card')).toBeHidden();
+
+    const inputSearch = page.getByRole('combobox', {
+      name: 'Find a member to add to the document',
+    });
+
+    await expect(inputSearch).toBeHidden();
   });
 
   test('It checks a authenticated doc in editable mode', async ({
@@ -512,14 +514,15 @@ test.describe('Doc Visibility: Authenticated', () => {
       page.getByText('Read only, you cannot edit this document'),
     ).toBeHidden();
 
-    const shareModal = page.getByLabel('Share modal');
-
     await expect(
-      shareModal.getByRole('combobox', {
+      page.getByRole('combobox', {
         name: 'Visibility',
       }),
     ).toHaveAttribute('disabled');
-    await expect(shareModal.getByText('Search by email')).toBeHidden();
-    await expect(shareModal.getByLabel('List members card')).toBeHidden();
+    const inputSearch = page.getByRole('combobox', {
+      name: 'Find a member to add to the document',
+    });
+
+    await expect(inputSearch).toBeHidden();
   });
 });
