@@ -47,9 +47,13 @@ setCacheNameDetails({
 const getStrategy = (
   options?: NetworkFirstOptions | StrategyOptions,
 ): NetworkFirst | CacheFirst => {
-  return SW_DEV_URL.some((devDomain) =>
+  const isDev = SW_DEV_URL.some((devDomain) =>
     self.location.origin.includes(devDomain),
-  ) || isApiUrl(self.location.href)
+  );
+  const isApi = isApiUrl(self.location.href);
+  const isHTMLRequest = options?.cacheName?.includes('html');
+
+  return isDev || isApi || isHTMLRequest
     ? new NetworkFirst(options)
     : new CacheFirst(options);
 };
@@ -77,7 +81,7 @@ self.addEventListener('activate', function (event) {
           }),
         );
       })
-      .then(void self.clients.claim()),
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -138,6 +142,18 @@ setCatchHandler(async ({ request, url, event }) => {
       return Response.error();
   }
 });
+
+// HTML documents
+registerRoute(
+  ({ request }) => request.destination === 'document',
+  new NetworkFirst({
+    cacheName: getCacheNameVersion('html'),
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+      new ExpirationPlugin({ maxAgeSeconds: 24 * 60 * 60 * DAYS_EXP }),
+    ],
+  }),
+);
 
 /**
  * External urls cache strategy
