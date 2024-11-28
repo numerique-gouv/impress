@@ -97,6 +97,11 @@ yProvider:
     pullPolicy: Always
     tag: "latest"
 
+  envVars:
+    COLLABORATION_LOGGING: true
+    COLLABORATION_SERVER_ORIGIN: https://impress.127.0.0.1.nip.io
+    COLLABORATION_SERVER_SECRET: my-secret
+
 ingress:
   enabled: true
   host: impress.127.0.0.1.nip.io
