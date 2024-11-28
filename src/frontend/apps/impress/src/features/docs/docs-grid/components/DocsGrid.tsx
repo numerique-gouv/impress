@@ -166,7 +166,7 @@ export const DocsGrid = () => {
       renderCell: ({ row }) => {
         return (
           <StyledLink href={`/docs/${row.id}`}>
-            <Text $weight="bold">{row.accesses.length}</Text>
+            <Text $weight="bold">{row.nb_accesses}</Text>
           </StyledLink>
         );
       },

@@ -38,9 +38,11 @@ export interface Doc {
   id: string;
   title: string;
   content: Base64;
+  creator: string;
+  is_favorite: boolean;
   link_reach: LinkReach;
   link_role: LinkRole;
-  accesses: Access[];
+  nb_accesses: number;
   created_at: string;
   updated_at: string;
   abilities: {
