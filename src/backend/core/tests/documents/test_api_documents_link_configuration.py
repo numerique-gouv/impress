@@ -6,6 +6,9 @@ from rest_framework.test import APIClient
 from core import factories, models
 from core.api import serializers
 from core.tests.conftest import TEAM, USER, VIA
+from core.tests.test_services_collaboration_services import (  # pylint: disable=unused-import
+    mock_reset_connections,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -116,7 +119,10 @@ def test_api_documents_link_configuration_update_authenticated_related_forbidden
 @pytest.mark.parametrize("role", ["administrator", "owner"])
 @pytest.mark.parametrize("via", VIA)
 def test_api_documents_link_configuration_update_authenticated_related_success(
-    via, role, mock_user_teams
+    via,
+    role,
+    mock_user_teams,
+    mock_reset_connections,  # pylint: disable=redefined-outer-name
 ):
     """
     A user who is administrator or owner of a document should be allowed to update
@@ -139,14 +145,16 @@ def test_api_documents_link_configuration_update_authenticated_related_success(
     new_document_values = serializers.LinkDocumentSerializer(
         instance=factories.DocumentFactory()
     ).data
-    response = client.put(
-        f"/api/v1.0/documents/{document.id!s}/link-configuration/",
-        new_document_values,
-        format="json",
-    )
-    assert response.status_code == 200
 
-    document = models.Document.objects.get(pk=document.pk)
-    document_values = serializers.LinkDocumentSerializer(instance=document).data
-    for key, value in document_values.items():
-        assert value == new_document_values[key]
+    with mock_reset_connections(document.id):
+        response = client.put(
+            f"/api/v1.0/documents/{document.id!s}/link-configuration/",
+            new_document_values,
+            format="json",
+        )
+        assert response.status_code == 200
+
+        document = models.Document.objects.get(pk=document.pk)
+        document_values = serializers.LinkDocumentSerializer(instance=document).data
+        for key, value in document_values.items():
+            assert value == new_document_values[key]

@@ -30,6 +30,7 @@ from rest_framework.permissions import AllowAny
 
 from core import enums, models
 from core.services.ai_services import AIService
+from core.services.collaboration_services import CollaborationService
 
 from . import permissions, serializers, utils
 from .filters import DocumentFilter
@@ -520,6 +521,10 @@ class DocumentViewSet(
         serializer.is_valid(raise_exception=True)
 
         serializer.save()
+
+        # Notify collaboration server about the link updated
+        CollaborationService().reset_connections(str(document.id))
+
         return drf.response.Response(serializer.data, status=drf.status.HTTP_200_OK)
 
     @drf.decorators.action(detail=True, methods=["post", "delete"], url_path="favorite")
@@ -813,6 +818,28 @@ class DocumentAccessViewSet(
             access.user.email,
             access.role,
             self.request.user,
+        )
+
+    def perform_update(self, serializer):
+        """Update an access to the document and notify the collaboration server."""
+        access = serializer.save()
+
+        access_user_id = None
+        if access.user:
+            access_user_id = str(access.user.id)
+
+        # Notify collaboration server about the access change
+        CollaborationService().reset_connections(
+            str(access.document.id), access_user_id
+        )
+
+    def perform_destroy(self, instance):
+        """Delete an access to the document and notify the collaboration server."""
+        instance.delete()
+
+        # Notify collaboration server about the access removed
+        CollaborationService().reset_connections(
+            str(instance.document.id), str(instance.user.id)
         )
 
 

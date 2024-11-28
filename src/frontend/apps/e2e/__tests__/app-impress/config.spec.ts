@@ -6,7 +6,7 @@ import { createDoc } from './common';
 
 const config = {
   CRISP_WEBSITE_ID: null,
-  COLLABORATION_WS_URL: 'ws://localhost:4444',
+  COLLABORATION_WS_URL: 'ws://localhost:8083/collaboration/ws/',
   ENVIRONMENT: 'development',
   FRONTEND_THEME: 'dsfr',
   MEDIA_BASE_URL: 'http://localhost:8083',
@@ -117,7 +117,7 @@ test.describe('Config', () => {
     browserName,
   }) => {
     const webSocketPromise = page.waitForEvent('websocket', (webSocket) => {
-      return webSocket.url().includes('ws://localhost:4444/');
+      return webSocket.url().includes('ws://localhost:8083/collaboration/ws/');
     });
 
     await page.goto('/');
@@ -131,7 +131,7 @@ test.describe('Config', () => {
     await expect(page.locator('h2').getByText(randomDoc[0])).toBeVisible();
 
     const webSocket = await webSocketPromise;
-    expect(webSocket.url()).toContain('ws://localhost:4444/');
+    expect(webSocket.url()).toContain('ws://localhost:8083/collaboration/ws/');
   });
 
   test('it checks that Crisp is trying to init from config endpoint', async ({
