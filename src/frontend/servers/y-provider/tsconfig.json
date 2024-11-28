@@ -13,6 +13,13 @@
     "jsx": "preserve",
     "incremental": false,
     "outDir": "./dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]
