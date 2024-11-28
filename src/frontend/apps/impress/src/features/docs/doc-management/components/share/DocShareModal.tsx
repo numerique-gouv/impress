@@ -156,6 +156,8 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
     <Modal
       isOpen
       closeOnClickOutside
+      data-testid="doc-share-modal"
+      aria-label={t('Share modal')}
       size={isDesktop ? ModalSize.LARGE : ModalSize.FULL}
       onClose={onClose}
       title={
@@ -165,7 +167,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
       }
     >
       <Box
-        aria-label={t('List members card')}
+        aria-label={t('Share modal')}
         $direction="column"
         $height={isDesktop ? undefined : 'calc(100vh - 50px)'}
         $justify="space-between"
@@ -198,7 +200,10 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
             </Box>
           )}
 
-          <Box data-testid="doc-share-quick-search">
+          <Box
+            aria-label={t('List members card')}
+            data-testid="doc-share-quick-search"
+          >
             <QuickSearch
               data={[]}
               onFilter={(str) => {

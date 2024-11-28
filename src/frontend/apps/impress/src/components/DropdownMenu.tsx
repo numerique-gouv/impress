@@ -81,6 +81,7 @@ export const DropdownMenu = ({
           return (
             <BoxButton
               role="option"
+              aria-label={option.label}
               data-testid={option.testId}
               $direction="row"
               disabled={isDisabled}
