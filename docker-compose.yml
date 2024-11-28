@@ -162,6 +162,8 @@ services:
       dockerfile: ./src/frontend/Dockerfile
       target: y-provider
     restart: unless-stopped
+    env_file:
+      - env.d/development/common
     ports:
       - "4444:4444"
     volumes:
