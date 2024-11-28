@@ -6,7 +6,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "tsc -p .",
+    "build": "tsc -p ./src",
     "dev": "nodemon --config nodemon.json",
     "start": "node ./dist/server.js",
     "lint": "eslint . --ext .ts"
@@ -16,9 +16,13 @@
   },
   "dependencies": {
     "@hocuspocus/server": "2.14.0",
+    "express": "4.21.1",
+    "express-ws": "5.0.2",
     "y-protocols": "1.0.6"
   },
   "devDependencies": {
+    "@types/express": "5.0.0",
+    "@types/express-ws": "3.0.5",
     "@types/node": "*",
     "eslint-config-impress": "*",
     "nodemon": "3.1.7",
