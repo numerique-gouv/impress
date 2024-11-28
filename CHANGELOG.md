@@ -9,16 +9,19 @@ and this project adheres to
 
 ## [Unreleased]
 
+
+## [1.8.2] - 2024-11-28
+
 ## Changed
 
-♻️(SW) change strategy html caching #460
+- ♻️(SW) change strategy html caching #460
 
 
 ## [1.8.1] - 2024-11-27
 
 ## Fixed
 
-🐛(frontend) link not clickable and flickering firefox #457
+- 🐛(frontend) link not clickable and flickering firefox #457
 
 
 ## [1.8.0] - 2024-11-25
@@ -279,7 +282,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.8.1...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.8.2...main
+[v1.8.2]: https://github.com/numerique-gouv/impress/releases/v1.8.2
 [v1.8.1]: https://github.com/numerique-gouv/impress/releases/v1.8.1
 [v1.8.0]: https://github.com/numerique-gouv/impress/releases/v1.8.0
 [v1.7.0]: https://github.com/numerique-gouv/impress/releases/v1.7.0
