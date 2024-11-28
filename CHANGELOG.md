@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Changed
+
+♻️(SW) change strategy html caching #460
+
 
 ## [1.8.1] - 2024-11-27
 
