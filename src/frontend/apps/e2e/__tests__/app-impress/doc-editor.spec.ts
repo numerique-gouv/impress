@@ -81,26 +81,69 @@ test.describe('Doc Editor', () => {
     ).toBeVisible();
   });
 
-  test('checks the Doc is connected to the provider server', async ({
+  /**
+   * We check:
+   *  - connection to the collaborative server
+   *  - signal of the backend to the collaborative server (connection should close)
+   *  - reconnection to the collaborative server
+   */
+  test('checks the connection with collaborative server', async ({
     page,
     browserName,
   }) => {
-    const webSocketPromise = page.waitForEvent('websocket', (webSocket) => {
-      return webSocket.url().includes('ws://localhost:4444/');
+    let webSocketPromise = page.waitForEvent('websocket', (webSocket) => {
+      return webSocket
+        .url()
+        .includes('ws://localhost:8083/collaboration/ws/?room=');
     });
 
     const randomDoc = await createDoc(page, 'doc-editor', browserName, 1);
     await expect(page.locator('h2').getByText(randomDoc[0])).toBeVisible();
 
-    const webSocket = await webSocketPromise;
-    expect(webSocket.url()).toContain('ws://localhost:4444/');
+    let webSocket = await webSocketPromise;
+    expect(webSocket.url()).toContain(
+      'ws://localhost:8083/collaboration/ws/?room=',
+    );
 
-    const framesentPromise = webSocket.waitForEvent('framesent');
+    // Is connected
+    let framesentPromise = webSocket.waitForEvent('framesent');
 
     await page.locator('.ProseMirror.bn-editor').click();
     await page.locator('.ProseMirror.bn-editor').fill('Hello World');
 
-    const framesent = await framesentPromise;
+    let framesent = await framesentPromise;
+    expect(framesent.payload).not.toBeNull();
+
+    await page.getByRole('button', { name: 'Share' }).click();
+
+    const selectVisibility = page.getByRole('combobox', {
+      name: 'Visibility',
+    });
+
+    // When the visibility is changed, the ws should closed the connection (backend signal)
+    const wsClosePromise = webSocket.waitForEvent('close');
+
+    await selectVisibility.click();
+    await page
+      .getByRole('option', {
+        name: 'Authenticated',
+      })
+      .click();
+
+    // Assert that the doc reconnects to the ws
+    const wsClose = await wsClosePromise;
+    expect(wsClose.isClosed()).toBeTruthy();
+
+    // Checkt the ws is connected again
+    webSocketPromise = page.waitForEvent('websocket', (webSocket) => {
+      return webSocket
+        .url()
+        .includes('ws://localhost:8083/collaboration/ws/?room=');
+    });
+
+    webSocket = await webSocketPromise;
+    framesentPromise = webSocket.waitForEvent('framesent');
+    framesent = await framesentPromise;
     expect(framesent.payload).not.toBeNull();
   });
 
