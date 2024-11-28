@@ -11,6 +11,9 @@ from rest_framework.test import APIClient
 from core import factories, models
 from core.api import serializers
 from core.tests.conftest import TEAM, USER, VIA
+from core.tests.test_services_collaboration_services import (  # pylint: disable=unused-import
+    mock_reset_connections,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -316,7 +319,11 @@ def test_api_document_accesses_update_authenticated_reader_or_editor(
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_administrator_except_owner(via, mock_user_teams):
+def test_api_document_accesses_update_administrator_except_owner(
+    via,
+    mock_user_teams,
+    mock_reset_connections,  # pylint: disable=redefined-outer-name
+):
     """
     A user who is a direct administrator in a document should be allowed to update a user
     access for this document, as long as they don't try to set the role to owner.
@@ -351,18 +358,21 @@ def test_api_document_accesses_update_administrator_except_owner(via, mock_user_
 
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = client.put(
-            f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
-            data=new_data,
-            format="json",
-        )
-
-        if (
-            new_data["role"] == old_values["role"]
-        ):  # we are not really updating the role
+        if new_data["role"] == old_values["role"]:
+            response = client.put(
+                f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+                data=new_data,
+                format="json",
+            )
             assert response.status_code == 403
         else:
-            assert response.status_code == 200
+            with mock_reset_connections(document.id, str(access.user_id)):
+                response = client.put(
+                    f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+                    data=new_data,
+                    format="json",
+                )
+                assert response.status_code == 200
 
         access.refresh_from_db()
         updated_values = serializers.DocumentAccessSerializer(instance=access).data
@@ -420,7 +430,11 @@ def test_api_document_accesses_update_administrator_from_owner(via, mock_user_te
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_administrator_to_owner(via, mock_user_teams):
+def test_api_document_accesses_update_administrator_to_owner(
+    via,
+    mock_user_teams,
+    mock_reset_connections,  # pylint: disable=redefined-outer-name
+):
     """
     A user who is an administrator in a document, should not be allowed to update
     the user access of another user to grant document ownership.
@@ -457,16 +471,23 @@ def test_api_document_accesses_update_administrator_to_owner(via, mock_user_team
 
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = client.put(
-            f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
-            data=new_data,
-            format="json",
-        )
         # We are not allowed or not really updating the role
         if field == "role" or new_data["role"] == old_values["role"]:
+            response = client.put(
+                f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+                data=new_data,
+                format="json",
+            )
+
             assert response.status_code == 403
         else:
-            assert response.status_code == 200
+            with mock_reset_connections(document.id, str(access.user_id)):
+                response = client.put(
+                    f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+                    data=new_data,
+                    format="json",
+                )
+                assert response.status_code == 200
 
         access.refresh_from_db()
         updated_values = serializers.DocumentAccessSerializer(instance=access).data
@@ -474,7 +495,11 @@ def test_api_document_accesses_update_administrator_to_owner(via, mock_user_team
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_owner(via, mock_user_teams):
+def test_api_document_accesses_update_owner(
+    via,
+    mock_user_teams,
+    mock_reset_connections,  # pylint: disable=redefined-outer-name
+):
     """
     A user who is an owner in a document should be allowed to update
     a user access for this document whatever the role.
@@ -507,18 +532,24 @@ def test_api_document_accesses_update_owner(via, mock_user_teams):
 
     for field, value in new_values.items():
         new_data = {**old_values, field: value}
-        response = client.put(
-            f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
-            data=new_data,
-            format="json",
-        )
-
         if (
             new_data["role"] == old_values["role"]
         ):  # we are not really updating the role
+            response = client.put(
+                f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+                data=new_data,
+                format="json",
+            )
             assert response.status_code == 403
         else:
-            assert response.status_code == 200
+            with mock_reset_connections(document.id, str(access.user_id)):
+                response = client.put(
+                    f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+                    data=new_data,
+                    format="json",
+                )
+
+                assert response.status_code == 200
 
         access.refresh_from_db()
         updated_values = serializers.DocumentAccessSerializer(instance=access).data
@@ -530,7 +561,11 @@ def test_api_document_accesses_update_owner(via, mock_user_teams):
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_update_owner_self(via, mock_user_teams):
+def test_api_document_accesses_update_owner_self(
+    via,
+    mock_user_teams,
+    mock_reset_connections,  # pylint: disable=redefined-outer-name
+):
     """
     A user who is owner of a document should be allowed to update
     their own user access provided there are other owners in the document.
@@ -568,21 +603,23 @@ def test_api_document_accesses_update_owner_self(via, mock_user_teams):
     # Add another owner and it should now work
     factories.UserDocumentAccessFactory(document=document, role="owner")
 
-    response = client.put(
-        f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
-        data={
-            **old_values,
-            "role": new_role,
-            "user_id": old_values.get("user", {}).get("id")
-            if old_values.get("user") is not None
-            else None,
-        },
-        format="json",
-    )
+    user_id = str(access.user_id) if via == USER else None
+    with mock_reset_connections(document.id, user_id):
+        response = client.put(
+            f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+            data={
+                **old_values,
+                "role": new_role,
+                "user_id": old_values.get("user", {}).get("id")
+                if old_values.get("user") is not None
+                else None,
+            },
+            format="json",
+        )
 
-    assert response.status_code == 200
-    access.refresh_from_db()
-    assert access.role == new_role
+        assert response.status_code == 200
+        access.refresh_from_db()
+        assert access.role == new_role
 
 
 # Delete
@@ -656,7 +693,9 @@ def test_api_document_accesses_delete_reader_or_editor(via, role, mock_user_team
 
 @pytest.mark.parametrize("via", VIA)
 def test_api_document_accesses_delete_administrators_except_owners(
-    via, mock_user_teams
+    via,
+    mock_user_teams,
+    mock_reset_connections,  # pylint: disable=redefined-outer-name
 ):
     """
     Users who are administrators in a document should be allowed to delete an access
@@ -685,12 +724,13 @@ def test_api_document_accesses_delete_administrators_except_owners(
     assert models.DocumentAccess.objects.count() == 2
     assert models.DocumentAccess.objects.filter(user=access.user).exists()
 
-    response = client.delete(
-        f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
-    )
+    with mock_reset_connections(document.id, str(access.user_id)):
+        response = client.delete(
+            f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+        )
 
-    assert response.status_code == 204
-    assert models.DocumentAccess.objects.count() == 1
+        assert response.status_code == 204
+        assert models.DocumentAccess.objects.count() == 1
 
 
 @pytest.mark.parametrize("via", VIA)
@@ -729,7 +769,11 @@ def test_api_document_accesses_delete_administrator_on_owners(via, mock_user_tea
 
 
 @pytest.mark.parametrize("via", VIA)
-def test_api_document_accesses_delete_owners(via, mock_user_teams):
+def test_api_document_accesses_delete_owners(
+    via,
+    mock_user_teams,
+    mock_reset_connections,  # pylint: disable=redefined-outer-name
+):
     """
     Users should be able to delete the document access of another user
     for a document of which they are owner.
@@ -753,12 +797,13 @@ def test_api_document_accesses_delete_owners(via, mock_user_teams):
     assert models.DocumentAccess.objects.count() == 2
     assert models.DocumentAccess.objects.filter(user=access.user).exists()
 
-    response = client.delete(
-        f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
-    )
+    with mock_reset_connections(document.id, str(access.user_id)):
+        response = client.delete(
+            f"/api/v1.0/documents/{document.id!s}/accesses/{access.id!s}/",
+        )
 
-    assert response.status_code == 204
-    assert models.DocumentAccess.objects.count() == 1
+        assert response.status_code == 204
+        assert models.DocumentAccess.objects.count() == 1
 
 
 @pytest.mark.parametrize("via", VIA)
