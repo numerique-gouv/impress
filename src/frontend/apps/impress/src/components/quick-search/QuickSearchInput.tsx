@@ -53,7 +53,9 @@ export const QuickSearchInput = ({
         <Command.Input
           /* eslint-disable-next-line jsx-a11y/no-autofocus */
           autoFocus={true}
+          aria-label={t('Find a member to add to the document')}
           value={inputValue}
+          role="combobox"
           placeholder={placeholder ?? t('Search')}
           onValueChange={onFilter}
         />

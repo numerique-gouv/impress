@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from 'react';
 import { css } from 'styled-components';
 
-import { Box, BoxButton, BoxProps, DropButton, Icon } from '@/components';
+import { Box, BoxButton, BoxProps, DropButton, Icon, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 
 export type DropdownMenuOption = {
@@ -10,13 +10,16 @@ export type DropdownMenuOption = {
   testId?: string;
   callback?: () => void | Promise<unknown>;
   danger?: boolean;
+  isSelected?: boolean;
   disabled?: boolean;
 };
 
 export type DropdownMenuProps = {
   options: DropdownMenuOption[];
   showArrow?: boolean;
+  label?: string;
   arrowCss?: BoxProps['$css'];
+  topMessage?: string;
 };
 
 export const DropdownMenu = ({
@@ -24,6 +27,8 @@ export const DropdownMenu = ({
   children,
   showArrow = false,
   arrowCss,
+  label,
+  topMessage,
 }: PropsWithChildren<DropdownMenuProps>) => {
   const theme = useCunninghamTheme();
   const spacings = theme.spacingsTokens();
@@ -34,10 +39,12 @@ export const DropdownMenu = ({
     setIsOpen(isOpen);
   };
 
+  console.log('topMessage', topMessage);
   return (
     <DropButton
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      label={label}
       button={
         showArrow ? (
           <Box $direction="row" $align="center">
@@ -57,11 +64,23 @@ export const DropdownMenu = ({
         )
       }
     >
-      <Box>
-        {options.map((option, index) => {
+      <Box $maxWidth="320px">
+        {topMessage && (
+          <Text
+            $variation="1000"
+            $wrap="wrap"
+            $size="xs"
+            $weight="bold"
+            $padding={{ vertical: 'xs', horizontal: 'base' }}
+          >
+            {topMessage}
+          </Text>
+        )}
+        {options.map((option) => {
           const isDisabled = option.disabled !== undefined && option.disabled;
           return (
             <BoxButton
+              role="option"
               data-testid={option.testId}
               $direction="row"
               disabled={isDisabled}
@@ -73,6 +92,7 @@ export const DropdownMenu = ({
               }}
               key={option.label}
               $align="center"
+              $justify="space-between"
               $background={colors['greyscale-000']}
               $color={colors['primary-600']}
               $padding={{ vertical: 'xs', horizontal: 'base' }}
@@ -81,28 +101,35 @@ export const DropdownMenu = ({
               $css={css`
                 border: none;
                 font-size: var(--c--theme--font--sizes--sm);
-                color: var(--c--theme--colors--primary-600);
+                color: var(--c--theme--colors--greyscale-1000);
                 font-weight: 500;
                 cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
                 user-select: none;
-                border-bottom: ${index !== options.length - 1
-                  ? `1px solid var(--c--theme--colors--greyscale-200)`
-                  : 'none'};
 
                 &:hover {
                   background-color: var(--c--theme--colors--greyscale-050);
                 }
               `}
             >
-              {option.icon && (
-                <Icon
-                  $size="20px"
-                  $theme={!isDisabled ? 'primary' : 'greyscale'}
-                  $variation={!isDisabled ? '600' : '400'}
-                  iconName={option.icon}
-                />
+              <Box $direction="row" $align="center" $gap={spacings['base']}>
+                {option.icon && (
+                  <Icon
+                    $size="20px"
+                    $theme="greyscale"
+                    $variation={isDisabled ? '400' : '1000'}
+                    iconName={option.icon}
+                  />
+                )}
+                <Text
+                  $margin={{ top: '-3px' }}
+                  $variation={isDisabled ? '400' : '1000'}
+                >
+                  {option.label}
+                </Text>
+              </Box>
+              {option.isSelected && (
+                <Icon iconName="check" $size="20px" $theme="greyscale" />
               )}
-              {option.label}
             </BoxButton>
           );
         })}

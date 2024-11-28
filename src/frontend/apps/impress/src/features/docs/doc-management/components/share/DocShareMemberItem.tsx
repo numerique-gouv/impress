@@ -28,7 +28,7 @@ export const DocShareMemberItem = ({ doc, access }: Props) => {
   const { toast } = useToastProvider();
   const { isDesktop } = useResponsiveStore();
   const isNotAllowed =
-    isOtherOwner || isLastOwner || !doc.abilities.accesses_manage;
+    isOtherOwner || !!isLastOwner || !doc.abilities.accesses_manage;
 
   const { mutate: updateDocAccess } = useUpdateDocAccess({
     onError: () => {
@@ -68,24 +68,34 @@ export const DocShareMemberItem = ({ doc, access }: Props) => {
   ];
 
   return (
-    <SearchUserRow
-      alwaysShowRight={true}
-      user={access.user}
-      right={
-        <Box $direction="row" $align="center">
-          <DocRoleDropdown
-            currentRole={access.role}
-            onSelectRole={onUpdate}
-            canUpdate={!isNotAllowed}
-          />
+    <Box
+      $width="100%"
+      data-testid={`doc-share-member-row-${access.user.email}`}
+    >
+      <SearchUserRow
+        alwaysShowRight={true}
+        user={access.user}
+        right={
+          <Box $direction="row" $align="center">
+            <DocRoleDropdown
+              currentRole={access.role}
+              onSelectRole={onUpdate}
+              canUpdate={doc.abilities.accesses_manage}
+              isLastOwner={isLastOwner}
+              isOtherOwner={!!isOtherOwner}
+            />
 
-          {isDesktop && (
-            <DropdownMenu options={moreActions}>
-              <IconOptions $variation="600" />
-            </DropdownMenu>
-          )}
-        </Box>
-      }
-    />
+            {isDesktop && doc.abilities.accesses_manage && (
+              <DropdownMenu options={moreActions}>
+                <IconOptions
+                  data-testid="doc-share-member-more-actions"
+                  $variation="600"
+                />
+              </DropdownMenu>
+            )}
+          </Box>
+        }
+      />
+    </Box>
   );
 };

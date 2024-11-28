@@ -4,11 +4,18 @@ import { Box } from './Box';
 import { Icon } from './Icon';
 import { Text } from './Text';
 
-export const LoadMoreText = () => {
+type LoadMoreTextProps = {
+  ['data-testid']?: string;
+};
+
+export const LoadMoreText = ({
+  'data-testid': dataTestId,
+}: LoadMoreTextProps) => {
   const { t } = useTranslation();
 
   return (
     <Box
+      data-testid={dataTestId}
       $direction="row"
       $align="center"
       $gap="0.4rem"

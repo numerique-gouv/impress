@@ -7,6 +7,7 @@ import {
 } from '@openfun/cunningham-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from 'styled-components';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { Box } from '@/components';
@@ -84,7 +85,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
       endActions: membersQuery.hasNextPage
         ? [
             {
-              content: <LoadMoreText />,
+              content: <LoadMoreText data-testid="load-more-members" />,
               onSelect: () => void membersQuery.fetchNextPage(),
             },
           ]
@@ -102,7 +103,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
       endActions: invitationQuery.hasNextPage
         ? [
             {
-              content: <LoadMoreText />,
+              content: <LoadMoreText data-testid="load-more-invitations" />,
               onSelect: () => void invitationQuery.fetchNextPage(),
             },
           ]
@@ -121,7 +122,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
     };
 
     return {
-      groupName: t('Share with {{count}} users', { count: users.length }),
+      groupName: t('Search user result', { count: users.length }),
       elements: users,
       endActions:
         isEmail && users.length === 0
@@ -154,6 +155,7 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
   return (
     <Modal
       isOpen
+      closeOnClickOutside
       size={isDesktop ? ModalSize.LARGE : ModalSize.FULL}
       onClose={onClose}
       title={
@@ -162,89 +164,125 @@ export const DocShareModal = ({ doc, onClose }: Props) => {
         </Box>
       }
     >
-      {canShare && selectedUsers.length > 0 && (
-        <Box $padding={{ horizontal: 'base' }} $margin={{ vertical: '11px' }}>
-          <DocShareAddMemberList
-            doc={doc}
-            selectedUsers={selectedUsers}
-            onRemoveUser={onRemoveUser}
-            afterInvite={() => {
-              setUserQuery('');
-              setInputValue('');
-              setSelectedUsers([]);
-            }}
-          />
-        </Box>
-      )}
-
-      <QuickSearch
-        data={[]}
-        onFilter={(str) => {
-          setInputValue(str);
-          onFilter(str);
-        }}
-        inputValue={inputValue}
-        showInput={canShare}
-        loading={searchUsersQuery.isLoading}
-        renderElement={(user) => <DocShareModalInviteUserRow user={user} />}
-        onSelect={onSelect}
-        placeholder={t('Type a name or email')}
+      <Box
+        aria-label={t('List members card')}
+        $direction="column"
+        $height={isDesktop ? undefined : 'calc(100vh - 50px)'}
+        $justify="space-between"
       >
-        {!showMemberSection && inputValue !== '' && (
-          <QuickSearchGroup
-            group={searchUserData}
-            onSelect={onSelect}
-            renderElement={(user) => <DocShareModalInviteUserRow user={user} />}
-          />
-        )}
-        {showMemberSection && (
-          <>
-            {invitationsData.elements.length > 0 && (
-              <QuickSearchGroup
-                group={invitationsData}
-                renderElement={(invitation) => (
-                  <DocShareInvitationItem doc={doc} invitation={invitation} />
-                )}
-              />
-            )}
-
-            <QuickSearchGroup
-              group={membersData}
-              renderElement={(access) => (
-                <DocShareMemberItem doc={doc} access={access} />
-              )}
-            />
-          </>
-        )}
-      </QuickSearch>
-      <HorizontalSeparator />
-      <DocVisibility doc={doc} />
-      <HorizontalSeparator />
-      <Box $direction="row" $justify="space-between" $padding="base">
-        <Button
-          fullWidth={false}
-          onClick={() => {
-            navigator.clipboard
-              .writeText(window.location.href)
-              .then(() => {
-                toast(t('Link Copied !'), VariantType.SUCCESS, {
-                  duration: 3000,
-                });
-              })
-              .catch(() => {
-                toast(t('Failed to copy link'), VariantType.ERROR, {
-                  duration: 3000,
-                });
-              });
-          }}
-          color="tertiary"
-          icon={<span className="material-icons">add_link</span>}
+        <Box
+          $flex={1}
+          $css={css`
+            overflow-y: auto;
+            [cmdk-list] {
+              overflow-y: auto;
+              max-height: ${isDesktop ? '400px' : '100%'};
+            }
+          `}
         >
-          {t('Copy link')}
-        </Button>
-        <Button onClick={onClose} color="primary">
-          {t('Ok')}
-        </Button>
+          {canShare && selectedUsers.length > 0 && (
+            <Box
+              $padding={{ horizontal: 'base' }}
+              $margin={{ vertical: '11px' }}
+            >
+              <DocShareAddMemberList
+                doc={doc}
+                selectedUsers={selectedUsers}
+                onRemoveUser={onRemoveUser}
+                afterInvite={() => {
+                  setUserQuery('');
+                  setInputValue('');
+                  setSelectedUsers([]);
+                }}
+              />
+            </Box>
+          )}
+
+          <Box data-testid="doc-share-quick-search">
+            <QuickSearch
+              data={[]}
+              onFilter={(str) => {
+                setInputValue(str);
+                onFilter(str);
+              }}
+              inputValue={inputValue}
+              showInput={canShare}
+              loading={searchUsersQuery.isLoading}
+              renderElement={(user) => (
+                <DocShareModalInviteUserRow user={user} />
+              )}
+              onSelect={onSelect}
+              placeholder={t('Type a name or email')}
+            >
+              {!showMemberSection && inputValue !== '' && (
+                <QuickSearchGroup
+                  group={searchUserData}
+                  onSelect={onSelect}
+                  renderElement={(user) => (
+                    <DocShareModalInviteUserRow user={user} />
+                  )}
+                />
+              )}
+              {showMemberSection && (
+                <>
+                  {invitationsData.elements.length > 0 && (
+                    <QuickSearchGroup
+                      group={invitationsData}
+                      renderElement={(invitation) => (
+                        <DocShareInvitationItem
+                          doc={doc}
+                          invitation={invitation}
+                        />
+                      )}
+                    />
+                  )}
+
+                  <QuickSearchGroup
+                    group={membersData}
+                    renderElement={(access) => (
+                      <DocShareMemberItem doc={doc} access={access} />
+                    )}
+                  />
+                </>
+              )}
+            </QuickSearch>
+          </Box>
+        </Box>
+        <Box
+          $css={css`
+            flex-shrink: 0;
+          `}
+        >
+          <HorizontalSeparator />
+          <DocVisibility doc={doc} />
+          <HorizontalSeparator />
+          <Box $direction="row" $justify="space-between" $padding="base">
+            <Button
+              fullWidth={false}
+              onClick={() => {
+                navigator.clipboard
+                  .writeText(window.location.href)
+                  .then(() => {
+                    toast(t('Link Copied !'), VariantType.SUCCESS, {
+                      duration: 3000,
+                    });
+                  })
+                  .catch(() => {
+                    toast(t('Failed to copy link'), VariantType.ERROR, {
+                      duration: 3000,
+                    });
+                  });
+              }}
+              color="tertiary"
+              icon={<span className="material-icons">add_link</span>}
+            >
+              {t('Copy link')}
+            </Button>
+            <Button onClick={onClose} color="primary">
+              {t('Ok')}
+            </Button>
+          </Box>
+        </Box>
       </Box>
     </Modal>
   );

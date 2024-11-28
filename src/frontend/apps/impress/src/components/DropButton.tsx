@@ -27,6 +27,7 @@ const StyledButton = styled(Button)`
 export interface DropButtonProps {
   button: ReactNode;
   isOpen?: boolean;
+  label?: string;
   onOpenChange?: (isOpen: boolean) => void;
 }
 
@@ -34,6 +35,7 @@ export const DropButton = ({
   button,
   isOpen = false,
   onOpenChange,
+  label,
   children,
 }: PropsWithChildren<DropButtonProps>) => {
   const [opacity, setOpacity] = useState(false);
@@ -53,7 +55,7 @@ export const DropButton = ({
 
   return (
     <DialogTrigger onOpenChange={onOpenChangeHandler} isOpen={isLocalOpen}>
-      <StyledButton>{button}</StyledButton>
+      <StyledButton aria-label={label}>{button}</StyledButton>
       <StyledPopover
         style={{ opacity: opacity ? 1 : 0 }}
         isOpen={isLocalOpen}

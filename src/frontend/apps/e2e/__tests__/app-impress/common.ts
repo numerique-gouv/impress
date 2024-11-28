@@ -67,7 +67,9 @@ export const addNewMember = async (
       response.status() === 200,
   );
 
-  const inputSearch = page.getByLabel(/Find a member to add to the document/);
+  const inputSearch = page.getByRole('combobox', {
+    name: 'Find a member to add to the document',
+  });
 
   // Select a new user
   await inputSearch.fill(fillText);
@@ -79,17 +81,19 @@ export const addNewMember = async (
   }[];
 
   // Choose user
-  await page.getByRole('option', { name: users[index].email }).click();
+  await page.getByTestId(`search-user-row-${users[index].email}`).click();
 
   // Choose a role
-  await page.getByRole('combobox', { name: /Choose a role/ }).click();
+  const container = page.getByTestId('doc-share-add-member-list');
+  await container.getByLabel('doc-role-dropdown').click();
   await page.getByRole('option', { name: role }).click();
-  await page.getByRole('button', { name: 'Validate' }).click();
+  await page.getByRole('button', { name: 'Invite' }).click();
 
-  await expect(
-    page.getByText(`User ${users[index].email} added to the document.`),
-  ).toBeVisible();
-
+  const list = page.getByTestId('doc-share-quick-search');
+  const newUser = list.getByTestId(
+    `doc-share-member-row-${users[index].email}`,
+  );
+  await expect(newUser).toBeVisible();
   return users[index].email;
 };
 

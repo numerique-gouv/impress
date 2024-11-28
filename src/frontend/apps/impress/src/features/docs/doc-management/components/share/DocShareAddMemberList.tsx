@@ -117,6 +117,7 @@ export const DocShareAddMemberList = ({
 
   return (
     <Box
+      data-testid="doc-share-add-member-list"
       $direction="row"
       $padding={spacing.sm}
       $align="center"

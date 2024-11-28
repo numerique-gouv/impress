@@ -7,13 +7,8 @@ export const QuickSearchStyle = createGlobalStyle`
         background: #ffffff;
         border-radius: 12px;
         overflow: hidden;
-
         transition: transform 100ms ease;
         outline: none;
-
-        .dark & {
-        background: rgba(22, 22, 22, 0.7);
-        }
   }
 
   [cmdk-input] {
@@ -23,9 +18,7 @@ export const QuickSearchStyle = createGlobalStyle`
     padding: 8px;
     background: white;
     outline: none;
-    
     color: var(--c--theme--colors--greyscale-1000);
-
     border-radius: 0;
 
     &::placeholder {
@@ -50,17 +43,12 @@ export const QuickSearchStyle = createGlobalStyle`
 
   [cmdk-item] {
     content-visibility: auto;
-
-    cursor: pointer;
-    
-    
+    cursor: pointer;  
     border-radius: var(--c--theme--spacings--xs);
     font-size: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
-    /* padding: var(--c--theme--spacings--2xs) ; */
-
     user-select: none;
     will-change: background, color;
     transition: all 150ms ease;
@@ -89,11 +77,11 @@ export const QuickSearchStyle = createGlobalStyle`
   }
 
   [cmdk-list] {
-    height: 500px;
+  
     padding: 0 var(--c--theme--spacings--sm) var(--c--theme--spacings--sm)
       var(--c--theme--spacings--sm);
-    max-height: 700px;
-    
+  
+    flex:1;
     overflow-y: auto;
     overscroll-behavior: contain;
     transition: 100ms ease;
@@ -161,7 +149,7 @@ export const QuickSearchStyle = createGlobalStyle`
   .c__modal__title {
     font-size: var(--c--theme--font--sizes--xs);
     
-    padding: var(--c--theme--spacings--200W);
+    padding: var(--c--theme--spacings--base);
     margin-bottom: 0;
   }
 }

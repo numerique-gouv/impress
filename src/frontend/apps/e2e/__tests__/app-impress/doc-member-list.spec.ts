@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-import { waitForElementCount } from '../helpers';
-
 import { addNewMember, createDoc, goToGridDoc, verifyDocName } from './common';
 
 test.beforeEach(async ({ page }) => {
@@ -15,10 +13,11 @@ test.describe('Document list members', () => {
       async (route) => {
         const request = route.request();
         const url = new URL(request.url());
-        const pageId = url.searchParams.get('page');
+        const pageId = url.searchParams.get('page') ?? '1';
+
         const accesses = {
-          count: 100,
-          next: 'http://anything/?page=2',
+          count: 40,
+          next: +pageId < 2 ? 'http://anything/?page=2' : undefined,
           previous: null,
           results: Array.from({ length: 20 }, (_, i) => ({
             id: `2ff1ec07-86c1-4534-a643-f41824a6c53a-${pageId}-${i}`,
@@ -48,25 +47,20 @@ test.describe('Document list members', () => {
     );
 
     await goToGridDoc(page);
-
     await page.getByRole('button', { name: 'Share' }).click();
 
-    const list = page.getByLabel('List members card').locator('ul');
-    await expect(list.locator('li')).toHaveCount(20);
-    await list.getByText(`impress@impress.world-page-${1}-18`).hover();
-    await page.mouse.wheel(0, 10);
+    const prefix = 'doc-share-member-row';
+    const elements = page.locator(`[data-testid^="${prefix}"]`);
+    const loadMore = page.getByTestId('load-more-members');
 
-    await waitForElementCount(list.locator('li'), 21, 10000);
+    await expect(elements).toHaveCount(20);
+    await expect(page.getByText(`Impress World Page 1-16`)).toBeVisible();
 
-    expect(await list.locator('li').count()).toBeGreaterThan(20);
-    await expect(list.getByText(`Impress World Page 1-16`)).toBeVisible();
-    await expect(
-      list.getByText(`impress@impress.world-page-1-16`),
-    ).toBeVisible();
-    await expect(list.getByText(`Impress World Page 2-15`)).toBeVisible();
-    await expect(
-      list.getByText(`impress@impress.world-page-2-15`),
-    ).toBeVisible();
+    await loadMore.click();
+    await expect(elements).toHaveCount(40);
+    await expect(page.getByText(`Impress World Page 2-15`)).toBeVisible();
+
+    await expect(loadMore).toBeHidden();
   });
 
   test('it checks a big list of invitations', async ({ page }) => {
@@ -75,10 +69,10 @@ test.describe('Document list members', () => {
       async (route) => {
         const request = route.request();
         const url = new URL(request.url());
-        const pageId = url.searchParams.get('page');
+        const pageId = url.searchParams.get('page') ?? '1';
         const accesses = {
-          count: 100,
-          next: 'http://anything/?page=2',
+          count: 40,
+          next: +pageId < 2 ? 'http://anything/?page=2' : null,
           previous: null,
           results: Array.from({ length: 20 }, (_, i) => ({
             id: `2ff1ec07-86c1-4534-a643-f41824a6c53a-${pageId}-${i}`,
@@ -105,23 +99,24 @@ test.describe('Document list members', () => {
     );
 
     await goToGridDoc(page);
-
     await page.getByRole('button', { name: 'Share' }).click();
 
-    const list = page.getByLabel('List invitation card').locator('ul');
-    await expect(list.locator('li')).toHaveCount(20);
-    await list.getByText(`impress@impress.world-page-${1}-18`).hover();
-    await page.mouse.wheel(0, 10);
+    const prefix = 'doc-share-invitation';
+    const elements = page.locator(`[data-testid^="${prefix}"]`);
+    const loadMore = page.getByTestId('load-more-invitations');
 
-    await waitForElementCount(list.locator('li'), 21, 10000);
+    await expect(elements).toHaveCount(20);
+    await expect(
+      page.getByText(`impress@impress.world-page-1-16`).first(),
+    ).toBeVisible();
 
-    expect(await list.locator('li').count()).toBeGreaterThan(20);
+    await loadMore.click();
+    await expect(elements).toHaveCount(40);
     await expect(
-      list.getByText(`impress@impress.world-page-1-16`),
+      page.getByText(`impress@impress.world-page-2-16`).first(),
     ).toBeVisible();
-    await expect(
-      list.getByText(`impress@impress.world-page-2-15`),
-    ).toBeVisible();
+
+    await expect(loadMore).toBeHidden();
   });
 
   test('it checks the role rules', async ({ page, browserName }) => {
@@ -130,59 +125,47 @@ test.describe('Document list members', () => {
     await verifyDocName(page, docTitle);
 
     await page.getByRole('button', { name: 'Share' }).click();
-
-    const list = page.getByLabel('List members card').locator('ul');
-
-    await expect(list.getByText(`user@${browserName}.e2e`)).toBeVisible();
-
-    const soleOwner = list.getByText(
+    const list = page.getByTestId('doc-share-quick-search');
+    await expect(list).toBeVisible();
+    const currentUser = list.getByTestId(
+      `doc-share-member-row-user@chromium.e2e`,
+    );
+    const currentUserRole = currentUser.getByLabel('doc-role-dropdown');
+    await expect(currentUser).toBeVisible();
+    await expect(currentUserRole).toBeVisible();
+    await currentUserRole.click();
+    const soloOwner = page.getByText(
       `You are the sole owner of this group, make another member the group owner before you can change your own role or be removed from your document.`,
     );
+    await expect(soloOwner).toBeVisible();
+    await list.click();
+    const newUserEmail = await addNewMember(page, 0, 'Owner');
+    const newUser = list.getByTestId(`doc-share-member-row-${newUserEmail}`);
+    const newUserRoles = newUser.getByLabel('doc-role-dropdown');
 
-    await expect(soleOwner).toBeVisible();
+    await expect(newUser).toBeVisible();
 
-    const username = await addNewMember(page, 0, 'Owner');
+    await currentUserRole.click();
+    await expect(soloOwner).toBeHidden();
+    await list.click();
 
-    await expect(list.getByText(username)).toBeVisible();
-
-    await expect(soleOwner).toBeHidden();
-
-    const otherOwner = list.getByText(
+    const otherOwner = page.getByText(
       `You cannot update the role or remove other owner.`,
     );
 
+    await newUserRoles.click();
     await expect(otherOwner).toBeVisible();
+    await list.click();
 
-    const SelectRoleCurrentUser = list
-      .locator('li')
-      .filter({
-        hasText: `user@${browserName}.e2e`,
-      })
-      .getByRole('combobox', { name: 'Role' });
-
-    await SelectRoleCurrentUser.click();
+    await currentUserRole.click();
     await page.getByRole('option', { name: 'Administrator' }).click();
-    await expect(page.getByText('The role has been updated')).toBeVisible();
+    await list.click();
+    await expect(currentUserRole).toBeVisible();
 
-    const shareModal = page.getByLabel('Share modal');
-
-    // Admin still have the right to share
-    await expect(
-      shareModal.getByRole('combobox', {
-        name: 'Visibility',
-      }),
-    ).not.toHaveAttribute('disabled');
-
-    await SelectRoleCurrentUser.click();
+    await currentUserRole.click();
     await page.getByRole('option', { name: 'Reader' }).click();
-    await expect(page.getByText('The role has been updated')).toBeVisible();
-
-    // Reader does not have the right to share
-    await expect(
-      shareModal.getByRole('combobox', {
-        name: 'Visibility',
-      }),
-    ).toHaveAttribute('disabled');
+    await list.click();
+    await expect(currentUserRole).toBeHidden();
   });
 
   test('it checks the delete members', async ({ page, browserName }) => {
@@ -192,43 +175,44 @@ test.describe('Document list members', () => {
 
     await page.getByRole('button', { name: 'Share' }).click();
 
-    const list = page.getByLabel('List members card').locator('ul');
+    const list = page.getByTestId('doc-share-quick-search');
 
-    const nameMyself = `user@${browserName}.e2e`;
-    await expect(list.getByText(nameMyself)).toBeVisible();
+    const emailMyself = `user@${browserName}.e2e`;
+    const mySelf = list.getByTestId(`doc-share-member-row-${emailMyself}`);
+    const mySelfMoreActions = mySelf.getByRole('button', { name: 'more_vert' });
 
-    const userOwner = await addNewMember(page, 0, 'Owner');
-    await expect(list.getByText(userOwner)).toBeVisible();
+    const userOwnerEmail = await addNewMember(page, 0, 'Owner');
+    const userOwner = list.getByTestId(
+      `doc-share-member-row-${userOwnerEmail}`,
+    );
+    const userOwnerMoreActions = userOwner.getByRole('button', {
+      name: 'more_vert',
+    });
 
-    const userReader = await addNewMember(page, 0, 'Reader');
-    await expect(list.getByText(userReader)).toBeVisible();
+    const userReaderEmail = await addNewMember(page, 0, 'Reader');
+    const userReader = list.getByTestId(
+      `doc-share-member-row-${userReaderEmail}`,
+    );
+    const userReaderMoreActions = userReader.getByRole('button', {
+      name: 'more_vert',
+    });
 
-    await list
-      .locator('li')
-      .filter({
-        hasText: userReader,
-      })
-      .getByText('delete')
-      .click();
+    await expect(mySelf).toBeVisible();
+    await expect(userOwner).toBeVisible();
+    await expect(userReader).toBeVisible();
 
-    await expect(list.getByText(userReader)).toBeHidden();
+    await expect(userOwnerMoreActions).toBeVisible();
+    await expect(userReaderMoreActions).toBeVisible();
+    await expect(mySelfMoreActions).toBeVisible();
 
-    await list
-      .locator('li')
-      .filter({
-        hasText: nameMyself,
-      })
-      .getByText('delete')
-      .click();
+    await userReaderMoreActions.click();
+    await page.getByRole('option', { name: 'Delete' }).click();
+    await expect(userReader).toBeHidden();
 
-    await expect(list.getByText(nameMyself)).toBeHidden();
-
+    await mySelfMoreActions.click();
+    await page.getByRole('option', { name: 'Delete' }).click();
     await expect(
-      page.getByText('The member has been removed from the document').first(),
+      page.getByText('You do not have permission to perform this action.'),
     ).toBeVisible();
-
-    await expect(
-      page.getByRole('heading', { name: 'Share', level: 3 }),
-    ).toBeHidden();
   });
 });

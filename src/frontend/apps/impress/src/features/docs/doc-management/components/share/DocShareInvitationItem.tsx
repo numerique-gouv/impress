@@ -32,7 +32,8 @@ export const DocShareInvitationItem = ({ doc, invitation }: Props) => {
   };
 
   const { toast } = useToastProvider();
-  const canUpdate = invitation.abilities.partial_update;
+  const canUpdate = doc.abilities.accesses_manage;
+
   const { mutate: updateDocInvitation } = useUpdateDocInvitation({
     onError: (error) => {
       toast(
@@ -78,22 +79,30 @@ export const DocShareInvitationItem = ({ doc, invitation }: Props) => {
     },
   ];
   return (
-    <SearchUserRow
-      showRightOnHover={false}
-      user={fakeUser}
-      right={
-        <Box $direction="row" $align="center">
-          <DocRoleDropdown
-            currentRole={invitation.role}
-            onSelectRole={onUpdate}
-            canUpdate={canUpdate}
-          />
+    <Box
+      $width="100%"
+      data-testid={`doc-share-invitation-row-${invitation.email}`}
+    >
+      <SearchUserRow
+        alwaysShowRight={true}
+        user={fakeUser}
+        right={
+          <Box $direction="row" $align="center">
+            <DocRoleDropdown
+              currentRole={invitation.role}
+              onSelectRole={onUpdate}
+              canUpdate={canUpdate}
+            />
 
-          <DropdownMenu options={moreActions}>
-            <IconOptions $variation="600" />
-          </DropdownMenu>
-        </Box>
-      }
-    />
+            <DropdownMenu
+              data-testid="doc-share-invitation-more-actions"
+              options={moreActions}
+            >
+              <IconOptions $variation="600" />
+            </DropdownMenu>
+          </Box>
+        }
+      />
+    </Box>
   );
 };

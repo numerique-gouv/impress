@@ -21,11 +21,7 @@ import {
   useEditorStore,
   usePanelEditorStore,
 } from '@/features/docs/doc-editor/';
-import {
-  Doc,
-  ModalRemoveDoc,
-  ModalShare,
-} from '@/features/docs/doc-management';
+import { Doc, ModalRemoveDoc } from '@/features/docs/doc-management';
 import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
 
@@ -204,9 +200,9 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
           />
         </DropdownMenu>
       </Box>
-      {isModalShareOpen && (
+      {/* {isModalShareOpen && (
         <ModalShare onClose={() => setIsModalShareOpen(false)} doc={doc} />
-      )}
+      )} */}
       {modalShare.isOpen && (
         <DocShareModal doc={doc} onClose={modalShare.onClose} />
       )}

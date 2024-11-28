@@ -17,6 +17,7 @@ export const DocShareAddMemberListItem = ({ user, onRemoveUser }: Props) => {
   const fontSize = fontSizesTokens();
   return (
     <Box
+      data-testid={`doc-share-add-member-${user.email}`}
       $radius={spacing['3xs']}
       $direction="row"
       $height="fit-content"
