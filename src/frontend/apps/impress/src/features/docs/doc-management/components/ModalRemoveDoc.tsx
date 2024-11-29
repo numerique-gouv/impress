@@ -6,11 +6,11 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { t } from 'i18next';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Text, TextErrors } from '@/components';
-import useCunninghamTheme from '@/cunningham/useCunninghamTheme';
+import { useCunninghamTheme } from '@/cunningham/';
 
 import { useRemoveDoc } from '../api/useRemoveDoc';
 import IconDoc from '../assets/icon-doc.svg';
@@ -22,6 +22,7 @@ interface ModalRemoveDocProps {
 }
 
 export const ModalRemoveDoc = ({ onClose, doc }: ModalRemoveDocProps) => {
+  const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
   const { toast } = useToastProvider();
   const { push } = useRouter();

@@ -1,13 +1,13 @@
 {
   "name": "eslint-config-impress",
-  "version": "1.7.0",
+  "version": "1.8.2",
   "license": "MIT",
   "scripts": {
     "lint": "eslint --ext .js ."
   },
   "dependencies": {
     "@next/eslint-plugin-next": "15.0.3",
-    "@tanstack/eslint-plugin-query": "5.60.1",
+    "@tanstack/eslint-plugin-query": "5.61.3",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "eslint": "*",
@@ -16,10 +16,10 @@
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.9.0",
     "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-playwright": "2.0.1",
+    "eslint-plugin-playwright": "2.1.0",
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-react": "7.37.2",
-    "eslint-plugin-testing-library": "6.4.0",
+    "eslint-plugin-testing-library": "7.0.0",
     "prettier": "3.3.3"
   }
 }

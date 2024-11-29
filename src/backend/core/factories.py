@@ -56,6 +56,7 @@ class DocumentFactory(factory.django.DjangoModelFactory):
 
     title = factory.Sequence(lambda n: f"document{n}")
     content = factory.Sequence(lambda n: f"content{n}")
+    creator = factory.SubFactory(UserFactory)
     link_reach = factory.fuzzy.FuzzyChoice(
         [a[0] for a in models.LinkReachChoices.choices]
     )
@@ -79,6 +80,13 @@ class DocumentFactory(factory.django.DjangoModelFactory):
         if create and extracted:
             for item in extracted:
                 models.LinkTrace.objects.create(document=self, user=item)
+
+    @factory.post_generation
+    def favorited_by(self, create, extracted, **kwargs):
+        """Mark document as favorited by a list of users."""
+        if create and extracted:
+            for item in extracted:
+                models.DocumentFavorite.objects.create(document=self, user=item)
 
 
 class UserDocumentAccessFactory(factory.django.DjangoModelFactory):

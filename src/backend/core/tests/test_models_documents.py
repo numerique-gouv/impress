@@ -32,15 +32,25 @@ def test_models_documents_id_unique():
         factories.DocumentFactory(id=document.id)
 
 
+def test_models_documents_creator_required():
+    """The "creator" field should be required."""
+    with pytest.raises(ValidationError) as excinfo:
+        models.Document.objects.create()
+
+    assert excinfo.value.message_dict["creator"] == ["This field cannot be null."]
+
+
 def test_models_documents_title_null():
     """The "title" field can be null."""
-    document = models.Document.objects.create(title=None)
+    document = models.Document.objects.create(
+        title=None, creator=factories.UserFactory()
+    )
     assert document.title is None
 
 
 def test_models_documents_title_empty():
     """The "title" field can be empty."""
-    document = models.Document.objects.create(title="")
+    document = models.Document.objects.create(title="", creator=factories.UserFactory())
     assert document.title == ""
 
 
@@ -88,9 +98,10 @@ def test_models_documents_get_abilities_forbidden(is_authenticated, reach, role)
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
-        "link_configuration": False,
         "destroy": False,
+        "favorite": False,
         "invite_owner": False,
+        "link_configuration": False,
         "partial_update": False,
         "retrieve": False,
         "update": False,
@@ -123,8 +134,9 @@ def test_models_documents_get_abilities_reader(is_authenticated, reach):
         "ai_translate": False,
         "attachment_upload": False,
         "destroy": False,
-        "link_configuration": False,
+        "favorite": is_authenticated,
         "invite_owner": False,
+        "link_configuration": False,
         "partial_update": False,
         "retrieve": True,
         "update": False,
@@ -157,8 +169,9 @@ def test_models_documents_get_abilities_editor(is_authenticated, reach):
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": False,
-        "link_configuration": False,
+        "favorite": is_authenticated,
         "invite_owner": False,
+        "link_configuration": False,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -180,8 +193,9 @@ def test_models_documents_get_abilities_owner():
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": True,
-        "link_configuration": True,
+        "favorite": True,
         "invite_owner": True,
+        "link_configuration": True,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -202,8 +216,9 @@ def test_models_documents_get_abilities_administrator():
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": False,
-        "link_configuration": True,
+        "favorite": True,
         "invite_owner": False,
+        "link_configuration": True,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -227,8 +242,9 @@ def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
         "ai_translate": True,
         "attachment_upload": True,
         "destroy": False,
-        "link_configuration": False,
+        "favorite": True,
         "invite_owner": False,
+        "link_configuration": False,
         "partial_update": True,
         "retrieve": True,
         "update": True,
@@ -254,8 +270,9 @@ def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
         "ai_translate": False,
         "attachment_upload": False,
         "destroy": False,
-        "link_configuration": False,
+        "favorite": True,
         "invite_owner": False,
+        "link_configuration": False,
         "partial_update": False,
         "retrieve": True,
         "update": False,
@@ -282,8 +299,9 @@ def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
         "ai_translate": False,
         "attachment_upload": False,
         "destroy": False,
-        "link_configuration": False,
+        "favorite": True,
         "invite_owner": False,
+        "link_configuration": False,
         "partial_update": False,
         "retrieve": True,
         "update": False,

@@ -4,12 +4,7 @@ import { css } from 'styled-components';
 
 import { Box, Card, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import {
-  Doc,
-  Role,
-  currentDocRole,
-  useTrans,
-} from '@/features/docs/doc-management';
+import { Doc, currentDocRole, useTrans } from '@/features/docs/doc-management';
 import { Versions } from '@/features/docs/doc-versioning';
 import { useDate } from '@/hook';
 import { useResponsiveStore } from '@/stores';
@@ -99,21 +94,6 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
             <DocTagPublic doc={doc} />
             <Text $size="s" $display="inline">
               {t('Created at')} <strong>{formatDate(doc.created_at)}</strong>
-            </Text>
-            <Text $size="s" $display="inline" $elipsis $maxWidth="60vw">
-              {t('Owners:')}{' '}
-              <strong>
-                {doc.accesses
-                  .filter(
-                    (access) => access.role === Role.OWNER && access.user.email,
-                  )
-                  .map((access, index, accesses) => (
-                    <Fragment key={`access-${index}`}>
-                      {access.user.full_name || access.user.email}{' '}
-                      {index < accesses.length - 1 ? ' / ' : ''}
-                    </Fragment>
-                  ))}
-              </strong>
             </Text>
           </Box>
           <Text $size="s" $display="inline">

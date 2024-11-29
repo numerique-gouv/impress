@@ -7,6 +7,7 @@ import '@/i18n/initI18n';
 import { useResponsiveStore } from '@/stores/';
 
 import { Auth } from './auth/';
+import { ConfigProvider } from './config/';
 
 /**
  * QueryClient:
@@ -39,7 +40,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <CunninghamProvider theme={theme}>
-        <Auth>{children}</Auth>
+        <ConfigProvider>
+          <Auth>{children}</Auth>
+        </ConfigProvider>
       </CunninghamProvider>
     </QueryClientProvider>
   );

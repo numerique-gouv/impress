@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
+import { useCollaborationUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
 import { DocEditor } from '@/features/docs/doc-editor';
 import { KEY_DOC, useDoc, useDocStore } from '@/features/docs/doc-management';
@@ -47,6 +48,7 @@ const DocPage = ({ id }: DocProps) => {
   const queryClient = useQueryClient();
   const { replace } = useRouter();
   const provider = providers?.[id];
+  const collaborationUrl = useCollaborationUrl(doc?.id);
 
   useEffect(() => {
     if (doc?.title) {
@@ -70,17 +72,17 @@ const DocPage = ({ id }: DocProps) => {
   }, [docQuery, setCurrentDoc]);
 
   useEffect(() => {
-    if (!doc?.id) {
+    if (!doc?.id || !collaborationUrl) {
       return;
     }
 
     let newProvider = provider;
     if (!provider || provider.document.guid !== doc.id) {
-      newProvider = createProvider(doc.id, doc.content);
+      newProvider = createProvider(collaborationUrl, doc.id, doc.content);
     }
 
     setBroadcastProvider(newProvider);
-  }, [createProvider, doc, provider, setBroadcastProvider]);
+  }, [createProvider, doc, provider, setBroadcastProvider, collaborationUrl]);
 
   /**
    * We add a broadcast task to reset the query cache

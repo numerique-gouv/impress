@@ -2,7 +2,6 @@ import { HocuspocusProvider } from '@hocuspocus/provider';
 import * as Y from 'yjs';
 import { create } from 'zustand';
 
-import { providerUrl } from '@/core';
 import { Base64, Doc, blocksToYDoc } from '@/features/docs/doc-management';
 
 export interface UseDocStore {
@@ -10,7 +9,11 @@ export interface UseDocStore {
   providers: {
     [storeId: string]: HocuspocusProvider;
   };
-  createProvider: (storeId: string, initialDoc: Base64) => HocuspocusProvider;
+  createProvider: (
+    providerUrl: string,
+    storeId: string,
+    initialDoc: Base64,
+  ) => HocuspocusProvider;
   setProviders: (storeId: string, providers: HocuspocusProvider) => void;
   setCurrentDoc: (doc: Doc | undefined) => void;
 }
@@ -18,7 +21,7 @@ export interface UseDocStore {
 export const useDocStore = create<UseDocStore>((set, get) => ({
   currentDoc: undefined,
   providers: {},
-  createProvider: (storeId: string, initialDoc: Base64) => {
+  createProvider: (providerUrl, storeId, initialDoc) => {
     const doc = new Y.Doc({
       guid: storeId,
     });
@@ -37,7 +40,7 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
     }
 
     const provider = new HocuspocusProvider({
-      url: providerUrl(storeId),
+      url: providerUrl,
       name: storeId,
       document: doc,
     });

@@ -1,4 +1,5 @@
 """API endpoints"""
+# pylint: disable=too-many-lines
 
 import re
 import uuid
@@ -10,24 +11,30 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db.models import (
+    Count,
+    Exists,
     Min,
     OuterRef,
     Q,
     Subquery,
+    Value,
 )
 from django.http import Http404
 
 from botocore.exceptions import ClientError
+from django_filters import rest_framework as filters
 from rest_framework import (
     decorators,
     exceptions,
-    filters,
     metadata,
     mixins,
     pagination,
     status,
     views,
     viewsets,
+)
+from rest_framework import (
+    filters as drf_filters,
 )
 from rest_framework import (
     response as drf_response,
@@ -38,6 +45,7 @@ from core import enums, models
 from core.services.ai_services import AIService
 
 from . import permissions, serializers, utils
+from .filters import DocumentFilter
 
 ATTACHMENTS_FOLDER = "attachments"
 UUID_REGEX = (
@@ -171,7 +179,7 @@ class UserViewSet(
                 threshold = 0.6 if "@" in query else 0.1
 
                 queryset = queryset.filter(similarity__gt=threshold).order_by(
-                    "-similarity"
+                    "-similarity", "email"
                 )
 
         return queryset
@@ -190,42 +198,6 @@ class UserViewSet(
         context = {"request": request}
         return drf_response.Response(
             self.serializer_class(request.user, context=context).data
-        )
-
-
-class ResourceViewsetMixin:
-    """Mixin with methods common to all resource viewsets that are managed with accesses."""
-
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ["created_at", "updated_at", "title"]
-    ordering = ["-created_at"]
-
-    def get_queryset(self):
-        """Custom queryset to get user related resources."""
-        queryset = super().get_queryset()
-        user = self.request.user
-
-        if not user.is_authenticated:
-            return queryset
-
-        user_roles_query = (
-            self.access_model_class.objects.filter(
-                Q(user=user) | Q(team__in=user.teams),
-                **{self.resource_field_name: OuterRef("pk")},
-            )
-            .values(self.resource_field_name)
-            .annotate(roles_array=ArrayAgg("role"))
-            .values("roles_array")
-        )
-        return queryset.annotate(user_roles=Subquery(user_roles_query)).distinct()
-
-    def perform_create(self, serializer):
-        """Set the current user as owner of the newly created object."""
-        obj = serializer.save()
-        self.access_model_class.objects.create(
-            user=self.request.user,
-            role=models.RoleChoices.OWNER,
-            **{self.resource_field_name: obj},
         )
 
 
@@ -338,28 +310,83 @@ class DocumentMetadata(metadata.SimpleMetadata):
 
 
 class DocumentViewSet(
-    ResourceViewsetMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Document ViewSet"""
+    """
+    Document ViewSet for managing documents.
 
+    Provides endpoints for creating, updating, and deleting documents,
+    along with filtering options.
+
+    Filtering:
+        - `is_creator_me=true`: Returns documents created by the current user.
+        - `is_creator_me=false`: Returns documents created by other users.
+        - `is_favorite=true`: Returns documents marked as favorite by the current user
+        - `is_favorite=false`: Returns documents not marked as favorite by the current user
+        - `title=hello`: Returns documents which title contains the "hello" string
+
+    Example Usage:
+        - GET /api/v1.0/documents/?is_creator_me=true&is_favorite=true
+        - GET /api/v1.0/documents/?is_creator_me=false&title=hello
+    """
+
+    filter_backends = [filters.DjangoFilterBackend, drf_filters.OrderingFilter]
+    filterset_class = DocumentFilter
+    metadata_class = DocumentMetadata
+    ordering = ["-updated_at"]
+    ordering_fields = ["created_at", "is_favorite", "updated_at", "title"]
     permission_classes = [
         permissions.AccessPermission,
     ]
-    serializer_class = serializers.DocumentSerializer
-    access_model_class = models.DocumentAccess
-    resource_field_name = "document"
     queryset = models.Document.objects.all()
-    ordering = ["-updated_at"]
-    metadata_class = DocumentMetadata
+    serializer_class = serializers.DocumentSerializer
+
+    def get_serializer_class(self):
+        """
+        Use ListDocumentSerializer for list actions, otherwise use DocumentSerializer.
+        """
+        if self.action == "list":
+            return serializers.ListDocumentSerializer
+        return self.serializer_class
+
+    def get_queryset(self):
+        """Optimize queryset to include favorite status for the current user."""
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        # Annotate the number of accesses associated with each document
+        queryset = queryset.annotate(nb_accesses=Count("accesses", distinct=True))
+
+        if not user.is_authenticated:
+            # If the user is not authenticated, annotate `is_favorite` as False
+            return queryset.annotate(is_favorite=Value(False))
+
+        # Annotate the queryset to indicate if the document is favorited by the current user
+        favorite_exists = models.DocumentFavorite.objects.filter(
+            document_id=OuterRef("pk"), user=user
+        )
+        queryset = queryset.annotate(is_favorite=Exists(favorite_exists))
+
+        # Annotate the queryset with the logged-in user roles
+        user_roles_query = (
+            models.DocumentAccess.objects.filter(
+                Q(user=user) | Q(team__in=user.teams),
+                document_id=OuterRef("pk"),
+            )
+            .values("document")
+            .annotate(roles_array=ArrayAgg("role"))
+            .values("roles_array")
+        )
+        return queryset.annotate(user_roles=Subquery(user_roles_query)).distinct()
 
     def list(self, request, *args, **kwargs):
         """Restrict resources returned by the list endpoint"""
         queryset = self.filter_queryset(self.get_queryset())
         user = self.request.user
+
         if user.is_authenticated:
             queryset = queryset.filter(
                 Q(accesses__user=user)
@@ -402,6 +429,15 @@ class DocumentViewSet(
                 pass
 
         return drf_response.Response(serializer.data)
+
+    def perform_create(self, serializer):
+        """Set the current user as creator and owner of the newly created object."""
+        obj = serializer.save(creator=self.request.user)
+        models.DocumentAccess.objects.create(
+            document=obj,
+            user=self.request.user,
+            role=models.RoleChoices.OWNER,
+        )
 
     @decorators.action(detail=True, methods=["get"], url_path="versions")
     def versions_list(self, request, *args, **kwargs):
@@ -495,6 +531,43 @@ class DocumentViewSet(
 
         serializer.save()
         return drf_response.Response(serializer.data, status=status.HTTP_200_OK)
+
+    @decorators.action(detail=True, methods=["post", "delete"], url_path="favorite")
+    def favorite(self, request, *args, **kwargs):
+        """
+        Mark or unmark the document as a favorite for the logged-in user based on the HTTP method.
+        """
+        # Check permissions first
+        document = self.get_object()
+        user = request.user
+
+        if request.method == "POST":
+            # Try to mark as favorite
+            try:
+                models.DocumentFavorite.objects.create(document=document, user=user)
+            except ValidationError:
+                return drf_response.Response(
+                    {"detail": "Document already marked as favorite"},
+                    status=status.HTTP_200_OK,
+                )
+            return drf_response.Response(
+                {"detail": "Document marked as favorite"},
+                status=status.HTTP_201_CREATED,
+            )
+
+        # Handle DELETE method to unmark as favorite
+        deleted, _ = models.DocumentFavorite.objects.filter(
+            document=document, user=user
+        ).delete()
+        if deleted:
+            return drf_response.Response(
+                {"detail": "Document unmarked as favorite"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        return drf_response.Response(
+            {"detail": "Document was already not marked as favorite"},
+            status=status.HTTP_200_OK,
+        )
 
     @decorators.action(detail=True, methods=["post"], url_path="attachment-upload")
     def attachment_upload(self, request, *args, **kwargs):
@@ -679,7 +752,6 @@ class DocumentAccessViewSet(
 
 
 class TemplateViewSet(
-    ResourceViewsetMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.RetrieveModelMixin,
@@ -688,14 +760,34 @@ class TemplateViewSet(
 ):
     """Template ViewSet"""
 
+    filter_backends = [drf_filters.OrderingFilter]
     permission_classes = [
         permissions.IsAuthenticatedOrSafe,
         permissions.AccessPermission,
     ]
+    ordering = ["-created_at"]
+    ordering_fields = ["created_at", "updated_at", "title"]
     serializer_class = serializers.TemplateSerializer
-    access_model_class = models.TemplateAccess
-    resource_field_name = "template"
     queryset = models.Template.objects.all()
+
+    def get_queryset(self):
+        """Custom queryset to get user related templates."""
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        if not user.is_authenticated:
+            return queryset
+
+        user_roles_query = (
+            models.TemplateAccess.objects.filter(
+                Q(user=user) | Q(team__in=user.teams),
+                template_id=OuterRef("pk"),
+            )
+            .values("template")
+            .annotate(roles_array=ArrayAgg("role"))
+            .values("roles_array")
+        )
+        return queryset.annotate(user_roles=Subquery(user_roles_query)).distinct()
 
     def list(self, request, *args, **kwargs):
         """Restrict templates returned by the list endpoint"""
@@ -717,6 +809,15 @@ class TemplateViewSet(
 
         serializer = self.get_serializer(queryset, many=True)
         return drf_response.Response(serializer.data)
+
+    def perform_create(self, serializer):
+        """Set the current user as owner of the newly created object."""
+        obj = serializer.save()
+        models.TemplateAccess.objects.create(
+            template=obj,
+            user=self.request.user,
+            role=models.RoleChoices.OWNER,
+        )
 
     @decorators.action(
         detail=True,
@@ -902,6 +1003,7 @@ class ConfigView(views.APIView):
         """
         array_settings = [
             "COLLABORATION_SERVER_URL",
+            "CRISP_WEBSITE_ID",
             "ENVIRONMENT",
             "FRONTEND_THEME",
             "MEDIA_BASE_URL",

@@ -1,6 +1,6 @@
 import { Button } from '@openfun/cunningham-react';
-import { t } from 'i18next';
 import React, { PropsWithChildren, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box, DropButton, IconOptions, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
@@ -25,6 +25,7 @@ export const VersionItem = ({
   link,
   isActive,
 }: VersionItemProps) => {
+  const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
   const [isDropOpen, setIsDropOpen] = useState(false);
   const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);

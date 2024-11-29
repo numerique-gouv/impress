@@ -9,19 +9,44 @@ and this project adheres to
 
 ## [Unreleased]
 
-## Added
 
-- 🌐(backend) add german translation #259
-- 🌐(frontend) Add German translation #255
-- ✨(frontend) Add a broadcast store #387
-- ✨(backend) config endpoint #425
+## [1.8.2] - 2024-11-28
 
 ## Changed
 
+- ♻️(SW) change strategy html caching #460
+
+
+## [1.8.1] - 2024-11-27
+
+## Fixed
+
+- 🐛(frontend) link not clickable and flickering firefox #457
+
+
+## [1.8.0] - 2024-11-25
+
+## Added
+
+- ✨(backend) annotate number of accesses on documents in list view #411
+- ✨(backend) allow users to mark/unmark documents as favorite #411
+- 🌐(backend) add German translation #259
+- 🌐(frontend) add German translation #255
+- ✨(frontend) add a broadcast store #387
+- ✨(backend) whitelist pod's IP address #443
+- ✨(backend) config endpoint #425
+- ✨(frontend) config endpoint #424
+- ✨(frontend) add sentry #424
+- ✨(frontend) add crisp chatbot #450
+
+## Changed
+
+- ⚡️(backend) optimize number of queries on document list view #411
 - 🚸(backend) improve users similarity search and sort results #391
 - ♻️(frontend) simplify stores #402
 - ✨(frontend) update $css Box props type to add styled components RuleSet #423
 - ✨(frontend) change visibility options order in dropdown menu #441
+- ✅(CI) trivy continue on error #453
 
 ## Fixed
 
@@ -29,6 +54,7 @@ and this project adheres to
 - 🦺(backend) add comma to sub regex #408
 - 🐛(editor) collaborative user tag hidden when read only #385
 - 🐛(frontend) users have view access when revoked #387
+- 🐛(frontend) fix placeholder editable when double clicks #454
 
 
 ## [1.7.0] - 2024-10-24
@@ -260,7 +286,10 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.7.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.8.2...main
+[v1.8.2]: https://github.com/numerique-gouv/impress/releases/v1.8.2
+[v1.8.1]: https://github.com/numerique-gouv/impress/releases/v1.8.1
+[v1.8.0]: https://github.com/numerique-gouv/impress/releases/v1.8.0
 [v1.7.0]: https://github.com/numerique-gouv/impress/releases/v1.7.0
 [v1.6.0]: https://github.com/numerique-gouv/impress/releases/v1.6.0
 [1.5.1]: https://github.com/numerique-gouv/impress/releases/v1.5.1

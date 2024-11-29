@@ -137,32 +137,69 @@ class BaseResourceSerializer(serializers.ModelSerializer):
         return {}
 
 
-class DocumentSerializer(BaseResourceSerializer):
-    """Serialize documents."""
+class ListDocumentSerializer(BaseResourceSerializer):
+    """Serialize documents with limited fields for display in lists."""
 
-    content = serializers.CharField(required=False)
-    accesses = DocumentAccessSerializer(many=True, read_only=True)
+    is_favorite = serializers.BooleanField(read_only=True)
+    nb_accesses = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Document
         fields = [
             "id",
-            "content",
-            "title",
-            "accesses",
             "abilities",
+            "content",
+            "created_at",
+            "creator",
+            "is_favorite",
             "link_role",
             "link_reach",
-            "created_at",
+            "nb_accesses",
+            "title",
             "updated_at",
         ]
         read_only_fields = [
             "id",
-            "accesses",
             "abilities",
+            "created_at",
+            "creator",
+            "is_favorite",
             "link_role",
             "link_reach",
+            "nb_accesses",
+            "updated_at",
+        ]
+
+
+class DocumentSerializer(ListDocumentSerializer):
+    """Serialize documents with all fields for display in detail views."""
+
+    content = serializers.CharField(required=False)
+
+    class Meta:
+        model = models.Document
+        fields = [
+            "id",
+            "abilities",
+            "content",
             "created_at",
+            "creator",
+            "is_favorite",
+            "link_role",
+            "link_reach",
+            "nb_accesses",
+            "title",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "abilities",
+            "created_at",
+            "creator",
+            "is_avorite",
+            "link_role",
+            "link_reach",
+            "nb_accesses",
             "updated_at",
         ]
 

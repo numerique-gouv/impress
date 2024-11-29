@@ -6,8 +6,8 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { t } from 'i18next';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import * as Y from 'yjs';
 
 import { Box, Text } from '@/components';
@@ -30,6 +30,7 @@ export const ModalVersion = ({
   docId,
   versionId,
 }: ModalVersionProps) => {
+  const { t } = useTranslation();
   const { toast } = useToastProvider();
   const { push } = useRouter();
   const { providers } = useDocStore();

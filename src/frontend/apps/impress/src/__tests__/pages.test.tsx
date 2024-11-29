@@ -13,6 +13,12 @@ jest.mock('next/router', () => ({
   },
 }));
 
+jest.mock('@sentry/nextjs', () => ({
+  captureException: jest.fn(),
+  captureMessage: jest.fn(),
+  setUser: jest.fn(),
+}));
+
 describe('Page', () => {
   it('checks Page rendering', () => {
     render(<Page />, { wrapper: AppWrapper });

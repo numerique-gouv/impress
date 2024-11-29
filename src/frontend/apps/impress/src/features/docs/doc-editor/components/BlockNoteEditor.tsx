@@ -4,16 +4,14 @@ import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { useCreateBlockNote } from '@blocknote/react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
-import { t } from 'i18next';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, TextErrors } from '@/components';
-import { mediaUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
 import { Doc } from '@/features/docs/doc-management';
 
-import { useCreateDocAttachment } from '../api/useCreateDocUpload';
+import { useUploadFile } from '../hook';
 import useSaveDoc from '../hook/useSaveDoc';
 import { useEditorStore, useHeadingStore } from '../stores';
 import { randomColor } from '../utils';
@@ -26,26 +24,12 @@ const cssEditor = (readonly: boolean) => `
   };
   & .bn-editor {
     padding-right: 30px;
-    ${
-      readonly &&
-      `
-        padding-left: 30px;
-        pointer-events: none;
-      `
-    }
+    ${readonly && `padding-left: 30px;`}
   };
-  & .collaboration-cursor__caret.ProseMirror-widget{
-    word-wrap: initial;
-  }
   & .bn-inline-content code {
     background-color: gainsboro;
     padding: 2px;
     border-radius: 4px;
-  }
-  /* @TODO: A fix is made in v0.19.1 - This code can be removed after the upgrade  */
-  .bn-block-content[data-content-type=codeBlock]>div>select option{
-    color: black;
-    background-color: white;
   }
   @media screen and (width <= 560px) {
     & .bn-editor {
@@ -92,32 +76,19 @@ export const BlockNoteEditor = ({
   const isVersion = doc.id !== storeId;
   const { userData } = useAuthStore();
   const { setEditor } = useEditorStore();
-
+  const { t } = useTranslation();
   const readOnly = !doc.abilities.partial_update || isVersion;
   useSaveDoc(doc.id, provider.document, !readOnly);
-  const {
-    mutateAsync: createDocAttachment,
-    isError: isErrorAttachment,
-    error: errorAttachment,
-  } = useCreateDocAttachment();
   const { setHeadings, resetHeadings } = useHeadingStore();
   const { i18n } = useTranslation();
   const lang = i18n.language;
 
-  const uploadFile = useCallback(
-    async (file: File) => {
-      const body = new FormData();
-      body.append('file', file);
+  const { uploadFile, errorAttachment } = useUploadFile(doc.id);
 
-      const ret = await createDocAttachment({
-        docId: doc.id,
-        body,
-      });
-
-      return `${mediaUrl()}${ret.file}`;
-    },
-    [createDocAttachment, doc.id],
-  );
+  const collabName =
+    userData?.full_name ||
+    userData?.email ||
+    (readOnly ? 'Reader' : t('Anonymous'));
 
   const editor = useCreateBlockNote(
     {
@@ -125,14 +96,39 @@ export const BlockNoteEditor = ({
         provider,
         fragment: provider.document.getXmlFragment('document-store'),
         user: {
-          name: userData?.full_name || userData?.email || t('Anonymous'),
+          name: collabName,
           color: randomColor(),
+        },
+        /**
+         * We re-use the blocknote code to render the cursor but we:
+         * - fix rendering issue with Firefox
+         * - We don't want to show the cursor when anonymous users
+         */
+        renderCursor: (user: { color: string; name: string }) => {
+          const cursor = document.createElement('span');
+
+          if (user.name === 'Reader') {
+            return cursor;
+          }
+
+          cursor.classList.add('collaboration-cursor__caret');
+          cursor.setAttribute('style', `border-color: ${user.color}`);
+
+          const label = document.createElement('span');
+
+          label.classList.add('collaboration-cursor__label');
+          label.setAttribute('style', `background-color: ${user.color}`);
+          label.insertBefore(document.createTextNode(user.name), null);
+
+          cursor.insertBefore(label, null);
+
+          return cursor;
         },
       },
       dictionary: locales[lang as keyof typeof locales] as Dictionary,
       uploadFile,
     },
-    [lang, provider, uploadFile, userData?.email, userData?.full_name],
+    [collabName, lang, provider, uploadFile],
   );
 
   useEffect(() => {
@@ -157,7 +153,7 @@ export const BlockNoteEditor = ({
 
   return (
     <Box $css={cssEditor(readOnly)}>
-      {isErrorAttachment && (
+      {errorAttachment && (
         <Box $margin={{ bottom: 'big' }}>
           <TextErrors
             causes={errorAttachment.cause}

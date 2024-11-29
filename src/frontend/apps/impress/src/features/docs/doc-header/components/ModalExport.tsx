@@ -10,8 +10,8 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
-import { t } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Box, Text } from '@/components';
 import { useEditorStore } from '@/features/docs/doc-editor';
@@ -27,6 +27,7 @@ interface ModalPDFProps {
 }
 
 export const ModalPDF = ({ onClose, doc }: ModalPDFProps) => {
+  const { t } = useTranslation();
   const { data: templates } = useTemplates({
     ordering: TemplatesOrdering.BY_CREATED_ON_DESC,
   });

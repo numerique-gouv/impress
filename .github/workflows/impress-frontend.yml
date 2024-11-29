@@ -99,7 +99,7 @@ jobs:
       - name: Run e2e tests
         run: cd src/frontend/ && yarn e2e:test --project='chromium'
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-chromium-report
@@ -133,7 +133,7 @@ jobs:
       - name: Run e2e tests
         run: cd src/frontend/ && yarn e2e:test --project=firefox --project=webkit
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-other-report
