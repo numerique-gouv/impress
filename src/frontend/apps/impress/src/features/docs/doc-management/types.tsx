@@ -23,8 +23,8 @@ export enum Role {
 
 export enum LinkReach {
   RESTRICTED = 'restricted',
-  PUBLIC = 'public',
   AUTHENTICATED = 'authenticated',
+  PUBLIC = 'public',
 }
 
 export enum LinkRole {
