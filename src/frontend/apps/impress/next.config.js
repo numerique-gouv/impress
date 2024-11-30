@@ -61,6 +61,8 @@ const nextConfig = {
     // Modify the file loader rule to ignore *.svg, since we have it handled now.
     fileLoaderRule.exclude = /\.svg$/i;
 
+    config.resolve.alias['@ironcalc/wasm'] = "@/features/docs/doc-editor/components/ironcalc/wasm";
+
     return config;
   },
 };

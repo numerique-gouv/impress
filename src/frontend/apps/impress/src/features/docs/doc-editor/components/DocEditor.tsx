@@ -14,6 +14,7 @@ import { useResponsiveStore } from '@/stores';
 import { useHeadingStore } from '../stores';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
+import { IronCalcEditor } from './IronCalcEditor';
 import { IconOpenPanelEditor, PanelEditor } from './PanelEditor';
 
 interface DocEditorProps {
@@ -29,6 +30,8 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
   const { isMobile } = useResponsiveStore();
 
   const isVersion = versionId && typeof versionId === 'string';
+
+  const isSpreadsheet = true; //doc.content_type === 'spreadsheet';
 
   const { colorsTokens } = useCunninghamTheme();
 
@@ -65,12 +68,14 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
         $position="relative"
       >
         <Card
-          $padding={isMobile ? 'small' : 'big'}
+          $padding={isSpreadsheet ? 'none' : isMobile ? 'small' : 'big'}
           $css="flex:1;"
           $overflow="auto"
           $position="relative"
         >
-          {isVersion ? (
+          {isSpreadsheet ? (
+            <IronCalcEditor doc={doc} storeId={doc.id} provider={provider} />
+          ) : isVersion ? (
             <DocVersionEditor doc={doc} versionId={versionId} />
           ) : (
             <BlockNoteEditor doc={doc} storeId={doc.id} provider={provider} />
