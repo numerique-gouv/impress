@@ -4,6 +4,7 @@ import mimetypes
 
 from django.conf import settings
 from django.db.models import Q
+from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
 
 import magic
@@ -11,6 +12,10 @@ from rest_framework import exceptions, serializers
 
 from core import enums, models
 from core.services.ai_services import AI_ACTIONS
+from core.services.converter_services import (
+    ConversionError,
+    YdocConverter,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -225,6 +230,96 @@ class DocumentSerializer(ListDocumentSerializer):
                 )
 
         return value
+
+
+class ServerCreateDocumentSerializer(serializers.Serializer):
+    """
+    Serializer for creating a document from a server-to-server request.
+
+    Expects 'content' as a markdown string, which is converted to our internal format
+    via a Node.js microservice. The conversion is handled automatically, so third parties
+    only need to provide markdown.
+
+    Both "sub" and "email" are required because the external app calling doesn't know
+    if the user will pre-exist in Docs database. If the user pre-exist, we will ignore the
+    submitted "email" field and use the email address set on the user account in our database
+    """
+
+    # Document
+    title = serializers.CharField(required=True)
+    content = serializers.CharField(required=True)
+    # User
+    sub = serializers.CharField(
+        required=True, validators=[models.User.sub_validator], max_length=255
+    )
+    email = serializers.EmailField(required=True)
+    language = serializers.ChoiceField(
+        required=False, choices=lazy(lambda: settings.LANGUAGES, tuple)()
+    )
+    # Invitation
+    message = serializers.CharField(required=False)
+    subject = serializers.CharField(required=False)
+
+    def create(self, validated_data):
+        """Create the document and associate it with the user or send an invitation."""
+        language = validated_data.get("language", settings.LANGUAGE_CODE)
+
+        # Get the user based on the sub (unique identifier)
+        try:
+            user = models.User.objects.get(sub=validated_data["sub"])
+        except (models.User.DoesNotExist, KeyError):
+            user = None
+            email = validated_data["email"]
+        else:
+            email = user.email
+            language = user.language or language
+
+        try:
+            converter_response = YdocConverter().convert_markdown(
+                validated_data["content"]
+            )
+        except ConversionError as err:
+            raise exceptions.APIException(detail="could not convert content") from err
+
+        document = models.Document.objects.create(
+            title=validated_data["title"],
+            content=converter_response["content"],
+            creator=user,
+        )
+
+        if user:
+            # Associate the document with the pre-existing user
+            models.DocumentAccess.objects.create(
+                document=document,
+                role=models.RoleChoices.OWNER,
+                user=user,
+            )
+        else:
+            # The user doesn't exist in our database: we need to invite him/her
+            models.Invitation.objects.create(
+                document=document,
+                email=email,
+                role=models.RoleChoices.OWNER,
+            )
+
+        # Notify the user about the newly created document
+        subject = validated_data.get("subject") or _(
+            "A new document was created on your behalf!"
+        )
+        context = {
+            "message": validated_data.get("message")
+            or _("You have been granted ownership of a new document:"),
+            "title": subject,
+        }
+        document.send_email(subject, [email], context, language)
+
+        return document
+
+    def update(self, instance, validated_data):
+        """
+        This serializer does not support updates.
+        """
+        raise NotImplementedError("Update is not supported for this serializer.")
 
 
 class LinkDocumentSerializer(BaseResourceSerializer):

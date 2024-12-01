@@ -25,10 +25,11 @@ from django.http import Http404
 import rest_framework as drf
 from botocore.exceptions import ClientError
 from django_filters import rest_framework as drf_filters
-from rest_framework import filters
+from rest_framework import filters, status
+from rest_framework import response as drf_response
 from rest_framework.permissions import AllowAny
 
-from core import enums, models
+from core import authentication, enums, models
 from core.services.ai_services import AIService
 from core.services.collaboration_services import CollaborationService
 
@@ -430,6 +431,30 @@ class DocumentViewSet(
             role=models.RoleChoices.OWNER,
         )
 
+    @drf.decorators.action(
+        authentication_classes=[authentication.ServerToServerAuthentication],
+        detail=False,
+        methods=["post"],
+        permission_classes=[],
+        url_path="create-for-owner",
+    )
+    def create_for_owner(self, request):
+        """
+        Create a document on behalf of a specified owner (pre-existing user or invited).
+        """
+        # Deserialize and validate the data
+        serializer = serializers.ServerCreateDocumentSerializer(data=request.data)
+        if not serializer.is_valid():
+            return drf_response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        document = serializer.save()
+
+        return drf_response.Response(
+            {"id": str(document.id)}, status=status.HTTP_201_CREATED
+        )
+
     @drf.decorators.action(detail=True, methods=["get"], url_path="versions")
     def versions_list(self, request, *args, **kwargs):
         """
@@ -813,11 +838,11 @@ class DocumentAccessViewSet(
         access = serializer.save()
         language = self.request.headers.get("Content-Language", "en-us")
 
-        access.document.email_invitation(
-            language,
+        access.document.send_invitation_email(
             access.user.email,
             access.role,
             self.request.user,
+            language,
         )
 
     def perform_update(self, serializer):
@@ -1078,8 +1103,8 @@ class InvitationViewset(
 
         language = self.request.headers.get("Content-Language", "en-us")
 
-        invitation.document.email_invitation(
-            language, invitation.email, invitation.role, self.request.user
+        invitation.document.send_invitation_email(
+            invitation.email, invitation.role, self.request.user, language
         )
 
 

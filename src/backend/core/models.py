@@ -26,8 +26,8 @@ from django.template.context import Context
 from django.template.loader import render_to_string
 from django.utils import html, timezone
 from django.utils.functional import cached_property, lazy
+from django.utils.translation import get_language, override
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import override
 
 import frontmatter
 import markdown
@@ -239,6 +239,13 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
                 for invitation in valid_invitations
             ]
         )
+
+        # Set creator of documents if not yet set (e.g. documents created via server-to-server API)
+        document_ids = [invitation.document_id for invitation in valid_invitations]
+        Document.objects.filter(id__in=document_ids, creator__isnull=True).update(
+            creator=self
+        )
+
         valid_invitations.delete()
 
     def email_user(self, subject, message, from_email=None, **kwargs):
@@ -342,7 +349,11 @@ class Document(BaseModel):
         max_length=20, choices=LinkRoleChoices.choices, default=LinkRoleChoices.READER
     )
     creator = models.ForeignKey(
-        User, on_delete=models.RESTRICT, related_name="documents_created"
+        User,
+        on_delete=models.RESTRICT,
+        related_name="documents_created",
+        blank=True,
+        null=True,
     )
 
     _content = None
@@ -534,44 +545,61 @@ class Document(BaseModel):
             "versions_retrieve": has_role,
         }
 
-    def email_invitation(self, language, email, role, sender):
-        """Send email invitation."""
-
-        sender_name = sender.full_name or sender.email
+    def send_email(self, subject, emails, context=None, language=None):
+        """Generate and send email from a template."""
+        context = context or {}
         domain = Site.objects.get_current().domain
+        language = language or get_language()
+        context.update(
+            {
+                "domain": domain,
+                "link": f"{domain}/docs/{self.id}/",
+                "document": self,
+            }
+        )
 
-        try:
-            with override(language):
-                title = _(
-                    "%(sender_name)s shared a document with you: %(document)s"
-                ) % {
-                    "sender_name": sender_name,
-                    "document": self.title,
-                }
-                template_vars = {
-                    "title": title,
-                    "domain": domain,
-                    "document": self,
-                    "link": f"{domain}/docs/{self.id}/",
-                    "sender_name": sender_name,
-                    "sender_name_email": f"{sender.full_name} ({sender.email})"
-                    if sender.full_name
-                    else sender.email,
-                    "role": RoleChoices(role).label.lower(),
-                }
-                msg_html = render_to_string("mail/html/invitation.html", template_vars)
-                msg_plain = render_to_string("mail/text/invitation.txt", template_vars)
+        with override(language):
+            msg_html = render_to_string("mail/html/invitation.html", context)
+            msg_plain = render_to_string("mail/text/invitation.txt", context)
+            subject = str(subject)  # Force translation
+
+            try:
                 send_mail(
-                    title,
+                    subject.capitalize(),
                     msg_plain,
                     settings.EMAIL_FROM,
-                    [email],
+                    emails,
                     html_message=msg_html,
                     fail_silently=False,
                 )
+            except smtplib.SMTPException as exception:
+                logger.error("invitation to %s was not sent: %s", emails, exception)
 
-        except smtplib.SMTPException as exception:
-            logger.error("invitation to %s was not sent: %s", email, exception)
+    def send_invitation_email(self, email, role, sender, language=None):
+        """Method allowing a user to send an email invitation to another user for a document."""
+        language = language or get_language()
+        role = RoleChoices(role).label
+        sender_name = sender.full_name or sender.email
+        sender_name_email = (
+            f"{sender.full_name:s} ({sender.email})"
+            if sender.full_name
+            else sender.email
+        )
+
+        with override(language):
+            context = {
+                "title": _("{name} shared a document with you!").format(
+                    name=sender_name
+                ),
+                "message": _(
+                    "{name} invited you with the role ``{role}`` on the following document:"
+                ).format(name=sender_name_email, role=role.lower()),
+            }
+            subject = _("{name} shared a document with you: {title}").format(
+                name=sender_name, title=self.title
+            )
+
+        self.send_email(subject, [email], context, language)
 
 
 class LinkTrace(BaseModel):
@@ -887,6 +915,8 @@ class Invitation(BaseModel):
         User,
         on_delete=models.CASCADE,
         related_name="invitations",
+        blank=True,
+        null=True,
     )
 
     class Meta:

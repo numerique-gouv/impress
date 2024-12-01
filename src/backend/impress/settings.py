@@ -65,6 +65,7 @@ class Base(Configuration):
     # Security
     ALLOWED_HOSTS = values.ListValue([])
     SECRET_KEY = values.Value(None)
+    SERVER_TO_SERVER_API_TOKENS = values.ListValue([])
 
     # Application definition
     ROOT_URLCONF = "impress.urls"
@@ -501,6 +502,26 @@ class Base(Configuration):
         "hour": 50,
         "day": 200,
     }
+
+    # Conversion microservice
+    CONVERSION_API_KEY = values.Value(
+        environ_name="CONVERSION_API_KEY",
+        environ_prefix=None,
+    )
+    CONVERSION_API_URL = values.Value(
+        environ_name="CONVERSION_API_URL",
+        environ_prefix=None,
+    )
+    CONVERSION_API_CONTENT_FIELD = values.Value(
+        default="content",
+        environ_name="CONVERSION_API_CONTENT_FIELD",
+        environ_prefix=None,
+    )
+    CONVERSION_API_TIMEOUT = values.Value(
+        default=30,
+        environ_name="CONVERSION_API_TIMEOUT",
+        environ_prefix=None,
+    )
 
     # Logging
     # We want to make it easy to log to console but by default we log production
