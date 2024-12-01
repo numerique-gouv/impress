@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- ✨(backend) add server-to-server API endpoint to create documents #467
+
 
 ## [1.8.2] - 2024-11-28
 

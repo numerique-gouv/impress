@@ -22,17 +22,11 @@
       <mj-section mj-class="bg--white-100" padding="30px 20px 60px 20px">
         <mj-column>
           <mj-text align="center">
-            <h1>
-              {% blocktrans %}
-                {{sender_name}} shared a document with you !
-              {% endblocktrans %}
-            </h1>
+            <h1>{{title|capfirst}}</h1>
           </mj-text>
           <!-- Main Message -->
           <mj-text>
-            {% blocktrans %}
-              {{sender_name_email}} invited you with the role "{{role}}" on the following document : 
-            {% endblocktrans %}
+            {{message|capfirst}}
             <a href="{{link}}">{{document.title}}</a>
           </mj-text>
           <mj-button

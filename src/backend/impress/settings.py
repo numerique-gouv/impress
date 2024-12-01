@@ -65,6 +65,7 @@ class Base(Configuration):
     # Security
     ALLOWED_HOSTS = values.ListValue([])
     SECRET_KEY = values.Value(None)
+    SERVER_TO_SERVER_API_TOKENS = values.ListValue([])
 
     # Application definition
     ROOT_URLCONF = "impress.urls"
