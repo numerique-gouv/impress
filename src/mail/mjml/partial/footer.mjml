@@ -1,9 +1,0 @@
-<mj-section padding="0">
-  <mj-column>
-    <mj-text mj-class="text--small" align="center" padding="20px 20px">
-      {% blocktranslate with href=site.url name=site.name trimmed %}
-        This mail has been sent to {{email}} by <a href="{{href}}">{{name}}</a>
-      {% endblocktranslate %}
-    </mj-text>
-  </mj-column>
-</mj-section>
