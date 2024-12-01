@@ -47,7 +47,7 @@ dependencies = [
     "jsonschema==4.23.0",
     "markdown==3.7",
     "nested-multipart-parser==1.5.0",
-    "openai==1.52.0",
+    "openai==1.55.3",
     "psycopg[binary]==3.2.3",
     "PyJWT==2.9.0",
     "pypandoc==1.14",
