@@ -33,11 +33,8 @@ def test_models_documents_id_unique():
 
 
 def test_models_documents_creator_required():
-    """The "creator" field should be required."""
-    with pytest.raises(ValidationError) as excinfo:
-        models.Document.objects.create()
-
-    assert excinfo.value.message_dict["creator"] == ["This field cannot be null."]
+    """No field should be required on the Document model."""
+    models.Document.objects.create()
 
 
 def test_models_documents_title_null():
@@ -430,8 +427,8 @@ def test_models_documents__email_invitation__success():
     assert len(mail.outbox) == 0
 
     sender = factories.UserFactory(full_name="Test Sender", email="sender@example.com")
-    document.email_invitation(
-        "en", "guest@example.com", models.RoleChoices.EDITOR, sender
+    document.send_invitation_email(
+        "guest@example.com", models.RoleChoices.EDITOR, sender, "en"
     )
 
     # pylint: disable-next=no-member
@@ -444,8 +441,8 @@ def test_models_documents__email_invitation__success():
     email_content = " ".join(email.body.split())
 
     assert (
-        f'Test Sender (sender@example.com) invited you with the role "editor" '
-        f"on the following document : {document.title}" in email_content
+        f"Test Sender (sender@example.com) invited you with the role ``editor`` "
+        f"on the following document: {document.title}" in email_content
     )
     assert f"docs/{document.id}/" in email_content
 
@@ -462,11 +459,11 @@ def test_models_documents__email_invitation__success_fr():
     sender = factories.UserFactory(
         full_name="Test Sender2", email="sender2@example.com"
     )
-    document.email_invitation(
-        "fr-fr",
+    document.send_invitation_email(
         "guest2@example.com",
         models.RoleChoices.OWNER,
         sender,
+        "fr-fr",
     )
 
     # pylint: disable-next=no-member
@@ -479,7 +476,7 @@ def test_models_documents__email_invitation__success_fr():
     email_content = " ".join(email.body.split())
 
     assert (
-        f'Test Sender2 (sender2@example.com) vous a invité avec le rôle "propriétaire" '
+        f"Test Sender2 (sender2@example.com) vous a invité avec le rôle ``propriétaire`` "
         f"sur le document suivant : {document.title}" in email_content
     )
     assert f"docs/{document.id}/" in email_content
@@ -498,11 +495,11 @@ def test_models_documents__email_invitation__failed(mock_logger, _mock_send_mail
     assert len(mail.outbox) == 0
 
     sender = factories.UserFactory()
-    document.email_invitation(
-        "en",
+    document.send_invitation_email(
         "guest3@example.com",
         models.RoleChoices.ADMIN,
         sender,
+        "en",
     )
 
     # No email has been sent
@@ -514,9 +511,9 @@ def test_models_documents__email_invitation__failed(mock_logger, _mock_send_mail
 
     (
         _,
-        email,
+        emails,
         exception,
     ) = mock_logger.call_args.args
 
-    assert email == "guest3@example.com"
+    assert emails == ["guest3@example.com"]
     assert isinstance(exception, smtplib.SMTPException)
