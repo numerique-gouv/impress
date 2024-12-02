@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Changed
+
+- 🔨(frontend) encapsulated title to its own component #474
+
 
 ## [1.8.2] - 2024-11-28
 
