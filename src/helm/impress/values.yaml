@@ -48,34 +48,62 @@ ingress:
   ## @param ingress.customBackends Add custom backends to ingress
   customBackends: []
 
-## @param ingressWS.enabled whether to enable the Ingress or not
-## @param ingressWS.className IngressClass to use for the Ingress
-## @param ingressWS.host Host for the Ingress
-## @param ingressWS.path Path to use for the Ingress
-ingressWS:
+## @param ingressCollaborationWS.enabled whether to enable the Ingress or not
+## @param ingressCollaborationWS.className IngressClass to use for the Ingress
+## @param ingressCollaborationWS.host Host for the Ingress
+## @param ingressCollaborationWS.path Path to use for the Ingress
+ingressCollaborationWS:
   enabled: false
   className: null
   host: impress.example.com
-  path: /ws
+  path: /collaboration/ws/
   ## @param ingress.hosts Additional host to configure for the Ingress
   hosts: []
   #  - chart-example.local
-  ## @param ingressWS.tls.enabled Wether to enable TLS for the Ingress
-  ## @skip ingressWS.tls.additional
-  ## @extra ingressWS.tls.additional[].secretName Secret name for additional TLS config
-  ## @extra ingressWS.tls.additional[].hosts[] Hosts for additional TLS config
+  ## @param ingressCollaborationWS.tls.enabled Wether to enable TLS for the Ingress
+  ## @skip ingressCollaborationWS.tls.additional
+  ## @extra ingressCollaborationWS.tls.additional[].secretName Secret name for additional TLS config
+  ## @extra ingressCollaborationWS.tls.additional[].hosts[] Hosts for additional TLS config
   tls:
     enabled: true
     additional: []
 
-  ## @param ingressWS.customBackends Add custom backends to ingress
+  ## @param ingressCollaborationWS.customBackends Add custom backends to ingress
   customBackends: []
 
   annotations: 
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Can-Edit, X-User-Id"
     nginx.ingress.kubernetes.io/auth-url: https://impress.example.com/api/v1.0/documents/collaboration-auth/
-    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, Can-Edit, User-Id"
     nginx.ingress.kubernetes.io/enable-websocket: "true" 
-    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/upstream-hash-by: $arg_room
+
+## @param ingressCollaborationApi.enabled whether to enable the Ingress or not
+## @param ingressCollaborationApi.className IngressClass to use for the Ingress
+## @param ingressCollaborationApi.host Host for the Ingress
+## @param ingressCollaborationApi.path Path to use for the Ingress
+ingressCollaborationApi:
+  enabled: false
+  className: null
+  host: impress.example.com
+  path: /collaboration/api/
+  ## @param ingress.hosts Additional host to configure for the Ingress
+  hosts: []
+  #  - chart-example.local
+  ## @param ingressCollaborationApi.tls.enabled Wether to enable TLS for the Ingress
+  ## @skip ingressCollaborationApi.tls.additional
+  ## @extra ingressCollaborationApi.tls.additional[].secretName Secret name for additional TLS config
+  ## @extra ingressCollaborationApi.tls.additional[].hosts[] Hosts for additional TLS config
+  tls:
+    enabled: true
+    additional: []
+
+  ## @param ingressCollaborationApi.customBackends Add custom backends to ingress
+  customBackends: []
+
+  annotations: 
+    nginx.ingress.kubernetes.io/upstream-hash-by: $arg_room
 
 ## @param ingressAdmin.enabled whether to enable the Ingress or not
 ## @param ingressAdmin.className IngressClass to use for the Ingress
