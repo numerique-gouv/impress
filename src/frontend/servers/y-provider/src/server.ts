@@ -1,4 +1,7 @@
+// eslint-disable-next-line import/order
+import './services/sentry';
 import { Server } from '@hocuspocus/server';
+import * as Sentry from '@sentry/node';
 import express, { Request, Response } from 'express';
 import expressWebsockets from 'express-ws';
 
@@ -129,6 +132,8 @@ export const initServer = () => {
       res.status(200).json({ message: 'Connections reset' });
     },
   );
+
+  Sentry.setupExpressErrorHandler(app);
 
   app.get('/ping', (req, res) => {
     res.status(200).json({ message: 'pong' });
