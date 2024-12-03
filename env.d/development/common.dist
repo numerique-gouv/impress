@@ -53,7 +53,7 @@ AI_API_KEY=password
 AI_MODEL=llama
 
 # Collaboration
-COLLABORATION_SERVER_URL=ws://localhost:4444
+COLLABORATION_WS_URL=ws://localhost:4444
 
 # Frontend
 FRONTEND_THEME=dsfr

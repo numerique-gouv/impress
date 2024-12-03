@@ -7,7 +7,7 @@ interface ConfigResponse {
   LANGUAGES: [string, string][];
   LANGUAGE_CODE: string;
   ENVIRONMENT: string;
-  COLLABORATION_SERVER_URL?: string;
+  COLLABORATION_WS_URL?: string;
   CRISP_WEBSITE_ID?: string;
   FRONTEND_THEME?: Theme;
   MEDIA_BASE_URL?: string;

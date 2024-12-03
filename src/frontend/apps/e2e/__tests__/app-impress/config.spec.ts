@@ -6,7 +6,7 @@ import { createDoc } from './common';
 
 const config = {
   CRISP_WEBSITE_ID: null,
-  COLLABORATION_SERVER_URL: 'ws://localhost:4444',
+  COLLABORATION_WS_URL: 'ws://localhost:4444',
   ENVIRONMENT: 'development',
   FRONTEND_THEME: 'dsfr',
   MEDIA_BASE_URL: 'http://localhost:8083',

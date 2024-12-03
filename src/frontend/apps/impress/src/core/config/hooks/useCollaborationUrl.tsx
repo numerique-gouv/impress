@@ -8,8 +8,10 @@ export const useCollaborationUrl = (room?: string) => {
   }
 
   const base =
-    conf?.COLLABORATION_SERVER_URL ||
-    (typeof window !== 'undefined' ? `wss://${window.location.host}/ws` : '');
+    conf?.COLLABORATION_WS_URL ||
+    (typeof window !== 'undefined'
+      ? `wss://${window.location.host}/collaboration/ws/`
+      : '');
 
-  return `${base}/${room}`;
+  return `${base}?room=${room}`;
 };

@@ -16,7 +16,7 @@ pytestmark = pytest.mark.django_db
 
 
 @override_settings(
-    COLLABORATION_SERVER_URL="http://testcollab/",
+    COLLABORATION_WS_URL="http://testcollab/",
     CRISP_WEBSITE_ID="123",
     FRONTEND_THEME="test-theme",
     MEDIA_BASE_URL="http://testserver/",
@@ -34,7 +34,7 @@ def test_api_config(is_authenticated):
     response = client.get("/api/v1.0/config/")
     assert response.status_code == HTTP_200_OK
     assert response.json() == {
-        "COLLABORATION_SERVER_URL": "http://testcollab/",
+        "COLLABORATION_WS_URL": "http://testcollab/",
         "CRISP_WEBSITE_ID": "123",
         "ENVIRONMENT": "test",
         "FRONTEND_THEME": "test-theme",

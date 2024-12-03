@@ -372,8 +372,8 @@ class Base(Configuration):
     SENTRY_DSN = values.Value(None, environ_name="SENTRY_DSN", environ_prefix=None)
 
     # Collaboration
-    COLLABORATION_SERVER_URL = values.Value(
-        None, environ_name="COLLABORATION_SERVER_URL", environ_prefix=None
+    COLLABORATION_WS_URL = values.Value(
+        None, environ_name="COLLABORATION_WS_URL", environ_prefix=None
     )
 
     # Frontend
