@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@next/eslint-plugin-next": "15.0.3",
-    "@tanstack/eslint-plugin-query": "5.61.3",
+    "@tanstack/eslint-plugin-query": "5.62.1",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "eslint": "*",
@@ -20,6 +20,6 @@
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-react": "7.37.2",
     "eslint-plugin-testing-library": "7.0.0",
-    "prettier": "3.3.3"
+    "prettier": "3.4.1"
   }
 }
