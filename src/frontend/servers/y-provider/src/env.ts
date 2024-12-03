@@ -5,3 +5,4 @@ export const COLLABORATION_SERVER_ORIGIN =
 export const COLLABORATION_SERVER_SECRET =
   process.env.COLLABORATION_SERVER_SECRET || 'secret-api-key';
 export const PORT = Number(process.env.PORT || 4444);
+export const SENTRY_DSN = process.env.SENTRY_DSN || '';
