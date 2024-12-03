@@ -28,3 +28,14 @@ export const blocksToYDoc = (blocks: BasicBlock[], doc: Y.Doc) => {
     xmlFragment.push([xmlElement]);
   });
 };
+
+export const base64ToYDoc = (base64: string) => {
+  const uint8Array = Buffer.from(base64, 'base64');
+  const ydoc = new Y.Doc();
+  Y.applyUpdate(ydoc, uint8Array);
+  return ydoc;
+};
+
+export const base64ToBlocknoteXmlFragment = (base64: string) => {
+  return base64ToYDoc(base64).getXmlFragment('document-store');
+};

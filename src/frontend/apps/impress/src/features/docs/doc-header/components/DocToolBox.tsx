@@ -3,6 +3,7 @@ import {
   VariantType,
   useToastProvider,
 } from '@openfun/cunningham-react';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,17 +18,19 @@ import {
   ModalRemoveDoc,
   ModalShare,
 } from '@/features/docs/doc-management';
-import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
+import { ModalVersion } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
 
 import { ModalPDF } from './ModalExport';
 
 interface DocToolBoxProps {
   doc: Doc;
-  versionId?: Versions['version_id'];
 }
 
-export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
+export const DocToolBox = ({ doc }: DocToolBoxProps) => {
+  const {
+    query: { versionId },
+  } = useRouter();
   const { t } = useTranslation();
   const [isModalShareOpen, setIsModalShareOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
@@ -194,7 +197,7 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
         <ModalVersion
           onClose={() => setIsModalVersionOpen(false)}
           docId={doc.id}
-          versionId={versionId}
+          versionId={versionId as string}
         />
       )}
     </Box>

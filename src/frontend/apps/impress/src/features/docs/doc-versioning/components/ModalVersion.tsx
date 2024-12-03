@@ -8,12 +8,16 @@ import {
 } from '@openfun/cunningham-react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import * as Y from 'yjs';
 
 import { Box, Text } from '@/components';
-import { toBase64 } from '@/features/docs/doc-editor';
-import { Doc, useDocStore, useUpdateDoc } from '@/features/docs/doc-management';
+import {
+  Doc,
+  base64ToYDoc,
+  useDocStore,
+  useUpdateDoc,
+} from '@/features/docs/doc-management';
 
+import { useDocVersion } from '../api';
 import { KEY_LIST_DOC_VERSIONS } from '../api/useDocVersions';
 import { Versions } from '../types';
 import { revertUpdate } from '../utils';
@@ -21,7 +25,6 @@ import { revertUpdate } from '../utils';
 interface ModalVersionProps {
   onClose: () => void;
   docId: Doc['id'];
-
   versionId: Versions['version_id'];
 }
 
@@ -30,6 +33,10 @@ export const ModalVersion = ({
   docId,
   versionId,
 }: ModalVersionProps) => {
+  const { data: version } = useDocVersion({
+    docId,
+    versionId,
+  });
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const { push } = useRouter();
@@ -42,7 +49,7 @@ export const ModalVersion = ({
         void push(`/docs/${docId}`);
       };
 
-      if (!providers?.[docId] || !providers?.[versionId]) {
+      if (!providers?.[docId] || !version?.content) {
         onDisplaySuccess();
         return;
       }
@@ -50,7 +57,7 @@ export const ModalVersion = ({
       revertUpdate(
         providers[docId].document,
         providers[docId].document,
-        providers[versionId].document,
+        base64ToYDoc(version.content),
       );
 
       onDisplaySuccess();
@@ -79,13 +86,13 @@ export const ModalVersion = ({
           color="primary"
           fullWidth
           onClick={() => {
-            const newDoc = toBase64(
-              Y.encodeStateAsUpdate(providers?.[versionId].document),
-            );
+            if (!version?.content) {
+              return;
+            }
 
             updateDoc({
               id: docId,
-              content: newDoc,
+              content: version.content,
             });
 
             onClose();

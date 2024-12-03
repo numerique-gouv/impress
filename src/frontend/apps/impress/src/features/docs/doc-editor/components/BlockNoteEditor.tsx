@@ -6,6 +6,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as Y from 'yjs';
 
 import { Box, TextErrors } from '@/components';
 import { useAuthStore } from '@/core/auth';
@@ -65,19 +66,14 @@ const cssEditor = (readonly: boolean) => `
 interface BlockNoteEditorProps {
   doc: Doc;
   provider: HocuspocusProvider;
-  storeId: string;
 }
 
-export const BlockNoteEditor = ({
-  doc,
-  provider,
-  storeId,
-}: BlockNoteEditorProps) => {
-  const isVersion = doc.id !== storeId;
+export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
   const { userData } = useAuthStore();
   const { setEditor } = useEditorStore();
   const { t } = useTranslation();
-  const readOnly = !doc.abilities.partial_update || isVersion;
+
+  const readOnly = !doc.abilities.partial_update;
   useSaveDoc(doc.id, provider.document, !readOnly);
   const { setHeadings, resetHeadings } = useHeadingStore();
   const { i18n } = useTranslation();
@@ -171,6 +167,49 @@ export const BlockNoteEditor = ({
       >
         <BlockNoteToolbar />
       </BlockNoteView>
+    </Box>
+  );
+};
+
+interface BlockNoteEditorVersionProps {
+  initialContent: Y.XmlFragment;
+}
+
+export const BlockNoteEditorVersion = ({
+  initialContent,
+}: BlockNoteEditorVersionProps) => {
+  const readOnly = true;
+  const { setHeadings, resetHeadings } = useHeadingStore();
+
+  const editor = useCreateBlockNote(
+    {
+      collaboration: {
+        fragment: initialContent,
+        user: {
+          name: '',
+          color: '',
+        },
+        provider: undefined,
+      },
+    },
+    [initialContent],
+  );
+
+  useEffect(() => {
+    setHeadings(editor);
+
+    editor?.onEditorContentChange(() => {
+      setHeadings(editor);
+    });
+
+    return () => {
+      resetHeadings();
+    };
+  }, [editor, resetHeadings, setHeadings]);
+
+  return (
+    <Box $css={cssEditor(readOnly)}>
+      <BlockNoteView editor={editor} editable={!readOnly} theme="light" />
     </Box>
   );
 };

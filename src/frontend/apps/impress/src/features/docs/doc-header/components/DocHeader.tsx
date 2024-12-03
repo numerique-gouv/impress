@@ -5,7 +5,6 @@ import { css } from 'styled-components';
 import { Box, Card, StyledLink, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
 import { Doc, currentDocRole, useTrans } from '@/features/docs/doc-management';
-import { Versions } from '@/features/docs/doc-versioning';
 import { useDate } from '@/hook';
 import { useResponsiveStore } from '@/stores';
 
@@ -15,10 +14,9 @@ import { DocToolBox } from './DocToolBox';
 
 interface DocHeaderProps {
   doc: Doc;
-  versionId?: Versions['version_id'];
 }
 
-export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
+export const DocHeader = ({ doc }: DocHeaderProps) => {
   const { colorsTokens } = useCunninghamTheme();
   const { t } = useTranslation();
   const { formatDate } = useDate();
@@ -69,7 +67,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
             $align="center"
           >
             <DocTitle doc={doc} />
-            <DocToolBox doc={doc} versionId={versionId} />
+            <DocToolBox doc={doc} />
           </Box>
         </Box>
         <Box
