@@ -11,7 +11,6 @@ import {
   currentDocRole,
   useTrans,
 } from '@/features/docs/doc-management';
-import { Versions } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
 
 import { DocTitle } from './DocTitle';
@@ -19,10 +18,9 @@ import { DocToolBox } from './DocToolBox';
 
 interface DocHeaderProps {
   doc: Doc;
-  versionId?: Versions['version_id'];
 }
 
-export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
+export const DocHeader = ({ doc }: DocHeaderProps) => {
   const { colorsTokens, spacingsTokens } = useCunninghamTheme();
   const { isDesktop } = useResponsiveStore();
   const spacings = spacingsTokens();
@@ -70,6 +68,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
           >
             <Box $gap={spacings['3xs']}>
               <DocTitle doc={doc} />
+
               <Box $direction="row">
                 {isDesktop && (
                   <>
@@ -90,7 +89,7 @@ export const DocHeader = ({ doc, versionId }: DocHeaderProps) => {
                 )}
               </Box>
             </Box>
-            <DocToolBox doc={doc} versionId={versionId} />
+            <DocToolBox doc={doc} />
           </Box>
         </Box>
         <HorizontalSeparator />
