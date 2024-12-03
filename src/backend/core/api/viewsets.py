@@ -1002,7 +1002,7 @@ class ConfigView(views.APIView):
             Return a dictionary of public settings.
         """
         array_settings = [
-            "COLLABORATION_SERVER_URL",
+            "COLLABORATION_WS_URL",
             "CRISP_WEBSITE_ID",
             "ENVIRONMENT",
             "FRONTEND_THEME",
