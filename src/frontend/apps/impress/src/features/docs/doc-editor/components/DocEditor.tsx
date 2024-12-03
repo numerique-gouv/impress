@@ -1,19 +1,23 @@
 import { Alert, Loader, VariantType } from '@openfun/cunningham-react';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as Y from 'yjs';
 
 import { Box, Card, Text, TextErrors } from '@/components';
-import { useCollaborationUrl } from '@/core';
 import { useCunninghamTheme } from '@/cunningham';
 import { DocHeader } from '@/features/docs/doc-header';
-import { Doc, useDocStore } from '@/features/docs/doc-management';
+import {
+  Doc,
+  base64ToBlocknoteXmlFragment,
+  useDocStore,
+} from '@/features/docs/doc-management';
 import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
 import { useResponsiveStore } from '@/stores';
 
 import { useHeadingStore } from '../stores';
 
-import { BlockNoteEditor } from './BlockNoteEditor';
+import { BlockNoteEditor, BlockNoteEditorVersion } from './BlockNoteEditor';
 import { IconOpenPanelEditor, PanelEditor } from './PanelEditor';
 
 interface DocEditorProps {
@@ -41,7 +45,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
 
   return (
     <>
-      <DocHeader doc={doc} versionId={versionId as Versions['version_id']} />
+      <DocHeader doc={doc} />
       {!doc.abilities.partial_update && (
         <Box $margin={{ all: 'small', top: 'none' }}>
           <Alert type={VariantType.WARNING}>
@@ -71,9 +75,9 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
           $position="relative"
         >
           {isVersion ? (
-            <DocVersionEditor doc={doc} versionId={versionId} />
+            <DocVersionEditor docId={doc.id} versionId={versionId} />
           ) : (
-            <BlockNoteEditor doc={doc} storeId={doc.id} provider={provider} />
+            <BlockNoteEditor doc={doc} provider={provider} />
           )}
           {!isMobile && <IconOpenPanelEditor headings={headings} />}
         </Card>
@@ -84,35 +88,34 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
 };
 
 interface DocVersionEditorProps {
-  doc: Doc;
+  docId: Doc['id'];
   versionId: Versions['version_id'];
 }
 
-export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
+export const DocVersionEditor = ({
+  docId,
+  versionId,
+}: DocVersionEditorProps) => {
   const {
     data: version,
     isLoading,
     isError,
     error,
   } = useDocVersion({
-    docId: doc.id,
+    docId,
     versionId,
   });
-  const { createProvider, providers } = useDocStore();
-  const collaborationUrl = useCollaborationUrl(versionId);
 
   const { replace } = useRouter();
+  const [initialContent, setInitialContent] = useState<Y.XmlFragment>();
 
   useEffect(() => {
-    if (!version?.id || !collaborationUrl) {
+    if (!version?.content) {
       return;
     }
 
-    const provider = providers?.[version.id];
-    if (!provider || provider.document.guid !== version.id) {
-      createProvider(collaborationUrl, version.id, version.content);
-    }
-  }, [createProvider, providers, version, collaborationUrl]);
+    setInitialContent(base64ToBlocknoteXmlFragment(version.content));
+  }, [version?.content]);
 
   if (isError && error) {
     if (error.status === 404) {
@@ -136,7 +139,7 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
     );
   }
 
-  if (isLoading || !version) {
+  if (isLoading || !version || !initialContent) {
     return (
       <Box $align="center" $justify="center" $height="100%">
         <Loader />
@@ -144,11 +147,5 @@ export const DocVersionEditor = ({ doc, versionId }: DocVersionEditorProps) => {
     );
   }
 
-  const provider = providers?.[version.id];
-
-  if (!provider) {
-    return null;
-  }
-
-  return <BlockNoteEditor doc={doc} storeId={version.id} provider={provider} />;
+  return <BlockNoteEditorVersion initialContent={initialContent} />;
 };

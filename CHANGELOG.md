@@ -19,6 +19,7 @@ and this project adheres to
 - 🔨(frontend) encapsulated title to its own component #474
 - 🐛(frontend) Fix hidden menu on Firefox #468
 - ⚡️(backend) optimize number of queries on document list view #411
+- ♻️(frontend) stop to use provider with version #480
 - 🚚(collaboration) change the websocket key name #480
 
 
