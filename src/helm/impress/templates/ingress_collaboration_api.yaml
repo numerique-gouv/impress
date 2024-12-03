@@ -1,8 +1,8 @@
-{{- if .Values.ingressWS.enabled -}}
+{{- if .Values.ingressCollaborationApi.enabled -}}
 {{- $fullName := include "impress.fullname" . -}}
-{{- if and .Values.ingressWS.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingressWS.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingressWS.annotations "kubernetes.io/ingress.class" .Values.ingressWS.className}}
+{{- if and .Values.ingressCollaborationApi.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingressCollaborationApi.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingressCollaborationApi.annotations "kubernetes.io/ingress.class" .Values.ingressCollaborationApi.className}}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -14,26 +14,26 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-ws
+  name: {{ $fullName }}-collaboration-api
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "impress.labels" . | nindent 4 }}
-  {{- with .Values.ingressWS.annotations }}
+  {{- with .Values.ingressCollaborationApi.annotations }}
   annotations:
   {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.ingressWS.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingressWS.className }}
+  {{- if and .Values.ingressCollaborationApi.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingressCollaborationApi.className }}
   {{- end }}
-  {{- if .Values.ingressWS.tls.enabled }}
+  {{- if .Values.ingressCollaborationApi.tls.enabled }}
   tls:
-    {{- if .Values.ingressWS.host }}
+    {{- if .Values.ingressCollaborationApi.host }}
     - secretName: {{ $fullName }}-tls
       hosts:
-        - {{ .Values.ingressWS.host | quote }}
+        - {{ .Values.ingressCollaborationApi.host | quote }}
     {{- end }}
-    {{- range .Values.ingressWS.tls.additional }}
+    {{- range .Values.ingressCollaborationApi.tls.additional }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -42,11 +42,11 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- if .Values.ingressWS.host }}
-    - host: {{ .Values.ingressWS.host | quote }}
+    {{- if .Values.ingressCollaborationApi.host }}
+    - host: {{ .Values.ingressCollaborationApi.host | quote }}
       http:
         paths:
-          - path: {{ .Values.ingressWS.path | quote }}
+          - path: {{ .Values.ingressCollaborationApi.path | quote }}
             {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
             {{- end }}
@@ -64,7 +64,7 @@ spec:
               serviceName: {{ include "impress.yProvider.fullname" . }}
               servicePort: {{ .Values.yProvider.service.port }}
             {{- end }}
-          {{- with .Values.ingressWS.customBackends }}
+          {{- with .Values.ingressCollaborationApi.customBackends }}
             {{- toYaml . | nindent 10 }}
           {{- end }}
     {{- end }}

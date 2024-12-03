@@ -1,0 +1,72 @@
+{{- if .Values.ingressCollaborationWS.enabled -}}
+{{- $fullName := include "impress.fullname" . -}}
+{{- if and .Values.ingressCollaborationWS.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingressCollaborationWS.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingressCollaborationWS.annotations "kubernetes.io/ingress.class" .Values.ingressCollaborationWS.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-ws
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "impress.labels" . | nindent 4 }}
+  {{- with .Values.ingressCollaborationWS.annotations }}
+  annotations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingressCollaborationWS.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingressCollaborationWS.className }}
+  {{- end }}
+  {{- if .Values.ingressCollaborationWS.tls.enabled }}
+  tls:
+    {{- if .Values.ingressCollaborationWS.host }}
+    - secretName: {{ $fullName }}-tls
+      hosts:
+        - {{ .Values.ingressCollaborationWS.host | quote }}
+    {{- end }}
+    {{- range .Values.ingressCollaborationWS.tls.additional }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- if .Values.ingressCollaborationWS.host }}
+    - host: {{ .Values.ingressCollaborationWS.host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.ingressCollaborationWS.path | quote }}
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "impress.yProvider.fullname" . }}
+                port:
+                  number: {{ .Values.yProvider.service.port }}
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "impress.yProvider.fullname" . }}
+                port:
+                  number: {{ .Values.yProvider.service.port }}
+              {{- else }}
+              serviceName: {{ include "impress.yProvider.fullname" . }}
+              servicePort: {{ .Values.yProvider.service.port }}
+            {{- end }}
+          {{- with .Values.ingressCollaborationWS.customBackends }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+    {{- end }}
+{{- end }}
+

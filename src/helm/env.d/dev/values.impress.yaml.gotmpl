@@ -8,7 +8,7 @@ backend:
   envVars:
     COLLABORATION_API_URL: https://impress.127.0.0.1.nip.io/collaboration/api/
     COLLABORATION_SERVER_SECRET: my-secret
-    DJANGO_CSRF_TRUSTED_ORIGINS: https://impress.127.0.0.1.nip.io,http://impress.127.0.0.1.nip.io
+    DJANGO_CSRF_TRUSTED_ORIGINS: https://impress.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Feature
     DJANGO_ALLOWED_HOSTS: impress.127.0.0.1.nip.io
     DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
@@ -28,7 +28,9 @@ backend:
     OIDC_RP_CLIENT_ID: {{ .Values.oidc.clientId }}
     OIDC_RP_CLIENT_SECRET: {{ .Values.oidc.clientSecret }}
     OIDC_RP_SIGN_ALGO: RS256
-    OIDC_RP_SCOPES: "openid email"
+    OIDC_RP_SCOPES: "openid email given_name usual_name"
+    USER_OIDC_FIELD_TO_SHORTNAME: "given_name"
+    USER_OIDC_FIELDS_TO_FULLNAME: "given_name,usual_name"
     OIDC_REDIRECT_ALLOWED_HOSTS: https://impress.127.0.0.1.nip.io
     OIDC_AUTH_REQUEST_EXTRA_PARAMS: "{'acr_values': 'eidas1'}"
     LOGIN_REDIRECT_URL: https://impress.127.0.0.1.nip.io
@@ -77,8 +79,6 @@ frontend:
   envVars:
     PORT: 8080
     NEXT_PUBLIC_API_ORIGIN: https://impress.127.0.0.1.nip.io
-    NEXT_PUBLIC_Y_PROVIDER_URL: wss://impress.127.0.0.1.nip.io/ws
-    NEXT_PUBLIC_MEDIA_URL: https://impress.127.0.0.1.nip.io
 
   replicas: 1
   command:
@@ -107,15 +107,16 @@ ingress:
   enabled: true
   host: impress.127.0.0.1.nip.io
 
-ingressWS:
+ingressCollaborationWS:
   enabled: true
   host: impress.127.0.0.1.nip.io
-
+  
   annotations:
-    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, Can-Edit, User-Id"
     nginx.ingress.kubernetes.io/auth-url: https://impress.127.0.0.1.nip.io/api/v1.0/documents/collaboration-auth/
-    nginx.ingress.kubernetes.io/enable-websocket: "true"
-    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
+
+ingressCollaborationApi:
+  enabled: true
+  host: impress.127.0.0.1.nip.io
 
 ingressAdmin:
   enabled: true
