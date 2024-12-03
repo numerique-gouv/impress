@@ -10,7 +10,13 @@ and this project adheres to
 ## [Unreleased]
 
 ## Added
-
+- ✨(frontend) WIP: New ui
+- 💄(frontend) Add left panel #420
+- 💄(frontend) updating the header and leftpanel for responsive #421
+- 💄(frontend) update DocsGrid component #431
+- 💄(frontend) update DocsGridOptions component #432
+- 💄(frontend) update DocHeader ui #446
+- 💄(frontend) update doc versioning ui #463
 - ✨(backend) add server-to-server API endpoint to create documents #467
 
 
@@ -37,7 +43,9 @@ and this project adheres to
 - 🐛(backend) fix sanitize problem IA #490
 
 
+
 ## [1.8.2] - 2024-11-28
+
 
 ## Changed
 
@@ -58,9 +66,6 @@ and this project adheres to
 - 🌐(backend) add German translation #259
 - 🌐(frontend) add German translation #255
 - ✨(frontend) add a broadcast store #387
-- ✨(frontend) WIP: New ui
-- 💄(frontend) Add left panel #420
-- 💄(frontend) updating the header and leftpanel for responsive #421
 - ✨(backend) config endpoint #425
 - 💄(frontend) update DocsGrid component #431
 - ✨(backend) whitelist pod's IP address #443
@@ -68,9 +73,6 @@ and this project adheres to
 - ✨(frontend) config endpoint #424
 - ✨(frontend) add sentry #424
 - ✨(frontend) add crisp chatbot #450
-- 💄(frontend) update DocsGridOptions component #432
-- 💄(frontend) update DocHeader ui #446
-
 
 ## Changed
 
