@@ -1,6 +1,7 @@
 import {
   Button,
   VariantType,
+  useModal,
   useToastProvider,
 } from '@openfun/cunningham-react';
 import { useState } from 'react';
@@ -25,17 +26,17 @@ import {
   ModalRemoveDoc,
   ModalShare,
 } from '@/features/docs/doc-management';
-import { ModalVersion, Versions } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
+
+import { ModalSelectVersion } from '../../doc-versioning/components/ModalSelectVersion';
 
 import { ModalPDF } from './ModalExport';
 
 interface DocToolBoxProps {
   doc: Doc;
-  versionId?: Versions['version_id'];
 }
 
-export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
+export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const { t } = useTranslation();
   const { spacingsTokens, colorsTokens } = useCunninghamTheme();
 
@@ -45,10 +46,10 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
   const [isModalShareOpen, setIsModalShareOpen] = useState(false);
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
-
+  const selectHistoryModal = useModal();
   const { setIsPanelOpen, setIsPanelTableContentOpen } = usePanelEditorStore();
-  const [isModalVersionOpen, setIsModalVersionOpen] = useState(false);
-  const { isSmallMobile } = useResponsiveStore();
+
+  const { isSmallMobile, isDesktop } = useResponsiveStore();
   const { authenticated } = useAuthStore();
   const { editor } = useEditorStore();
   const { toast } = useToastProvider();
@@ -77,9 +78,9 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
       icon: 'history',
       disabled: !doc.abilities.versions_list,
       callback: () => {
-        setIsPanelOpen(true);
-        setIsPanelTableContentOpen(false);
+        selectHistoryModal.open();
       },
+      show: isDesktop,
     },
     {
       label: t('Table of contents'),
@@ -144,19 +145,6 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
       $gap="0.5rem 1.5rem"
       $wrap={isSmallMobile ? 'wrap' : 'nowrap'}
     >
-      {versionId && (
-        <Box $margin={{ left: 'auto' }}>
-          <Button
-            onClick={() => {
-              setIsModalVersionOpen(true);
-            }}
-            color="secondary"
-            size={isSmallMobile ? 'small' : 'medium'}
-          >
-            {t('Restore this version')}
-          </Button>
-        </Box>
-      )}
       <Box $direction="row" $margin={{ left: 'auto' }} $gap={spacings['2xs']}>
         {authenticated && !isSmallMobile && (
           <Button
@@ -207,11 +195,10 @@ export const DocToolBox = ({ doc, versionId }: DocToolBoxProps) => {
       {isModalRemoveOpen && (
         <ModalRemoveDoc onClose={() => setIsModalRemoveOpen(false)} doc={doc} />
       )}
-      {isModalVersionOpen && versionId && (
-        <ModalVersion
-          onClose={() => setIsModalVersionOpen(false)}
-          docId={doc.id}
-          versionId={versionId}
+      {selectHistoryModal.isOpen && (
+        <ModalSelectVersion
+          onClose={() => selectHistoryModal.close()}
+          doc={doc}
         />
       )}
     </Box>

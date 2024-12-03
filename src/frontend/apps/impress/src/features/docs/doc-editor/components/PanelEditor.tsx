@@ -1,25 +1,19 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Card, IconBG, Text } from '@/components';
 import { useCunninghamTheme } from '@/cunningham';
-import { Doc } from '@/features/docs/doc-management';
 import { TableContent } from '@/features/docs/doc-table-content';
-import { VersionList } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
 
 import { usePanelEditorStore } from '../stores';
 import { HeadingBlock } from '../types';
 
 interface PanelProps {
-  doc: Doc;
   headings: HeadingBlock[];
 }
 
-export const PanelEditor = ({
-  doc,
-  headings,
-}: PropsWithChildren<PanelProps>) => {
+export const PanelEditor = ({ headings }: PropsWithChildren<PanelProps>) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
   const { isMobile } = useResponsiveStore();
@@ -77,7 +71,7 @@ export const PanelEditor = ({
             $background="white"
             $position="absolute"
             $height="100%"
-            $width={doc.abilities.versions_list ? '50%' : '100%'}
+            $width="100%"
             $hasTransition="slow"
             $css={`
                 border-top: 2px solid ${colorsTokens()['primary-600']};
@@ -93,7 +87,7 @@ export const PanelEditor = ({
               `}
           />
           <BoxButton
-            $minWidth={doc.abilities.versions_list ? '50%' : '100%'}
+            $minWidth="100%"
             onClick={() => setIsPanelTableContentOpen(true)}
             $zIndex={1}
           >
@@ -108,29 +102,8 @@ export const PanelEditor = ({
               {t('Table of content')}
             </Text>
           </BoxButton>
-          {doc.abilities.versions_list && (
-            <BoxButton
-              $minWidth="50%"
-              onClick={() => setIsPanelTableContentOpen(false)}
-              $zIndex={1}
-            >
-              <Text
-                $width="100%"
-                $weight="bold"
-                $size="m"
-                $theme="primary"
-                $variation="600"
-                $padding={{ vertical: 'small', horizontal: 'small' }}
-              >
-                {t('Versions')}
-              </Text>
-            </BoxButton>
-          )}
         </Box>
-        {isPanelTableContentOpen && <TableContent headings={headings} />}
-        {!isPanelTableContentOpen && doc.abilities.versions_list && (
-          <VersionList doc={doc} />
-        )}
+        <TableContent headings={headings} />
       </Box>
     </Card>
   );

@@ -11,6 +11,7 @@ import { Doc, useDocStore } from '@/features/docs/doc-management';
 import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
 import { useResponsiveStore } from '@/stores';
 
+import { DocVersionHeader } from '../../doc-header/components/DocVersionHeader';
 import { useHeadingStore } from '../stores';
 
 import { BlockNoteEditor } from './BlockNoteEditor';
@@ -18,12 +19,10 @@ import { IconOpenPanelEditor, PanelEditor } from './PanelEditor';
 
 interface DocEditorProps {
   doc: Doc;
+  versionId?: Versions['version_id'];
 }
 
-export const DocEditor = ({ doc }: DocEditorProps) => {
-  const {
-    query: { versionId },
-  } = useRouter();
+export const DocEditor = ({ doc, versionId }: DocEditorProps) => {
   const { t } = useTranslation();
   const { headings } = useHeadingStore();
   const { isMobile } = useResponsiveStore();
@@ -41,7 +40,12 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
 
   return (
     <>
-      <DocHeader doc={doc} versionId={versionId as Versions['version_id']} />
+      {isVersion ? (
+        <DocVersionHeader title={doc.title} />
+      ) : (
+        <DocHeader doc={doc} />
+      )}
+
       {!doc.abilities.partial_update && (
         <Box $width="100%" $margin={{ all: 'small', top: 'none' }}>
           <Alert type={VariantType.WARNING}>
@@ -49,18 +53,11 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
           </Alert>
         </Box>
       )}
-      {isVersion && (
-        <Box $margin={{ all: 'small', top: 'none' }}>
-          <Alert type={VariantType.WARNING}>
-            {t(`Read only, you cannot edit document versions.`)}
-          </Alert>
-        </Box>
-      )}
+
       <Box
         $background={colorsTokens()['primary-bg']}
         $direction="row"
         $width="100%"
-        $margin={{ all: isMobile ? 'tiny' : 'small', top: 'none' }}
         $css="overflow-x: clip; flex: 1;"
         $position="relative"
       >
@@ -75,9 +72,11 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
           ) : (
             <BlockNoteEditor doc={doc} storeId={doc.id} provider={provider} />
           )}
-          {!isMobile && <IconOpenPanelEditor headings={headings} />}
+          {!isMobile && !isVersion && (
+            <IconOpenPanelEditor headings={headings} />
+          )}
         </Card>
-        <PanelEditor doc={doc} headings={headings} />
+        {!isVersion && <PanelEditor headings={headings} />}
       </Box>
     </>
   );
