@@ -28,7 +28,7 @@ spec:
   {{- end }}
   {{- if .Values.ingressMedia.tls.enabled }}
   tls:
-    {{- if .Values.ingressMedia.host }}
+    {{- if and .Values.ingressMedia.host .Values.ingressMedia.tls.useDefaultSecretName }}
     - secretName: {{ $fullName }}-tls
       hosts:
         - {{ .Values.ingressMedia.host | quote }}

@@ -28,7 +28,7 @@ spec:
   {{- end }}
   {{- if .Values.ingressAdmin.tls.enabled }}
   tls:
-    {{- if .Values.ingressAdmin.host }}
+    {{- if and .Values.ingressAdmin.host .Values.ingressAdmin.tls.useDefaultSecretName }}
     - secretName: {{ $fullName }}-tls
       hosts:
         - {{ .Values.ingressAdmin.host | quote }}
