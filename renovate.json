@@ -13,7 +13,13 @@
       "enabled": false,
       "groupName": "ignored js dependencies",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["fetch-mock", "node", "node-fetch", "eslint"]
+      "matchPackageNames": [
+        "fetch-mock",
+        "node",
+        "node-fetch",
+        "eslint",
+        "workbox-webpack-plugin"
+      ]
     }
   ]
 }
