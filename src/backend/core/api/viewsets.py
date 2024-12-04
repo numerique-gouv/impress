@@ -680,9 +680,9 @@ class DocumentViewSet(
         """
         POST /api/v1.0/documents/<resource_id>/ai-translate
         with expected data:
-        - text: str
+        - text: json
         - language: str [settings.LANGUAGES]
-        Return JSON response with the translated text.
+        Return the same json but with the value updated, keep the keys accordingly.
         """
         # Check permissions first
         self.get_object()

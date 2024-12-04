@@ -15,29 +15,33 @@ AI_ACTIONS = {
         "Answer the prompt in markdown format. Return JSON: "
         '{"answer": "Your markdown answer"}. '
         "Do not provide any other information."
+        "Preserve the language."
     ),
     "correct": (
         "Correct grammar and spelling of the markdown text, "
         "preserving language and markdown formatting. "
         'Return JSON: {"answer": "your corrected markdown text"}. '
         "Do not provide any other information."
+        "Preserve the language."
     ),
     "rephrase": (
         "Rephrase the given markdown text, "
         "preserving language and markdown formatting. "
         'Return JSON: {"answer": "your rephrased markdown text"}. '
         "Do not provide any other information."
+        "Preserve the language."
     ),
     "summarize": (
         "Summarize the markdown text, preserving language and markdown formatting. "
         'Return JSON: {"answer": "your markdown summary"}. '
         "Do not provide any other information."
+        "Preserve the language."
     ),
 }
 
 AI_TRANSLATE = (
-    "Translate the markdown text to {language:s}, preserving markdown formatting. "
-    'Return JSON: {{"answer": "your translated markdown text in {language:s}"}}. '
+    "Translate to {language:s} for every value of the json provided."
+    "Keep the same json but with the value updated, keep the keys accordingly."
     "Do not provide any other information."
 )
 
@@ -62,7 +66,7 @@ class AIService:
             response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": system_content},
-                {"role": "user", "content": json.dumps({"markdown_input": text})},
+                {"role": "user", "content": json.dumps({"answer": text})},
             ],
         )
 

@@ -426,11 +426,12 @@ class AITranslateSerializer(serializers.Serializer):
     language = serializers.ChoiceField(
         choices=tuple(enums.ALL_LANGUAGES.items()), required=True
     )
-    text = serializers.CharField(required=True)
+    text = serializers.JSONField(required=True)
 
     def validate_text(self, value):
         """Ensure the text field is not empty."""
 
-        if len(value.strip()) == 0:
-            raise serializers.ValidationError("Text field cannot be empty.")
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Text field must be a json object.")
+
         return value
