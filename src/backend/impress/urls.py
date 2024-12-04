@@ -1,5 +1,7 @@
 """URL configuration for the impress project"""
 
+import os
+from django_prometheus import exports
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -16,6 +18,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("core.urls")),
 ]
+
+if os.environ.get("PROMETHEUS_METRICS", "False").lower() == "true":
+    urlpatterns.append(
+        path("prometheus/", exports.ExportToDjangoView, name="prometheus-django-metrics")
+    )
 
 if settings.DEBUG:
     urlpatterns = (

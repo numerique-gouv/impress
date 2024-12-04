@@ -1,5 +1,7 @@
 """Impress core API endpoints"""
 
+import os
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
@@ -7,6 +9,14 @@ from rest_framework import exceptions as drf_exceptions
 from rest_framework import views as drf_views
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+from prometheus_client import REGISTRY
+from .custom_metrics_collector import CustomMetricsCollector
+
+# Register the custom Prometheus metric collector during API initialization if it has been enabled
+if os.environ.get("PROMETHEUS_METRICS", "False").lower() == "true":
+    if not any(isinstance(cmc, CustomMetricsCollector) for cmc in REGISTRY._collector_to_names):
+        REGISTRY.register(CustomMetricsCollector())
 
 
 def exception_handler(exc, context):
