@@ -29,7 +29,7 @@ spec:
   {{- if .Values.ingressCollaborationApi.tls.enabled }}
   tls:
     {{- if .Values.ingressCollaborationApi.host }}
-    - secretName: {{ $fullName }}-tls
+    - secretName: {{ .Values.ingressCollaborationApi.tls.secretName | default (printf "%s-tls" $fullName) | quote }}
       hosts:
         - {{ .Values.ingressCollaborationApi.host | quote }}
     {{- end }}
@@ -69,4 +69,3 @@ spec:
           {{- end }}
     {{- end }}
 {{- end }}
-
