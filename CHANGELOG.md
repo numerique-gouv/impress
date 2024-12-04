@@ -19,6 +19,9 @@ and this project adheres to
 - 💄(frontend) update doc versioning ui #463
 - ✨(backend) add server-to-server API endpoint to create documents #467
 
+## Changed
+- 💄(frontend) add filtering from left panel #475
+
 
 ## [1.9.0] - 2024-12-11
 
