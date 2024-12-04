@@ -17,6 +17,7 @@ and this project adheres to
 - 💄(frontend) update DocsGridOptions component #432
 - 💄(frontend) update DocHeader ui #446
 - 💄(frontend) update doc versioning ui #463
+- 💄(frontend) update doc home left panel #475
 
 ## [1.8.2] - 2024-11-28
 
