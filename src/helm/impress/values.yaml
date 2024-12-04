@@ -37,12 +37,14 @@ ingress:
   ## @param ingress.hosts Additional host to configure for the Ingress
   hosts: []
   #  - chart-example.local
-  ## @param ingress.tls.enabled Wether to enable TLS for the Ingress
+  ## @param ingress.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingress.tls.secretName Secret name for TLS config
   ## @skip ingress.tls.additional
   ## @extra ingress.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingress.tls.additional[].hosts[] Hosts for additional TLS config
   tls:
     enabled: true
+    secretName: null
     additional: []
 
   ## @param ingress.customBackends Add custom backends to ingress
@@ -60,21 +62,23 @@ ingressCollaborationWS:
   ## @param ingress.hosts Additional host to configure for the Ingress
   hosts: []
   #  - chart-example.local
-  ## @param ingressCollaborationWS.tls.enabled Wether to enable TLS for the Ingress
+  ## @param ingressCollaborationWS.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingressCollaborationWS.tls.secretName Secret name for TLS config
   ## @skip ingressCollaborationWS.tls.additional
   ## @extra ingressCollaborationWS.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingressCollaborationWS.tls.additional[].hosts[] Hosts for additional TLS config
   tls:
     enabled: true
+    secretName: null
     additional: []
 
   ## @param ingressCollaborationWS.customBackends Add custom backends to ingress
   customBackends: []
 
-  annotations: 
+  annotations:
     nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Can-Edit, X-User-Id"
     nginx.ingress.kubernetes.io/auth-url: https://impress.example.com/api/v1.0/documents/collaboration-auth/
-    nginx.ingress.kubernetes.io/enable-websocket: "true" 
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
     nginx.ingress.kubernetes.io/upstream-hash-by: $arg_room
@@ -91,19 +95,22 @@ ingressCollaborationApi:
   ## @param ingress.hosts Additional host to configure for the Ingress
   hosts: []
   #  - chart-example.local
-  ## @param ingressCollaborationApi.tls.enabled Wether to enable TLS for the Ingress
+  ## @param ingressCollaborationApi.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingressCollaborationApi.tls.secretName Secret name for TLS config
   ## @skip ingressCollaborationApi.tls.additional
   ## @extra ingressCollaborationApi.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingressCollaborationApi.tls.additional[].hosts[] Hosts for additional TLS config
   tls:
     enabled: true
+    secretName: null
     additional: []
 
   ## @param ingressCollaborationApi.customBackends Add custom backends to ingress
   customBackends: []
 
-  annotations: 
+  annotations:
     nginx.ingress.kubernetes.io/upstream-hash-by: $arg_room
+
 
 ## @param ingressAdmin.enabled whether to enable the Ingress or not
 ## @param ingressAdmin.className IngressClass to use for the Ingress
@@ -117,12 +124,14 @@ ingressAdmin:
   ## @param ingressAdmin.hosts Additional host to configure for the Ingress
   hosts: [ ]
   #  - chart-example.local
-  ## @param ingressAdmin.tls.enabled Wether to enable TLS for the Ingress
+  ## @param ingressAdmin.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingressAdmin.tls.secretName Secret name for TLS config
   ## @skip ingressAdmin.tls.additional
   ## @extra ingressAdmin.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingressAdmin.tls.additional[].hosts[] Hosts for additional TLS config
   tls:
     enabled: true
+    secretName: null
     additional: []
 
 ## @param ingressMedia.enabled whether to enable the Ingress or not
@@ -137,12 +146,14 @@ ingressMedia:
   ## @param ingressMedia.hosts Additional host to configure for the Ingress
   hosts: [ ]
   #  - chart-example.local
-  ## @param ingressMedia.tls.enabled Wether to enable TLS for the Ingress
+  ## @param ingressMedia.tls.enabled Weather to enable TLS for the Ingress
+  ## @param ingressMedia.tls.secretName Secret name for TLS config
   ## @skip ingressMedia.tls.additional
   ## @extra ingressMedia.tls.additional[].secretName Secret name for additional TLS config
   ## @extra ingressMedia.tls.additional[].hosts[] Hosts for additional TLS config
   tls:
     enabled: true
+    secretName: null
     additional: []
 
   annotations:
