@@ -9,6 +9,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+✨(backend) Adding /prometheus metrics endpoint #455
 
 ## [1.8.2] - 2024-11-28
 
