@@ -50,6 +50,9 @@ services:
     environment:
       - PYLINTHOME=/app/.pylint.d
       - DJANGO_CONFIGURATION=Development
+      - PROMETHEUS_EXPORTER=true
+      - K8S_PROBING=true
+      - MONITORING_ALLOWED_CIDR_RANGES="172.23.0.0/16" # separate by comma
     env_file:
       - env.d/development/common
       - env.d/development/postgresql

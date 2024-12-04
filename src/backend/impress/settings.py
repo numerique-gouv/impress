@@ -23,6 +23,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join("/", "data")
+PROMETHEUS_EXPORTER = os.getenv("PROMETHEUS_EXPORTER", "False").lower() == "true"
 
 
 def get_release():
@@ -282,6 +283,14 @@ class Base(Configuration):
         "dockerflow.django.middleware.DockerflowMiddleware",
     ]
 
+    if PROMETHEUS_EXPORTER:
+        MIDDLEWARE.insert(0, "django_prometheus.middleware.PrometheusBeforeMiddleware")
+        MIDDLEWARE.append("django_prometheus.middleware.PrometheusAfterMiddleware")
+        PROMETHEUS_METRIC_NAMESPACE = "impress"
+        PROMETHEUS_LATENCY_BUCKETS = (
+            .05, .1, .25, .5, .75, 1.0, 1.5, 2.5, 5.0, 10.0, 15.0, 30.0, float("inf")
+        )
+
     AUTHENTICATION_BACKENDS = [
         "django.contrib.auth.backends.ModelBackend",
         "core.authentication.backends.OIDCAuthenticationBackend",
@@ -295,6 +304,7 @@ class Base(Configuration):
         "drf_spectacular",
         # Third party apps
         "corsheaders",
+        "django_prometheus",
         "dockerflow.django",
         "rest_framework",
         "parler",
@@ -314,7 +324,10 @@ class Base(Configuration):
 
     # Cache
     CACHES = {
-        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache" if not PROMETHEUS_EXPORTER
+            else "django_prometheus.cache.backends.locmem.LocMemCache",
+        },
     }
 
     REST_FRAMEWORK = {
