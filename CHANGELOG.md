@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+🔧(helm) add option to disable default tls setting by @dominikkaminski #519
+
 
 ## [1.10.0] - 2024-12-17
 
