@@ -10,7 +10,6 @@ import { APIError } from '@/api';
 import { Box, Card, IconBG } from '@/components';
 import { Doc, Role } from '@/features/docs/doc-management';
 import { useCreateDocInvitation } from '@/features/docs/members/invitation-list/';
-import { useLanguage } from '@/i18n/hooks/useLanguage';
 import { useResponsiveStore } from '@/stores';
 
 import { useCreateDocAccess } from '../api';
@@ -36,7 +35,6 @@ interface ModalAddMembersProps {
 }
 
 export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
-  const { contentLanguage } = useLanguage();
   const { t } = useTranslation();
   const { isSmallMobile } = useResponsiveStore();
   const [selectedUsers, setSelectedUsers] = useState<OptionsSelect>([]);
@@ -56,7 +54,6 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
             email: selectedUser.value.email,
             role: selectedRole,
             docId: doc.id,
-            contentLanguage,
           });
           break;
 
@@ -65,7 +62,6 @@ export const AddMembers = ({ currentRole, doc }: ModalAddMembersProps) => {
             role: selectedRole,
             docId: doc.id,
             memberId: selectedUser.value.id,
-            contentLanguage,
           });
           break;
       }

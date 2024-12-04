@@ -232,9 +232,9 @@ class Base(Configuration):
     # fallback/default languages throughout the app.
     LANGUAGES = values.SingleNestedTupleValue(
         (
-            ("en-us", _("English")),
-            ("fr-fr", _("French")),
-            ("de-de", _("German")),
+            ("en-us", "English"),
+            ("fr-fr", "Français"),
+            ("de-de", "Deutsch"),
         )
     )
 

@@ -81,7 +81,7 @@ export const BlockNoteEditor = ({
   useSaveDoc(doc.id, provider.document, !readOnly);
   const { setHeadings, resetHeadings } = useHeadingStore();
   const { i18n } = useTranslation();
-  const lang = i18n.language;
+  const lang = i18n.resolvedLanguage;
 
   const { uploadFile, errorAttachment } = useUploadFile(doc.id);
 

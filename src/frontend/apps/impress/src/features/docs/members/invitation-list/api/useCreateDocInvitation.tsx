@@ -4,7 +4,6 @@ import { APIError, errorCauses, fetchAPI } from '@/api';
 import { User } from '@/core/auth';
 import { Doc, Role } from '@/features/docs/doc-management';
 import { OptionType } from '@/features/docs/members/members-add/types';
-import { ContentLanguage } from '@/i18n/types';
 
 import { Invitation } from '../types';
 
@@ -14,20 +13,15 @@ interface CreateDocInvitationParams {
   email: User['email'];
   role: Role;
   docId: Doc['id'];
-  contentLanguage: ContentLanguage;
 }
 
 export const createDocInvitation = async ({
   email,
   role,
   docId,
-  contentLanguage,
 }: CreateDocInvitationParams): Promise<Invitation> => {
   const response = await fetchAPI(`documents/${docId}/invitations/`, {
     method: 'POST',
-    headers: {
-      'Content-Language': contentLanguage,
-    },
     body: JSON.stringify({
       email,
       role,
