@@ -12,6 +12,9 @@ class ServerToServerAuthentication(BaseAuthentication):
     Validates the presence and correctness of the Authorization header.
     """
 
+    AUTH_HEADER = "Authorization"
+    TOKEN_TYPE = "Bearer"  # noqa S105
+
     def authenticate(self, request):
         """
         Authenticate the server-to-server request by validating the Authorization header.
@@ -29,17 +32,21 @@ class ServerToServerAuthentication(BaseAuthentication):
             AuthenticationFailed: If the Authorization header is missing, malformed,
             or contains an invalid token.
         """
-        auth_header = request.headers.get("Authorization")
+        auth_header = request.headers.get(self.AUTH_HEADER)
         if not auth_header:
             raise AuthenticationFailed("Authorization header is missing.")
 
         # Validate token format and existence
-        prefix = "Bearer "
-        if not auth_header.startswith(prefix):
-            raise AuthenticationFailed("Invalid token format.")
+        auth_parts = auth_header.split(" ")
+        if len(auth_parts) != 2 or auth_parts[0] != self.TOKEN_TYPE:
+            raise AuthenticationFailed("Invalid authorization header.")
 
-        token = auth_header[len(prefix) :]
+        token = auth_parts[1]
         if token not in settings.SERVER_TO_SERVER_API_TOKENS:
             raise AuthenticationFailed("Invalid server-to-server token.")
 
         # Authentication is successful, but no user is authenticated
+
+    def authenticate_header(self, request):
+        """Return the WWW-Authenticate header value."""
+        return f"{self.TOKEN_TYPE} realm='Create document server to server'"
