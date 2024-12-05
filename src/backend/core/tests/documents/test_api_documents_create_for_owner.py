@@ -122,6 +122,39 @@ def test_api_documents_create_for_owner_missing_email():
     assert not Document.objects.exists()
 
 
+@pytest.mark.parametrize(
+    "invalid_sub",
+    [
+        (
+            "jQdrtG62686DYhhHmwMQrW0I1vkk038e4swM6dxLSJinIdfBmbwtL6zxhIWKCfsnRL4NAT6GyQRX6cj8O2kC4V"
+            + "4kqoL3bhIVElgTltMp8y4D60PeSXvq3bGykkqiHjO9JO8X8Me9L4EHdYUOrPlCJ5LxhAfHMGoxduGzdxTxNN"
+            + "8hHXGDwt1jypgUXVNFVabBwHtiSueZCSsyVsY8FbnulDbGytMaQoeSwyz5kvfFXfJssQ7ShDVuWmfn6iGr9z"
+        ),
+        "123!!",
+    ],
+)
+@override_settings(SERVER_TO_SERVER_API_TOKENS=["DummyToken"])
+def test_api_documents_create_for_owner_invalid_sub(invalid_sub):
+    """Requests with an invalid sub should not be allowed to create documents for owner."""
+    data = {
+        "title": "My Document",
+        "content": "Document content",
+        "sub": invalid_sub,
+        "email": "john.doe@example.com",
+        "language": "fr",
+    }
+
+    response = APIClient().post(
+        "/api/v1.0/documents/create-for-owner/",
+        data,
+        format="json",
+        HTTP_AUTHORIZATION="Bearer DummyToken",
+    )
+
+    assert response.status_code == 400
+    assert not Document.objects.exists()
+
+
 @override_settings(SERVER_TO_SERVER_API_TOKENS=["DummyToken"])
 def test_api_documents_create_for_owner_existing():
     """It should be possible to create a document on behalf of a pre-existing user."""

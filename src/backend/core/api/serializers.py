@@ -241,7 +241,9 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
     title = serializers.CharField(required=True)
     content = serializers.CharField(required=True)
     # User
-    sub = serializers.CharField(required=True)
+    sub = serializers.CharField(
+        required=True, validators=[models.User.sub_validator], max_length=255
+    )
     email = serializers.EmailField(required=True)
     language = serializers.ChoiceField(
         required=False, choices=lazy(lambda: settings.LANGUAGES, tuple)()
