@@ -81,6 +81,48 @@ def test_api_documents_create_for_owner_authenticated_forbidden():
 
 
 @override_settings(SERVER_TO_SERVER_API_TOKENS=["DummyToken"])
+def test_api_documents_create_for_owner_missing_sub():
+    """Requests with no sub should not be allowed to create documents for owner."""
+    data = {
+        "title": "My Document",
+        "content": "Document content",
+        "email": "john.doe@example.com",
+        "language": "fr",
+    }
+
+    response = APIClient().post(
+        "/api/v1.0/documents/create-for-owner/",
+        data,
+        format="json",
+        HTTP_AUTHORIZATION="Bearer DummyToken",
+    )
+
+    assert response.status_code == 400
+    assert not Document.objects.exists()
+
+
+@override_settings(SERVER_TO_SERVER_API_TOKENS=["DummyToken"])
+def test_api_documents_create_for_owner_missing_email():
+    """Requests with no email should not be allowed to create documents for owner."""
+    data = {
+        "title": "My Document",
+        "content": "Document content",
+        "sub": "123",
+        "language": "fr",
+    }
+
+    response = APIClient().post(
+        "/api/v1.0/documents/create-for-owner/",
+        data,
+        format="json",
+        HTTP_AUTHORIZATION="Bearer DummyToken",
+    )
+
+    assert response.status_code == 400
+    assert not Document.objects.exists()
+
+
+@override_settings(SERVER_TO_SERVER_API_TOKENS=["DummyToken"])
 def test_api_documents_create_for_owner_existing():
     """It should be possible to create a document on behalf of a pre-existing user."""
     user = factories.UserFactory(language="en-us")
