@@ -9,7 +9,7 @@ export const LeftPanelContent = () => {
   const isHome = router.pathname === '/';
 
   return (
-    <Box>
+    <Box $width="100%">
       {isHome && (
         <SeparatedSection>
           <LeftPanelTargetFilters />
