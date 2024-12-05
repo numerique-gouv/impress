@@ -1,3 +1,4 @@
+import { Block } from '@blocknote/core';
 import {
   ComponentProps,
   useBlockNoteEditor,
@@ -21,6 +22,12 @@ import {
   useDocAITransform,
   useDocAITranslate,
 } from '../api/';
+import {
+  Node,
+  addIdToTextNodes,
+  extractTextWithId,
+  updateTextsWithId,
+} from '../utilsAI';
 
 type LanguageTranslate = {
   value: string;
@@ -212,14 +219,23 @@ const AIMenuItemTransform = ({
   icon,
 }: PropsWithChildren<AIMenuItemTransform>) => {
   const { mutateAsync: requestAI, isPending } = useDocAITransform();
+  const editor = useBlockNoteEditor();
 
-  const requestAIAction = async (markdown: string) => {
+  const requestAIAction = async (selectedBlocks: Block[]) => {
+    const text = await editor.blocksToMarkdownLossy(selectedBlocks);
+
     const responseAI = await requestAI({
-      text: markdown,
+      text,
       action,
       docId,
     });
-    return responseAI.answer;
+
+    if (!responseAI || !responseAI.answer) {
+      throw new Error('No response from AI');
+    }
+
+    const markdown = await editor.tryParseMarkdownToBlocks(responseAI.answer);
+    editor.replaceBlocks(selectedBlocks, markdown);
   };
 
   return (
@@ -242,14 +258,28 @@ const AIMenuItemTranslate = ({
   language,
 }: PropsWithChildren<AIMenuItemTranslate>) => {
   const { mutateAsync: requestAI, isPending } = useDocAITranslate();
+  const editor = useBlockNoteEditor();
 
-  const requestAITranslate = async (markdown: string) => {
+  const requestAITranslate = async (selectedBlocks: Block[]) => {
+    addIdToTextNodes(selectedBlocks as Node);
+    const content = extractTextWithId(selectedBlocks as Node);
+
     const responseAI = await requestAI({
-      text: markdown,
+      text: content,
       language,
       docId,
     });
-    return responseAI.answer;
+
+    if (!responseAI || !responseAI.answer) {
+      throw new Error('No response from AI');
+    }
+
+    updateTextsWithId(selectedBlocks as Node, responseAI.answer);
+    selectedBlocks.forEach((block) => {
+      if (editor.getBlock(block)) {
+        editor.replaceBlocks([block], [block]);
+      }
+    });
   };
 
   return (
@@ -264,7 +294,7 @@ const AIMenuItemTranslate = ({
 };
 
 interface AIMenuItemProps {
-  requestAI: (markdown: string) => Promise<string>;
+  requestAI: (blocks: Block[]) => Promise<void>;
   isPending: boolean;
   icon?: ReactNode;
 }
@@ -280,31 +310,17 @@ const AIMenuItem = ({
   const editor = useBlockNoteEditor();
   const handleAIError = useHandleAIError();
 
-  const handleAIAction = async () => {
+  const handleAIAction = () => {
     let selectedBlocks = editor.getSelection()?.blocks;
 
     if (!selectedBlocks || selectedBlocks.length === 0) {
       selectedBlocks = [editor.getTextCursorPosition().block];
-
       if (!selectedBlocks || selectedBlocks.length === 0) {
         return;
       }
     }
 
-    const markdown = await editor.blocksToMarkdownLossy(selectedBlocks);
-
-    try {
-      const responseAI = await requestAI(markdown);
-
-      if (!responseAI) {
-        return;
-      }
-
-      const blockMarkdown = await editor.tryParseMarkdownToBlocks(responseAI);
-      editor.replaceBlocks(selectedBlocks, blockMarkdown);
-    } catch (error) {
-      handleAIError(error);
-    }
+    requestAI(selectedBlocks).catch(handleAIError);
   };
 
   if (!Components) {
@@ -338,6 +354,7 @@ const useHandleAIError = () => {
       return;
     }
 
+    console.error('AI', error);
     toast(t('AI seems busy! Please try again.'), VariantType.ERROR);
   };
 };

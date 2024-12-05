@@ -16,6 +16,8 @@ and this project adheres to
 
 ## Changes
 
+- ♻️(frontend) Improve Ai translations #478
+- 🐛(frontend) Fix hidden menu on Firefox #468
 - ⚡️(backend) optimize number of queries on document list view #411
 
 
