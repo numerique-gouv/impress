@@ -46,7 +46,11 @@ export function MarkdownButton() {
   const { t } = useTranslation();
 
   const handleConvertMarkdown = () => {
-    const blocks = editor.getSelection()?.blocks;
+    let blocks = editor.getSelection()?.blocks;
+
+    if (!blocks || blocks.length === 0) {
+      blocks = [editor.getTextCursorPosition().block];
+    }
 
     forEach(blocks, async (block) => {
       if (!isBlock(block as unknown as Block)) {
