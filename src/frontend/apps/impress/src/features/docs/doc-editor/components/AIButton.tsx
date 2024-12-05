@@ -281,10 +281,14 @@ const AIMenuItem = ({
   const handleAIError = useHandleAIError();
 
   const handleAIAction = async () => {
-    const selectedBlocks = editor.getSelection()?.blocks;
+    let selectedBlocks = editor.getSelection()?.blocks;
 
     if (!selectedBlocks || selectedBlocks.length === 0) {
-      return;
+      selectedBlocks = [editor.getTextCursorPosition().block];
+
+      if (!selectedBlocks || selectedBlocks.length === 0) {
+        return;
+      }
     }
 
     const markdown = await editor.blocksToMarkdownLossy(selectedBlocks);
