@@ -254,9 +254,9 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """Create the document and associate it with the user or send an invitation."""
-        # Get the user based on the sub (unique identifier)
         language = validated_data.get("language", settings.LANGUAGE_CODE)
 
+        # Get the user based on the sub (unique identifier)
         try:
             user = models.User.objects.get(sub=validated_data["sub"])
         except (models.User.DoesNotExist, KeyError):
