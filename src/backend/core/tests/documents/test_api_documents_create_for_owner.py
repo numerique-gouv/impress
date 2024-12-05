@@ -37,6 +37,7 @@ def test_api_documents_create_for_owner_invalid_token():
     data = {
         "title": "My Document",
         "content": "Document content",
+        "sub": "123",
         "email": "john.doe@example.com",
         "language": "fr",
     }
@@ -130,6 +131,7 @@ def test_api_documents_create_for_owner_new_user():
     data = {
         "title": "My Document",
         "content": "Document content",
+        "sub": "123",
         "email": "john.doe@example.com",  # Should be used to create a new user
     }
 
@@ -179,6 +181,7 @@ def test_api_documents_create_for_owner_with_custom_language():
     data = {
         "title": "My Document",
         "content": "Document content",
+        "sub": "123",
         "email": "john.doe@example.com",
         "language": "fr-fr",
     }
@@ -209,6 +212,7 @@ def test_api_documents_create_for_owner_with_custom_subject_and_message():
     data = {
         "title": "My Document",
         "content": "Document content",
+        "sub": "123",
         "email": "john.doe@example.com",
         "message": "mon message spécial",
         "subject": "mon sujet spécial !",
