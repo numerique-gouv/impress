@@ -16,7 +16,9 @@ PYTHONPATH=/app
 # impress settings
 
 # Mail
+DJANGO_EMAIL_BRAND_NAME="La Suite Numérique"
 DJANGO_EMAIL_HOST="mailcatcher"
+DJANGO_EMAIL_LOGO_IMG="http://localhost:3000/assets/logo-suite-numerique.png"
 DJANGO_EMAIL_PORT=1025
 
 # Backend url
