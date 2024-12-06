@@ -9,9 +9,16 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- ✨(backend) annotate number of accesses on documents in list view #411
+- ✨(backend) allow users to mark/unmark documents as favorite #411
+
 ## Changed
 
 - 🔨(frontend) encapsulated title to its own component #474
+- 🐛(frontend) Fix hidden menu on Firefox #468
+- ⚡️(backend) optimize number of queries on document list view #411
 
 
 ## [1.8.2] - 2024-11-28
@@ -32,8 +39,6 @@ and this project adheres to
 
 ## Added
 
-- ✨(backend) annotate number of accesses on documents in list view #411
-- ✨(backend) allow users to mark/unmark documents as favorite #411
 - 🌐(backend) add German translation #259
 - 🌐(frontend) add German translation #255
 - ✨(frontend) add a broadcast store #387
@@ -45,7 +50,6 @@ and this project adheres to
 
 ## Changed
 
-- ⚡️(backend) optimize number of queries on document list view #411
 - 🚸(backend) improve users similarity search and sort results #391
 - ♻️(frontend) simplify stores #402
 - ✨(frontend) update $css Box props type to add styled components RuleSet #423
