@@ -15,8 +15,6 @@ import {
 import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
 import { useResponsiveStore } from '@/stores';
 
-import { useHeadingStore } from '../stores';
-
 import { BlockNoteEditor, BlockNoteEditorVersion } from './BlockNoteEditor';
 import { IconOpenPanelEditor, PanelEditor } from './PanelEditor';
 
@@ -29,7 +27,6 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
     query: { versionId },
   } = useRouter();
   const { t } = useTranslation();
-  const { headings } = useHeadingStore();
   const { isMobile } = useResponsiveStore();
 
   const isVersion = versionId && typeof versionId === 'string';
@@ -79,9 +76,9 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
           ) : (
             <BlockNoteEditor doc={doc} provider={provider} />
           )}
-          {!isMobile && <IconOpenPanelEditor headings={headings} />}
+          {!isMobile && <IconOpenPanelEditor />}
         </Card>
-        <PanelEditor doc={doc} headings={headings} />
+        <PanelEditor doc={doc} />
       </Box>
     </>
   );

@@ -13,8 +13,9 @@ import { useAuthStore } from '@/core/auth';
 import { Doc } from '@/features/docs/doc-management';
 
 import { useUploadFile } from '../hook';
+import { useHeadings } from '../hook/useHeadings';
 import useSaveDoc from '../hook/useSaveDoc';
-import { useEditorStore, useHeadingStore } from '../stores';
+import { useEditorStore } from '../stores';
 import { randomColor } from '../utils';
 
 import { BlockNoteToolbar } from './BlockNoteToolbar';
@@ -75,7 +76,6 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
 
   const readOnly = !doc.abilities.partial_update;
   useSaveDoc(doc.id, provider.document, !readOnly);
-  const { setHeadings, resetHeadings } = useHeadingStore();
   const { i18n } = useTranslation();
   const lang = i18n.language;
 
@@ -126,6 +126,7 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
     },
     [collabName, lang, provider, uploadFile],
   );
+  useHeadings(editor);
 
   useEffect(() => {
     setEditor(editor);
@@ -134,18 +135,6 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
       setEditor(undefined);
     };
   }, [setEditor, editor]);
-
-  useEffect(() => {
-    setHeadings(editor);
-
-    editor?.onEditorContentChange(() => {
-      setHeadings(editor);
-    });
-
-    return () => {
-      resetHeadings();
-    };
-  }, [editor, resetHeadings, setHeadings]);
 
   return (
     <Box $css={cssEditor(readOnly)}>
@@ -179,8 +168,7 @@ export const BlockNoteEditorVersion = ({
   initialContent,
 }: BlockNoteEditorVersionProps) => {
   const readOnly = true;
-  const { setHeadings, resetHeadings } = useHeadingStore();
-
+  const { setEditor } = useEditorStore();
   const editor = useCreateBlockNote(
     {
       collaboration: {
@@ -194,18 +182,15 @@ export const BlockNoteEditorVersion = ({
     },
     [initialContent],
   );
+  useHeadings(editor);
 
   useEffect(() => {
-    setHeadings(editor);
-
-    editor?.onEditorContentChange(() => {
-      setHeadings(editor);
-    });
+    setEditor(editor);
 
     return () => {
-      resetHeadings();
+      setEditor(undefined);
     };
-  }, [editor, resetHeadings, setHeadings]);
+  }, [setEditor, editor]);
 
   return (
     <Box $css={cssEditor(readOnly)}>
