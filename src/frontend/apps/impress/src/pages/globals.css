@@ -9,6 +9,10 @@ body {
   box-sizing: border-box;
 }
 
+.ironcalc-workbook * {
+  box-sizing: initial;
+}
+
 main ::-webkit-scrollbar,
 .ReactModalPortal ::-webkit-scrollbar {
   width: 20px;
