@@ -20,6 +20,7 @@ and this project adheres to
 - 💄(frontend) update doc summary ui #473
 - 🐛(frontend) fix doc grid button #478
 - 💄(frontend) update doc home left panel #475
+- 🐛(frontend) update doc editor height #481
 
 ## [1.8.2] - 2024-11-28
 
