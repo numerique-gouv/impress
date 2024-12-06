@@ -402,10 +402,11 @@ def test_api_document_invitations_create_privileged_members(
         email = mail.outbox[0]
         assert email.to == ["guest@example.com"]
         email_content = " ".join(email.body.split())
+        assert f"{user.full_name} shared a document with you!" in email_content
         assert (
-            f"{user.full_name} shared a document with you: {document.title}"
-            in email_content
-        )
+            f"{user.full_name} ({user.email}) invited you with the role ``{invited}`` "
+            f"on the following document: {document.title}"
+        ) in email_content
     else:
         assert models.Invitation.objects.exists() is False
 
@@ -452,10 +453,7 @@ def test_api_document_invitations_create_email_from_content_language():
     assert email.to == ["guest@example.com"]
 
     email_content = " ".join(email.body.split())
-    assert (
-        f"{user.full_name} a partagé un document avec vous: {document.title}"
-        in email_content
-    )
+    assert f"{user.full_name} a partagé un document avec vous !" in email_content
 
 
 def test_api_document_invitations_create_email_from_content_language_not_supported():
@@ -494,10 +492,7 @@ def test_api_document_invitations_create_email_from_content_language_not_support
     assert email.to == ["guest@example.com"]
 
     email_content = " ".join(email.body.split())
-    assert (
-        f"{user.full_name} shared a document with you: {document.title}"
-        in email_content
-    )
+    assert f"{user.full_name} shared a document with you!" in email_content
 
 
 def test_api_document_invitations_create_email_full_name_empty():
@@ -535,10 +530,10 @@ def test_api_document_invitations_create_email_full_name_empty():
     assert email.to == ["guest@example.com"]
 
     email_content = " ".join(email.body.split())
-    assert f"{user.email} shared a document with you: {document.title}" in email_content
+    assert f"{user.email} shared a document with you!" in email_content
     assert (
-        f'{user.email} invited you with the role "reader" on the '
-        f"following document : {document.title}" in email_content
+        f"{user.email.capitalize()} invited you with the role ``reader`` on the "
+        f"following document: {document.title}" in email_content
     )
 
 
