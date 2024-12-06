@@ -163,10 +163,6 @@ services:
     restart: unless-stopped
     ports:
       - "4444:4444"
-    volumes:
-      - ./src/frontend/servers/y-provider:/home/frontend/servers/y-provider
-      - /home/frontend/servers/y-provider/node_modules/
-      - /home/frontend/servers/y-provider/dist/
 
   kc_postgresql:
     image: postgres:14.3
