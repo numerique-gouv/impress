@@ -2,16 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, BoxButton, Text } from '@/components';
-import { HeadingBlock, useEditorStore } from '@/features/docs/doc-editor';
+import { useEditorStore, useHeadingStore } from '@/features/docs/doc-editor';
 import { useResponsiveStore } from '@/stores';
 
 import { Heading } from './Heading';
 
-interface TableContentProps {
-  headings: HeadingBlock[];
-}
-
-export const TableContent = ({ headings }: TableContentProps) => {
+export const TableContent = () => {
+  const { headings } = useHeadingStore();
   const { editor } = useEditorStore();
   const { isMobile } = useResponsiveStore();
   const { t } = useTranslation();

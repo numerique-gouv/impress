@@ -8,18 +8,13 @@ import { TableContent } from '@/features/docs/doc-table-content';
 import { VersionList } from '@/features/docs/doc-versioning';
 import { useResponsiveStore } from '@/stores';
 
-import { usePanelEditorStore } from '../stores';
-import { HeadingBlock } from '../types';
+import { useHeadingStore, usePanelEditorStore } from '../stores';
 
 interface PanelProps {
   doc: Doc;
-  headings: HeadingBlock[];
 }
 
-export const PanelEditor = ({
-  doc,
-  headings,
-}: PropsWithChildren<PanelProps>) => {
+export const PanelEditor = ({ doc }: PropsWithChildren<PanelProps>) => {
   const { t } = useTranslation();
   const { colorsTokens } = useCunninghamTheme();
   const { isMobile } = useResponsiveStore();
@@ -63,7 +58,7 @@ export const PanelEditor = ({
         `}
         $maxHeight="99vh"
       >
-        {isMobile && <IconOpenPanelEditor headings={headings} />}
+        {isMobile && <IconOpenPanelEditor />}
         <Box
           $direction="row"
           $justify="space-between"
@@ -127,7 +122,7 @@ export const PanelEditor = ({
             </BoxButton>
           )}
         </Box>
-        {isPanelTableContentOpen && <TableContent headings={headings} />}
+        {isPanelTableContentOpen && <TableContent />}
         {!isPanelTableContentOpen && doc.abilities.versions_list && (
           <VersionList doc={doc} />
         )}
@@ -136,11 +131,8 @@ export const PanelEditor = ({
   );
 };
 
-interface IconOpenPanelEditorProps {
-  headings: HeadingBlock[];
-}
-
-export const IconOpenPanelEditor = ({ headings }: IconOpenPanelEditorProps) => {
+export const IconOpenPanelEditor = () => {
+  const { headings } = useHeadingStore();
   const { t } = useTranslation();
   const { setIsPanelOpen, isPanelOpen, setIsPanelTableContentOpen } =
     usePanelEditorStore();
