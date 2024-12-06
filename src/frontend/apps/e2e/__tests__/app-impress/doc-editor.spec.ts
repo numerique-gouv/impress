@@ -262,7 +262,7 @@ test.describe('Doc Editor', () => {
       if (request.method().includes('POST')) {
         await route.fulfill({
           json: {
-            answer: 'Bonjour le monde',
+            answer: { 'tid-0': 'Bonjour le monde' },
           },
         });
       } else {
