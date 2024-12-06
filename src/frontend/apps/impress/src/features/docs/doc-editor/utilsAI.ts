@@ -2,7 +2,7 @@ import { Block as CoreBlock } from '@blocknote/core';
 
 type Block = Omit<CoreBlock, 'type'> & {
   tid?: string;
-  type: string;
+  type?: string;
   text?: string;
   content: Block[] | Block;
   children?: Block[] | Block;
@@ -21,7 +21,7 @@ export function addIdToTextNodes(node: Node) {
   if (Array.isArray(node)) {
     node.forEach((child) => addIdToTextNodes(child));
   } else if (typeof node === 'object' && node !== null) {
-    if (node.type === 'text') {
+    if (node?.type === 'text') {
       node.tid = generateId();
     }
 
@@ -37,7 +37,7 @@ export function addIdToTextNodes(node: Node) {
     // Handle table content
     if (
       !Array.isArray(node.content) &&
-      node.type === 'table' &&
+      node?.type === 'table' &&
       node.content &&
       node.content.type === 'tableContent'
     ) {
@@ -63,7 +63,7 @@ export function extractTextWithId(
   if (Array.isArray(node)) {
     node.forEach((child) => extractTextWithId(child, texts));
   } else if (typeof node === 'object' && node !== null) {
-    if (node.type === 'text' && node.tid) {
+    if (node?.type === 'text' && node.tid) {
       texts[node.tid] = node.text || '';
     }
 
@@ -79,7 +79,7 @@ export function extractTextWithId(
     // Handle table content
     if (
       !Array.isArray(node.content) &&
-      node.type === 'table' &&
+      node?.type === 'table' &&
       node.content &&
       node.content.type === 'tableContent'
     ) {
@@ -107,7 +107,7 @@ export function updateTextsWithId(
     node.forEach((child) => updateTextsWithId(child, updatedTexts));
   } else if (typeof node === 'object' && node !== null) {
     if (
-      node.type === 'text' &&
+      node?.type === 'text' &&
       node.tid &&
       updatedTexts[node.tid] !== undefined
     ) {
@@ -126,7 +126,7 @@ export function updateTextsWithId(
     // Handle table content
     if (
       !Array.isArray(node.content) &&
-      node.type === 'table' &&
+      node?.type === 'table' &&
       node.content &&
       node.content.type === 'tableContent'
     ) {
