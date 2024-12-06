@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ['impress/next'],
+  extends: ['impress/jest', 'impress/next'],
   parserOptions: {
     tsconfigRootDir: __dirname,
     project: ['./tsconfig.json'],
