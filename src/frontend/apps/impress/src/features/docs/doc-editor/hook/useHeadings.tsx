@@ -9,14 +9,11 @@ export const useHeadings = (editor: BlockNoteEditor) => {
   useEffect(() => {
     setHeadings(editor);
 
-    let timeout: NodeJS.Timeout;
     editor?.onEditorContentChange(() => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => setHeadings(editor), 200);
+      setHeadings(editor);
     });
 
     return () => {
-      clearTimeout(timeout);
       resetHeadings();
     };
   }, [editor, resetHeadings, setHeadings]);
