@@ -128,6 +128,23 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
   );
   useHeadings(editor);
 
+  /**
+   * With the collaboration it gets complicated to create the initial block
+   * better to let Blocknote manage, then we update the block with the content.
+   */
+  useEffect(() => {
+    if (doc.content) {
+      return;
+    }
+
+    setTimeout(() => {
+      editor.updateBlock(editor.document[0], {
+        type: 'heading',
+        content: '',
+      });
+    }, 100);
+  }, [editor, doc.content]);
+
   useEffect(() => {
     setEditor(editor);
 
