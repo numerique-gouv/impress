@@ -2,7 +2,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider';
 import * as Y from 'yjs';
 import { create } from 'zustand';
 
-import { Base64, Doc, blocksToYDoc } from '@/features/docs/doc-management';
+import { Base64, Doc } from '@/features/docs/doc-management';
 
 export interface UseDocStore {
   currentDoc?: Doc;
@@ -28,15 +28,6 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
 
     if (initialDoc) {
       Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
-    } else {
-      const initialDocContent = [
-        {
-          type: 'heading',
-          content: '',
-        },
-      ];
-
-      blocksToYDoc(initialDocContent, doc);
     }
 
     const provider = new HocuspocusProvider({

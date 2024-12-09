@@ -24,6 +24,7 @@ and this project adheres to
 
 ## Fixed
 
+- 🐛(frontend) fix initial content with collaboration #484
 - 🐛(frontend) Fix hidden menu on Firefox #468
 - 🐛(backend) fix sanitize problem IA #490
 
