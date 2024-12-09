@@ -21,6 +21,7 @@ and this project adheres to
 - 🐛(frontend) fix doc grid button #478
 - 💄(frontend) update doc home left panel #475
 - 🐛(frontend) update doc editor height #481
+- 💄(frontend) add doc search #485
 
 ## [1.8.2] - 2024-11-28
 
