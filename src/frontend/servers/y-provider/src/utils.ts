@@ -7,3 +7,7 @@ export function logger(...args: any[]) {
     console.log(...args);
   }
 }
+
+export const toBase64 = function (str: Uint8Array) {
+  return Buffer.from(str).toString('base64');
+};
