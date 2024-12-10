@@ -91,6 +91,39 @@ describe('Server Tests', () => {
     hocuspocusServer.closeConnections = closeConnections;
   });
 
+  test('POST /api/convert-markdown with incorrect API key should return 403', async () => {
+    const response = await request(app as any)
+      .post('/api/convert-markdown')
+      .set('Origin', origin)
+      .set('Authorization', 'wrong-api-key');
+
+    expect(response.status).toBe(403);
+    expect(response.body.error).toBe('Forbidden: Invalid API Key');
+  });
+
+  test('POST /api/convert-markdown with missing body param content', async () => {
+    const response = await request(app as any)
+      .post('/api/convert-markdown')
+      .set('Origin', origin)
+      .set('Authorization', 'test-secret-api-key');
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Invalid request: missing content');
+  });
+
+  test('POST /api/convert-markdown with body param content being an empty string', async () => {
+    const response = await request(app as any)
+      .post('/api/convert-markdown')
+      .set('Origin', origin)
+      .set('Authorization', 'test-secret-api-key')
+      .send({
+        content: '',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Invalid request: missing content');
+  });
+
   ['/collaboration/api/anything/', '/', '/anything'].forEach((path) => {
     test(`"${path}" endpoint should be forbidden`, async () => {
       const response = await request(app as any).post(path);

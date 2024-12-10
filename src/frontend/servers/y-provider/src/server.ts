@@ -1,14 +1,16 @@
 // eslint-disable-next-line import/order
 import './services/sentry';
+import { ServerBlockNoteEditor } from '@blocknote/server-util';
 import { Server } from '@hocuspocus/server';
 import * as Sentry from '@sentry/node';
 import express, { Request, Response } from 'express';
 import expressWebsockets from 'express-ws';
+import * as Y from 'yjs';
 
 import { PORT } from './env';
 import { httpSecurity, wsSecurity } from './middlewares';
 import { routes } from './routes';
-import { logger } from './utils';
+import { logger, toBase64 } from './utils';
 
 export const hocuspocusServer = Server.configure({
   name: 'docs-y-server',
@@ -130,6 +132,63 @@ export const initServer = () => {
       }
 
       res.status(200).json({ message: 'Connections reset' });
+    },
+  );
+
+  interface ConversionRequest {
+    content: string;
+  }
+
+  interface ConversionResponse {
+    content: string;
+  }
+
+  interface ErrorResponse {
+    error: string;
+  }
+
+  /**
+   * Route to convert markdown
+   */
+  app.post(
+    routes.CONVERT_MARKDOWN,
+    httpSecurity,
+    async (
+      req: Request<
+        object,
+        ConversionResponse | ErrorResponse,
+        ConversionRequest,
+        object
+      >,
+      res: Response<ConversionResponse | ErrorResponse>,
+    ) => {
+      const content = req.body?.content;
+
+      if (!content) {
+        res.status(400).json({ error: 'Invalid request: missing content' });
+        return;
+      }
+
+      try {
+        const editor = ServerBlockNoteEditor.create();
+
+        // Perform the conversion from markdown to Blocknote.js blocks
+        const blocks = await editor.tryParseMarkdownToBlocks(content);
+
+        if (!blocks || blocks.length === 0) {
+          res.status(500).json({ error: 'No valid blocks were generated' });
+          return;
+        }
+
+        // Create a Yjs Document from blocks, and encode it as a base64 string
+        const yDocument = editor.blocksToYDoc(blocks, 'document-store');
+        const documentContent = toBase64(Y.encodeStateAsUpdate(yDocument));
+
+        res.status(200).json({ content: documentContent });
+      } catch (e) {
+        logger('conversion failed:', e);
+        res.status(500).json({ error: 'An error occurred' });
+      }
     },
   );
 

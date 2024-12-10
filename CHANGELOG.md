@@ -20,6 +20,7 @@ and this project adheres to
 
 - ✨(backend) annotate number of accesses on documents in list view #429
 - ✨(backend) allow users to mark/unmark documents as favorite #429
+- ✨(y-provider) create a markdown converter endpoint #488
 
 ## Changed
 
