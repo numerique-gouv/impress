@@ -29,6 +29,7 @@ from django.utils.functional import cached_property, lazy
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import override
 
+from core.services.collaboration_services import CollaborationService
 import frontmatter
 import markdown
 import pypandoc
@@ -358,6 +359,14 @@ class Document(BaseModel):
 
     def save(self, *args, **kwargs):
         """Write content to object storage only if _content has changed."""
+
+        link_reach_changed = False
+        link_role_changed = False
+        if self.pk:
+            old_doc = Document.objects.get(pk=self.pk)
+            link_reach_changed = (old_doc.link_reach != self.link_reach)
+            link_role_changed = (old_doc.link_role != self.link_role)
+
         super().save(*args, **kwargs)
 
         if self._content:
@@ -385,6 +394,9 @@ class Document(BaseModel):
             if has_changed:
                 content_file = ContentFile(bytes_content)
                 default_storage.save(file_key, content_file)
+
+        if link_reach_changed or link_role_changed:
+            CollaborationService().reset_connections(str(self.id))
 
     @property
     def key_base(self):
@@ -511,22 +523,24 @@ class Document(BaseModel):
         is_owner_or_admin = bool(
             roles.intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
-        is_editor = bool(RoleChoices.EDITOR in roles)
         can_get = bool(roles)
+        can_update = is_owner_or_admin or RoleChoices.EDITOR in roles
 
         return {
             "accesses_manage": is_owner_or_admin,
             "accesses_view": has_role,
-            "ai_transform": is_owner_or_admin or is_editor,
-            "ai_translate": is_owner_or_admin or is_editor,
-            "attachment_upload": is_owner_or_admin or is_editor,
+            "ai_transform": can_update,
+            "ai_translate": can_update,
+            "attachment_upload": can_update,
+            "collaboration_auth": can_get,
             "destroy": RoleChoices.OWNER in roles,
             "favorite": can_get and user.is_authenticated,
             "link_configuration": is_owner_or_admin,
             "invite_owner": RoleChoices.OWNER in roles,
-            "partial_update": is_owner_or_admin or is_editor,
+            "partial_update": can_update,
             "retrieve": can_get,
-            "update": is_owner_or_admin or is_editor,
+            "media_auth": can_get,
+            "update": can_update,
             "versions_destroy": is_owner_or_admin,
             "versions_list": has_role,
             "versions_retrieve": has_role,
@@ -678,6 +692,41 @@ class DocumentAccess(BaseAccess):
         Compute and return abilities for a given user on the document access.
         """
         return self._get_abilities(self.document, user)
+    
+    def save(self, *args, **kwargs):
+        """
+        Overrides the save method to perform additional actions after saving the instance.
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        This method saves the instance and then calls the CollaborationService to reset connections
+        for the associated document and user.
+        Raises:
+            Any exceptions raised by the superclass save method.
+        """
+        
+        document_id = str(self.document_id)
+        user_id = str(self.user_id)
+
+        super().save(*args, **kwargs)
+        CollaborationService().reset_connections(document_id, user_id)
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the current instance and resets connections for the associated document and user.
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        This method overrides the default delete behavior to include a call to 
+        `CollaborationService().reset_connections` with the document ID and user ID 
+        of the instance being deleted.
+        """
+
+        document_id = str(self.document.id)
+        user_id = str(self.user.id)
+
+        super().delete(*args, **kwargs)
+        CollaborationService().reset_connections(document_id, user_id)
 
 
 class Template(BaseModel):
@@ -710,15 +759,15 @@ class Template(BaseModel):
         is_owner_or_admin = bool(
             set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
-        is_editor = bool(RoleChoices.EDITOR in roles)
         can_get = self.is_public or bool(roles)
+        can_update = is_owner_or_admin or RoleChoices.EDITOR in roles
 
         return {
             "destroy": RoleChoices.OWNER in roles,
             "generate_document": can_get,
             "accesses_manage": is_owner_or_admin,
-            "update": is_owner_or_admin or is_editor,
-            "partial_update": is_owner_or_admin or is_editor,
+            "update": can_update,
+            "partial_update": can_update,
             "retrieve": can_get,
         }
 
