@@ -19,28 +19,14 @@ jest.mock('../src/env', () => {
 
 console.error = jest.fn();
 
+import { promiseDone } from '../src/helpers';
 import { hocuspocusServer, initServer } from '../src/server'; // Adjust the path to your server file
 
 const { app, server } = initServer();
 
 describe('Server Tests', () => {
   beforeAll(async () => {
-    await new Promise<void>((resolve) => {
-      if (server.listening) {
-        resolve();
-      }
-    });
-
-    await new Promise<void>((resolve) => {
-      void hocuspocusServer
-        .configure({
-          port: portWS,
-        })
-        .listen()
-        .then(() => {
-          resolve();
-        });
-    });
+    await hocuspocusServer.configure({ port: portWS }).listen();
   });
 
   afterAll(() => {
@@ -87,6 +73,11 @@ describe('Server Tests', () => {
   });
 
   test('POST /collaboration/api/reset-connections?room=[ROOM_ID] with correct API key should reset connections', async () => {
+    // eslint-disable-next-line jest/unbound-method
+    const { closeConnections } = hocuspocusServer;
+    const mockHandleConnection = jest.fn();
+    (hocuspocusServer.closeConnections as jest.Mock) = mockHandleConnection;
+
     const response = await request(app as any)
       .post('/collaboration/api/reset-connections?room=test-room')
       .set('Origin', origin)
@@ -94,6 +85,10 @@ describe('Server Tests', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Connections reset');
+
+    expect(mockHandleConnection).toHaveBeenCalled();
+    mockHandleConnection.mockClear();
+    hocuspocusServer.closeConnections = closeConnections;
   });
 
   ['/collaboration/api/anything/', '/', '/anything'].forEach((path) => {
@@ -106,70 +101,77 @@ describe('Server Tests', () => {
   });
 
   test('WebSocket connection with correct API key can connect', () => {
-    return new Promise<void>((resolve) => {
-      // eslint-disable-next-line jest/unbound-method
-      const { handleConnection } = hocuspocusServer;
-      const mockHandleConnection = jest.fn();
-      (hocuspocusServer.handleConnection as jest.Mock) = mockHandleConnection;
+    const { promise, done } = promiseDone();
 
-      const clientWS = new WebSocket(
-        `ws://localhost:${port}/collaboration/ws/?room=test-room`,
-        {
-          headers: {
-            authorization: 'test-secret-api-key',
-            Origin: origin,
-          },
+    // eslint-disable-next-line jest/unbound-method
+    const { handleConnection } = hocuspocusServer;
+    const mockHandleConnection = jest.fn();
+    (hocuspocusServer.handleConnection as jest.Mock) = mockHandleConnection;
+
+    const clientWS = new WebSocket(
+      `ws://localhost:${port}/collaboration/ws/?room=test-room`,
+      {
+        headers: {
+          authorization: 'test-secret-api-key',
+          Origin: origin,
         },
-      );
+      },
+    );
 
-      clientWS.on('open', () => {
-        expect(mockHandleConnection).toHaveBeenCalled();
-        clientWS.close();
-        mockHandleConnection.mockClear();
-        hocuspocusServer.handleConnection = handleConnection;
-        resolve();
-      });
+    clientWS.on('open', () => {
+      expect(mockHandleConnection).toHaveBeenCalled();
+      clientWS.close();
+      mockHandleConnection.mockClear();
+      hocuspocusServer.handleConnection = handleConnection;
+      done();
     });
+
+    return promise;
   });
 
   test('WebSocket connection with bad origin should be closed', () => {
-    return new Promise<void>((resolve) => {
-      const ws = new WebSocket(
-        `ws://localhost:${port}/collaboration/ws/?room=test-room`,
-        {
-          headers: {
-            Origin: 'http://bad-origin.com',
-          },
-        },
-      );
+    const { promise, done } = promiseDone();
 
-      ws.onclose = () => {
-        expect(ws.readyState).toBe(ws.CLOSED);
-        resolve();
-      };
-    });
+    const ws = new WebSocket(
+      `ws://localhost:${port}/collaboration/ws/?room=test-room`,
+      {
+        headers: {
+          Origin: 'http://bad-origin.com',
+        },
+      },
+    );
+
+    ws.onclose = () => {
+      expect(ws.readyState).toBe(ws.CLOSED);
+      done();
+    };
+
+    return promise;
   });
 
   test('WebSocket connection with incorrect API key should be closed', () => {
-    return new Promise<void>((resolve) => {
-      const ws = new WebSocket(
-        `ws://localhost:${port}/collaboration/ws/?room=test-room`,
-        {
-          headers: {
-            Authorization: 'wrong-api-key',
-            Origin: origin,
-          },
+    const { promise, done } = promiseDone();
+    const ws = new WebSocket(
+      `ws://localhost:${port}/collaboration/ws/?room=test-room`,
+      {
+        headers: {
+          Authorization: 'wrong-api-key',
+          Origin: origin,
         },
-      );
+      },
+    );
 
-      ws.onclose = () => {
-        expect(ws.readyState).toBe(ws.CLOSED);
-        resolve();
-      };
-    });
+    ws.onclose = () => {
+      expect(ws.readyState).toBe(ws.CLOSED);
+      done();
+    };
+
+    return promise;
   });
 
   test('WebSocket connection not allowed if room not matching provider name', () => {
+    const { promise, done } = promiseDone();
+
     const wsHocus = new HocuspocusProviderWebsocket({
       url: `ws://localhost:${portWS}/?room=my-test`,
       WebSocketPolyfill: WebSocket,
@@ -177,54 +179,56 @@ describe('Server Tests', () => {
       quiet: true,
     });
 
-    return new Promise<void>((resolve) => {
-      const provider = new HocuspocusProvider({
-        websocketProvider: wsHocus,
-        name: 'hocuspocus-test',
-        broadcast: false,
-        quiet: true,
-        preserveConnection: false,
-        onClose: (data) => {
-          wsHocus.stopConnectionAttempt();
-          expect(data.event.reason).toBe('Forbidden');
-          wsHocus.webSocket?.close();
-          wsHocus.disconnect();
-          provider.destroy();
-          wsHocus.destroy();
-          resolve();
-        },
-      });
+    const provider = new HocuspocusProvider({
+      websocketProvider: wsHocus,
+      name: 'hocuspocus-test',
+      broadcast: false,
+      quiet: true,
+      preserveConnection: false,
+      onClose: (data) => {
+        wsHocus.stopConnectionAttempt();
+        expect(data.event.reason).toBe('Forbidden');
+        wsHocus.webSocket?.close();
+        wsHocus.disconnect();
+        provider.destroy();
+        wsHocus.destroy();
+        done();
+      },
     });
+
+    return promise;
   });
 
   test('WebSocket connection read-only', () => {
+    const { promise, done } = promiseDone();
+
     const wsHocus = new HocuspocusProviderWebsocket({
       url: `ws://localhost:${portWS}/?room=hocuspocus-test`,
       WebSocketPolyfill: WebSocket,
     });
 
-    return new Promise<void>((resolve) => {
-      const provider = new HocuspocusProvider({
-        websocketProvider: wsHocus,
-        name: 'hocuspocus-test',
-        broadcast: false,
-        quiet: true,
-        onConnect: () => {
-          void hocuspocusServer
-            .openDirectConnection('hocuspocus-test')
-            .then((connection) => {
-              connection.document?.getConnections().forEach((connection) => {
-                expect(connection.readOnly).toBe(true);
-              });
-
-              void connection.disconnect();
+    const provider = new HocuspocusProvider({
+      websocketProvider: wsHocus,
+      name: 'hocuspocus-test',
+      broadcast: false,
+      quiet: true,
+      onConnect: () => {
+        void hocuspocusServer
+          .openDirectConnection('hocuspocus-test')
+          .then((connection) => {
+            connection.document?.getConnections().forEach((connection) => {
+              expect(connection.readOnly).toBe(true);
             });
 
-          provider.destroy();
-          wsHocus.destroy();
-          resolve();
-        },
-      });
+            void connection.disconnect();
+          });
+
+        provider.destroy();
+        wsHocus.destroy();
+        done();
+      },
     });
+
+    return promise;
   });
 });

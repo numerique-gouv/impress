@@ -6,7 +6,7 @@ import express, { Request, Response } from 'express';
 import expressWebsockets from 'express-ws';
 
 import { PORT } from './env';
-import { httpSecurity, wsSecurity } from './middlelayers';
+import { httpSecurity, wsSecurity } from './middlewares';
 import { routes } from './routes';
 import { logger } from './utils';
 
@@ -83,7 +83,7 @@ export const initServer = () => {
   app.post(
     routes.RESET_CONNECTIONS,
     httpSecurity,
-    async (
+    (
       req: Request<object, object, object, ResetConnectionsRequestQuery>,
       res: Response,
     ) => {
@@ -104,20 +104,28 @@ export const initServer = () => {
         return;
       }
 
-      const docConnection = await hocuspocusServer.openDirectConnection(room);
-      docConnection.document?.getConnections().forEach((connection) => {
-        if (!userId) {
-          connection.close();
-          return;
-        }
+      /**
+       * If no user ID is provided, close all connections in the room
+       */
+      if (!userId) {
+        hocuspocusServer.closeConnections(room);
+      } else {
+        /**
+         * Close connections for the user in the room
+         */
+        hocuspocusServer.documents.forEach((doc) => {
+          if (doc.name !== room) {
+            return;
+          }
 
-        const connectionUserId = connection.request.headers['x-user-id'];
-        if (connectionUserId === userId) {
-          connection.close();
-        }
-      });
-
-      await docConnection.disconnect();
+          doc.getConnections().forEach((connection) => {
+            const connectionUserId = connection.request.headers['x-user-id'];
+            if (connectionUserId === userId) {
+              connection.close();
+            }
+          });
+        });
+      }
 
       res.status(200).json({ message: 'Connections reset' });
     },
