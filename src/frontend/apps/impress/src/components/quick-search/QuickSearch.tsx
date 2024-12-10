@@ -1,9 +1,10 @@
 import { Command } from 'cmdk';
 import { ReactNode, useRef } from 'react';
 
+import { hasChildrens } from '@/utils/children';
+
 import { Box } from '../Box';
 
-import { QuickSearchGroup } from './QuickSearchGroup';
 import { QuickSearchInput } from './QuickSearchInput';
 import { QuickSearchStyle } from './QuickSearchStyle';
 
@@ -22,10 +23,8 @@ export type QuickSearchData<T> = {
 };
 
 export type QuickSearchProps<T> = {
-  data?: QuickSearchData<T>[];
   onFilter?: (str: string) => void;
-  renderElement?: (element: T) => ReactNode;
-  onSelect?: (element: T) => void;
+
   inputValue?: string;
   inputContent?: ReactNode;
   showInput?: boolean;
@@ -36,14 +35,11 @@ export type QuickSearchProps<T> = {
 };
 
 export const QuickSearch = <T,>({
-  onSelect,
   onFilter,
   inputContent,
   inputValue,
   loading,
   showInput = true,
-  data,
-  renderElement,
   label,
   placeholder,
   children,
@@ -58,6 +54,7 @@ export const QuickSearch = <T,>({
           {showInput && (
             <QuickSearchInput
               loading={loading}
+              separator={hasChildrens(children)}
               inputValue={inputValue}
               onFilter={onFilter}
               placeholder={placeholder}
@@ -66,20 +63,7 @@ export const QuickSearch = <T,>({
             </QuickSearchInput>
           )}
           <Command.List>
-            <Box>
-              {!loading &&
-                data?.map((group) => {
-                  return (
-                    <QuickSearchGroup
-                      key={group.groupName}
-                      group={group}
-                      onSelect={onSelect}
-                      renderElement={renderElement}
-                    />
-                  );
-                })}
-              {children}
-            </Box>
+            <Box>{children}</Box>
           </Command.List>
         </Command>
       </div>

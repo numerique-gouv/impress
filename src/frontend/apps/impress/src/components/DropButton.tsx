@@ -21,6 +21,7 @@ const StyledButton = styled(Button)`
   font-family: Marianne, Arial, serif;
   font-weight: 500;
   font-size: 0.938rem;
+  padding: 0;
   text-wrap: nowrap;
 `;
 
@@ -28,6 +29,7 @@ export interface DropButtonProps {
   button: ReactNode;
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
+  label?: string;
 }
 
 export const DropButton = ({
@@ -35,6 +37,7 @@ export const DropButton = ({
   isOpen = false,
   onOpenChange,
   children,
+  label,
 }: PropsWithChildren<DropButtonProps>) => {
   const [opacity, setOpacity] = useState(false);
   const [isLocalOpen, setIsLocalOpen] = useState(isOpen);
@@ -53,7 +56,7 @@ export const DropButton = ({
 
   return (
     <DialogTrigger onOpenChange={onOpenChangeHandler} isOpen={isLocalOpen}>
-      <StyledButton>{button}</StyledButton>
+      <StyledButton aria-label={label}>{button}</StyledButton>
       <StyledPopover
         style={{ opacity: opacity ? 1 : 0 }}
         isOpen={isLocalOpen}

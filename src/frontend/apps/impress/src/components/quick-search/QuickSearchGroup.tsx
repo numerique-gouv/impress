@@ -1,14 +1,15 @@
 import { Command } from 'cmdk';
+import { ReactNode } from 'react';
 
 import { Box } from '../Box';
 
-import { QuickSearchData, QuickSearchProps } from './QuickSearch';
+import { QuickSearchData } from './QuickSearch';
 import { QuickSearchItem } from './QuickSearchItem';
 
 type Props<T> = {
   group: QuickSearchData<T>;
-  onSelect?: QuickSearchProps<T>['onSelect'];
-  renderElement: QuickSearchProps<T>['renderElement'];
+  renderElement?: (element: T) => ReactNode;
+  onSelect?: (element: T) => void;
 };
 
 export const QuickSearchGroup = <T,>({

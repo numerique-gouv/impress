@@ -28,6 +28,7 @@ import {
 } from '@/features/docs/doc-management';
 import { useResponsiveStore } from '@/stores';
 
+import { DocShareModal } from '../../doc-management/components/share/DocShareModal';
 import { ModalSelectVersion } from '../../doc-versioning/components/ModalSelectVersion';
 
 import { ModalPDF } from './ModalExport';
@@ -47,6 +48,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
   const [isModalRemoveOpen, setIsModalRemoveOpen] = useState(false);
   const [isModalPDFOpen, setIsModalPDFOpen] = useState(false);
   const selectHistoryModal = useModal();
+  const modalShare = useModal();
   const { setIsPanelOpen, setIsPanelTableContentOpen } = usePanelEditorStore();
 
   const { isSmallMobile, isDesktop } = useResponsiveStore();
@@ -73,6 +75,13 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
           },
         ]
       : []),
+    {
+      label: t('Share'),
+      icon: 'history',
+      callback: () => {
+        modalShare.open();
+      },
+    },
     {
       label: t('Version history'),
       icon: 'history',
@@ -188,6 +197,9 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
       </Box>
       {isModalShareOpen && (
         <ModalShare onClose={() => setIsModalShareOpen(false)} doc={doc} />
+      )}
+      {modalShare.isOpen && (
+        <DocShareModal onClose={() => modalShare.close()} doc={doc} />
       )}
       {isModalPDFOpen && (
         <ModalPDF onClose={() => setIsModalPDFOpen(false)} doc={doc} />
