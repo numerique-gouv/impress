@@ -29,6 +29,7 @@ from django.utils.functional import cached_property, lazy
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import override
 
+from core.services.collaboration_services import CollaborationService
 import frontmatter
 import markdown
 import pypandoc
@@ -358,6 +359,14 @@ class Document(BaseModel):
 
     def save(self, *args, **kwargs):
         """Write content to object storage only if _content has changed."""
+
+        link_reach_changed = False
+        link_role_changed = False
+        if self.pk:
+            old_doc = Document.objects.get(pk=self.pk)
+            link_reach_changed = (old_doc.link_reach != self.link_reach)
+            link_role_changed = (old_doc.link_role != self.link_role)
+
         super().save(*args, **kwargs)
 
         if self._content:
@@ -385,6 +394,9 @@ class Document(BaseModel):
             if has_changed:
                 content_file = ContentFile(bytes_content)
                 default_storage.save(file_key, content_file)
+
+        if link_reach_changed or link_role_changed:
+            CollaborationService().reset_connections(str(self.id))
 
     @property
     def key_base(self):
@@ -680,6 +692,41 @@ class DocumentAccess(BaseAccess):
         Compute and return abilities for a given user on the document access.
         """
         return self._get_abilities(self.document, user)
+    
+    def save(self, *args, **kwargs):
+        """
+        Overrides the save method to perform additional actions after saving the instance.
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        This method saves the instance and then calls the CollaborationService to reset connections
+        for the associated document and user.
+        Raises:
+            Any exceptions raised by the superclass save method.
+        """
+        
+        document_id = str(self.document_id)
+        user_id = str(self.user_id)
+
+        super().save(*args, **kwargs)
+        CollaborationService().reset_connections(document_id, user_id)
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the current instance and resets connections for the associated document and user.
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        This method overrides the default delete behavior to include a call to 
+        `CollaborationService().reset_connections` with the document ID and user ID 
+        of the instance being deleted.
+        """
+
+        document_id = str(self.document.id)
+        user_id = str(self.user.id)
+
+        super().delete(*args, **kwargs)
+        CollaborationService().reset_connections(document_id, user_id)
 
 
 class Template(BaseModel):
