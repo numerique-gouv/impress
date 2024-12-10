@@ -8,6 +8,7 @@ from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
 
 import magic
+import requests
 from rest_framework import exceptions, serializers
 
 from core import enums, models
@@ -232,6 +233,10 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
     """
     Serializer for creating a document from a server-to-server request.
 
+    Expects 'content' as a markdown string, which is converted to our internal format
+    via a Node.js microservice. The conversion is handled automatically, so third parties
+    only need to provide markdown.
+
     Both "sub" and "email" are required because the external app calling doesn't know
     if the user will pre-exist in Docs database. If the user pre-exist, we will ignore the
     submitted "email" field and use the email address set on the user account in our database
@@ -266,9 +271,41 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
             email = user.email
             language = user.language or language
 
+        try:
+            response = requests.post(
+                settings.CONVERSION_API_URL,
+                json={
+                    "content": validated_data["content"],
+                },
+                headers={
+                    "Authorization": f"Bearer {settings.CONVERSION_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                timeout=settings.CONVERSION_API_TIMEOUT,
+            )
+            response.raise_for_status()
+            conversion_response = response.json()
+
+        except requests.RequestException as err:
+            raise exceptions.APIException(
+                detail="Conversion service unavailable",
+            ) from err
+
+        except ValueError as err:
+            raise exceptions.APIException(
+                detail="Invalid conversion response",
+            ) from err
+
+        try:
+            content = conversion_response[settings.CONVERSION_API_CONTENT_FIELD]
+        except KeyError as err:
+            raise exceptions.APIException(
+                detail="Invalid response: missing content"
+            ) from err
+
         document = models.Document.objects.create(
             title=validated_data["title"],
-            content=validated_data["content"],
+            content=content,
             creator=user,
         )
 
