@@ -10,7 +10,7 @@ import * as Y from 'yjs';
 
 import { Box, TextErrors } from '@/components';
 import { useAuthStore } from '@/core/auth';
-import { Doc } from '@/features/docs/doc-management';
+import { Doc, Role, currentDocRole } from '@/features/docs/doc-management';
 
 import { useUploadFile } from '../hook';
 import { useHeadings } from '../hook/useHeadings';
@@ -133,7 +133,7 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
    * better to let Blocknote manage, then we update the block with the content.
    */
   useEffect(() => {
-    if (doc.content) {
+    if (doc.content || currentDocRole(doc.abilities) !== Role.OWNER) {
       return;
     }
 
@@ -143,7 +143,7 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
         content: '',
       });
     }, 100);
-  }, [editor, doc.content]);
+  }, [editor, doc.content, doc.abilities]);
 
   useEffect(() => {
     setEditor(editor);

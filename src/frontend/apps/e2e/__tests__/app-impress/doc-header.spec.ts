@@ -124,7 +124,9 @@ test.describe('Doc Header', () => {
       .getByRole('heading', { name: 'Top World', level: 2 })
       .fill(' ');
 
-    await page.getByText('Created at').click();
+    await page.getByText('Created at').click({
+      delay: 200,
+    });
 
     await expect(
       docHeader.getByRole('heading', { name: 'Untitled  document', level: 2 }),
