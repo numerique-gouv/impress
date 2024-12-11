@@ -67,10 +67,14 @@ class AIService:
         )
 
         content = response.choices[0].message.content
-        sanitized_content = re.sub(r"(?<!\\)\n", "\\\\n", content)
-        sanitized_content = re.sub(r"(?<!\\)\t", "\\\\t", sanitized_content)
 
-        json_response = json.loads(sanitized_content)
+        try:
+            sanitized_content = re.sub(r"(?<!\\)\n", "\\\\n", content)
+            sanitized_content = re.sub(r"(?<!\\)\t", "\\\\t", sanitized_content)
+
+            json_response = json.loads(sanitized_content)
+        except (json.JSONDecodeError, IndexError):
+            json_response = json.loads(content)
 
         if "answer" not in json_response:
             raise RuntimeError("AI response does not contain an answer")
