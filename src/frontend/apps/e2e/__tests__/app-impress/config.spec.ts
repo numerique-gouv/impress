@@ -93,6 +93,7 @@ test.describe('Config', () => {
 
     const fileChooserPromise = page.waitForEvent('filechooser');
 
+    await page.locator('.bn-block-outer').last().fill('Anything');
     await page.locator('.bn-block-outer').last().fill('/');
     await page.getByText('Resizable image with caption').click();
     await page.getByText('Upload image').click();
