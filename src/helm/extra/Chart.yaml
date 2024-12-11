@@ -2,4 +2,4 @@ apiVersion: v2
 name: extra
 description: A Helm chart to add some manifests to impress
 type: application
-version: 1.8.2
+version: 1.9.0
