@@ -102,3 +102,24 @@ def test_api_ai__success_sanitize(mock_create):
     response = AIService().transform("hello", "prompt")
 
     assert response == {"answer": "Salut\n \tle \nmonde"}
+
+
+@override_settings(
+    AI_BASE_URL="http://example.com", AI_API_KEY="test-key", AI_MODEL="test-model"
+)
+@patch("openai.resources.chat.completions.Completions.create")
+def test_api_ai__success_when_sanitize_fails(mock_create):
+    """The AI request should work as expected even with badly formatted response."""
+
+    # pylint: disable=C0303
+    answer = """{ 
+        "answer"        :       
+        "Salut le monde"
+    }"""
+    mock_create.return_value = MagicMock(
+        choices=[MagicMock(message=MagicMock(content=answer))]
+    )
+
+    response = AIService().transform("hello", "prompt")
+
+    assert response == {"answer": "Salut le monde"}
