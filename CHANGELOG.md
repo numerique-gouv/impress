@@ -9,16 +9,18 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.9.0] - 2024-12-11
+
 ## Added
 
-- ✨(backend) annotate number of accesses on documents in list view #411
-- ✨(backend) allow users to mark/unmark documents as favorite #411
+- ✨(backend) annotate number of accesses on documents in list view #429
+- ✨(backend) allow users to mark/unmark documents as favorite #429
 
 ## Changed
 
 - 🔒️(collaboration) increase collaboration access security #472
 - 🔨(frontend) encapsulated title to its own component #474
-- ⚡️(backend) optimize number of queries on document list view #411
+- ⚡️(backend) optimize number of queries on document list view #429
 - ♻️(frontend) stop to use provider with version #480
 - 🚚(collaboration) change the websocket key name #480
 
@@ -301,7 +303,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.8.2...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.9.0...main
+[v1.9.0]: https://github.com/numerique-gouv/impress/releases/v1.9.0
 [v1.8.2]: https://github.com/numerique-gouv/impress/releases/v1.8.2
 [v1.8.1]: https://github.com/numerique-gouv/impress/releases/v1.8.1
 [v1.8.0]: https://github.com/numerique-gouv/impress/releases/v1.8.0
