@@ -81,10 +81,9 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
 
   const { uploadFile, errorAttachment } = useUploadFile(doc.id);
 
-  const collabName =
-    userData?.full_name ||
-    userData?.email ||
-    (readOnly ? 'Reader' : t('Anonymous'));
+  const collabName = readOnly
+    ? 'Reader'
+    : userData?.full_name || userData?.email || t('Anonymous');
 
   const editor = useCreateBlockNote(
     {
