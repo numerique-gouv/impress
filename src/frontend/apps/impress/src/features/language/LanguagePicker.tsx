@@ -14,6 +14,7 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
   .c__select__wrapper {
     min-height: 2rem;
     height: auto;
+
     border-color: transparent;
     padding: 0 0.15rem 0 0.45rem;
     border-radius: 1px;
@@ -27,7 +28,7 @@ const SelectStyled = styled(Select)<{ $isSmall?: boolean }>`
     }
 
     &:hover {
-      box-shadow: var(--c--theme--colors--primary-100) 0 0 0 2px !important;
+      box-shadow: none !important;
     }
   }
 `;
@@ -48,10 +49,16 @@ export const LanguagePicker = () => {
           $gap="0.7rem"
           $align="center"
         >
-          <Text $isMaterialIcon $size="1rem" $theme="primary" $variation="600">
+          <Text
+            $isMaterialIcon
+            $size="1rem"
+            $theme="primary"
+            $weight="bold"
+            $variation="800"
+          >
             translate
           </Text>
-          <Text $theme="primary" $variation="600">
+          <Text $theme="primary" $weight="500" $variation="800">
             {LANGUAGES_ALLOWED[lang]}
           </Text>
         </Box>

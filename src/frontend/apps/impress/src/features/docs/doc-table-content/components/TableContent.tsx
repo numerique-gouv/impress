@@ -107,7 +107,7 @@ export const TableContent = ({ headings }: TableContentProps) => {
           gap: var(--c--theme--spacings--2xs);
           width: 200px;
           height: auto;
-          max-height: calc(100vh - 60px - 15vh);
+          max-height: calc(50vh - 60px);
         }
       `}
     >

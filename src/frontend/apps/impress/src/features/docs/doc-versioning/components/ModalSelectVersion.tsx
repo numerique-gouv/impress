@@ -42,7 +42,7 @@ export const ModalSelectVersion = ({
     <>
       <Modal
         isOpen
-        hideCloseButton
+        hideCloseButton={true}
         closeOnClickOutside={true}
         size={ModalSize.EXTRA_LARGE}
         onClose={onClose}
@@ -52,7 +52,8 @@ export const ModalSelectVersion = ({
           aria-label="version history modal"
           className="noPadding"
           $direction="row"
-          $height="calc(100vh -  50px);"
+          $height="100%"
+          $maxHeight="calc(100vh - 2em - 12px)"
           $overflow="hidden"
         >
           <Box
@@ -64,7 +65,11 @@ export const ModalSelectVersion = ({
               flex: 1;
             `}
           >
-            <Box $width="100%" $padding="base" $align="center">
+            <Box
+              $width="100%"
+              $padding={{ horizontal: 'base', vertical: 'xl' }}
+              $align="center"
+            >
               {selectedVersionId && (
                 <DocEditor doc={doc} versionId={selectedVersionId} />
               )}
@@ -81,7 +86,8 @@ export const ModalSelectVersion = ({
             $direction="column"
             $justify="space-between"
             $width="250px"
-            $height="calc(100vh - 2em - 30px);"
+            $height="100%"
+            $maxHeight="calc(100vh - 2em - 12px)"
             $css={css`
               overflow-y: hidden;
               border-left: 1px solid var(--c--theme--colors--greyscale-200);
@@ -105,7 +111,7 @@ export const ModalSelectVersion = ({
                 `}
                 $padding="sm"
               >
-                <Text $size="h6" $weight="bold">
+                <Text $size="h6" $variation="1000" $weight="bold">
                   {t('History')}
                 </Text>
                 <Button
@@ -123,7 +129,7 @@ export const ModalSelectVersion = ({
               />
             </Box>
             <Box
-              $padding="base"
+              $padding="xs"
               $css={css`
                 border-top: 1px solid var(--c--theme--colors--greyscale-200);
               `}

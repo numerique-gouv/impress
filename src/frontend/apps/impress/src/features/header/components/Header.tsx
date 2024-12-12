@@ -65,29 +65,28 @@ export const Header = () => {
         >
           <Image priority src={IconDocs} alt={t('Docs Logo')} width={25} />
 
-          <Text
-            $margin="none"
-            as="h2"
-            $color="#000091"
-            $zIndex={1}
-            $size="1.30rem"
-          >
-            {t('Docs')}
-          </Text>
-          <Text
-            $padding="2px 3px"
-            $size="8px"
-            $background="#368bd6"
-            $color="white"
-            $position="absolute"
-            $radius="5px"
-            $css={`
-                  bottom: 13px;
-                  right: -17px;
-                `}
-          >
-            BETA
-          </Text>
+          <Box $direction="row" $align="center" $gap={spacings['2xs']}>
+            <Text
+              $margin="none"
+              as="h2"
+              $color="#000091"
+              $zIndex={1}
+              $size="1.30rem"
+            >
+              {t('Docs')}
+            </Text>
+            <Text
+              $padding={{ horizontal: 'xs', vertical: '1px' }}
+              $size="11px"
+              $theme="primary"
+              $variation="500"
+              $weight="bold"
+              $radius="12px"
+              $background={colors['primary-200']}
+            >
+              BETA
+            </Text>
+          </Box>
         </Box>
       </StyledLink>
       {!isDesktop ? (

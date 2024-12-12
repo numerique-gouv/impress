@@ -352,12 +352,21 @@ input:-webkit-autofill:focus {
 }
 
 .c__button--nano {
-  padding: 0 var(--c--theme--spacings--2xs);
-  gap: var(--c--theme--spacings--2xs);
+  padding: 0 var(--c--theme--spacings--3xs);
+  gap: var(--c--theme--spacings--3xs);
+}
+
+.c__button--nano {
+  padding: 0 var(--c--theme--spacings--3xs);
+  gap: var(--c--theme--spacings--3xs);
 }
 
 .c__button--nano.c__button--icon-only {
   width: auto;
+}
+
+.c__button--nano.c__button--icon-only.c__button--full-width {
+  width: 100%;
 }
 
 .c__button--medium {
@@ -528,8 +537,20 @@ input:-webkit-autofill:focus {
   box-shadow: none;
 }
 
+.c__modal__footer {
+  margin-top: -1.5rem;
+}
+
 .c__modal__close button {
-  padding: 1.5rem 1rem;
+  padding: 0px;
+  font-size: 88px;
+  width: 28px !important;
+  height: 28px;
+}
+
+.c__modal__close button .material-icons {
+  padding: 0px;
+  font-size: 24px;
 }
 
 .c__modal--full .c__modal__content {

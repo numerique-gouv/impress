@@ -60,7 +60,12 @@ export const SimpleDocItem = ({
         >
           {doc.title}
         </Text>
-        <Box $direction="row" $align="center" $gap={spacings['3xs']}>
+        <Box
+          $direction="row"
+          $align="center"
+          $gap={spacings['3xs']}
+          $margin={{ top: '-2px' }}
+        >
           {!isDesktop && (
             <>
               {isPublic && <Icon iconName="public" $size="16px" />}
@@ -72,7 +77,7 @@ export const SimpleDocItem = ({
             </>
           )}
 
-          <Text $size="xs" $variation="500" $weight="500" $css={ItemTextCss}>
+          <Text $size="xs" $variation="500" $weight="400" $css={ItemTextCss}>
             {subText ??
               'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vel ante libero. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed imperdiet neque quam, sed euismod metus mollis ut. '}
           </Text>

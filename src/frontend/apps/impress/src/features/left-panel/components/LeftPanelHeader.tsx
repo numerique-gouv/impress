@@ -42,7 +42,7 @@ export const LeftPanelHeader = ({ children }: PropsWithChildren) => {
             <Button
               onClick={goToHome}
               size="medium"
-              color="primary-text"
+              color="tertiary-text"
               icon={<Icon iconName="house" />}
             />
           </Box>

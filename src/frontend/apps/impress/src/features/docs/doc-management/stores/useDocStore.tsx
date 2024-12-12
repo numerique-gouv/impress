@@ -31,7 +31,7 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
     } else {
       const initialDocContent = [
         {
-          type: 'heading',
+          type: 'paragraph',
           content: '',
         },
       ];

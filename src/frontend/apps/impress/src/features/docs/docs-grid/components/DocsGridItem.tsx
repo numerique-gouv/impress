@@ -29,7 +29,7 @@ export const DocsGridItem = ({ doc }: DocsGridItemProps) => {
       $align="center"
       $gap="20px"
       role="row"
-      $padding={{ vertical: 'xs', horizontal: 'sm' }}
+      $padding={{ vertical: '2xs', horizontal: 'sm' }}
       $css={css`
         cursor: pointer;
         border-radius: 4px;
@@ -55,7 +55,7 @@ export const DocsGridItem = ({ doc }: DocsGridItemProps) => {
         )}
       </StyledLink>
       <Box
-        $flex={1}
+        $flex={0.9}
         $direction="row"
         $align="center"
         $justify="flex-end"
@@ -68,6 +68,7 @@ export const DocsGridItem = ({ doc }: DocsGridItemProps) => {
               event.stopPropagation();
             }}
             size="nano"
+            fullWidth
             icon={<Icon $variation="000" iconName="public" />}
           >
             {isShared ? sharedCount : undefined}
@@ -79,6 +80,7 @@ export const DocsGridItem = ({ doc }: DocsGridItemProps) => {
               event.preventDefault();
               event.stopPropagation();
             }}
+            fullWidth
             color="tertiary"
             size="nano"
             icon={<Icon $variation="800" $theme="primary" iconName="group" />}
@@ -93,6 +95,7 @@ export const DocsGridItem = ({ doc }: DocsGridItemProps) => {
               event.stopPropagation();
             }}
             size="nano"
+            fullWidth
             icon={<Icon $variation="000" iconName="corporate_fare" />}
           >
             {sharedCount}

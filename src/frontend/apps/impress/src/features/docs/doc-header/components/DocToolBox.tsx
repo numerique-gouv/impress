@@ -148,7 +148,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
       <Box $direction="row" $margin={{ left: 'auto' }} $gap={spacings['2xs']}>
         {authenticated && !isSmallMobile && (
           <Button
-            color="primary-text"
+            color="tertiary-text"
             onClick={() => {
               setIsModalShareOpen(true);
             }}
@@ -159,7 +159,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
         )}
         {!isSmallMobile && (
           <Button
-            color="primary-text"
+            color="tertiary-text"
             icon={
               <Icon iconName="download" $theme="primary" $variation="800" />
             }
@@ -174,14 +174,18 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
             isHorizontal
             $theme="primary"
             $radius={spacings['3xs']}
-            $css={
-              isSmallMobile
+            $padding={{ all: 'xs' }}
+            $css={css`
+              &:hover {
+                background-color: ${colors['greyscale-100']};
+              }
+              ${isSmallMobile
                 ? css`
                     padding: 10px;
                     border: 1px solid ${colors['greyscale-300']};
                   `
-                : ''
-            }
+                : ''}
+            `}
             aria-label={t('Open the document options')}
           />
         </DropdownMenu>
