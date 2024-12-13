@@ -31,7 +31,7 @@ class YdocConverter:
     @property
     def auth_header(self):
         """Build microservice authentication header."""
-        return f"Bearer {settings.CONVERSION_API_KEY}"
+        return settings.CONVERSION_API_KEY
 
     def convert_markdown(self, text):
         """Convert a Markdown text into our internal format using an external microservice."""
@@ -50,6 +50,7 @@ class YdocConverter:
                     "Content-Type": "application/json",
                 },
                 timeout=settings.CONVERSION_API_TIMEOUT,
+                verify=settings.CONVERSION_API_SECURE,
             )
             response.raise_for_status()
             conversion_response = response.json()

@@ -524,6 +524,11 @@ class Base(Configuration):
         environ_name="CONVERSION_API_TIMEOUT",
         environ_prefix=None,
     )
+    CONVERSION_API_SECURE = values.Value(
+        default=False,
+        environ_name="CONVERSION_API_SECURE",
+        environ_prefix=None,
+    )
 
     # Logging
     # We want to make it easy to log to console but by default we log production

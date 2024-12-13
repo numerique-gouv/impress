@@ -275,7 +275,7 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
             language = user.language or language
 
         try:
-            converter_response = YdocConverter().convert_markdown(
+            document_content = YdocConverter().convert_markdown(
                 validated_data["content"]
             )
         except ConversionError as err:
@@ -283,7 +283,7 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
 
         document = models.Document.objects.create(
             title=validated_data["title"],
-            content=converter_response["content"],
+            content=document_content,
             creator=user,
         )
 
