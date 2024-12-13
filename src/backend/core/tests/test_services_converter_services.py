@@ -18,7 +18,7 @@ def test_auth_header(settings):
     """Test authentication header generation."""
     settings.CONVERSION_API_KEY = "test-key"
     converter = YdocConverter()
-    assert converter.auth_header == "Bearer test-key"
+    assert converter.auth_header == "test-key"
 
 
 def test_convert_markdown_empty_text():
@@ -116,10 +116,11 @@ def test_convert_markdown_full_integration(mock_post, settings):
         "http://test.com",
         json={"content": "test markdown"},
         headers={
-            "Authorization": "Bearer test-key",
+            "Authorization": "test-key",
             "Content-Type": "application/json",
         },
         timeout=5,
+        verify=False,
     )
 
 

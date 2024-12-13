@@ -25,7 +25,7 @@ def mock_convert_markdown():
     with patch.object(
         YdocConverter,
         "convert_markdown",
-        return_value={"content": "Converted document content"},
+        return_value="Converted document content",
     ) as mock:
         yield mock
 
