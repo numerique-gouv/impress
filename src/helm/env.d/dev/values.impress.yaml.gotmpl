@@ -11,6 +11,7 @@ backend:
     DJANGO_CSRF_TRUSTED_ORIGINS: https://impress.127.0.0.1.nip.io
     DJANGO_CONFIGURATION: Feature
     DJANGO_ALLOWED_HOSTS: impress.127.0.0.1.nip.io
+    DJANGO_SERVER_TO_SERVER_API_TOKENS: secret-api-key
     DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
     DJANGO_SETTINGS_MODULE: impress.settings
     DJANGO_SUPERUSER_PASSWORD: admin
@@ -50,6 +51,8 @@ backend:
     AWS_S3_SECRET_ACCESS_KEY: password
     AWS_STORAGE_BUCKET_NAME: impress-media-storage
     STORAGES_STATICFILES_BACKEND: django.contrib.staticfiles.storage.StaticFilesStorage
+    CONVERSION_API_URL: http://impress-y-provider:443/api/convert-markdown/
+    CONVERSION_API_KEY: my-secret
 
   migrate:
     command:
