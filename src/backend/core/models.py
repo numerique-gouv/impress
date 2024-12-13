@@ -552,9 +552,11 @@ class Document(BaseModel):
         language = language or get_language()
         context.update(
             {
+                "brandname": settings.EMAIL_BRAND_NAME,
+                "document": self,
                 "domain": domain,
                 "link": f"{domain}/docs/{self.id}/",
-                "document": self,
+                "logo_img": settings.EMAIL_LOGO_IMG,
             }
         )
 

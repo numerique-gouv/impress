@@ -3,19 +3,14 @@
 
   <mj-body mj-class="bg--blue-100">
     <mj-wrapper css-class="wrapper" padding="0 25px 0px 25px">
-      <mj-section
-        background-url="{{domain}}/assets/mail-header-background.png"
-        background-size="cover"
-        background-repeat="no-repeat"
-        background-position="0 -30px"
-      >
+      <mj-section css-class="wrapper-logo">
         <mj-column>
           <mj-image
             align="center"
-            src="{{domain}}/assets/logo-suite-numerique.png"
-            width="250px"
+            src="{{logo_img}}"
+            width="320px"
             align="left"
-            alt="{%trans 'La Suite Numérique' %}"
+            alt="{%trans 'Logo email' %}"
           />
         </mj-column>
       </mj-section>
@@ -51,7 +46,11 @@
           </mj-text>
           <!-- Signature -->
           <mj-text>
-            <p>{% trans "Brought to you by La Suite Numérique" %}</p>
+            <p>
+              {% blocktrans %}
+                Brought to you by {{brandname}}
+              {% endblocktrans %}
+            </p>
           </mj-text>
         </mj-column>
       </mj-section>
