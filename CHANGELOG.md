@@ -14,6 +14,10 @@ and this project adheres to
 - ✨(backend) add server-to-server API endpoint to create documents #467
 - ✨(email) white brand email #412
 
+## Changed
+
+- ⚡️(docker) improve y-provider image #422
+
 
 ## [1.9.0] - 2024-12-11
 
