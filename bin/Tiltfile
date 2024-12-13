@@ -20,7 +20,7 @@ docker_build(
 docker_build(
     'localhost:5001/impress-y-provider:latest',
     context='..',
-    dockerfile='../src/frontend/Dockerfile',
+    dockerfile='../src/frontend/servers/y-provider/Dockerfile',
     only=['./src/frontend/', './docker/', './.dockerignore'],
     target = 'y-provider',
     live_update=[

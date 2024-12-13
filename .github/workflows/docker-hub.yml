@@ -156,7 +156,7 @@ jobs:
         name: Run trivy scan
         uses: numerique-gouv/action-trivy-cache@main
         with:
-          docker-build-args: '-f src/frontend/Dockerfile --target y-provider'
+          docker-build-args: '-f src/frontend/servers/y-provider/Dockerfile --target y-provider'
           docker-image-name: 'docker.io/lasuite/impress-frontend:${{ github.sha }}'
         continue-on-error: true
       -
@@ -164,7 +164,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./src/frontend/Dockerfile
+          file: ./src/frontend/servers/y-provider/Dockerfile
           target: y-provider
           build-args: DOCKER_USER=${{ env.DOCKER_USER }}:-1000
           push: ${{ github.event_name != 'pull_request' }}

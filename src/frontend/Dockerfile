@@ -1,33 +1,3 @@
-FROM node:20-alpine AS frontend-deps-y-provider
-
-WORKDIR /home/frontend/
-
-COPY ./src/frontend/package.json ./package.json
-COPY ./src/frontend/yarn.lock ./yarn.lock
-COPY ./src/frontend/servers/y-provider/package.json ./servers/y-provider/package.json
-COPY ./src/frontend/packages/eslint-config-impress/package.json ./packages/eslint-config-impress/package.json
-
-RUN yarn install
-
-COPY ./src/frontend/ .
-
-# Copy entrypoint
-COPY ./docker/files/usr/local/bin/entrypoint /usr/local/bin/entrypoint
-
-# ---- y-provider ----
-FROM frontend-deps-y-provider AS y-provider
-
-WORKDIR /home/frontend/servers/y-provider
-RUN yarn build
-
-# Un-privileged user running the application
-ARG DOCKER_USER
-USER ${DOCKER_USER}
-
-ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
-
-CMD ["yarn", "start"]
-
 FROM node:20-alpine AS frontend-deps
 
 WORKDIR /home/frontend/
@@ -40,7 +10,9 @@ COPY ./src/frontend/packages/eslint-config-impress/package.json ./packages/eslin
 RUN yarn install --frozen-lockfile
 
 COPY .dockerignore ./.dockerignore
-COPY ./src/frontend/ .
+COPY ./src/frontend/.prettierrc.js ./.prettierrc.js
+COPY ./src/frontend/packages/eslint-config-impress ./packages/eslint-config-impress
+COPY ./src/frontend/apps/impress ./apps/impress
 
 ### ---- Front-end builder image ----
 FROM frontend-deps AS impress
