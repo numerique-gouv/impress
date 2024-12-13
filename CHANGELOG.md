@@ -12,6 +12,7 @@ and this project adheres to
 ## Added
 
 - ✨(backend) add server-to-server API endpoint to create documents #467
+- ✨(email) white brand email #412
 
 
 ## [1.9.0] - 2024-12-11

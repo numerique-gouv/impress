@@ -7,6 +7,7 @@ from datetime import timedelta
 from unittest import mock
 
 from django.core import mail
+from django.test import override_settings
 from django.utils import timezone
 
 import pytest
@@ -339,6 +340,7 @@ def test_api_document_invitations_create_authenticated_outsider():
     assert response.status_code == 403
 
 
+@override_settings(EMAIL_BRAND_NAME="My brand name", EMAIL_LOGO_IMG="my-img.jpg")
 @pytest.mark.parametrize(
     "inviting,invited,response_code",
     (
@@ -407,6 +409,8 @@ def test_api_document_invitations_create_privileged_members(
             f"{user.full_name} ({user.email}) invited you with the role ``{invited}`` "
             f"on the following document: {document.title}"
         ) in email_content
+        assert "My brand name" in email_content
+        assert "my-img.jpg" in email_content
     else:
         assert models.Invitation.objects.exists() is False
 
@@ -453,7 +457,7 @@ def test_api_document_invitations_create_email_from_content_language():
     assert email.to == ["guest@example.com"]
 
     email_content = " ".join(email.body.split())
-    assert f"{user.full_name} a partagé un document avec vous !" in email_content
+    assert f"{user.full_name} a partagé un document avec vous!" in email_content
 
 
 def test_api_document_invitations_create_email_from_content_language_not_supported():
