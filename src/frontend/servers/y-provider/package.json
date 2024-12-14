@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.build.json && tsc-alias",
-    "dev": "nodemon --config nodemon.json",
+    "dev": "cross-env COLLABORATION_LOGGING=true && nodemon --config nodemon.json",
     "start": "node ./dist/start-server.js",
     "lint": "eslint . --ext .ts",
     "test": "jest"
@@ -34,6 +34,7 @@
     "@types/supertest": "6.0.2",
     "@types/ws": "8.5.13",
     "eslint-config-impress": "*",
+    "cross-env": "*",
     "jest": "29.7.0",
     "nodemon": "3.1.9",
     "supertest": "7.0.0",
