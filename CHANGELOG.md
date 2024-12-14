@@ -13,6 +13,10 @@ and this project adheres to
 
 🔧(helm) add option to disable default tls setting by @dominikkaminski #519
 
+## Changed
+
+- 🏗️(yjs-server) organize yjs server #528
+
 
 ## [1.10.0] - 2024-12-17
 
