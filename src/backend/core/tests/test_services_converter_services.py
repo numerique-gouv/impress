@@ -16,7 +16,7 @@ from core.services.converter_services import (
 
 def test_auth_header(settings):
     """Test authentication header generation."""
-    settings.CONVERSION_API_KEY = "test-key"
+    settings.Y_PROVIDER_API_KEY = "test-key"
     converter = YdocConverter()
     assert converter.auth_header == "test-key"
 
@@ -97,8 +97,9 @@ def test_convert_markdown_missing_content_field(mock_post, settings):
 def test_convert_markdown_full_integration(mock_post, settings):
     """Test full integration with all settings."""
 
-    settings.CONVERSION_API_URL = "http://test.com"
-    settings.CONVERSION_API_KEY = "test-key"
+    settings.Y_PROVIDER_API_BASE_URL = "http://test.com/"
+    settings.Y_PROVIDER_API_KEY = "test-key"
+    settings.CONVERSION_API_ENDPOINT = "conversion-endpoint"
     settings.CONVERSION_API_TIMEOUT = 5
     settings.CONVERSION_API_CONTENT_FIELD = "content"
 
@@ -113,7 +114,7 @@ def test_convert_markdown_full_integration(mock_post, settings):
 
     assert result == expected_content
     mock_post.assert_called_once_with(
-        "http://test.com",
+        "http://test.com/conversion-endpoint/",
         json={"content": "test markdown"},
         headers={
             "Authorization": "test-key",
