@@ -101,6 +101,16 @@ describe('Server Tests', () => {
     expect(response.body.error).toBe('Forbidden: Invalid API Key');
   });
 
+  test('POST /api/convert-markdown with a Bearer token', async () => {
+    const response = await request(app as any)
+      .post('/api/convert-markdown')
+      .set('Origin', origin)
+      .set('Authorization', 'Bearer test-secret-api-key');
+
+    // Warning: Changing the authorization header to Bearer token format will break backend compatibility with this microservice.
+    expect(response.status).toBe(403);
+  });
+
   test('POST /api/convert-markdown with missing body param content', async () => {
     const response = await request(app as any)
       .post('/api/convert-markdown')
