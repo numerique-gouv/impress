@@ -26,6 +26,7 @@ class CollaborationService:
         # same pod thanks to a parameter
         endpoint_url = f"{settings.COLLABORATION_API_URL}{endpoint}/?room={room}"
 
+        # Note: Collaboration microservice accepts only raw token, which is not recommended
         headers = {"Authorization": settings.COLLABORATION_SERVER_SECRET}
         if user_id:
             headers["X-User-Id"] = user_id

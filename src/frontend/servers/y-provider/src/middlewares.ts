@@ -25,6 +25,7 @@ export const httpSecurity = (
   }
 
   // Secret API Key check
+  // Note: Changing this header to Bearer token format will break backend compatibility with this microservice.
   const apiKey = req.headers['authorization'];
   if (apiKey !== COLLABORATION_SERVER_SECRET) {
     res.status(403).json({ error: 'Forbidden: Invalid API Key' });
