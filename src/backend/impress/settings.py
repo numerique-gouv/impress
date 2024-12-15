@@ -505,13 +505,21 @@ class Base(Configuration):
         "day": 200,
     }
 
-    # Conversion microservice
-    CONVERSION_API_KEY = values.Value(
-        environ_name="CONVERSION_API_KEY",
+    # Y provider microservice
+    # Note: Be careful, this value is currently the same as in the collaboration service.
+    Y_PROVIDER_API_KEY = values.Value(
+        environ_name="Y_PROVIDER_API_KEY",
         environ_prefix=None,
     )
-    CONVERSION_API_URL = values.Value(
-        environ_name="CONVERSION_API_URL",
+    Y_PROVIDER_API_BASE_URL = values.Value(
+        environ_name="Y_PROVIDER_API_BASE_URL",
+        environ_prefix=None,
+    )
+
+    # Conversion endpoint
+    CONVERSION_API_ENDPOINT = values.Value(
+        default="convert-markdown",
+        environ_name="CONVERSION_API_ENDPOINT",
         environ_prefix=None,
     )
     CONVERSION_API_CONTENT_FIELD = values.Value(

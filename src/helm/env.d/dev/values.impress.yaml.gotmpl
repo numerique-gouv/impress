@@ -51,8 +51,8 @@ backend:
     AWS_S3_SECRET_ACCESS_KEY: password
     AWS_STORAGE_BUCKET_NAME: impress-media-storage
     STORAGES_STATICFILES_BACKEND: django.contrib.staticfiles.storage.StaticFilesStorage
-    CONVERSION_API_URL: http://impress-y-provider:443/api/convert-markdown/
-    CONVERSION_API_KEY: my-secret
+    Y_PROVIDER_API_BASE_URL: http://impress-y-provider:443/api/
+    Y_PROVIDER_API_KEY: my-secret
 
   migrate:
     command:

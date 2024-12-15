@@ -31,7 +31,7 @@ class YdocConverter:
     @property
     def auth_header(self):
         """Build microservice authentication header."""
-        return settings.CONVERSION_API_KEY
+        return settings.Y_PROVIDER_API_KEY
 
     def convert_markdown(self, text):
         """Convert a Markdown text into our internal format using an external microservice."""
@@ -41,7 +41,7 @@ class YdocConverter:
 
         try:
             response = requests.post(
-                settings.CONVERSION_API_URL,
+                f"{settings.Y_PROVIDER_API_BASE_URL}{settings.CONVERSION_API_ENDPOINT}/",
                 json={
                     "content": text,
                 },
