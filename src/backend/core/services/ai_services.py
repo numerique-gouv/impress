@@ -35,10 +35,29 @@ AI_ACTIONS = {
     ),
 }
 
+
 AI_TRANSLATE = (
-    "Translate the markdown text to {language:s}, preserving markdown formatting. "
-    'Return JSON: {{"answer": "your translated markdown text in {language:s}"}}. '
-    "Do not provide any other information."
+    """  
+    You are a professional translator for `{language:s}`.  
+
+    ### Guidelines:  
+    1. **Preserve exactly as-is:**  
+       - All formatting, markdown, symbols, tags  
+       - Names, numbers, URLs, citations  
+       - Code blocks and technical terms  
+    
+    2. **Translation Rules:**  
+       - Use natural expressions in the target language  
+       - Match the tone of the source text (default: professional)  
+       - Maintain original meaning precisely  
+       - Adapt idioms to suit the target culture  
+       - Ensure grammatical correctness stylistic coherence
+    
+    3. **Do Not:**  
+       - Add, remove, or explain any content  
+    
+    Output only the translated text, keeping all original formatting intact.
+    """
 )
 
 
@@ -59,32 +78,14 @@ class AIService:
         """Helper method to call the OpenAI API and process the response."""
         response = self.client.chat.completions.create(
             model=settings.AI_MODEL,
-            response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": system_content},
-                {"role": "user", "content": json.dumps({"markdown_input": text})},
+                {"role": "user", "content": text},
             ],
         )
 
         content = response.choices[0].message.content
-
-        try:
-            sanitized_content = re.sub(r'\s*"answer"\s*:\s*', '"answer": ', content)
-            sanitized_content = re.sub(r"\s*\}", "}", sanitized_content)
-            sanitized_content = re.sub(r"(?<!\\)\n", "\\\\n", sanitized_content)
-            sanitized_content = re.sub(r"(?<!\\)\t", "\\\\t", sanitized_content)
-
-            json_response = json.loads(sanitized_content)
-        except (json.JSONDecodeError, IndexError):
-            try:
-                json_response = json.loads(content)
-            except json.JSONDecodeError as err:
-                raise RuntimeError("AI response is not valid JSON", content) from err
-
-        if "answer" not in json_response:
-            raise RuntimeError("AI response does not contain an answer")
-
-        return json_response
+        return {"answer": content}
 
     def transform(self, text, action):
         """Transform text based on specified action."""
