@@ -199,6 +199,7 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
 
     class Meta:
         db_table = "impress_user"
+        ordering = ("-created_at",)
         verbose_name = _("user")
         verbose_name_plural = _("users")
 
