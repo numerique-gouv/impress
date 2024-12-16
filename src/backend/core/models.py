@@ -798,7 +798,6 @@ class Template(BaseModel):
         """
 
         reference_docx = "core/static/reference.docx"
-        output = BytesIO()
 
         # Convert the HTML to a temporary docx file
         with tempfile.NamedTemporaryFile(suffix=".docx", prefix="docx_") as tmp_file:
