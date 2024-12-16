@@ -145,7 +145,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='documentaccess',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(('team', ''), ('user__isnull', False)), models.Q(('team__gt', ''), ('user__isnull', True)), _connector='OR'), name='check_document_access_either_user_or_team', violation_error_message='Either user or team must be set, not both.'),
+            constraint=models.CheckConstraint(condition=models.Q(models.Q(('team', ''), ('user__isnull', False)), models.Q(('team__gt', ''), ('user__isnull', True)), _connector='OR'), name='check_document_access_either_user_or_team', violation_error_message='Either user or team must be set, not both.'),
         ),
         migrations.AddConstraint(
             model_name='invitation',
@@ -161,6 +161,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='templateaccess',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(('team', ''), ('user__isnull', False)), models.Q(('team__gt', ''), ('user__isnull', True)), _connector='OR'), name='check_template_access_either_user_or_team', violation_error_message='Either user or team must be set, not both.'),
+            constraint=models.CheckConstraint(condition=models.Q(models.Q(('team', ''), ('user__isnull', False)), models.Q(('team__gt', ''), ('user__isnull', True)), _connector='OR'), name='check_template_access_either_user_or_team', violation_error_message='Either user or team must be set, not both.'),
         ),
     ]

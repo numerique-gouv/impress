@@ -695,7 +695,7 @@ class DocumentAccess(BaseAccess):
                 violation_error_message=_("This team is already in this document."),
             ),
             models.CheckConstraint(
-                check=models.Q(user__isnull=False, team="")
+                condition=models.Q(user__isnull=False, team="")
                 | models.Q(user__isnull=True, team__gt=""),
                 name="check_document_access_either_user_or_team",
                 violation_error_message=_("Either user or team must be set, not both."),
@@ -884,7 +884,7 @@ class TemplateAccess(BaseAccess):
                 violation_error_message=_("This team is already in this template."),
             ),
             models.CheckConstraint(
-                check=models.Q(user__isnull=False, team="")
+                condition=models.Q(user__isnull=False, team="")
                 | models.Q(user__isnull=True, team__gt=""),
                 name="check_template_access_either_user_or_team",
                 violation_error_message=_("Either user or team must be set, not both."),
