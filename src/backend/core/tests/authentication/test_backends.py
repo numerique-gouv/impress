@@ -341,7 +341,7 @@ def test_authentication_getter_existing_disabled_user_via_email(
     django_assert_num_queries, monkeypatch
 ):
     """
-    If an existing user does not matches the sub but matches the email and is disabled,
+    If an existing user does not match the sub but matches the email and is disabled,
     an error should be raised and a user should not be created.
     """
 
