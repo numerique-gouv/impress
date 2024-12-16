@@ -16,17 +16,17 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@blocknote/server-util": "0.20.0",
-    "@hocuspocus/server": "2.14.0",
-    "@sentry/node": "8.41.0",
-    "@sentry/profiling-node": "8.41.0",
-    "express": "4.21.1",
+    "@blocknote/server-util": "0.21.0",
+    "@hocuspocus/server": "2.15.0",
+    "@sentry/node": "8.45.1",
+    "@sentry/profiling-node": "8.45.1",
+    "express": "4.21.2",
     "express-ws": "5.0.2",
     "y-protocols": "1.0.6",
     "yjs": "13.6.20"
   },
   "devDependencies": {
-    "@hocuspocus/provider": "2.14.0",
+    "@hocuspocus/provider": "2.15.0",
     "@types/express": "5.0.0",
     "@types/express-ws": "3.0.5",
     "@types/jest": "29.5.14",
@@ -35,7 +35,7 @@
     "@types/ws": "8.5.13",
     "eslint-config-impress": "*",
     "jest": "29.7.0",
-    "nodemon": "3.1.7",
+    "nodemon": "3.1.9",
     "supertest": "7.0.0",
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
