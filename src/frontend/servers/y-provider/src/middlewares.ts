@@ -4,9 +4,12 @@ import * as ws from 'ws';
 import {
   COLLABORATION_SERVER_ORIGIN,
   COLLABORATION_SERVER_SECRET,
+  Y_PROVIDER_API_KEY,
 } from '@/env';
 
 import { logger } from './utils';
+
+const VALID_API_KEYS = [COLLABORATION_SERVER_SECRET, Y_PROVIDER_API_KEY];
 
 export const httpSecurity = (
   req: Request,
@@ -27,7 +30,7 @@ export const httpSecurity = (
   // Secret API Key check
   // Note: Changing this header to Bearer token format will break backend compatibility with this microservice.
   const apiKey = req.headers['authorization'];
-  if (apiKey !== COLLABORATION_SERVER_SECRET) {
+  if (!apiKey || !VALID_API_KEYS.includes(apiKey)) {
     res.status(403).json({ error: 'Forbidden: Invalid API Key' });
     return;
   }

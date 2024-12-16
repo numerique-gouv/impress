@@ -14,6 +14,7 @@ jest.mock('../src/env', () => {
     PORT: port,
     COLLABORATION_SERVER_ORIGIN: origin,
     COLLABORATION_SERVER_SECRET: 'test-secret-api-key',
+    Y_PROVIDER_API_KEY: 'yprovider-api-key',
   };
 });
 
@@ -115,7 +116,7 @@ describe('Server Tests', () => {
     const response = await request(app as any)
       .post('/api/convert-markdown')
       .set('Origin', origin)
-      .set('Authorization', 'test-secret-api-key');
+      .set('Authorization', 'yprovider-api-key');
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Invalid request: missing content');
@@ -125,7 +126,7 @@ describe('Server Tests', () => {
     const response = await request(app as any)
       .post('/api/convert-markdown')
       .set('Origin', origin)
-      .set('Authorization', 'test-secret-api-key')
+      .set('Authorization', 'yprovider-api-key')
       .send({
         content: '',
       });
