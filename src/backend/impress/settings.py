@@ -506,7 +506,6 @@ class Base(Configuration):
     }
 
     # Y provider microservice
-    # Note: Be careful, this value is currently the same as in the collaboration service.
     Y_PROVIDER_API_KEY = values.Value(
         environ_name="Y_PROVIDER_API_KEY",
         environ_prefix=None,
