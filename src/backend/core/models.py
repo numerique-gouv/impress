@@ -761,7 +761,7 @@ class Template(BaseModel):
         """
         document_html = weasyprint.HTML(
             string=DjangoTemplate(self.code).render(
-                Context({"body": html.format_html(body_html), **metadata})
+                Context({"body": html.format_html("{}", body_html), **metadata})
             )
         )
         css = weasyprint.CSS(
@@ -780,7 +780,7 @@ class Template(BaseModel):
         Generate and return a docx document wrapped around the current template
         """
         template_string = DjangoTemplate(self.code).render(
-            Context({"body": html.format_html(body_html), **metadata})
+            Context({"body": html.format_html("{}", body_html), **metadata})
         )
 
         html_string = f"""
