@@ -35,6 +35,7 @@ import pypandoc
 import weasyprint
 from botocore.exceptions import ClientError
 from timezone_field import TimeZoneField
+from treebeard.mp_tree import MP_Node
 
 logger = getLogger(__name__)
 
@@ -336,7 +337,7 @@ class BaseAccess(BaseModel):
         }
 
 
-class Document(BaseModel):
+class Document(MP_Node, BaseModel):
     """Pad document carrying the content."""
 
     title = models.CharField(_("title"), max_length=255, null=True, blank=True)
@@ -357,6 +358,10 @@ class Document(BaseModel):
     )
 
     _content = None
+
+    # Tree structure
+    steplen = 7  # nb siblings max: 78,364,164,096 / max depth: 255/7=36
+    node_order_by = None  # Manual ordering
 
     class Meta:
         db_table = "impress_document"

@@ -201,7 +201,7 @@ class DocumentSerializer(ListDocumentSerializer):
             "abilities",
             "created_at",
             "creator",
-            "is_avorite",
+            "is_favorite",
             "link_role",
             "link_reach",
             "nb_accesses",
@@ -281,7 +281,7 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
         except ConversionError as err:
             raise exceptions.APIException(detail="could not convert content") from err
 
-        document = models.Document.objects.create(
+        document = models.Document.add_root(
             title=validated_data["title"],
             content=document_content,
             creator=user,

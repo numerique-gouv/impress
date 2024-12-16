@@ -34,20 +34,18 @@ def test_models_documents_id_unique():
 
 def test_models_documents_creator_required():
     """No field should be required on the Document model."""
-    models.Document.objects.create()
+    models.Document.add_root()
 
 
 def test_models_documents_title_null():
     """The "title" field can be null."""
-    document = models.Document.objects.create(
-        title=None, creator=factories.UserFactory()
-    )
+    document = models.Document.add_root(title=None, creator=factories.UserFactory())
     assert document.title is None
 
 
 def test_models_documents_title_empty():
     """The "title" field can be empty."""
-    document = models.Document.objects.create(title="", creator=factories.UserFactory())
+    document = models.Document.add_root(title="", creator=factories.UserFactory())
     assert document.title == ""
 
 
