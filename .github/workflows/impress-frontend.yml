@@ -95,11 +95,11 @@ jobs:
       - name: Set e2e env variables
         run: cat env.d/development/common.e2e.dist >> env.d/development/common.dist
 
+      - name: Install Playwright Browsers
+        run: cd src/frontend/apps/e2e && yarn install --frozen-lockfile && yarn install-playwright chromium
+
       - name: Start Docker services
         run: make bootstrap FLUSH_ARGS='--no-input' cache=
-
-      - name: Install Playwright Browsers
-        run: cd src/frontend/apps/e2e && yarn install-playwright chromium
 
       # Tool to wait for a service to be ready
       - name: Install Dockerize
@@ -151,11 +151,11 @@ jobs:
       - name: Set e2e env variables
         run: cat env.d/development/common.e2e.dist >> env.d/development/common.dist
 
+      - name: Install Playwright Browsers
+        run: cd src/frontend/apps/e2e && yarn install --frozen-lockfile && yarn install-playwright firefox webkit
+
       - name: Start Docker services
         run: make bootstrap FLUSH_ARGS='--no-input' cache=
-
-      - name: Install Playwright Browsers
-        run: cd src/frontend/apps/e2e && yarn install-playwright firefox webkit chromium
 
       - name: Run e2e tests
         run: cd src/frontend/ && yarn e2e:test --project=firefox --project=webkit
