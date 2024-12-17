@@ -594,7 +594,7 @@ class Document(BaseModel):
                     name=sender_name
                 ),
                 "message": _(
-                    "{name} invited you with the role ``{role}`` on the following document:"
+                    '{name} invited you with the role "{role}" on the following document:'
                 ).format(name=sender_name_email, role=role.lower()),
             }
             subject = _("{name} shared a document with you: {title}").format(
