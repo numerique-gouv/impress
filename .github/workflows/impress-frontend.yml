@@ -152,7 +152,7 @@ jobs:
         run: cat env.d/development/common.e2e.dist >> env.d/development/common.dist
 
       - name: Install Playwright Browsers
-        run: cd src/frontend/apps/e2e && yarn install --frozen-lockfile && yarn install-playwright firefox webkit
+        run: cd src/frontend/apps/e2e && yarn install --frozen-lockfile && yarn install-playwright firefox webkit chromium
 
       - name: Start Docker services
         run: make bootstrap FLUSH_ARGS='--no-input' cache=
