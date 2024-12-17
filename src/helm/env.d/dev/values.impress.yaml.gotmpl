@@ -15,7 +15,9 @@ backend:
     DJANGO_SECRET_KEY: {{ .Values.djangoSecretKey }}
     DJANGO_SETTINGS_MODULE: impress.settings
     DJANGO_SUPERUSER_PASSWORD: admin
+    DJANGO_EMAIL_BRAND_NAME: "La Suite Numérique"
     DJANGO_EMAIL_HOST: "mailcatcher"
+    DJANGO_EMAIL_LOGO_IMG: https://impress.127.0.0.1.nip.io/assets/logo-suite-numerique.png
     DJANGO_EMAIL_PORT: 1025
     DJANGO_EMAIL_USE_SSL: False
     LOGGING_LEVEL_HANDLERS_CONSOLE: ERROR
