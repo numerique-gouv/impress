@@ -18,6 +18,10 @@ and this project adheres to
 
 - ⚡️(docker) improve y-provider image #422
 
+## Fixed
+
+- ⚡️(e2e) reduce flakiness on e2e tests #511
+
 
 ## [1.9.0] - 2024-12-11
 
