@@ -65,10 +65,6 @@ const DocPage = ({ id }: DocProps) => {
 
     setDoc(docQuery);
     setCurrentDoc(docQuery);
-
-    return () => {
-      setCurrentDoc(undefined);
-    };
   }, [docQuery, setCurrentDoc]);
 
   useEffect(() => {
