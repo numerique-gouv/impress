@@ -9,6 +9,17 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- ✨(backend) annotate number of accesses on documents in list view #411
+- ✨(backend) allow users to mark/unmark documents as favorite #411
+
+## Changes
+
+- ♻️(frontend) Improve Ai translations #478
+- 🐛(frontend) Fix hidden menu on Firefox #468
+- ⚡️(backend) optimize number of queries on document list view #411
+
 
 ## [1.10.0] - 2024-12-17
 

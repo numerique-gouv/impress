@@ -86,16 +86,18 @@ def test_api_documents_ai_translate_anonymous_success(mock_create):
     """
     document = factories.DocumentFactory(link_reach="public", link_role="editor")
 
-    answer = '{"answer": "Salut"}'
+    answer = '{"answer": {"tid-1": "Ola"}}'
     mock_create.return_value = MagicMock(
         choices=[MagicMock(message=MagicMock(content=answer))]
     )
 
     url = f"/api/v1.0/documents/{document.id!s}/ai-translate/"
-    response = APIClient().post(url, {"text": "Hello", "language": "es"})
+    response = APIClient().post(
+        url, {"text": {"tid-1": "Hello"}, "language": "es"}, format="json"
+    )
 
     assert response.status_code == 200
-    assert response.json() == {"answer": "Salut"}
+    assert response.json() == {"answer": {"tid-1": "Ola"}}
     mock_create.assert_called_once_with(
         model="llama",
         response_format={"type": "json_object"},
@@ -103,12 +105,12 @@ def test_api_documents_ai_translate_anonymous_success(mock_create):
             {
                 "role": "system",
                 "content": (
-                    "Translate the markdown text to Spanish, preserving markdown formatting. "
-                    'Return JSON: {"answer": "your translated markdown text in Spanish"}. '
+                    "Translate to Spanish for every value of the json provided."
+                    "Keep the same json but with the value updated, keep the keys accordingly."
                     "Do not provide any other information."
                 ),
             },
-            {"role": "user", "content": '{"markdown_input": "Hello"}'},
+            {"role": "user", "content": '{"answer": {"tid-1": "Hello"}}'},
         ],
     )
 
@@ -164,16 +166,18 @@ def test_api_documents_ai_translate_authenticated_success(mock_create, reach, ro
 
     document = factories.DocumentFactory(link_reach=reach, link_role=role)
 
-    answer = '{"answer": "Salut"}'
+    answer = '{"answer": {"tid-1": "Ola"}}'
     mock_create.return_value = MagicMock(
         choices=[MagicMock(message=MagicMock(content=answer))]
     )
 
     url = f"/api/v1.0/documents/{document.id!s}/ai-translate/"
-    response = client.post(url, {"text": "Hello", "language": "es-co"})
+    response = client.post(
+        url, {"text": {"tid-1": "Hello"}, "language": "es-co"}, format="json"
+    )
 
     assert response.status_code == 200
-    assert response.json() == {"answer": "Salut"}
+    assert response.json() == {"answer": {"tid-1": "Ola"}}
     mock_create.assert_called_once_with(
         model="llama",
         response_format={"type": "json_object"},
@@ -181,13 +185,12 @@ def test_api_documents_ai_translate_authenticated_success(mock_create, reach, ro
             {
                 "role": "system",
                 "content": (
-                    "Translate the markdown text to Colombian Spanish, "
-                    "preserving markdown formatting. Return JSON: "
-                    '{"answer": "your translated markdown text in Colombian Spanish"}. '
+                    "Translate to Colombian Spanish for every value of the json provided."
+                    "Keep the same json but with the value updated, keep the keys accordingly."
                     "Do not provide any other information."
                 ),
             },
-            {"role": "user", "content": '{"markdown_input": "Hello"}'},
+            {"role": "user", "content": '{"answer": {"tid-1": "Hello"}}'},
         ],
     )
 
@@ -242,16 +245,18 @@ def test_api_documents_ai_translate_success(mock_create, via, role, mock_user_te
             document=document, team="lasuite", role=role
         )
 
-    answer = '{"answer": "Salut"}'
+    answer = '{"answer": {"tid-1": "Ola"}}'
     mock_create.return_value = MagicMock(
         choices=[MagicMock(message=MagicMock(content=answer))]
     )
 
     url = f"/api/v1.0/documents/{document.id!s}/ai-translate/"
-    response = client.post(url, {"text": "Hello", "language": "es-co"})
+    response = client.post(
+        url, {"text": {"tid-1": "Hello"}, "language": "es-co"}, format="json"
+    )
 
     assert response.status_code == 200
-    assert response.json() == {"answer": "Salut"}
+    assert response.json() == {"answer": {"tid-1": "Ola"}}
     mock_create.assert_called_once_with(
         model="llama",
         response_format={"type": "json_object"},
@@ -259,19 +264,18 @@ def test_api_documents_ai_translate_success(mock_create, via, role, mock_user_te
             {
                 "role": "system",
                 "content": (
-                    "Translate the markdown text to Colombian Spanish, "
-                    "preserving markdown formatting. Return JSON: "
-                    '{"answer": "your translated markdown text in Colombian Spanish"}. '
+                    "Translate to Colombian Spanish for every value of the json provided."
+                    "Keep the same json but with the value updated, keep the keys accordingly."
                     "Do not provide any other information."
                 ),
             },
-            {"role": "user", "content": '{"markdown_input": "Hello"}'},
+            {"role": "user", "content": '{"answer": {"tid-1": "Hello"}}'},
         ],
     )
 
 
-def test_api_documents_ai_translate_empty_text():
-    """The text should not be empty when requesting AI translate."""
+def test_api_documents_ai_translate_should_be_json():
+    """The text should be a json when requesting AI translate."""
     user = factories.UserFactory()
 
     client = APIClient()
@@ -283,7 +287,7 @@ def test_api_documents_ai_translate_empty_text():
     response = client.post(url, {"text": " ", "language": "es"})
 
     assert response.status_code == 400
-    assert response.json() == {"text": ["This field may not be blank."]}
+    assert response.json() == {"text": ["Text field must be a json object."]}
 
 
 def test_api_documents_ai_translate_invalid_action():
@@ -296,7 +300,9 @@ def test_api_documents_ai_translate_invalid_action():
     document = factories.DocumentFactory(link_reach="public", link_role="editor")
 
     url = f"/api/v1.0/documents/{document.id!s}/ai-translate/"
-    response = client.post(url, {"text": "Hello", "language": "invalid"})
+    response = client.post(
+        url, {"text": {"tid-1": "Hello"}, "language": "invalid"}, format="json"
+    )
 
     assert response.status_code == 400
     assert response.json() == {"language": ['"invalid" is not a valid choice.']}
@@ -322,13 +328,17 @@ def test_api_documents_ai_translate_throttling_document(mock_create):
     for _ in range(3):
         user = factories.UserFactory()
         client.force_login(user)
-        response = client.post(url, {"text": "Hello", "language": "es"})
+        response = client.post(
+            url, {"text": {"tid-1": "Hello"}, "language": "es"}, format="json"
+        )
         assert response.status_code == 200
         assert response.json() == {"answer": "Salut"}
 
     user = factories.UserFactory()
     client.force_login(user)
-    response = client.post(url, {"text": "Hello", "language": "es"})
+    response = client.post(
+        url, {"text": {"tid-1": "Hello"}, "language": "es"}, format="json"
+    )
 
     assert response.status_code == 429
     assert response.json() == {
@@ -356,13 +366,17 @@ def test_api_documents_ai_translate_throttling_user(mock_create):
     for _ in range(3):
         document = factories.DocumentFactory(link_reach="public", link_role="editor")
         url = f"/api/v1.0/documents/{document.id!s}/ai-translate/"
-        response = client.post(url, {"text": "Hello", "language": "es"})
+        response = client.post(
+            url, {"text": {"tid-1": "Hello"}, "language": "es"}, format="json"
+        )
         assert response.status_code == 200
         assert response.json() == {"answer": "Salut"}
 
     document = factories.DocumentFactory(link_reach="public", link_role="editor")
     url = f"/api/v1.0/documents/{document.id!s}/ai-translate/"
-    response = client.post(url, {"text": "Hello", "language": "es"})
+    response = client.post(
+        url, {"text": {"tid-1": "Hello"}, "language": "es"}, format="json"
+    )
 
     assert response.status_code == 429
     assert response.json() == {

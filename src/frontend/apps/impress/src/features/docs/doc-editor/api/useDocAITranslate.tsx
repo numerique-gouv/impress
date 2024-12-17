@@ -4,12 +4,12 @@ import { APIError, errorCauses, fetchAPI } from '@/api';
 
 export type DocAITranslate = {
   docId: string;
-  text: string;
+  text: Record<string, string>;
   language: string;
 };
 
 export type DocAITranslateResponse = {
-  answer: string;
+  answer: Record<string, string>;
 };
 
 export const docAITranslate = async ({
