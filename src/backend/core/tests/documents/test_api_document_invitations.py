@@ -406,7 +406,7 @@ def test_api_document_invitations_create_privileged_members(
         email_content = " ".join(email.body.split())
         assert f"{user.full_name} shared a document with you!" in email_content
         assert (
-            f"{user.full_name} ({user.email}) invited you with the role ``{invited}`` "
+            f"{user.full_name} ({user.email}) invited you with the role &quot;{invited}&quot; "
             f"on the following document: {document.title}"
         ) in email_content
         assert "My brand name" in email_content
@@ -536,7 +536,7 @@ def test_api_document_invitations_create_email_full_name_empty():
     email_content = " ".join(email.body.split())
     assert f"{user.email} shared a document with you!" in email_content
     assert (
-        f"{user.email.capitalize()} invited you with the role ``reader`` on the "
+        f"{user.email.capitalize()} invited you with the role &quot;reader&quot; on the "
         f"following document: {document.title}" in email_content
     )
 

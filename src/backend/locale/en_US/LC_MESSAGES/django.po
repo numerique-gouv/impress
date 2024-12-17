@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lasuite-people\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-13 15:17+0000\n"
-"PO-Revision-Date: 2024-12-13 15:22\n"
+"POT-Creation-Date: 2024-12-17 15:50+0000\n"
+"PO-Revision-Date: 2024-12-17 15:53\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -220,7 +220,7 @@ msgstr ""
 
 #: core/models.py:597
 #, python-brace-format
-msgid "{name} invited you with the role ``{role}`` on the following document:"
+msgid "{name} invited you with the role \"{role}\" on the following document:"
 msgstr ""
 
 #: core/models.py:600
