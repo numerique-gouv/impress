@@ -120,13 +120,14 @@ test.describe('Doc Header', () => {
 
     await editor.locator('h1').fill('');
 
+    // eslint-disable-next-line playwright/no-wait-for-timeout
+    await page.waitForTimeout(500);
+
     await docHeader
       .getByRole('heading', { name: 'Top World', level: 2 })
       .fill(' ');
 
-    await page.getByText('Created at').click({
-      delay: 200,
-    });
+    await page.getByText('Created at').click();
 
     await expect(
       docHeader.getByRole('heading', { name: 'Untitled  document', level: 2 }),

@@ -233,7 +233,7 @@ test.describe('Doc Editor', () => {
     test.skip(browserName === 'webkit', 'This test is very flaky with webkit');
 
     // Check the first doc
-    const doc = await goToGridDoc(page);
+    const [doc] = await createDoc(page, 'doc-quit-1', browserName, 1);
     await expect(page.locator('h2').getByText(doc)).toBeVisible();
 
     const editor = page.locator('.ProseMirror');
@@ -272,8 +272,8 @@ test.describe('Doc Editor', () => {
     ).toBeVisible();
   });
 
-  test('it adds an image to the doc editor', async ({ page }) => {
-    await goToGridDoc(page);
+  test('it adds an image to the doc editor', async ({ page, browserName }) => {
+    await createDoc(page, 'doc-image', browserName, 1);
 
     const fileChooserPromise = page.waitForEvent('filechooser');
 
