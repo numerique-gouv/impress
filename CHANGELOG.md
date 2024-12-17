@@ -9,10 +9,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+
+## [1.10.0] - 2024-12-17
+
 ## Added
 
 - ✨(backend) add server-to-server API endpoint to create documents #467
 - ✨(email) white brand email #412
+- ✨(y-provider) create a markdown converter endpoint #488
 
 ## Changed
 
@@ -29,7 +33,6 @@ and this project adheres to
 
 - ✨(backend) annotate number of accesses on documents in list view #429
 - ✨(backend) allow users to mark/unmark documents as favorite #429
-- ✨(y-provider) create a markdown converter endpoint #488
 
 ## Changed
 
@@ -318,7 +321,8 @@ and this project adheres to
 - 🚀 Impress, project to manage your documents easily and collaboratively.
 
 
-[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.9.0...main
+[unreleased]: https://github.com/numerique-gouv/impress/compare/v1.10.0...main
+[v1.10.0]: https://github.com/numerique-gouv/impress/releases/v1.10.0
 [v1.9.0]: https://github.com/numerique-gouv/impress/releases/v1.9.0
 [v1.8.2]: https://github.com/numerique-gouv/impress/releases/v1.8.2
 [v1.8.1]: https://github.com/numerique-gouv/impress/releases/v1.8.1
