@@ -6,11 +6,12 @@ import expressWebsockets from 'express-ws';
 
 import { PORT } from '../env';
 import {
+  collaborationHTTPHandler,
   collaborationResetConnectionsHandler,
   collaborationWSHandler,
   convertMarkdownHandler,
 } from '../handlers';
-import { httpSecurity, wsSecurity } from '../middlewares';
+import { corsMiddleware, httpSecurity, wsSecurity } from '../middlewares';
 import { routes } from '../routes';
 import { logger } from '../utils';
 
@@ -24,11 +25,13 @@ import { logger } from '../utils';
 export const initServer = () => {
   const { app } = expressWebsockets(express());
   app.use(express.json());
+  app.use(corsMiddleware);
 
   /**
    * Route to handle WebSocket connections
    */
-  app.ws(routes.COLLABORATION_WS, wsSecurity, collaborationWSHandler);
+  app.ws(routes.COLLABORATION_WS, collaborationWSHandler);
+  app.post(routes.COLLABORATION_POOL, collaborationHTTPHandler);
 
   /**
    * Route to reset connections in a room:
@@ -58,7 +61,7 @@ export const initServer = () => {
   });
 
   const server = app.listen(PORT, () =>
-    console.log('Listening on port :', PORT),
+    console.log('App listening on port :', PORT),
   );
 
   return { app, server };

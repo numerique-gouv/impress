@@ -10,9 +10,9 @@ export const hocusPocusServer = Server.configure({
     const roomParam = requestParameters.get('room');
     const canEdit = requestHeaders['x-can-edit'] === 'True';
 
-    if (!canEdit) {
-      connection.readOnly = true;
-    }
+    // if (!canEdit) {
+    //   connection.readOnly = true;
+    // }
 
     logger(
       'Connection established:',
