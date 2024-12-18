@@ -130,7 +130,9 @@ def test_api_documents_children_list_anonymous_restricted_or_authenticated(reach
 
 
 @pytest.mark.parametrize("reach", ["public", "authenticated"])
-def test_api_documents_children_list_authenticated_unrelated_public_or_authenticated(reach):
+def test_api_documents_children_list_authenticated_unrelated_public_or_authenticated(
+    reach,
+):
     """
     Authenticated users should be able to retrieve the children of a public/authenticated
     document to which they are not related.
@@ -185,7 +187,9 @@ def test_api_documents_children_list_authenticated_unrelated_public_or_authentic
 
 
 @pytest.mark.parametrize("reach", ["public", "authenticated"])
-def test_api_documents_children_list_authenticated_public_or_authenticated_parent(reach):
+def test_api_documents_children_list_authenticated_public_or_authenticated_parent(
+    reach,
+):
     """
     Authenticated users should be allowed to retrieve the children of a document who
     has a public or authenticated ancestor.
@@ -432,7 +436,9 @@ def test_api_documents_children_list_authenticated_related_team_none(mock_user_t
     }
 
 
-def test_api_documents_children_list_authenticated_related_team_members(mock_user_teams):
+def test_api_documents_children_list_authenticated_related_team_members(
+    mock_user_teams,
+):
     """
     Authenticated users should be allowed to retrieve the children of a document to which they
     are related via a team whatever the role.
