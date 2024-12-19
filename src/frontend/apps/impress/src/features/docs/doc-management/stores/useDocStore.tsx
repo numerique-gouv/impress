@@ -3,7 +3,7 @@ import * as Y from 'yjs';
 import { create } from 'zustand';
 
 import { Base64, Doc, base64ToYDoc } from '@/features/docs/doc-management';
-import { isFirefox } from '@/utils';
+import { isEdge, isFirefox } from '@/utils';
 
 import { toBase64 } from '../../doc-editor';
 
@@ -38,9 +38,12 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
       Y.applyUpdate(doc, Buffer.from(initialDoc, 'base64'));
     }
 
-    const wsUrl = isFirefox()
+    console.log('navigator.userAgent', navigator.userAgent);
+    const withWS = isEdge(); /*|| isFirefox()*/
+    const wsUrl = withWS
       ? 'ws://localhost:4444/collaboration/ws/?room=' + storeId
       : 'ws://localhost:6666';
+
     const provider = new HocuspocusProvider({
       url: wsUrl,
       name: storeId,
@@ -59,7 +62,7 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
       },
     });
 
-    if (!isFirefox()) {
+    if (!withWS) {
       get().setPool(storeId, provider);
     }
     get().setProviders(storeId, provider);
