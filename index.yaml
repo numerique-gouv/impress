@@ -1,0 +1,13 @@
+apiVersion: v1
+entries:
+  docs:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2024-12-19T16:11:26.612475775Z"
+    digest: b18de19048df8138059f13f87f304fdf2d3fa690a4888b9fe797db650cffdb6d
+    name: docs
+    type: application
+    urls:
+    - https://numerique-gouv.github.io/impress/docs-0.0.1.tgz
+    version: 0.0.1
+generated: "2024-12-19T16:11:26.611295089Z"
