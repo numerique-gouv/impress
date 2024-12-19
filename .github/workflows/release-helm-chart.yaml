@@ -1,0 +1,28 @@
+name: Release Charts
+
+
+on:
+  push:
+
+jobs:
+  release:
+    # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
+    # see: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Cleanup
+        run: rm -rf ./src/helm/extra
+
+      - name: Publish Helm charts
+        uses: stefanprodan/helm-gh-pages@v1.7.0
+        with:
+          charts_dir: ./src/helm/
+          linting: off
+          token: ${{ secrets.GITHUB_TOKEN }}
