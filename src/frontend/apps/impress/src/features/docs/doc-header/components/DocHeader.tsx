@@ -72,10 +72,10 @@ export const DocHeader = ({ doc }: DocHeaderProps) => {
               <Box $direction="row">
                 {isDesktop && (
                   <>
-                    <Text $variation="400" $size="s" $weight="bold">
+                    <Text $variation="600" $size="s" $weight="bold">
                       {transRole(currentDocRole(doc.abilities))}&nbsp;·&nbsp;
                     </Text>
-                    <Text $variation="400" $size="s">
+                    <Text $variation="600" $size="s">
                       {t('Last update: {{update}}', {
                         update: DateTime.fromISO(doc.updated_at).toRelative(),
                       })}
@@ -92,7 +92,7 @@ export const DocHeader = ({ doc }: DocHeaderProps) => {
             <DocToolBox doc={doc} />
           </Box>
         </Box>
-        <HorizontalSeparator />
+        <HorizontalSeparator $withPadding={true} />
       </Box>
     </>
   );

@@ -24,6 +24,26 @@ const cssEditor = (readonly: boolean) => `
   &, & > .bn-container, & .ProseMirror {
     height:100%;
     
+    a {
+      color: var(--c--theme--colors--greyscale-500);
+      cursor: pointer;
+    }
+    .bn-block-group
+      .bn-block-group
+      .bn-block-outer:not([data-prev-depth-changed]):before {
+      border-left: none;
+    }
+  }
+  .bn-block-outer:not(:first-child) {
+    &:has(h1) {
+      padding-top: 32px;
+    }
+    &:has(h2) {
+      padding-top: 24px;
+    }
+    &:has(h3) {
+      padding-top: 16px;
+    }
   };
   
   & .bn-inline-content code {
@@ -135,7 +155,7 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
 
     setTimeout(() => {
       editor.updateBlock(editor.document[0], {
-        type: 'heading',
+        type: 'paragraph',
         content: '',
       });
     }, 100);

@@ -9,15 +9,22 @@ import {
   useCreateFavoriteDoc,
 } from '@/features/docs/doc-management';
 
+import { ModalPDF } from '../../doc-header/components/ModalExport';
 import { useDeleteFavoriteDoc } from '../../doc-management/api/useDeleteFavoriteDoc';
 
 interface DocsGridActionsProps {
   doc: Doc;
+  openShareModal?: () => void;
 }
 
-export const DocsGridActions = ({ doc }: DocsGridActionsProps) => {
+export const DocsGridActions = ({
+  doc,
+  openShareModal,
+}: DocsGridActionsProps) => {
   const { t } = useTranslation();
   const deleteModal = useModal();
+
+  const downloadModal = useModal();
   const removeFavoriteDoc = useDeleteFavoriteDoc({
     listInvalideQueries: [KEY_LIST_DOC],
   });
@@ -37,6 +44,18 @@ export const DocsGridActions = ({ doc }: DocsGridActionsProps) => {
         }
       },
       testId: `docs-grid-actions-${doc.is_favorite ? 'unpin' : 'pin'}-${doc.id}`,
+    },
+    {
+      label: t('Share'),
+      icon: 'group',
+      callback: () => openShareModal?.(),
+      testId: `docs-grid-actions-share-${doc.id}`,
+    },
+    {
+      label: t('Download'),
+      icon: 'download',
+      callback: () => downloadModal.open(),
+      testId: `docs-grid-actions-download-${doc.id}`,
     },
     {
       label: t('Remove'),
@@ -60,6 +79,9 @@ export const DocsGridActions = ({ doc }: DocsGridActionsProps) => {
 
       {deleteModal.isOpen && (
         <ModalRemoveDoc onClose={deleteModal.onClose} doc={doc} />
+      )}
+      {downloadModal.isOpen && (
+        <ModalPDF onClose={() => downloadModal.onClose()} doc={doc} />
       )}
     </>
   );
