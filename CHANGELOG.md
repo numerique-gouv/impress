@@ -9,6 +9,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Fixed
+
+🐛(create_demo) fix failing create_demo #520
+
 
 ## [1.10.0] - 2024-12-17
 
