@@ -34,20 +34,18 @@ def test_models_documents_id_unique():
 
 def test_models_documents_creator_required():
     """No field should be required on the Document model."""
-    models.Document.objects.create()
+    models.Document.add_root()
 
 
 def test_models_documents_title_null():
     """The "title" field can be null."""
-    document = models.Document.objects.create(
-        title=None, creator=factories.UserFactory()
-    )
+    document = models.Document.add_root(title=None, creator=factories.UserFactory())
     assert document.title is None
 
 
 def test_models_documents_title_empty():
     """The "title" field can be empty."""
-    document = models.Document.objects.create(title="", creator=factories.UserFactory())
+    document = models.Document.add_root(title="", creator=factories.UserFactory())
     assert document.title == ""
 
 
@@ -95,6 +93,8 @@ def test_models_documents_get_abilities_forbidden(is_authenticated, reach, role)
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
+        "children_create": False,
+        "children_list": False,
         "collaboration_auth": False,
         "destroy": False,
         "favorite": False,
@@ -132,6 +132,8 @@ def test_models_documents_get_abilities_reader(is_authenticated, reach):
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
+        "children_create": False,
+        "children_list": True,
         "collaboration_auth": True,
         "destroy": False,
         "favorite": is_authenticated,
@@ -169,6 +171,8 @@ def test_models_documents_get_abilities_editor(is_authenticated, reach):
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
+        "children_create": is_authenticated,
+        "children_list": True,
         "collaboration_auth": True,
         "destroy": False,
         "favorite": is_authenticated,
@@ -195,6 +199,8 @@ def test_models_documents_get_abilities_owner():
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
+        "children_create": True,
+        "children_list": True,
         "collaboration_auth": True,
         "destroy": True,
         "favorite": True,
@@ -220,6 +226,8 @@ def test_models_documents_get_abilities_administrator():
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
+        "children_create": True,
+        "children_list": True,
         "collaboration_auth": True,
         "destroy": False,
         "favorite": True,
@@ -248,6 +256,8 @@ def test_models_documents_get_abilities_editor_user(django_assert_num_queries):
         "ai_transform": True,
         "ai_translate": True,
         "attachment_upload": True,
+        "children_create": True,
+        "children_list": True,
         "collaboration_auth": True,
         "destroy": False,
         "favorite": True,
@@ -278,6 +288,8 @@ def test_models_documents_get_abilities_reader_user(django_assert_num_queries):
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
+        "children_create": False,
+        "children_list": True,
         "collaboration_auth": True,
         "destroy": False,
         "favorite": True,
@@ -309,6 +321,8 @@ def test_models_documents_get_abilities_preset_role(django_assert_num_queries):
         "ai_transform": False,
         "ai_translate": False,
         "attachment_upload": False,
+        "children_create": False,
+        "children_list": True,
         "collaboration_auth": True,
         "destroy": False,
         "favorite": True,

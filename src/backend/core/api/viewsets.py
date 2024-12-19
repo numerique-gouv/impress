@@ -12,14 +12,17 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models as db
+from django.db import transaction
 from django.db.models import (
-    Count,
     Exists,
+    F,
+    Func,
     OuterRef,
     Q,
     Subquery,
     Value,
 )
+from django.db.models.functions import Left, Length
 from django.http import Http404
 
 import rest_framework as drf
@@ -344,13 +347,22 @@ class DocumentViewSet(
             return serializers.ListDocumentSerializer
         return self.serializer_class
 
-    def get_queryset(self):
-        """Optimize queryset to include favorite status for the current user."""
-        queryset = super().get_queryset()
+    def annotate_queryset(self, queryset):
+        """Annotate document queryset with favorite and number of accesses."""
         user = self.request.user
 
-        # Annotate the number of accesses associated with each document
-        queryset = queryset.annotate(nb_accesses=Count("accesses", distinct=True))
+        # Annotate the number of accesses taking into account ancestors
+        ancestor_accesses_query = (
+            models.DocumentAccess.objects.filter(
+                document__path=Left(OuterRef("path"), Length("document__path")),
+            )
+            .order_by()
+            .annotate(total_accesses=Func(Value("id"), function="COUNT"))
+            .values("total_accesses")
+        )
+
+        # Annotate with the number of accesses, default to 0 if no accesses exist
+        queryset = queryset.annotate(nb_accesses=Subquery(ancestor_accesses_query))
 
         if not user.is_authenticated:
             # If the user is not authenticated, annotate `is_favorite` as False
@@ -360,19 +372,13 @@ class DocumentViewSet(
         favorite_exists = models.DocumentFavorite.objects.filter(
             document_id=OuterRef("pk"), user=user
         )
-        queryset = queryset.annotate(is_favorite=Exists(favorite_exists))
+        return queryset.annotate(is_favorite=Exists(favorite_exists))
 
-        # Annotate the queryset with the logged-in user roles
-        user_roles_query = (
-            models.DocumentAccess.objects.filter(
-                Q(user=user) | Q(team__in=user.teams),
-                document_id=OuterRef("pk"),
-            )
-            .values("document")
-            .annotate(roles_array=ArrayAgg("role"))
-            .values("roles_array")
-        )
-        return queryset.annotate(user_roles=Subquery(user_roles_query)).distinct()
+    def get_queryset(self):
+        """Optimize queryset to include favorite status for the current user."""
+        queryset = super().get_queryset()
+        queryset = self.annotate_queryset(queryset)
+        return queryset.distinct()
 
     def list(self, request, *args, **kwargs):
         """Restrict resources returned by the list endpoint"""
@@ -388,6 +394,24 @@ class DocumentViewSet(
                     & ~db.Q(link_reach=models.LinkReachChoices.RESTRICTED)
                 )
             )
+
+            # Among the results, we may have documents that are ancestors/children of each other
+            # In this case we want to keep only the highest ancestor. Let's annotate, each document
+            # with the path of its highest ancestor within results so we can use it to filter
+            shortest_path = Subquery(
+                queryset.filter(path=Left(OuterRef("path"), Length("path")))
+                .order_by("path")  # Get the shortest (root) path
+                .values("path")[:1]
+            )
+            queryset = queryset.annotate(root_path=shortest_path)
+
+            # Filter documents based on their shortest path (root path)
+            queryset = queryset.filter(
+                root_path=F(
+                    "path"
+                )  # Keep only documents who are the annotated highest ancestor
+            )
+
         else:
             queryset = queryset.none()
 
@@ -424,7 +448,11 @@ class DocumentViewSet(
 
     def perform_create(self, serializer):
         """Set the current user as creator and owner of the newly created object."""
-        obj = serializer.save(creator=self.request.user)
+        obj = models.Document.add_root(
+            creator=self.request.user,
+            **serializer.validated_data,
+        )
+        serializer.instance = obj
         models.DocumentAccess.objects.create(
             document=obj,
             user=self.request.user,
@@ -455,6 +483,53 @@ class DocumentViewSet(
             {"id": str(document.id)}, status=status.HTTP_201_CREATED
         )
 
+    @drf.decorators.action(
+        detail=True,
+        methods=["get", "post"],
+        serializer_class=serializers.ListDocumentSerializer,
+        url_path="children",
+    )
+    def children(self, request, *args, **kwargs):
+        """Handle listing and creating children of a document"""
+        document = self.get_object()
+
+        if request.method == "POST":
+            # Create a child document
+            serializer = serializers.DocumentSerializer(
+                data=request.data, context=self.get_serializer_context()
+            )
+            serializer.is_valid(raise_exception=True)
+
+            with transaction.atomic():
+                child_document = document.add_child(
+                    creator=request.user,
+                    **serializer.validated_data,
+                )
+                models.DocumentAccess.objects.create(
+                    document=child_document,
+                    user=request.user,
+                    role=models.RoleChoices.OWNER,
+                )
+            # Set the created instance to the serializer
+            serializer.instance = child_document
+
+            headers = self.get_success_headers(serializer.data)
+            return drf.response.Response(
+                serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            )
+
+        # GET: List children
+        queryset = document.get_children()
+        queryset = self.annotate_queryset(queryset)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return drf.response.Response(serializer.data)
+
     @drf.decorators.action(detail=True, methods=["get"], url_path="versions")
     def versions_list(self, request, *args, **kwargs):
         """
@@ -473,8 +548,9 @@ class DocumentViewSet(
 
         # Users should not see version history dating from before they gained access to the
         # document. Filter to get the minimum access date for the logged-in user
-        access_queryset = document.accesses.filter(
-            db.Q(user=user) | db.Q(team__in=user.teams)
+        access_queryset = models.DocumentAccess.objects.filter(
+            db.Q(user=user) | db.Q(team__in=user.teams),
+            document__path=Left(Value(document.path), Length("document__path")),
         ).aggregate(min_date=db.Min("created_at"))
 
         # Handle the case where the user has no accesses
@@ -512,10 +588,12 @@ class DocumentViewSet(
         user = request.user
         min_datetime = min(
             access.created_at
-            for access in document.accesses.filter(
+            for access in models.DocumentAccess.objects.filter(
                 db.Q(user=user) | db.Q(team__in=user.teams),
+                document__path=Left(Value(document.path), Length("document__path")),
             )
         )
+
         if response["LastModified"] < min_datetime:
             raise Http404
 
