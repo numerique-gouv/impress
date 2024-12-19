@@ -25,7 +25,7 @@ export const useSentryStore = create<SentryState>((set, get) => ({
         release: packageJson.version,
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
-        tracesSampleRate: 1.0,
+        tracesSampleRate: 0.1,
       }),
     });
   },
