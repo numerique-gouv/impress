@@ -117,19 +117,20 @@ def create_demo(stdout):
         last_names = [fake.last_name() for _ in range(name_size)]
         for i in range(defaults.NB_OBJECTS["users"]):
             first_name = random.choice(first_names)
-            queue.push(
-                models.User(
-                    admin_email=f"user{i:d}@example.com",
-                    email=f"user{i:d}@example.com",
-                    password="!",
-                    is_superuser=False,
-                    is_active=True,
-                    is_staff=False,
-                    short_name=first_name,
-                    full_name=f"{first_name:s} {random.choice(last_names):s}",
-                    language=random.choice(settings.LANGUAGES)[0],
+            if not models.User.objects.filter(admin_email=f"user{i:d}@example.com").exists():
+                queue.push(
+                    models.User(
+                        admin_email=f"user{i:d}@example.com",
+                        email=f"user{i:d}@example.com",
+                        password="!",
+                        is_superuser=False,
+                        is_active=True,
+                        is_staff=False,
+                        short_name=first_name,
+                        full_name=f"{first_name:s} {random.choice(last_names):s}",
+                        language=random.choice(settings.LANGUAGES)[0],
+                    )
                 )
-            )
         queue.flush()
 
     users_ids = list(models.User.objects.values_list("id", flat=True))
@@ -156,27 +157,31 @@ def create_demo(stdout):
                 random.randint(1, defaults.NB_OBJECTS["max_users_per_document"]),
             ):
                 role = random.choice(models.RoleChoices.choices)
-                queue.push(
-                    models.DocumentAccess(
-                        document_id=doc_id, user_id=user_id, role=role[0]
+                if not models.DocumentAccess.objects.filter(
+                    document_id=doc_id, user_id=user_id
+                ).exists():
+                    queue.push(
+                        models.DocumentAccess(
+                            document_id=doc_id, user_id=user_id, role=role[0]
+                        )
                     )
-                )
         queue.flush()
 
     with Timeit(stdout, "Creating development users"):
         for dev_user in defaults.DEV_USERS:
-            queue.push(
-                models.User(
-                    admin_email=dev_user["email"],
-                    email=dev_user["email"],
-                    sub=dev_user["email"],
-                    password="!",
-                    is_superuser=False,
-                    is_active=True,
-                    is_staff=False,
-                    language=random.choice(settings.LANGUAGES)[0],
+            if not models.User.objects.filter(email=dev_user["email"]).exists():
+                queue.push(
+                    models.User(
+                        admin_email=dev_user["email"],
+                        email=dev_user["email"],
+                        sub=dev_user["email"],
+                        password="!",
+                        is_superuser=False,
+                        is_active=True,
+                        is_staff=False,
+                        language=random.choice(settings.LANGUAGES)[0],
+                    )
                 )
-            )
 
         queue.flush()
 
@@ -187,11 +192,14 @@ def create_demo(stdout):
 
             for doc_id in docs_ids:
                 role = random.choice(models.RoleChoices.choices)
-                queue.push(
-                    models.DocumentAccess(
-                        document_id=doc_id, user_id=user_id, role=role[0]
+                if not models.DocumentAccess.objects.filter(
+                    document_id=doc_id, user_id=user_id
+                ).exists():
+                    queue.push(
+                        models.DocumentAccess(
+                            document_id=doc_id, user_id=user_id, role=role[0]
+                        )
                     )
-                )
 
         queue.flush()
 
@@ -206,16 +214,19 @@ def create_demo(stdout):
         ) as text_file:
             css_data = text_file.read()
 
-        queue.push(
-            models.Template(
-                id="baca9e2a-59fb-42ef-b5c6-6f6b05637111",
-                title="Demo Template",
-                description="This is the demo template",
-                code=code_data,
-                css=css_data,
-                is_public=True,
+        if not models.Template.objects.filter(
+            id="baca9e2a-59fb-42ef-b5c6-6f6b05637111"
+        ).exists():
+            queue.push(
+                models.Template(
+                    id="baca9e2a-59fb-42ef-b5c6-6f6b05637111",
+                    title="Demo Template",
+                    description="This is the demo template",
+                    code=code_data,
+                    css=css_data,
+                    is_public=True,
+                )
             )
-        )
         queue.flush()
 
 
