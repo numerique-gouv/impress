@@ -2,7 +2,14 @@ import { useMemo } from 'react';
 
 import { useConfig } from '../api';
 
-export const useCollaborationUrl = (room?: string) => {
+export type CollaborationUrl = {
+  wsUrl: string;
+  poolUrl: string;
+};
+
+export const useCollaborationUrl = (
+  room?: string,
+): CollaborationUrl | undefined => {
   const { data: conf } = useConfig();
 
   return useMemo(() => {

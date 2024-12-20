@@ -3,16 +3,16 @@ import { Server } from '@hocuspocus/server';
 import { logger } from '@/utils';
 
 export const hocusPocusServer = Server.configure({
-  name: 'docs-y-server',
+  name: 'docs-collaboration',
   timeout: 30000,
   quiet: true,
   onConnect({ requestHeaders, connection, documentName, requestParameters }) {
     const roomParam = requestParameters.get('room');
     const canEdit = requestHeaders['x-can-edit'] === 'True';
 
-    // if (!canEdit) {
-    //   connection.readOnly = true;
-    // }
+    if (!canEdit) {
+      connection.readOnly = true;
+    }
 
     logger(
       'Connection established:',

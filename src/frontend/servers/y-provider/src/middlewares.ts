@@ -14,6 +14,7 @@ const allowedOrigins = COLLABORATION_SERVER_ORIGIN.split(',');
 export const corsMiddleware = cors({
   origin: allowedOrigins,
   methods: ['GET', 'POST'],
+  credentials: true,
 });
 
 export const httpSecurity = (
