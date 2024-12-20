@@ -26,12 +26,17 @@ export const LeftPanelFavorites = () => {
   return (
     <Box
       $justify="center"
-      $padding={{ horizontal: 'xs' }}
+      $padding={{ horizontal: 'sm' }}
       $gap={spacing['2xs']}
       $height="100%"
       data-testid="left-panel-favorites"
     >
-      <Text $size="sm" $variation="700" $weight="700">
+      <Text
+        $size="sm"
+        $variation="700"
+        $padding={{ horizontal: '3xs' }}
+        $weight="700"
+      >
         {t('Pinned documents')}
       </Text>
       <InfiniteScroll

@@ -4,11 +4,14 @@ import { css } from 'styled-components';
 import { Box, SeparatedSection } from '@/components';
 
 import { LeftPanelTargetFilters } from './LefPanelTargetFilters';
+import { LeftPanelDocContent } from './LeftPanelDocContent';
 import { LeftPanelFavorites } from './LeftPanelFavorites';
 
 export const LeftPanelContent = () => {
   const router = useRouter();
   const isHome = router.pathname === '/';
+  const isDoc = router.pathname === '/docs/[id]';
+  console.log('router', router.pathname);
 
   return (
     <>
@@ -24,9 +27,26 @@ export const LeftPanelContent = () => {
               <LeftPanelTargetFilters />
             </SeparatedSection>
           </Box>
-          <Box $flex={1} $css="overflow-y: auto; overflow-x: hidden;">
-            <SeparatedSection showSeparator={false}>
+          <Box
+            $flex={1}
+            $width="100%"
+            $css="overflow-y: auto; overflow-x: hidden;"
+          >
+            <SeparatedSection showSeparator={true}>
               <LeftPanelFavorites />
+            </SeparatedSection>
+          </Box>
+        </>
+      )}
+      {isDoc && (
+        <>
+          <Box
+            $flex={1}
+            $width="100%"
+            $css="width: 100%; overflow-y: auto; overflow-x: hidden;"
+          >
+            <SeparatedSection showSeparator={false}>
+              <LeftPanelDocContent />
             </SeparatedSection>
           </Box>
         </>

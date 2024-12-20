@@ -80,14 +80,7 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
       },
       show: isDesktop,
     },
-    {
-      label: t('Table of contents'),
-      icon: 'summarize',
-      callback: () => {
-        setIsPanelOpen(true);
-        setIsPanelTableContentOpen(true);
-      },
-    },
+
     {
       label: t('Copy as {{format}}', { format: 'Markdown' }),
       icon: 'content_copy',
@@ -143,21 +136,54 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
       $gap="0.5rem 1.5rem"
       $wrap={isSmallMobile ? 'wrap' : 'nowrap'}
     >
-      <Box $direction="row" $margin={{ left: 'auto' }} $gap={spacings['2xs']}>
+      <Box
+        $direction="row"
+        $align="center"
+        $margin={{ left: 'auto' }}
+        $gap={spacings['2xs']}
+      >
         {authenticated && !isSmallMobile && (
-          <Button
-            color="primary-text"
-            onClick={() => {
-              modalShare.open();
-            }}
-            size={isSmallMobile ? 'small' : 'medium'}
-          >
-            {t('Share')}
-          </Button>
+          <>
+            {doc.nb_accesses <= 1 && (
+              <Button
+                color="tertiary-text"
+                onClick={() => {
+                  modalShare.open();
+                }}
+                size={isSmallMobile ? 'small' : 'medium'}
+              >
+                {t('Share')}
+              </Button>
+            )}
+            {doc.nb_accesses > 1 && (
+              <Box
+                $css={css`
+                  .c__button--medium {
+                    height: 32px;
+                    padding: 10px var(--c--theme--spacings--xs);
+                    gap: 7px;
+                  }
+                `}
+              >
+                <Button
+                  color="tertiary"
+                  icon={
+                    <Icon iconName="group" $theme="primary" $variation="800" />
+                  }
+                  onClick={() => {
+                    modalShare.open();
+                  }}
+                  size={isSmallMobile ? 'small' : 'medium'}
+                >
+                  {doc.nb_accesses}
+                </Button>
+              </Box>
+            )}
+          </>
         )}
         {!isSmallMobile && (
           <Button
-            color="primary-text"
+            color="tertiary-text"
             icon={
               <Icon iconName="download" $theme="primary" $variation="800" />
             }
@@ -171,15 +197,18 @@ export const DocToolBox = ({ doc }: DocToolBoxProps) => {
           <IconOptions
             isHorizontal
             $theme="primary"
-            $radius={spacings['3xs']}
-            $css={
-              isSmallMobile
+            $padding={{ all: 'xs' }}
+            $css={css`
+              &:hover {
+                background-color: ${colors['greyscale-100']};
+              }
+              ${isSmallMobile
                 ? css`
                     padding: 10px;
                     border: 1px solid ${colors['greyscale-300']};
                   `
-                : ''
-            }
+                : ''}
+            `}
             aria-label={t('Open the document options')}
           />
         </DropdownMenu>
