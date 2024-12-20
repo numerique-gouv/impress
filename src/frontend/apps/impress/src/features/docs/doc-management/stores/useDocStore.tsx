@@ -13,13 +13,20 @@ export interface UseDocStore {
     [storeId: string]: HocuspocusProvider;
   };
   createProvider: (
-    providerUrl: string,
+    providerUrl: {
+      wsUrl: string;
+      poolUrl: string;
+    },
     storeId: string,
     initialDoc: Base64,
   ) => HocuspocusProvider;
   setProviders: (storeId: string, providers: HocuspocusProvider) => void;
   setCurrentDoc: (doc: Doc | undefined) => void;
-  setPool: (storeId: string, provider: HocuspocusProvider) => void;
+  setPool: (
+    poolUrl: string,
+    storeId: string,
+    provider: HocuspocusProvider,
+  ) => void;
   pools: {
     [storeId: string]: boolean;
   };
@@ -39,9 +46,10 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
     }
 
     console.log('navigator.userAgent', navigator.userAgent);
-    const withWS = isEdge(); /*|| isFirefox()*/
+    console.log('providerUrl', providerUrl);
+    const withWS = false; //; isEdge(); /*|| isFirefox()*/
     const wsUrl = withWS
-      ? 'ws://localhost:4444/collaboration/ws/?room=' + storeId
+      ? providerUrl.wsUrl //'ws://localhost:4444/collaboration/ws/?room=' + storeId
       : 'ws://localhost:6666';
 
     const provider = new HocuspocusProvider({
@@ -63,13 +71,13 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
     });
 
     if (!withWS) {
-      get().setPool(storeId, provider);
+      get().setPool(providerUrl.poolUrl, storeId, provider);
     }
     get().setProviders(storeId, provider);
 
     return provider;
   },
-  setPool: (storeId, provider) => {
+  setPool: (poolUrl, storeId, provider) => {
     if (get().pools[storeId]) {
       return;
     }
@@ -81,9 +89,12 @@ export const useDocStore = create<UseDocStore>((set, get) => ({
       },
     }));
 
+    console.log('Setting poolUrl: ', poolUrl);
+
     setInterval(() => {
-      fetch('http://localhost:4444/collaboration/pool/?room=' + storeId, {
+      fetch(poolUrl, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

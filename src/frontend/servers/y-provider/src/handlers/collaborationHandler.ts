@@ -51,15 +51,16 @@ export const collaborationHTTPHandler = async (
 
   const syncYDoc64 = await syncDoc(room, yDoc64, canEdit, req);
 
-  /**
-   * If the document does not exist, create a new one
-   */
-
   res.status(200).json({
     yDoc64: syncYDoc64,
   });
 };
 
+/**
+ * Used only for polling:
+ * - Sync the document with the latest changes.
+ * - Create a new document if it does not exist.
+ */
 const syncDoc = async (
   room: string,
   yDoc64: string,
@@ -75,17 +76,32 @@ const syncDoc = async (
 
     docExist = true;
     syncYDoc = hpYDoc;
-    const hpYDoc64 = toBase64(Y.encodeStateAsUpdate(hpYDoc));
 
-    if (canEdit && yDoc64 !== hpYDoc64) {
+    if (!canEdit) {
+      return;
+    }
+
+    /**
+     * - if the user is not allowed to edit
+     * - if a change is made to the document
+     */
+    const hpYDoc64 = toBase64(Y.encodeStateAsUpdate(hpYDoc));
+    if (yDoc64 !== hpYDoc64) {
       const ydoc = base64ToYDoc(yDoc64);
       syncYDoc = hpYDoc.merge(ydoc);
+
       logger('Polling Updated YDoc:', room);
     }
   });
 
-  if (!docExist) {
-    const hpYDoc = await hocusPocusServer.createDocument(room, req, '123456', {
+  /**
+   * If the document does not exist, create a new one.
+   * We create a new doc to allow multiple users without websocket
+   * to collaborate with each others.
+   */
+  if (canEdit && !docExist) {
+    const socketId = Math.random().toString(36).substring(7);
+    const hpYDoc = await hocusPocusServer.createDocument(room, req, socketId, {
       readOnly: false,
       requiresAuthentication: false,
       isAuthenticated: true,

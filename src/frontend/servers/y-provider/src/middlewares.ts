@@ -9,7 +9,7 @@ import {
 } from '@/env';
 
 const VALID_API_KEYS = [COLLABORATION_SERVER_SECRET, Y_PROVIDER_API_KEY];
-const allowedOrigins = [COLLABORATION_SERVER_ORIGIN];
+const allowedOrigins = COLLABORATION_SERVER_ORIGIN.split(',');
 
 export const corsMiddleware = cors({
   origin: allowedOrigins,

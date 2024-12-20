@@ -28,10 +28,10 @@ export const initServer = () => {
   app.use(corsMiddleware);
 
   /**
-   * Route to handle WebSocket connections
+   * Routes to handle collaboration connections
    */
-  app.ws(routes.COLLABORATION_WS, collaborationWSHandler);
-  app.post(routes.COLLABORATION_POOL, collaborationHTTPHandler);
+  app.ws(routes.COLLABORATION_WS, wsSecurity, collaborationWSHandler);
+  app.post(routes.COLLABORATION_POOL, httpSecurity, collaborationHTTPHandler);
 
   /**
    * Route to reset connections in a room:
