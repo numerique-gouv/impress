@@ -8,7 +8,20 @@ interface BroadcastState {
   getBroadcastProvider: () => HocuspocusProvider | undefined;
   provider?: HocuspocusProvider;
   setBroadcastProvider: (provider: HocuspocusProvider) => void;
-  tasks: { [taskLabel: string]: Y.Array<string> };
+  setTask: (
+    taskLabel: string,
+    task: Y.Array<string>,
+    action: () => void,
+  ) => void;
+  tasks: {
+    [taskLabel: string]: {
+      task: Y.Array<string>;
+      observer: (
+        event: Y.YArrayEvent<string>,
+        transaction: Y.Transaction,
+      ) => void;
+    };
+  };
 }
 
 export const useBroadcastStore = create<BroadcastState>((set, get) => ({
@@ -25,26 +38,47 @@ export const useBroadcastStore = create<BroadcastState>((set, get) => ({
     return provider;
   },
   addTask: (taskLabel, action) => {
-    const taskExistAlready = get().tasks[taskLabel];
     const provider = get().getBroadcastProvider();
-    if (taskExistAlready || !provider) {
+    if (!provider) {
+      return;
+    }
+
+    const existingTask = get().tasks[taskLabel];
+    if (existingTask) {
+      existingTask.task.unobserve(existingTask.observer);
+      get().setTask(taskLabel, existingTask.task, action);
       return;
     }
 
     const task = provider.document.getArray<string>(taskLabel);
-    task.observe(() => {
-      action();
-    });
+    get().setTask(taskLabel, task, action);
+  },
+  setTask: (taskLabel: string, task: Y.Array<string>, action: () => void) => {
+    let isInitializing = true;
+    const observer = () => {
+      if (!isInitializing) {
+        action();
+      }
+    };
+
+    task.observe(observer);
+
+    setTimeout(() => {
+      isInitializing = false;
+    }, 1000);
 
     set((state) => ({
       tasks: {
         ...state.tasks,
-        [taskLabel]: task,
+        [taskLabel]: {
+          task,
+          observer,
+        },
       },
     }));
   },
   broadcast: (taskLabel) => {
-    const task = get().tasks[taskLabel];
+    const { task } = get().tasks[taskLabel];
     if (!task) {
       console.warn(`Task ${taskLabel} is not defined`);
       return;
