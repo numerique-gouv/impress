@@ -152,26 +152,29 @@ class ListDocumentSerializer(BaseResourceSerializer):
         model = models.Document
         fields = [
             "id",
-            "abilities",
-            "content",
             "created_at",
             "creator",
+            "depth",
             "is_favorite",
             "link_role",
             "link_reach",
             "nb_accesses",
+            "numchild",
+            "path",
             "title",
             "updated_at",
         ]
         read_only_fields = [
             "id",
-            "abilities",
             "created_at",
             "creator",
+            "depth",
             "is_favorite",
             "link_role",
             "link_reach",
             "nb_accesses",
+            "numchild",
+            "path",
             "updated_at",
         ]
 
@@ -189,10 +192,14 @@ class DocumentSerializer(ListDocumentSerializer):
             "content",
             "created_at",
             "creator",
+            "depth",
+            "excerpt",
             "is_favorite",
             "link_role",
             "link_reach",
             "nb_accesses",
+            "numchild",
+            "path",
             "title",
             "updated_at",
         ]
@@ -201,10 +208,13 @@ class DocumentSerializer(ListDocumentSerializer):
             "abilities",
             "created_at",
             "creator",
-            "is_avorite",
+            "depth",
+            "is_favorite",
             "link_role",
             "link_reach",
             "nb_accesses",
+            "numchild",
+            "path",
             "updated_at",
         ]
 
@@ -281,7 +291,7 @@ class ServerCreateDocumentSerializer(serializers.Serializer):
         except ConversionError as err:
             raise exceptions.APIException(detail="could not convert content") from err
 
-        document = models.Document.objects.create(
+        document = models.Document.add_root(
             title=validated_data["title"],
             content=document_content,
             creator=user,

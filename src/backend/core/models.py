@@ -1,6 +1,7 @@
 """
 Declare and configure the models for the impress core application
 """
+# pylint: disable=too-many-lines
 
 import hashlib
 import smtplib
@@ -20,6 +21,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models.functions import Left, Length
 from django.http import FileResponse
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context
@@ -35,25 +37,9 @@ import pypandoc
 import weasyprint
 from botocore.exceptions import ClientError
 from timezone_field import TimeZoneField
+from treebeard.mp_tree import MP_Node
 
 logger = getLogger(__name__)
-
-
-def get_resource_roles(resource, user):
-    """Compute the roles a user has on a resource."""
-    if not user.is_authenticated:
-        return []
-
-    try:
-        roles = resource.user_roles or []
-    except AttributeError:
-        try:
-            roles = resource.accesses.filter(
-                models.Q(user=user) | models.Q(team__in=user.teams),
-            ).values_list("role", flat=True)
-        except (models.ObjectDoesNotExist, IndexError):
-            roles = []
-    return roles
 
 
 class LinkRoleChoices(models.TextChoices):
@@ -336,10 +322,11 @@ class BaseAccess(BaseModel):
         }
 
 
-class Document(BaseModel):
+class Document(MP_Node, BaseModel):
     """Pad document carrying the content."""
 
     title = models.CharField(_("title"), max_length=255, null=True, blank=True)
+    excerpt = models.TextField(_("excerpt"), max_length=300, null=True, blank=True)
     link_reach = models.CharField(
         max_length=20,
         choices=LinkReachChoices.choices,
@@ -357,6 +344,10 @@ class Document(BaseModel):
     )
 
     _content = None
+
+    # Tree structure
+    steplen = 7  # nb siblings max: 78,364,164,096 / max depth: 255/7=36
+    node_order_by = None  # Manual ordering
 
     class Meta:
         db_table = "impress_document"
@@ -501,11 +492,30 @@ class Document(BaseModel):
             Bucket=default_storage.bucket_name, Key=self.file_key, VersionId=version_id
         )
 
+    def get_roles(self, user):
+        """Return the roles a user has on a document."""
+        if not user.is_authenticated:
+            return []
+
+        try:
+            roles = self.user_roles or []
+        except AttributeError:
+            try:
+                roles = DocumentAccess.objects.filter(
+                    models.Q(user=user) | models.Q(team__in=user.teams),
+                    document__path=Left(
+                        models.Value(self.path), Length("document__path")
+                    ),
+                ).values_list("role", flat=True)
+            except (models.ObjectDoesNotExist, IndexError):
+                roles = []
+        return roles
+
     def get_abilities(self, user):
         """
         Compute and return abilities for a given user on the document.
         """
-        roles = set(get_resource_roles(self, user))
+        roles = set(self.get_roles(user))
 
         # Compute version roles before adding link roles because we don't
         # want anonymous users to access versions (we wouldn't know from
@@ -513,11 +523,20 @@ class Document(BaseModel):
         # Anonymous users should also not see document accesses
         has_role = bool(roles)
 
-        # Add role provided by the document link
-        if self.link_reach == LinkReachChoices.PUBLIC or (
-            self.link_reach == LinkReachChoices.AUTHENTICATED and user.is_authenticated
-        ):
-            roles.add(self.link_role)
+        # Add roles provided by the document link, taking into account its ancestors
+        link_reaches = list(self.get_ancestors().values("link_reach", "link_role"))
+        link_reaches.append(
+            {"link_reach": self.link_reach, "link_role": self.link_role}
+        )
+
+        for lr in link_reaches:
+            if lr["link_reach"] == LinkReachChoices.PUBLIC:
+                roles.add(lr["link_role"])
+
+        if user.is_authenticated:
+            for lr in link_reaches:
+                if lr["link_reach"] == LinkReachChoices.AUTHENTICATED:
+                    roles.add(lr["link_role"])
 
         is_owner_or_admin = bool(
             roles.intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
@@ -531,6 +550,8 @@ class Document(BaseModel):
             "ai_transform": can_update,
             "ai_translate": can_update,
             "attachment_upload": can_update,
+            "children_list": can_get,
+            "children_create": can_update and user.is_authenticated,
             "collaboration_auth": can_get,
             "destroy": RoleChoices.OWNER in roles,
             "favorite": can_get and user.is_authenticated,
@@ -734,11 +755,27 @@ class Template(BaseModel):
     def __str__(self):
         return self.title
 
+    def get_roles(self, user):
+        """Return the roles a user has on a resource."""
+        if not user.is_authenticated:
+            return []
+
+        try:
+            roles = self.user_roles or []
+        except AttributeError:
+            try:
+                roles = self.accesses.filter(
+                    models.Q(user=user) | models.Q(team__in=user.teams),
+                ).values_list("role", flat=True)
+            except (models.ObjectDoesNotExist, IndexError):
+                roles = []
+        return roles
+
     def get_abilities(self, user):
         """
         Compute and return abilities for a given user on the template.
         """
-        roles = get_resource_roles(self, user)
+        roles = self.get_roles(user)
         is_owner_or_admin = bool(
             set(roles).intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
         )
