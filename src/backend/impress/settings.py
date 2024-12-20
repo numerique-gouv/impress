@@ -381,8 +381,8 @@ class Base(Configuration):
     COLLABORATION_SERVER_SECRET = values.Value(
         None, environ_name="COLLABORATION_SERVER_SECRET", environ_prefix=None
     )
-    COLLABORATION_WS_URL = values.Value(
-        None, environ_name="COLLABORATION_WS_URL", environ_prefix=None
+    COLLABORATION_WS_BASE_URL = values.Value(
+        None, environ_name="COLLABORATION_WS_BASE_URL", environ_prefix=None
     )
 
     # Frontend

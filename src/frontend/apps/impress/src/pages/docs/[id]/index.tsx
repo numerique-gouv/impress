@@ -6,10 +6,10 @@ import { useEffect, useState } from 'react';
 
 import { Box, Text } from '@/components';
 import { TextErrors } from '@/components/TextErrors';
-import { useCollaborationUrl } from '@/core';
 import { useAuthStore } from '@/core/auth';
 import { DocEditor } from '@/features/docs/doc-editor';
 import { KEY_DOC, useDoc, useDocStore } from '@/features/docs/doc-management';
+import { useCollaboration } from '@/features/docs/doc-management/';
 import { MainLayout } from '@/layouts';
 import { useBroadcastStore } from '@/stores';
 import { NextPageWithLayout } from '@/types/next';
@@ -43,12 +43,11 @@ const DocPage = ({ id }: DocProps) => {
   const { login } = useAuthStore();
   const { data: docQuery, isError, error } = useDoc({ id });
   const [doc, setDoc] = useState(docQuery);
-  const { setCurrentDoc, createProvider, providers } = useDocStore();
-  const { setBroadcastProvider, addTask } = useBroadcastStore();
+  const { setCurrentDoc } = useDocStore();
+  const { addTask } = useBroadcastStore();
   const queryClient = useQueryClient();
   const { replace } = useRouter();
-  const provider = providers?.[id];
-  const collaborationUrl = useCollaborationUrl(doc?.id);
+  useCollaboration(doc?.id, doc?.content);
 
   useEffect(() => {
     if (doc?.title) {
@@ -66,19 +65,6 @@ const DocPage = ({ id }: DocProps) => {
     setDoc(docQuery);
     setCurrentDoc(docQuery);
   }, [docQuery, setCurrentDoc]);
-
-  useEffect(() => {
-    if (!doc?.id || !collaborationUrl) {
-      return;
-    }
-
-    let newProvider = provider;
-    if (!provider || provider.document.guid !== doc.id) {
-      newProvider = createProvider(collaborationUrl, doc.id, doc.content);
-    }
-
-    setBroadcastProvider(newProvider);
-  }, [createProvider, doc, provider, setBroadcastProvider, collaborationUrl]);
 
   /**
    * We add a broadcast task to reset the query cache

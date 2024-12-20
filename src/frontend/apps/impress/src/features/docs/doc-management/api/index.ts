@@ -1,3 +1,4 @@
+export * from './syncDocPolling';
 export * from './useCreateDoc';
 export * from './useDoc';
 export * from './useDocOptions';

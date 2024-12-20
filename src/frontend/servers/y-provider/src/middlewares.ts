@@ -1,3 +1,4 @@
+import cors from 'cors';
 import { NextFunction, Request, Response } from 'express';
 import * as ws from 'ws';
 
@@ -7,26 +8,20 @@ import {
   Y_PROVIDER_API_KEY,
 } from '@/env';
 
-import { logger } from './utils';
-
 const VALID_API_KEYS = [COLLABORATION_SERVER_SECRET, Y_PROVIDER_API_KEY];
+const allowedOrigins = COLLABORATION_SERVER_ORIGIN.split(',');
+
+export const corsMiddleware = cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST'],
+  credentials: true,
+});
 
 export const httpSecurity = (
   req: Request,
   res: Response,
   next: NextFunction,
 ): void => {
-  // Origin check
-  const origin = req.headers['origin'];
-  if (origin && COLLABORATION_SERVER_ORIGIN !== origin) {
-    logger('CORS policy violation: Invalid Origin', origin);
-
-    res
-      .status(403)
-      .json({ error: 'CORS policy violation: Invalid Origin', origin });
-    return;
-  }
-
   // Secret API Key check
   // Note: Changing this header to Bearer token format will break backend compatibility with this microservice.
   const apiKey = req.headers['authorization'];
@@ -45,9 +40,9 @@ export const wsSecurity = (
 ): void => {
   // Origin check
   const origin = req.headers['origin'];
-  if (COLLABORATION_SERVER_ORIGIN !== origin) {
+  if (origin && !allowedOrigins.includes(origin)) {
+    ws.close(4001, 'Origin not allowed');
     console.error('CORS policy violation: Invalid Origin', origin);
-    ws.close();
     return;
   }
 

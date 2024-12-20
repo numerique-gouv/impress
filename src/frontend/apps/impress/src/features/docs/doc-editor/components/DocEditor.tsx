@@ -10,7 +10,7 @@ import { DocHeader } from '@/features/docs/doc-header';
 import {
   Doc,
   base64ToBlocknoteXmlFragment,
-  useDocStore,
+  useProviderStore,
 } from '@/features/docs/doc-management';
 import { Versions, useDocVersion } from '@/features/docs/doc-versioning/';
 import { useResponsiveStore } from '@/stores';
@@ -33,8 +33,7 @@ export const DocEditor = ({ doc }: DocEditorProps) => {
 
   const { colorsTokens } = useCunninghamTheme();
 
-  const { providers } = useDocStore();
-  const provider = providers?.[doc.id];
+  const { provider } = useProviderStore();
 
   if (!provider) {
     return null;
