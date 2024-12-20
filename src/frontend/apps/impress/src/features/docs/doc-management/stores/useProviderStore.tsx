@@ -7,29 +7,27 @@ import { Base64, base64ToYDoc } from '@/features/docs/doc-management';
 import { isEdge, isFirefox } from '@/utils';
 
 import { toBase64 } from '../../doc-editor';
+import { syncDocPolling } from '../api/';
 
 export interface UseCollaborationStore {
-  provider: HocuspocusProvider | undefined;
-  failureCount: number;
-  maxFailureCount: number;
   createProvider: (
     providerUrl: CollaborationUrl,
     storeId: string,
     initialDoc?: Base64,
   ) => HocuspocusProvider;
   destroyProvider: () => void;
-  pollingInterval?: NodeJS.Timeout;
-  setProvider: (providers?: HocuspocusProvider) => void;
-  startPooling: (poolUrl: string, provider: HocuspocusProvider) => void;
-  stopPolling: () => void;
+  failureCount: number;
+  maxFailureCount: number;
+  provider: HocuspocusProvider | undefined;
+  pollRequest: (poolUrl: string) => Promise<void>;
+  withPolling: boolean;
 }
 
 const defaultValues = {
-  pools: {},
-  provider: undefined,
-  maxFailureCount: 4,
   failureCount: 0,
-  pollingInterval: undefined,
+  maxFailureCount: 4,
+  provider: undefined,
+  withPolling: false,
 };
 
 export const useProviderStore = create<UseCollaborationStore>((set, get) => ({
@@ -59,9 +57,8 @@ export const useProviderStore = create<UseCollaborationStore>((set, get) => ({
         console.log('Provider connected');
         set({
           failureCount: 0,
+          withPolling: false,
         });
-
-        get().stopPolling();
       },
       onAuthenticationFailed: () => {
         console.error('Authentication failed');
@@ -73,7 +70,9 @@ export const useProviderStore = create<UseCollaborationStore>((set, get) => ({
 
         if (get().failureCount > get().maxFailureCount) {
           console.error('Max failure count reached');
-          get().startPooling(providerUrl.poolUrl, provider);
+          set({
+            withPolling: true,
+          });
         }
         console.log('Provider closed');
       },
@@ -85,7 +84,9 @@ export const useProviderStore = create<UseCollaborationStore>((set, get) => ({
       },
     });
 
-    get().setProvider(provider);
+    set({
+      provider,
+    });
 
     return provider;
   },
@@ -93,59 +94,32 @@ export const useProviderStore = create<UseCollaborationStore>((set, get) => ({
     const provider = get().provider;
     if (provider) {
       provider.destroy();
-      get().setProvider(undefined);
-      get().stopPolling();
     }
+
+    set({
+      withPolling: defaultValues.withPolling,
+      provider: defaultValues.provider,
+    });
   },
-  stopPolling: () => {
-    const pollingInterval = get().pollingInterval;
-    clearInterval(pollingInterval);
-  },
-  startPooling: (poolUrl, provider) => {
-    const isAlreadyPolling = !!get().pollingInterval;
-    if (isAlreadyPolling) {
+  pollRequest: async (pollUrl) => {
+    const provider = get().provider;
+
+    if (!provider) {
       return;
     }
 
-    console.log('Setting poolUrl: ', poolUrl);
+    console.log('Start polling');
 
-    const pollingInterval = setInterval(() => {
-      fetch(poolUrl, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          yDoc64: toBase64(Y.encodeStateAsUpdate(provider.document)),
-        }),
-      })
-        .then(async (response) => {
-          if (response.ok) {
-            const { yDoc64 } = (await response.json()) as {
-              yDoc64?: string;
-            };
-
-            if (!yDoc64) {
-              return;
-            }
-
-            const yDoc = base64ToYDoc(yDoc64);
-            Y.applyUpdate(provider.document, Y.encodeStateAsUpdate(yDoc));
-          }
-        })
-        .catch((error) => {
-          console.error('Error pooling:', error);
-        });
-    }, 1500);
-
-    set({
-      pollingInterval,
+    const { yDoc64 } = await syncDocPolling({
+      pollUrl,
+      yDoc64: toBase64(Y.encodeStateAsUpdate(provider.document)),
     });
-  },
-  setProvider: (provider) => {
-    set({
-      provider,
-    });
+
+    if (!yDoc64) {
+      return;
+    }
+
+    const yDoc = base64ToYDoc(yDoc64);
+    Y.applyUpdate(provider.document, Y.encodeStateAsUpdate(yDoc));
   },
 }));
