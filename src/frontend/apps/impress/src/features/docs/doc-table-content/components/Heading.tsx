@@ -41,7 +41,7 @@ export const Heading = ({
       onMouseOver={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onClick={() => {
-        // With mobile the focus open the keyboard and the scroll is not working
+        // With mobile the focus open the keyboard and the scroll are not working
         if (!isMobile) {
           editor.focus();
         }

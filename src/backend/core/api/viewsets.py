@@ -621,7 +621,7 @@ class DocumentViewSet(
 
     def _authorize_subrequest(self, request, pattern):
         """
-        Shared method to authorize access based on the original URL of an Nginx subrequest
+        Shared method to authorize access based on the original URL of a Nginx subrequest
         and user permissions. Returns a dictionary of URL parameters if authorized.
 
         The original url is passed by nginx in the "HTTP_X_ORIGINAL_URL" header.
@@ -629,7 +629,7 @@ class DocumentViewSet(
         nginx.ingress.kubernetes.io/auth-url annotation to understand how the Nginx ingress
         is configured to do this.
 
-        Based on the original url and the logged in user, we must decide if we authorize Nginx
+        Based on the original url and the logged-in user, we must decide if we authorize Nginx
         to let this request go through (by returning a 200 code) or if we block it (by returning
         a 403 error). Note that we return 403 errors without any further details for security
         reasons.
@@ -697,7 +697,7 @@ class DocumentViewSet(
     @drf.decorators.action(detail=False, methods=["get"], url_path="media-auth")
     def media_auth(self, request, *args, **kwargs):
         """
-        This view is used by an Nginx subrequest to control access to a document's
+        This view is used by a Nginx subrequest to control access to a document's
         attachment file.
 
         When we let the request go through, we compute authorization headers that will be added to
@@ -718,7 +718,7 @@ class DocumentViewSet(
     @drf.decorators.action(detail=False, methods=["get"], url_path="collaboration-auth")
     def collaboration_auth(self, request, *args, **kwargs):
         """
-        This view is used by an Nginx subrequest to control access to a document's
+        This view is used by a Nginx subrequest to control access to a document's
         collaboration server.
         """
         _, user_abilities, user_id = self._authorize_subrequest(
@@ -834,7 +834,7 @@ class DocumentAccessViewSet(
     serializer_class = serializers.DocumentAccessSerializer
 
     def perform_create(self, serializer):
-        """Add a new access to the document and send an email to the new added user."""
+        """Add new access to the document and email the new added user."""
         access = serializer.save()
         language = self.request.headers.get("Content-Language", "en-us")
 
@@ -846,7 +846,7 @@ class DocumentAccessViewSet(
         )
 
     def perform_update(self, serializer):
-        """Update an access to the document and notify the collaboration server."""
+        """Update access to the document and notify the collaboration server."""
         access = serializer.save()
 
         access_user_id = None
@@ -859,7 +859,7 @@ class DocumentAccessViewSet(
         )
 
     def perform_destroy(self, instance):
-        """Delete an access to the document and notify the collaboration server."""
+        """Delete access to the document and notify the collaboration server."""
         instance.delete()
 
         # Notify collaboration server about the access removed
@@ -1098,7 +1098,7 @@ class InvitationViewset(
         return queryset
 
     def perform_create(self, serializer):
-        """Save invitation to a document then send an email to the invited user."""
+        """Save invitation to a document then email the invited user."""
         invitation = serializer.save()
 
         language = self.request.headers.get("Content-Language", "en-us")

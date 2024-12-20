@@ -96,7 +96,7 @@ test.describe('Doc Table Content', () => {
     await expect(superW).toHaveAttribute('aria-selected', 'true');
   });
 
-  test('it checks that table contents panel is opened automaticaly if more that 2 headings', async ({
+  test('it checks that table contents panel is opened automatically if more that 2 headings', async ({
     page,
     browserName,
   }) => {
