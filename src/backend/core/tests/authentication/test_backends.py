@@ -365,3 +365,87 @@ def test_authentication_getter_existing_disabled_user_via_email(
         klass.get_or_create_user(access_token="test-token", id_token=None, payload=None)
 
     assert models.User.objects.count() == 1
+
+
+# Required claims
+
+
+@override_settings(
+    OIDC_OP_USER_ENDPOINT="http://oidc.endpoint.test/userinfo",
+    USER_OIDC_REQUIRED_CLAIMS=["email", "sub", "address"],
+)
+@responses.activate
+def test_authentication_get_userinfo_required_claims_missing():
+    """Ensure SuspiciousOperation is raised if required claims are missing."""
+
+    responses.add(
+        responses.GET,
+        re.compile(r".*/userinfo"),
+        json={
+            "last_name": "Doe",
+            "email": "john.doe@example.com",
+        },
+        status=200,
+    )
+
+    oidc_backend = OIDCAuthenticationBackend()
+
+    with pytest.raises(
+        SuspiciousOperation, match="Missing required claims in user info: sub, address"
+    ):
+        oidc_backend.get_userinfo("fake_access_token", None, None)
+
+
+@override_settings(
+    OIDC_OP_USER_ENDPOINT="http://oidc.endpoint.test/userinfo",
+    USER_OIDC_REQUIRED_CLAIMS=["email", "Sub"],
+)
+@responses.activate
+def test_authentication_get_userinfo_required_claims_case_sensitivity():
+    """Ensure the system respects case sensitivity for required claims."""
+
+    responses.add(
+        responses.GET,
+        re.compile(r".*/userinfo"),
+        json={
+            "sub": "123",
+            "last_name": "Doe",
+            "email": "john.doe@example.com",
+        },
+        status=200,
+    )
+
+    oidc_backend = OIDCAuthenticationBackend()
+
+    with pytest.raises(
+        SuspiciousOperation, match="Missing required claims in user info: Sub"
+    ):
+        oidc_backend.get_userinfo("fake_access_token", None, None)
+
+
+@override_settings(
+    OIDC_OP_USER_ENDPOINT="http://oidc.endpoint.test/userinfo",
+    USER_OIDC_REQUIRED_CLAIMS=["email", "sub"],
+)
+@responses.activate
+def test_authentication_get_userinfo_required_claims_success():
+    """Ensure user is authenticated when required claims are present."""
+
+    responses.add(
+        responses.GET,
+        re.compile(r".*/userinfo"),
+        json={
+            "sub": "123",
+            "last_name": "Doe",
+            "email": "john.doe@example.com",
+        },
+        status=200,
+    )
+
+    oidc_backend = OIDCAuthenticationBackend()
+    result = oidc_backend.get_userinfo("fake_access_token", None, None)
+
+    assert result["sub"] == "123"
+    assert result.get("first_name") is None
+    assert result["last_name"] == "Doe"
+    assert result["email"] == "john.doe@example.com"
