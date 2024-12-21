@@ -57,6 +57,18 @@ class OIDCAuthenticationBackend(MozillaOIDCAuthenticationBackend):
                     _("Invalid response format or token verification failed")
                 ) from e
 
+        # Validate required claims
+        missing_claims = [
+            claim
+            for claim in settings.USER_OIDC_REQUIRED_CLAIMS
+            if claim not in userinfo
+        ]
+        if missing_claims:
+            raise SuspiciousOperation(
+                _("Missing required claims in user info: %(claims)s")
+                % {"claims": ", ".join(missing_claims)}
+            )
+
         return userinfo
 
     def get_or_create_user(self, access_token, id_token, payload):

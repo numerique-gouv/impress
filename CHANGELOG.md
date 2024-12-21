@@ -11,6 +11,7 @@ and this project adheres to
 
 ## Added
 
+🔧(backend) add option to configure list of required OIDC claims #525
 🔧(helm) add option to disable default tls setting by @dominikkaminski #519
 
 ## Changed
