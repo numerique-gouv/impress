@@ -41,7 +41,7 @@ export const createDoc = async (
       .click();
 
     await page.getByRole('heading', { name: 'Untitled document' }).click();
-    await page.keyboard.type(randomDocs[i]);
+    await page.keyboard.type(randomDocs[i], { delay: 100 });
     await page.getByText('Created at ').click();
   }
 

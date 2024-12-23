@@ -16,6 +16,7 @@ and this project adheres to
 ## Changed
 
 - 🏗️(yjs-server) organize yjs server #528
+- ♻️(frontend) better separation collaboration process #528
 
 
 ## [1.10.0] - 2024-12-17
