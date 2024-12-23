@@ -22,6 +22,7 @@ and this project adheres to
 - ✨(backend) add server-to-server API endpoint to create documents #467
 - ✨(frontend) new share modal ui #489
 - ✨(frontend) add favorite feature #515
+- ✨(frontend) many ui fixes #524
 
 ## Changed
 - 💄(frontend) add filtering from left panel #475
