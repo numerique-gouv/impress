@@ -13,9 +13,9 @@ import { Box, Text } from '@/components';
 import {
   Doc,
   base64ToYDoc,
-  useDocStore,
+  useProviderStore,
   useUpdateDoc,
-} from '@/features/docs/doc-management';
+} from '@/features/docs/doc-management/';
 
 import { useDocVersion } from '../api';
 import { KEY_LIST_DOC_VERSIONS } from '../api/useDocVersions';
@@ -40,7 +40,7 @@ export const ModalVersion = ({
   const { t } = useTranslation();
   const { toast } = useToastProvider();
   const { push } = useRouter();
-  const { providers } = useDocStore();
+  const { provider } = useProviderStore();
   const { mutate: updateDoc } = useUpdateDoc({
     listInvalideQueries: [KEY_LIST_DOC_VERSIONS],
     onSuccess: () => {
@@ -49,14 +49,14 @@ export const ModalVersion = ({
         void push(`/docs/${docId}`);
       };
 
-      if (!providers?.[docId] || !version?.content) {
+      if (!provider || !version?.content) {
         onDisplaySuccess();
         return;
       }
 
       revertUpdate(
-        providers[docId].document,
-        providers[docId].document,
+        provider.document,
+        provider.document,
         base64ToYDoc(version.content),
       );
 
