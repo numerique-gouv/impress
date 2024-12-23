@@ -24,16 +24,6 @@ describe('Server Tests', () => {
     server.close();
   });
 
-  test('POST /collaboration/api/reset-connections?room=[ROOM_ID] invalid origin', async () => {
-    const response = await request(app as any)
-      .post('/collaboration/api/reset-connections/?room=test-room')
-      .set('Origin', 'http://invalid-origin.com')
-      .send({ document_id: 'test-document' });
-
-    expect(response.status).toBe(403);
-    expect(response.body.error).toBe('CORS policy violation: Invalid Origin');
-  });
-
   test('POST /collaboration/api/reset-connections?room=[ROOM_ID] with incorrect API key should return 403', async () => {
     const response = await request(app as any)
       .post('/collaboration/api/reset-connections/?room=test-room')

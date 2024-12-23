@@ -20,6 +20,7 @@
     "@hocuspocus/server": "2.15.0",
     "@sentry/node": "8.45.1",
     "@sentry/profiling-node": "8.45.1",
+    "cors": "2.8.5",
     "express": "4.21.2",
     "express-ws": "5.0.2",
     "y-protocols": "1.0.6",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@hocuspocus/provider": "2.15.0",
+    "@types/cors": "2.8.17",
     "@types/express": "5.0.0",
     "@types/express-ws": "3.0.5",
     "@types/jest": "29.5.14",

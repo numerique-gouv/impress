@@ -10,7 +10,7 @@ import {
   collaborationWSHandler,
   convertMarkdownHandler,
 } from '../handlers';
-import { httpSecurity, wsSecurity } from '../middlewares';
+import { corsMiddleware, httpSecurity, wsSecurity } from '../middlewares';
 import { routes } from '../routes';
 import { logger } from '../utils';
 
@@ -24,6 +24,7 @@ import { logger } from '../utils';
 export const initServer = () => {
   const { app } = expressWebsockets(express());
   app.use(express.json());
+  app.use(corsMiddleware);
 
   /**
    * Route to handle WebSocket connections
