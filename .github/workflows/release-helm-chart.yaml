@@ -3,10 +3,6 @@ run-name: Release Chart
 
 on:
   push:
-    paths:
-      - src/helm/impress/**
-    branches:
-      - main
 
 jobs:
   release:
