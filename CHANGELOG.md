@@ -11,7 +11,8 @@ and this project adheres to
 
 ## Added
 
-🔧(helm) add option to disable default tls setting by @dominikkaminski #519
+- 🔧(helm) add option to disable default tls setting by @dominikkaminski #519
+- ✨Collaboration long polling fallback #517
 
 ## Changed
 
