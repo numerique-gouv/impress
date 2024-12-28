@@ -25,7 +25,7 @@ license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "boto3==1.35.81",
+    "boto3==1.35.90",
     "Brotli==1.1.0",
     "celery[redis]==5.4.0",
     "django-configurations==2.5.1",
@@ -47,7 +47,7 @@ dependencies = [
     "jsonschema==4.23.0",
     "markdown==3.7",
     "nested-multipart-parser==1.5.0",
-    "openai==1.57.4",
+    "openai==1.58.1",
     "psycopg[binary]==3.2.3",
     "PyJWT==2.10.1",
     "pypandoc==1.14",
@@ -73,17 +73,17 @@ dev = [
     "drf-spectacular-sidecar==2024.12.1",
     "freezegun==1.5.1",
     "ipdb==0.13.13",
-    "ipython==8.30.0",
+    "ipython==8.31.0",
     "pyfakefs==5.7.3",
     "pylint-django==2.6.1",
-    "pylint==3.3.2",
+    "pylint==3.3.3",
     "pytest-cov==6.0.0",
     "pytest-django==4.9.0",
     "pytest==8.3.4",
     "pytest-icdiff==0.9",
     "pytest-xdist==3.6.1",
     "responses==0.25.3",
-    "ruff==0.8.3",
+    "ruff==0.8.4",
     "types-requests==2.32.0.20241016",
 ]
 
