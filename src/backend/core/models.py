@@ -360,7 +360,8 @@ class Document(MP_Node, BaseModel):
     _content = None
 
     # Tree structure
-    steplen = 7  # nb siblings max: 78,364,164,096 / max depth: 255/7=36
+    alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    steplen = 7  # nb siblings max: 3,521,614,606,208 / max depth: 255/7=36
     node_order_by = None  # Manual ordering
 
     class Meta:
