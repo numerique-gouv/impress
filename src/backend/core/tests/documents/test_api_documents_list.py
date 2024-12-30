@@ -60,6 +60,7 @@ def test_api_documents_list_format():
     assert results[0] == {
         "id": str(document.id),
         "content": document.content,
+        "abilities": document.get_abilities(user),
         "created_at": document.created_at.isoformat().replace("+00:00", "Z"),
         "creator": str(document.creator.id),
         "is_favorite": True,
@@ -78,7 +79,6 @@ def test_api_documents_list_authenticated_direct(django_assert_num_queries):
     than restricted.
     """
     user = factories.UserFactory()
-
     client = APIClient()
     client.force_login(user)
 

@@ -153,6 +153,7 @@ class ListDocumentSerializer(BaseResourceSerializer):
         fields = [
             "id",
             "content",
+            "abilities",
             "created_at",
             "creator",
             "is_favorite",
@@ -164,6 +165,7 @@ class ListDocumentSerializer(BaseResourceSerializer):
         ]
         read_only_fields = [
             "id",
+            "abilities",
             "created_at",
             "creator",
             "is_favorite",
