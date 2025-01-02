@@ -13,7 +13,7 @@ from rest_framework.throttling import BaseThrottle
 
 def generate_s3_authorization_headers(key):
     """
-    Generate authorization headers for an s3 object.
+    Generate authorization headers for a s3 object.
     These headers can be used as an alternative to signed urls with many benefits:
     - the urls of our files never expire and can be stored in our documents' content
     - we don't leak authorized urls that could be shared (file access can only be done

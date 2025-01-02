@@ -86,7 +86,7 @@ export const TableContent = () => {
       />
       <BoxButton
         onClick={() => {
-          // With mobile the focus open the keyboard and the scroll is not working
+          // With mobile the focus open the keyboard and the scroll are not working
           if (!isMobile) {
             editor.focus();
           }
@@ -104,7 +104,7 @@ export const TableContent = () => {
       </BoxButton>
       <BoxButton
         onClick={() => {
-          // With mobile the focus open the keyboard and the scroll is not working
+          // With mobile the focus open the keyboard and the scroll are not working
           if (!isMobile) {
             editor.focus();
           }

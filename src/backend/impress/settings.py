@@ -622,8 +622,9 @@ class Base(Configuration):
                 release=get_release(),
                 integrations=[DjangoIntegration()],
             )
-            with sentry_sdk.configure_scope() as scope:
-                scope.set_extra("application", "backend")
+            # Add the application name to the Sentry scope
+            scope = sentry_sdk.get_global_scope()
+            scope.set_tag("application", "backend")
 
 
 class Build(Base):
