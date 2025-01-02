@@ -471,9 +471,7 @@ test.describe('Doc Header', () => {
       navigator.clipboard.readText(),
     );
     const clipboardContent = await handle.jsonValue();
-    expect(clipboardContent.trim()).toBe(
-      `<h1 data-level="1">Hello World</h1><p></p>`,
-    );
+    expect(clipboardContent.trim()).toBe(`<h1>Hello World</h1><p></p>`);
   });
 });
 
