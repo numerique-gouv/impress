@@ -28,18 +28,13 @@
     "server:test": "yarn COLLABORATION_SERVER run test"
   },
   "resolutions": {
-    "@blocknote/core": "0.21.0",
-    "@blocknote/mantine": "0.21.0",
-    "@blocknote/react": "0.21.0",
-    "@types/node": "22.10.2",
+    "@types/node": "22.10.3",
     "@types/react-dom": "18.3.1",
-    "@typescript-eslint/eslint-plugin": "8.18.0",
-    "@typescript-eslint/parser": "8.18.0",
-    "cross-env": "7.0.3",
+    "@typescript-eslint/eslint-plugin": "8.19.0",
+    "@typescript-eslint/parser": "8.19.0",
     "eslint": "8.57.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "typescript": "5.7.2",
-    "yjs": "13.6.20"
+    "typescript": "5.7.2"
   }
 }
