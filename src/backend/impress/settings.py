@@ -351,6 +351,10 @@ class Base(Configuration):
         "REDOC_DIST": "SIDECAR",
     }
 
+    SOFT_DELETE_KEEP_DAYS = values.Value(
+        30, environ_name="SOFT_DELETE_KEEP_DAYS", environ_prefix=None
+    )
+
     # Mail
     EMAIL_BACKEND = values.Value("django.core.mail.backends.smtp.EmailBackend")
     EMAIL_BRAND_NAME = values.Value(None)

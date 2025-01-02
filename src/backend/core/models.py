@@ -322,6 +322,31 @@ class BaseAccess(BaseModel):
         }
 
 
+class DocumentQuerySet(models.QuerySet):
+    """Custom queryset for Document model."""
+
+    def active(self):
+        """Return only active (non-deleted) documents."""
+        return self.filter(deleted_at__isnull=True)
+
+    def soft_deleted(self):
+        """Return only soft-deleted documents."""
+        limit_datetime = timezone.now() - timedelta(days=settings.SOFT_DELETE_KEEP_DAYS)
+        return self.filter(deleted_at__isnull=False, deleted_at__gte=limit_datetime)
+
+    def hard_deleted(self):
+        """Return only hard-deleted documents."""
+        limit_datetime = timezone.now() - timedelta(days=settings.SOFT_DELETE_KEEP_DAYS)
+        return self.filter(deleted_at__isnull=False, deleted_at__lt=limit_datetime)
+
+    def not_hard_deleted(self):
+        """Return active or soft-deleted documents. Used for detailed views."""
+        limit_datetime = timezone.now() - timedelta(days=settings.SOFT_DELETE_KEEP_DAYS)
+        return self.filter(
+            models.Q(deleted_at__isnull=True) | models.Q(deleted_at__gte=limit_datetime)
+        )
+
+
 class Document(MP_Node, BaseModel):
     """Pad document carrying the content."""
 
@@ -342,6 +367,7 @@ class Document(MP_Node, BaseModel):
         blank=True,
         null=True,
     )
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     _content = None
 
@@ -349,6 +375,9 @@ class Document(MP_Node, BaseModel):
     alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     steplen = 7  # nb siblings max: 3,521,614,606,208 / max depth: 255/7=36
     node_order_by = None  # Manual ordering
+
+    # Custom manager
+    objects = DocumentQuerySet.as_manager()
 
     class Meta:
         db_table = "impress_document"
@@ -512,6 +541,22 @@ class Document(MP_Node, BaseModel):
                 roles = []
         return roles
 
+    @cached_property
+    def links_definitions(self):
+        """Get links reach/role definitions for the current document and its ancestors."""
+        links_definitions = [
+            {"link_reach": self.link_reach, "link_role": self.link_role}
+        ]
+
+        # Ancestors links definitions are only interesting if the document is not the highest
+        # ancestor to which the current user has access. Look for the annotation:
+        if getattr(self, "root_path", None) != self.path:
+            links_definitions.extend(
+                self.get_ancestors().values("link_reach", "link_role")
+            )
+
+        return links_definitions
+
     def get_abilities(self, user):
         """
         Compute and return abilities for a given user on the document.
@@ -525,17 +570,13 @@ class Document(MP_Node, BaseModel):
         has_role = bool(roles)
 
         # Add roles provided by the document link, taking into account its ancestors
-        link_reaches = list(self.get_ancestors().values("link_reach", "link_role"))
-        link_reaches.append(
-            {"link_reach": self.link_reach, "link_role": self.link_role}
-        )
-
-        for lr in link_reaches:
+        links_definitions = self.links_definitions
+        for lr in links_definitions:
             if lr["link_reach"] == LinkReachChoices.PUBLIC:
                 roles.add(lr["link_role"])
 
         if user.is_authenticated:
-            for lr in link_reaches:
+            for lr in links_definitions:
                 if lr["link_reach"] == LinkReachChoices.AUTHENTICATED:
                     roles.add(lr["link_role"])
 

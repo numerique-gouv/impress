@@ -3,7 +3,10 @@ Tests for Documents API endpoint in impress's core app: list
 """
 
 import random
+from datetime import timedelta
 from unittest import mock
+
+from django.utils import timezone
 
 import pytest
 from faker import Faker
@@ -111,6 +114,24 @@ def test_api_documents_list_authenticated_direct(django_assert_num_queries):
     child3_with_access = factories.DocumentFactory(parent=hidden_root)
     factories.UserDocumentAccessFactory(user=user, document=child3_with_access)
 
+    # Documents that are soft deleted and children of a soft deleted document should not be listed
+    soft_deleted_document = factories.DocumentFactory(
+        users=[user], deleted_at=timezone.now()
+    )
+    child_of_soft_deleted_document = factories.DocumentFactory(
+        users=[user], parent=soft_deleted_document
+    )
+    factories.DocumentFactory(users=[user], parent=child_of_soft_deleted_document)
+
+    # Documents that are hard deleted and children of a hard deleted document should not be listed
+    hard_deleted_document = factories.DocumentFactory(
+        users=[user], deleted_at=timezone.now() - timedelta(days=40)
+    )
+    child_of_hard_deleted_document = factories.DocumentFactory(
+        users=[user], parent=hard_deleted_document
+    )
+    factories.DocumentFactory(users=[user], parent=child_of_hard_deleted_document)
+
     expected_ids = {str(document1.id), str(document2.id), str(child3_with_access.id)}
 
     with django_assert_num_queries(3):
@@ -118,9 +139,9 @@ def test_api_documents_list_authenticated_direct(django_assert_num_queries):
 
     assert response.status_code == 200
     results = response.json()["results"]
+    results_ids = {result["id"] for result in results}
     assert len(results) == 3
-    results_id = {result["id"] for result in results}
-    assert expected_ids == results_id
+    assert expected_ids == results_ids
 
 
 def test_api_documents_list_authenticated_via_team(

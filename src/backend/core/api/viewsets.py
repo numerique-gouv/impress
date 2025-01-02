@@ -4,31 +4,25 @@
 import logging
 import re
 import uuid
+from datetime import timedelta
 from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models as db
 from django.db import transaction
-from django.db.models import (
-    Exists,
-    F,
-    Func,
-    OuterRef,
-    Q,
-    Subquery,
-    Value,
-)
 from django.db.models.functions import Left, Length
 from django.http import Http404
+from django.utils import timezone
 
 import rest_framework as drf
 from botocore.exceptions import ClientError
 from django_filters import rest_framework as drf_filters
-from rest_framework import filters, status
+from rest_framework import filters, status, viewsets
 from rest_framework import response as drf_response
 from rest_framework.permissions import AllowAny
 
@@ -55,7 +49,7 @@ COLLABORATION_WS_URL_PATTERN = re.compile(rf"(?:^|&)room=(?P<pk>{UUID_REGEX})(?:
 # pylint: disable=too-many-ancestors
 
 
-class NestedGenericViewSet(drf.viewsets.GenericViewSet):
+class NestedGenericViewSet(viewsets.GenericViewSet):
     """
     A generic Viewset aims to be used in a nested route context.
     e.g: `/api/v1.0/resource_1/<resource_1_pk>/resource_2/<resource_2_pk>/`
@@ -136,7 +130,7 @@ class Pagination(drf.pagination.PageNumberPagination):
 
 
 class UserViewSet(
-    drf.mixins.UpdateModelMixin, drf.viewsets.GenericViewSet, drf.mixins.ListModelMixin
+    drf.mixins.UpdateModelMixin, viewsets.GenericViewSet, drf.mixins.ListModelMixin
 ):
     """User ViewSet"""
 
@@ -307,25 +301,101 @@ class DocumentMetadata(drf.metadata.SimpleMetadata):
 class DocumentViewSet(
     drf.mixins.CreateModelMixin,
     drf.mixins.DestroyModelMixin,
+    drf.mixins.ListModelMixin,
     drf.mixins.UpdateModelMixin,
-    drf.viewsets.GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     """
-    Document ViewSet for managing documents.
+    DocumentViewSet API.
 
-    Provides endpoints for creating, updating, and deleting documents,
-    along with filtering options.
+    This view set provides CRUD operations and additional actions for managing documents.
+    Supports filtering, ordering, and annotations for enhanced querying capabilities.
 
-    Filtering:
+    ### API Endpoints:
+    1. **List**: Retrieve a paginated list of documents.
+       Example: GET /documents/?page=2
+    2. **Retrieve**: Get a specific document by its ID.
+       Example: GET /documents/{id}/
+    3. **Create**: Create a new document.
+       Example: POST /documents/
+    4. **Update**: Update a document by its ID.
+       Example: PUT /documents/{id}/
+    5. **Delete**: Soft delete a document by its ID.
+       Example: DELETE /documents/{id}/
+
+    ### Additional Actions:
+    1. **Children**: List or create child documents.
+        Example: GET, POST /documents/{id}/children/
+
+    2. **Versions List**: Retrieve version history of a document.
+        Example: GET /documents/{id}/versions/
+
+    3. **Version Detail**: Get or delete a specific document version.
+        Example: GET, DELETE /documents/{id}/versions/{version_id}/
+
+    4. **Favorite**: Mark or unmark a document as favorite.
+        Example: POST, DELETE /documents/{id}/favorite/
+
+    5. **Attachment Upload**: Upload a file attachment for the document.
+        Example: POST /documents/{id}/attachment-upload/
+
+    6. **Create for Owner**: Create a document via server-to-server on behalf of a user.
+        Example: POST /documents/create-for-owner/
+
+    7. **Link Configuration**: Update document link configuration.
+        Example: PUT /documents/{id}/link-configuration/
+
+    8. **Media Auth**: Authorize access to document media.
+        Example: GET /documents/media-auth/
+
+    9. **Media Auth**: Authorize access to the collaboration server for a document.
+        Example: GET /documents/collaboration-auth/
+
+    10. **AI Transform**: Apply a transformation action on a piece of text with AI.
+        Example: POST /documents/{id}/ai-transform/
+        Expected data:
+        - text (str): The input text.
+        - action (str): The transformation type, one of [prompt, correct, rephrase, summarize].
+        Returns: JSON response with the processed text.
+        Throttled by: AIDocumentRateThrottle, AIUserRateThrottle.
+
+    11. **AI Translate**: Translate a piece of text with AI.
+        Example: POST /documents/{id}/ai-translate/
+        Expected data:
+        - text (str): The input text.
+        - language (str): The target language, chosen from settings.LANGUAGES.
+        Returns: JSON response with the translated text.
+        Throttled by: AIDocumentRateThrottle, AIUserRateThrottle.
+
+    ### Ordering: created_at, updated_at, is_favorite, title
+
+        Example:
+        - Ascending: GET /api/v1.0/documents/?ordering=created_at
+        - Desceding: GET /api/v1.0/documents/?ordering=-title
+
+    ### Filtering:
         - `is_creator_me=true`: Returns documents created by the current user.
         - `is_creator_me=false`: Returns documents created by other users.
         - `is_favorite=true`: Returns documents marked as favorite by the current user
         - `is_favorite=false`: Returns documents not marked as favorite by the current user
+        - `is_deleted=true`: Returns documents that were soft deleted left than x days ago
+        - `is_deleted=false`: Returns documents that were not deleted
         - `title=hello`: Returns documents which title contains the "hello" string
 
-    Example Usage:
+        Example:
         - GET /api/v1.0/documents/?is_creator_me=true&is_favorite=true
         - GET /api/v1.0/documents/?is_creator_me=false&title=hello
+
+    ### Annotations:
+    1. **nb_accesses**: Number of accesses related to the document or its ancestors.
+    2. **is_favorite**: Indicates whether the document is marked as favorite by the current user.
+    3. **user_roles**: Roles the current user has on the document or its ancestors.
+    4. **is_traced**: Indicates if the document has been accessed by the current user.
+    5. **ancestors_deleted_at**: Date when the document or one of its ancestors was soft deleted.
+
+    ### Notes:
+    - Only the highest ancestor in a document hierarchy is shown in list views.
+    - Implements soft delete logic to retain document tree structures.
     """
 
     filter_backends = [drf_filters.DjangoFilterBackend, filters.OrderingFilter]
@@ -341,87 +411,148 @@ class DocumentViewSet(
 
     def get_serializer_class(self):
         """
-        Use ListDocumentSerializer for list actions, otherwise use DocumentSerializer.
+        Use ListDocumentSerializer for list actions; otherwise, use DocumentSerializer.
         """
-        if self.action == "list":
-            return serializers.ListDocumentSerializer
-        return self.serializer_class
+        return (
+            serializers.ListDocumentSerializer
+            if self.action == "list"
+            else self.serializer_class
+        )
 
-    def annotate_queryset(self, queryset):
-        """Annotate document queryset with favorite and number of accesses."""
-        user = self.request.user
+    def annotate_nb_accesses(self, queryset):
+        """Annotate document queryset with number of accesses, taking into account ancestors."""
 
-        # Annotate the number of accesses taking into account ancestors
         ancestor_accesses_query = (
             models.DocumentAccess.objects.filter(
-                document__path=Left(OuterRef("path"), Length("document__path")),
+                document__path=Left(db.OuterRef("path"), Length("document__path")),
             )
             .order_by()
-            .annotate(total_accesses=Func(Value("id"), function="COUNT"))
+            .annotate(total_accesses=db.Func(db.Value("id"), function="COUNT"))
             .values("total_accesses")
         )
+        return queryset.annotate(nb_accesses=db.Subquery(ancestor_accesses_query))
 
-        # Annotate with the number of accesses, default to 0 if no accesses exist
-        queryset = queryset.annotate(nb_accesses=Subquery(ancestor_accesses_query))
-
-        if not user.is_authenticated:
-            # If the user is not authenticated, annotate `is_favorite` as False
-            return queryset.annotate(is_favorite=Value(False))
-
-        # Annotate the queryset to indicate if the document is favorited by the current user
-        favorite_exists = models.DocumentFavorite.objects.filter(
-            document_id=OuterRef("pk"), user=user
-        )
-        return queryset.annotate(is_favorite=Exists(favorite_exists))
-
-    def get_queryset(self):
-        """Optimize queryset to include favorite status for the current user."""
-        queryset = super().get_queryset()
-        queryset = self.annotate_queryset(queryset)
-        return queryset.distinct()
-
-    def list(self, request, *args, **kwargs):
-        """Restrict resources returned by the list endpoint"""
-        queryset = self.filter_queryset(self.get_queryset())
+    def annotate_is_favorite(self, queryset):
+        """
+        Annotate document queryset with the favorite status for the current user.
+        """
         user = self.request.user
 
         if user.is_authenticated:
-            queryset = queryset.filter(
-                db.Q(accesses__user=user)
-                | db.Q(accesses__team__in=user.teams)
-                | (
-                    db.Q(link_traces__user=user)
-                    & ~db.Q(link_reach=models.LinkReachChoices.RESTRICTED)
+            favorite_exists_subquery = models.DocumentFavorite.objects.filter(
+                document_id=db.OuterRef("pk"), user=user
+            )
+            return queryset.annotate(is_favorite=db.Exists(favorite_exists_subquery))
+
+        return queryset.annotate(is_favorite=db.Value(False))
+
+    def annotate_user_roles(self, queryset):
+        """
+        Annotate document queryset with the roles of the current user
+        on the document or its ancestors.
+        """
+        user = self.request.user
+
+        if user.is_authenticated:
+            user_roles_subquery = models.DocumentAccess.objects.filter(
+                db.Q(user=user) | db.Q(team__in=user.teams),
+                document__path=Left(db.OuterRef("path"), Length("document__path")),
+            ).values_list("role", flat=True)
+
+            return queryset.annotate(
+                user_roles=db.Func(user_roles_subquery, function="ARRAY")
+            )
+
+        return queryset.annotate(
+            user_roles=db.Value([], output_field=ArrayField(base_field=db.CharField())),
+        )
+
+    def get_queryset(self):
+        """Get queryset performing all annotation and filtering on the document tree structure."""
+        request = self.request
+        user = request.user
+        is_deleted = request.GET.get("is_deleted", "false").lower() in ["true", "1"]
+
+        queryset = super().get_queryset()
+
+        # Annotate link trace to indicate if the user has already visited the document
+        # and filter based on user access
+        if user.is_authenticated:
+            if not is_deleted:
+                link_trace_subquery = models.LinkTrace.objects.filter(
+                    document=db.OuterRef("pk"), user=user
                 )
-            )
+                queryset = queryset.annotate(is_traced=db.Exists(link_trace_subquery))
 
-            # Among the results, we may have documents that are ancestors/children of each other
-            # In this case we want to keep only the highest ancestor. Let's annotate, each document
-            # with the path of its highest ancestor within results so we can use it to filter
-            shortest_path = Subquery(
-                queryset.filter(path=Left(OuterRef("path"), Length("path")))
-                .order_by("path")  # Get the shortest (root) path
-                .values("path")[:1]
-            )
-            queryset = queryset.annotate(root_path=shortest_path)
-
-            # Filter documents based on their shortest path (root path)
-            queryset = queryset.filter(
-                root_path=F(
-                    "path"
-                )  # Keep only documents who are the annotated highest ancestor
-            )
-
+                if not self.detail:
+                    queryset = queryset.filter(
+                        db.Q(accesses__user=user)
+                        | db.Q(accesses__team__in=user.teams)
+                        | (
+                            db.Q(is_traced=True)
+                            & ~db.Q(link_reach=models.LinkReachChoices.RESTRICTED)
+                        )
+                    )
+        elif self.detail:
+            queryset = queryset.annotate(is_traced=db.Value(False))
         else:
-            queryset = queryset.none()
+            return queryset.none()
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        # Among the results, we may have documents that are ancestors/children of each other
+        # In this case we want to keep only the highest ancestor.
+        # As for deletion, as soon as a document is deleted, all its descendants are considered
+        # deleted as well.
+        ancestors_subquery = queryset.filter(
+            path=Left(db.OuterRef("path"), Length("path"))
+        )
 
-        serializer = self.get_serializer(queryset, many=True)
-        return drf.response.Response(serializer.data)
+        # Annotate with the oldest `deleted_at` date among ancestors using the `Min` function`
+        queryset = queryset.annotate(
+            ancestors_deleted_at=db.Subquery(
+                ancestors_subquery.filter(deleted_at__isnull=False)
+                .annotate(min_deleted_at=db.Min("deleted_at"))
+                .values("min_deleted_at")[:1]
+            )
+        )
+
+        if not user.is_authenticated or (not self.detail and not is_deleted):
+            queryset = queryset.filter(ancestors_deleted_at__isnull=True)
+
+        queryset = self.annotate_user_roles(queryset)
+
+        if user.is_authenticated:
+            trashbin_threshold = timezone.now() - timedelta(
+                days=settings.SOFT_DELETE_KEEP_DAYS
+            )
+            owner_trashbin_clause = (
+                db.Q(user_roles__contains=models.RoleChoices.OWNER)
+                & db.Q(ancestors_deleted_at__isnull=False)
+                & db.Q(ancestors_deleted_at__gte=trashbin_threshold)
+            )
+            if self.detail:
+                queryset = queryset.filter(
+                    owner_trashbin_clause | db.Q(ancestors_deleted_at__isnull=True)
+                )
+            elif is_deleted:
+                queryset = queryset.filter(owner_trashbin_clause)
+
+        if not self.detail:
+            # Keep only documents who are the annotated highest ancestor
+            queryset = queryset.annotate(
+                root_path=db.Subquery(
+                    ancestors_subquery.filter(deleted_at__isnull=not is_deleted)
+                    .order_by("path")
+                    .values("path")[:1]
+                )
+            ).filter(root_path=db.F("path"))
+
+        return queryset.distinct()
+
+    def filter_queryset(self, queryset):
+        """Apply annotations and filters sequentially."""
+        queryset = self.annotate_is_favorite(queryset)
+        queryset = super().filter_queryset(queryset)
+        return self.annotate_nb_accesses(queryset)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -432,17 +563,8 @@ class DocumentViewSet(
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
-        if self.request.user.is_authenticated:
-            try:
-                # Add a trace that the user visited the document (this is needed to include
-                # the document in the user's list view)
-                models.LinkTrace.objects.create(
-                    document=instance,
-                    user=self.request.user,
-                )
-            except ValidationError:
-                # The trace already exists, so we just pass without doing anything
-                pass
+        if self.request.user.is_authenticated and not instance.is_traced:
+            models.LinkTrace.objects.create(document=instance, user=request.user)
 
         return drf.response.Response(serializer.data)
 
@@ -458,6 +580,11 @@ class DocumentViewSet(
             user=self.request.user,
             role=models.RoleChoices.OWNER,
         )
+
+    def perform_destroy(self, instance):
+        """Override to implement a soft delete instead of dumping the record in database."""
+        instance.deleted_at = timezone.now()
+        instance.save()
 
     @drf.decorators.action(
         authentication_classes=[authentication.ServerToServerAuthentication],
@@ -486,6 +613,7 @@ class DocumentViewSet(
     @drf.decorators.action(
         detail=True,
         methods=["get", "post"],
+        ordering=["path"],
         serializer_class=serializers.ListDocumentSerializer,
         url_path="children",
     )
@@ -519,8 +647,9 @@ class DocumentViewSet(
             )
 
         # GET: List children
-        queryset = document.get_children()
-        queryset = self.annotate_queryset(queryset)
+        queryset = document.get_children().filter(deleted_at__isnull=True)
+        queryset = self.filter_queryset(queryset)
+        queryset = self.annotate_user_roles(queryset)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -550,7 +679,7 @@ class DocumentViewSet(
         # document. Filter to get the minimum access date for the logged-in user
         access_queryset = models.DocumentAccess.objects.filter(
             db.Q(user=user) | db.Q(team__in=user.teams),
-            document__path=Left(Value(document.path), Length("document__path")),
+            document__path=Left(db.Value(document.path), Length("document__path")),
         ).aggregate(min_date=db.Min("created_at"))
 
         # Handle the case where the user has no accesses
@@ -590,7 +719,7 @@ class DocumentViewSet(
             access.created_at
             for access in models.DocumentAccess.objects.filter(
                 db.Q(user=user) | db.Q(team__in=user.teams),
-                document__path=Left(Value(document.path), Length("document__path")),
+                document__path=Left(db.Value(document.path), Length("document__path")),
             )
         )
 
@@ -878,7 +1007,7 @@ class DocumentAccessViewSet(
     drf.mixins.ListModelMixin,
     drf.mixins.RetrieveModelMixin,
     drf.mixins.UpdateModelMixin,
-    drf.viewsets.GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     """
     API ViewSet for all interactions with document accesses.
@@ -951,7 +1080,7 @@ class TemplateViewSet(
     drf.mixins.DestroyModelMixin,
     drf.mixins.RetrieveModelMixin,
     drf.mixins.UpdateModelMixin,
-    drf.viewsets.GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     """Template ViewSet"""
 
@@ -975,14 +1104,14 @@ class TemplateViewSet(
 
         user_roles_query = (
             models.TemplateAccess.objects.filter(
-                Q(user=user) | Q(team__in=user.teams),
-                template_id=OuterRef("pk"),
+                db.Q(user=user) | db.Q(team__in=user.teams),
+                template_id=db.OuterRef("pk"),
             )
             .values("template")
             .annotate(roles_array=ArrayAgg("role"))
             .values("roles_array")
         )
-        return queryset.annotate(user_roles=Subquery(user_roles_query)).distinct()
+        return queryset.annotate(user_roles=db.Subquery(user_roles_query)).distinct()
 
     def list(self, request, *args, **kwargs):
         """Restrict templates returned by the list endpoint"""
@@ -1056,7 +1185,7 @@ class TemplateAccessViewSet(
     drf.mixins.ListModelMixin,
     drf.mixins.RetrieveModelMixin,
     drf.mixins.UpdateModelMixin,
-    drf.viewsets.GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     """
     API ViewSet for all interactions with template accesses.
@@ -1096,7 +1225,7 @@ class InvitationViewset(
     drf.mixins.RetrieveModelMixin,
     drf.mixins.DestroyModelMixin,
     drf.mixins.UpdateModelMixin,
-    drf.viewsets.GenericViewSet,
+    viewsets.GenericViewSet,
 ):
     """API ViewSet for user invitations to document.
 
