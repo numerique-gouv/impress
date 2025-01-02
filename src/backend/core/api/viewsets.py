@@ -583,8 +583,7 @@ class DocumentViewSet(
 
     def perform_destroy(self, instance):
         """Override to implement a soft delete instead of dumping the record in database."""
-        instance.deleted_at = timezone.now()
-        instance.save()
+        instance.soft_delete()
 
     @drf.decorators.action(
         authentication_classes=[authentication.ServerToServerAuthentication],
@@ -608,6 +607,22 @@ class DocumentViewSet(
 
         return drf_response.Response(
             {"id": str(document.id)}, status=status.HTTP_201_CREATED
+        )
+
+    @drf.decorators.action(
+        detail=True,
+        methods=["post"],
+    )
+    def restore(self, request, *args, **kwargs):
+        """
+        Restore a soft-deleted document if it was deleted less than x days ago.
+        """
+        document = self.get_object()
+        document.restore()
+
+        return drf_response.Response(
+            {"detail": "Document has been successfully restored."},
+            status=status.HTTP_200_OK,
         )
 
     @drf.decorators.action(

@@ -580,9 +580,9 @@ class Document(MP_Node, BaseModel):
                 if lr["link_reach"] == LinkReachChoices.AUTHENTICATED:
                     roles.add(lr["link_role"])
 
-        is_owner_or_admin = bool(
-            roles.intersection({RoleChoices.OWNER, RoleChoices.ADMIN})
-        )
+        is_owner = RoleChoices.OWNER in roles
+        is_owner_or_admin = is_owner or RoleChoices.ADMIN in roles
+
         can_get = bool(roles)
         can_update = is_owner_or_admin or RoleChoices.EDITOR in roles
 
@@ -600,6 +600,7 @@ class Document(MP_Node, BaseModel):
             "link_configuration": is_owner_or_admin,
             "invite_owner": RoleChoices.OWNER in roles,
             "partial_update": can_update,
+            "restore": is_owner,
             "retrieve": can_get,
             "media_auth": can_get,
             "update": can_update,
@@ -665,6 +666,31 @@ class Document(MP_Node, BaseModel):
             )
 
         self.send_email(subject, [email], context, language)
+
+    def soft_delete(self):
+        """We still keep the .delete() method untouched for programmatic purposes."""
+        self.deleted_at = timezone.now()
+        self.save()
+
+    def restore(self):
+        """Cancelling a soft delete with checks."""
+        if self.deleted_at is None:
+            raise exceptions.ValidationError(
+                {"deleted_at": _("This document is not deleted.")}
+            )
+
+        limit_datetime = timezone.now() - timedelta(days=settings.SOFT_DELETE_KEEP_DAYS)
+        if self.deleted_at < limit_datetime:
+            raise exceptions.ValidationError(
+                {
+                    "deleted_at": _(
+                        "This document was hard deleted and cannot be restored."
+                    )
+                }
+            )
+
+        self.deleted_at = None
+        self.save()
 
 
 class LinkTrace(BaseModel):
