@@ -3,8 +3,6 @@ run-name: Release Chart
 
 on:
   push:
-    paths:
-      - src/helm/impress/**
 
 jobs:
   release:
@@ -35,3 +33,4 @@ jobs:
           mark_as_latest: False
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_GIT_REPO: numerique-gouv/helm-repo
